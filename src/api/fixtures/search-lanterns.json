@@ -1,0 +1,557 @@
+[
+  {
+    "score": 0.8965063,
+    "show": {
+      "id": 44776,
+      "url": "https://www.tvmaze.com/shows/44776/lanterns",
+      "name": "Lanterns",
+      "type": "Scripted",
+      "language": "English",
+      "genres": ["Action", "Adventure", "Science-Fiction"],
+      "status": "Running",
+      "runtime": 60,
+      "averageRuntime": 60,
+      "premiered": "2026-08-16",
+      "ended": null,
+      "officialSite": "https://www.hbomax.com/lanterns/8c11d041-6b71-4e54-8369-fdb310e063b8",
+      "schedule": {
+        "time": "21:00",
+        "days": ["Sunday"]
+      },
+      "rating": {
+        "average": 7.1
+      },
+      "weight": 100,
+      "network": {
+        "id": 8,
+        "name": "HBO",
+        "country": {
+          "name": "United States",
+          "code": "US",
+          "timezone": "America/New_York"
+        },
+        "officialSite": "https://www.hbo.com/"
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 376098,
+        "imdb": "tt26545992"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/637/1592971.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/637/1592971.jpg"
+      },
+      "summary": "<p><b>Lanterns</b> follows new recruit John Stewart and Lantern legend Hal Jordan, two intergalactic cops drawn into a dark, Earth-based mystery as they investigate a murder in the American heartland.</p>",
+      "updated": 1790016883,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/44776"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/3695364",
+          "name": "Bad Optics"
+        },
+        "nextepisode": {
+          "href": "https://api.tvmaze.com/episodes/3695365",
+          "name": "The Jordan Boys Legacy"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.3873379,
+    "show": {
+      "id": 70687,
+      "url": "https://www.tvmaze.com/shows/70687/patterns",
+      "name": "Patterns",
+      "type": "Scripted",
+      "language": "English",
+      "genres": ["Comedy", "Romance"],
+      "status": "To Be Determined",
+      "runtime": null,
+      "averageRuntime": 24,
+      "premiered": "2023-07-27",
+      "ended": null,
+      "officialSite": "https://www.primevideo.com/detail/Patterns/0RJC3R3ZGUTXHS385CMETJ5KV0",
+      "schedule": {
+        "time": "",
+        "days": []
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 75,
+      "network": null,
+      "webChannel": {
+        "id": 3,
+        "name": "Prime Video",
+        "country": null,
+        "officialSite": "https://www.primevideo.com"
+      },
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 438231,
+        "imdb": "tt26753419"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/473/1183088.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/473/1183088.jpg"
+      },
+      "summary": "<p>We all navigate in multiple social circles - friendships, family, work - and often these groups do not mix. Patterns takes this concept and creates a universe of characters and narratives who move between these circles and finds the comedy within. The series touches on a range of topical issues including, LGBTQ matters; family problems; conspiracy theories; and reality television.</p>",
+      "updated": 1704795397,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/70687"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/2625310",
+          "name": "Entropy"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.30901098,
+    "show": {
+      "id": 26709,
+      "url": "https://www.tvmaze.com/shows/26709/scrubs-interns",
+      "name": "Scrubs: Interns",
+      "type": "Scripted",
+      "language": "English",
+      "genres": ["Drama", "Comedy", "Medical"],
+      "status": "Ended",
+      "runtime": null,
+      "averageRuntime": 3,
+      "premiered": "2009-01-01",
+      "ended": "2009-08-25",
+      "officialSite": null,
+      "schedule": {
+        "time": "",
+        "days": ["Tuesday", "Wednesday", "Thursday"]
+      },
+      "rating": {
+        "average": 5.3
+      },
+      "weight": 63,
+      "network": null,
+      "webChannel": {
+        "id": 95,
+        "name": "ABC.com",
+        "country": {
+          "name": "United States",
+          "code": "US",
+          "timezone": "America/New_York"
+        },
+        "officialSite": "https://abc.com/"
+      },
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": null,
+        "imdb": "tt1350342"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/389/973690.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/389/973690.jpg"
+      },
+      "summary": "<p>A webisode series from ABC based on the comedy-drama series <i>Scrubs</i> in its eighth season, which originally aired premiered on ABC.com, the day of a new Scrubs episode aired. The webisodes features four interns in their first year at Sacred Heart Hospital – Katie Collins, Denise \"Jo\" Mahoney, Howie Gelder and Sonja \"Sunny\" Dey, who \"directs\" the series as a video diary project.</p>",
+      "updated": 1756381821,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/26709"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/1121453",
+          "name": "Legal Custodians Episode"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.2959687,
+    "show": {
+      "id": 3585,
+      "url": "https://www.tvmaze.com/shows/3585/green-lantern-the-animated-series",
+      "name": "Green Lantern The Animated Series",
+      "type": "Animation",
+      "language": "English",
+      "genres": ["Action", "Adventure"],
+      "status": "Ended",
+      "runtime": 30,
+      "averageRuntime": 30,
+      "premiered": "2011-11-11",
+      "ended": "2013-03-16",
+      "officialSite": null,
+      "schedule": {
+        "time": "10:00",
+        "days": ["Saturday"]
+      },
+      "rating": {
+        "average": 8
+      },
+      "weight": 96,
+      "network": {
+        "id": 11,
+        "name": "Cartoon Network",
+        "country": {
+          "name": "United States",
+          "code": "US",
+          "timezone": "America/New_York"
+        },
+        "officialSite": null
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": 26783,
+        "thetvdb": 251807,
+        "imdb": "tt1724587"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/18/46844.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/18/46844.jpg"
+      },
+      "summary": "<p>In this animated CGI adaptation of the comic book hero, Hal Jordan is recruited to go on a long-term space mission to deal with the outbreak of the Red Lantern Corps. Just like the Green Lanterns are fueled by will, the Red Lanterns rely on hate for their powers. The two forces will clash in a battle of power rings and meet a few allies along the way.</p>",
+      "updated": 1704793913,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/3585"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/233692",
+          "name": "Dark Matter"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.29400015,
+    "show": {
+      "id": 85889,
+      "url": "https://www.tvmaze.com/shows/85889/my-adventures-with-green-lantern",
+      "name": "My Adventures with Green Lantern",
+      "type": "Animation",
+      "language": "English",
+      "genres": [],
+      "status": "In Development",
+      "runtime": null,
+      "averageRuntime": null,
+      "premiered": null,
+      "ended": null,
+      "officialSite": null,
+      "schedule": {
+        "time": "",
+        "days": []
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 92,
+      "network": null,
+      "webChannel": {
+        "id": 329,
+        "name": "HBO Max",
+        "country": null,
+        "officialSite": "https://www.hbomax.com"
+      },
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 460627,
+        "imdb": "tt37286909"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/629/1574384.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/629/1574384.jpg"
+      },
+      "summary": "<p>This animated series will follow teen Jessica Cruz, who becomes the new Green Lantern after receiving a Power Ring, but her new powers bring challenges as debris and enemies from the Lantern's war arrive on Earth. With no release date confirmed yet, the show is being executive produced by Jake Wyatt and co-executive produced by Stephanie Gonzaga.</p>",
+      "updated": 1782139882,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/85889"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.29105142,
+    "show": {
+      "id": 64734,
+      "url": "https://www.tvmaze.com/shows/64734/the-interns",
+      "name": "The Interns",
+      "type": "Scripted",
+      "language": "English",
+      "genres": ["Drama", "Medical"],
+      "status": "Ended",
+      "runtime": 60,
+      "averageRuntime": 60,
+      "premiered": "1970-09-18",
+      "ended": "1971-03-26",
+      "officialSite": null,
+      "schedule": {
+        "time": "19:30",
+        "days": ["Friday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 47,
+      "network": {
+        "id": 2,
+        "name": "CBS",
+        "country": {
+          "name": "United States",
+          "code": "US",
+          "timezone": "America/New_York"
+        },
+        "officialSite": "https://www.cbs.com/"
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 70374,
+        "imdb": "tt0065305"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/484/1212396.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/484/1212396.jpg"
+      },
+      "summary": "<p>A veteran doctor guides five young interns at New North Hospital.</p>",
+      "updated": 1711502190,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/64734"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/2418023",
+          "name": "The Choice"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.2882627,
+    "show": {
+      "id": 15162,
+      "url": "https://www.tvmaze.com/shows/15162/interns-of-field",
+      "name": "Interns of F.I.E.L.D.",
+      "type": "Scripted",
+      "language": "English",
+      "genres": ["Comedy"],
+      "status": "Ended",
+      "runtime": 15,
+      "averageRuntime": 15,
+      "premiered": "2016-01-10",
+      "ended": "2016-02-28",
+      "officialSite": null,
+      "schedule": {
+        "time": "",
+        "days": ["Sunday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 70,
+      "network": null,
+      "webChannel": {
+        "id": 21,
+        "name": "YouTube",
+        "country": null,
+        "officialSite": "https://www.youtube.com"
+      },
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 307802,
+        "imdb": "tt5334428"
+      },
+      "image": null,
+      "summary": "<p>Even Superheroes need help saving the world sometimes, but what about the people who help the people who help the people doing the saving? Join the summer interns at the top secret agency F.I.E.L.D., where defending Earth is an entry-level dead-end job. Interns of F.I.E.L.D. follows the misadventures and shenanigans of four interns who work in the basements basement of a top secret Superhero Agency.</p>",
+      "updated": 1579463343,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/15162"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/689178",
+          "name": "Double Cross"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.19976757,
+    "show": {
+      "id": 56822,
+      "url": "https://www.tvmaze.com/shows/56822/tales-of-the-77th-bengal-lancers",
+      "name": "Tales of the 77th Bengal Lancers",
+      "type": "Scripted",
+      "language": "English",
+      "genres": [],
+      "status": "Ended",
+      "runtime": 30,
+      "averageRuntime": 30,
+      "premiered": "1956-10-21",
+      "ended": "1957-04-14",
+      "officialSite": null,
+      "schedule": {
+        "time": "",
+        "days": ["Sunday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 28,
+      "network": {
+        "id": 1,
+        "name": "NBC",
+        "country": {
+          "name": "United States",
+          "code": "US",
+          "timezone": "America/New_York"
+        },
+        "officialSite": "https://www.nbc.com/"
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 72305,
+        "imdb": "tt0048901"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/348/870926.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/348/870926.jpg"
+      },
+      "summary": null,
+      "updated": 1628772292,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/56822"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/2146838",
+          "name": "The Inconstant Moon"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.1997089,
+    "show": {
+      "id": 90241,
+      "url": "https://www.tvmaze.com/shows/90241/the-interns",
+      "name": "The Interns",
+      "type": "Scripted",
+      "language": "Thai",
+      "genres": [],
+      "status": "Ended",
+      "runtime": null,
+      "averageRuntime": null,
+      "premiered": "2023-02-10",
+      "ended": "2023-03-17",
+      "officialSite": null,
+      "schedule": {
+        "time": "20:15",
+        "days": ["Friday", "Saturday", "Sunday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 9,
+      "network": {
+        "id": 1392,
+        "name": "Thai PBS",
+        "country": {
+          "name": "Thailand",
+          "code": "TH",
+          "timezone": "Asia/Bangkok"
+        },
+        "officialSite": null
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 453819,
+        "imdb": null
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/612/1531692.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/612/1531692.jpg"
+      },
+      "summary": "<p>A group of newly graduated doctors begin their internships at Maharak Hospital. Lin hopes to impress Dr. Thida, the country's most famous brain surgeon so that she'll pick her as her protégé. Pawin is the pillar of his family. With his family facing financial troubles, he works hard to take amazing care of all his patients. Emmi is the heiress of an importing business that moves medical equipment. She means to make connections in order to profit from future business in the medical industry. Ket is chasing her dream of being a doctor who treats all patients equally, regardless of gender identity. Best has high ideals; he has a love for what is right. He became a doctor out of a desire to make changes in the system, wanting everyone to receive equal treatment. He doesn't want to see anyone die hopelessly as his little sister did.</p>",
+      "updated": 1770580274,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/90241"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/3543181",
+          "name": "Episode 16"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.19773741,
+    "show": {
+      "id": 21258,
+      "url": "https://www.tvmaze.com/shows/21258/college-hill-interns",
+      "name": "College Hill: Interns",
+      "type": "Reality",
+      "language": "English",
+      "genres": [],
+      "status": "Ended",
+      "runtime": 20,
+      "averageRuntime": 20,
+      "premiered": "2007-10-23",
+      "ended": "2007-12-04",
+      "officialSite": null,
+      "schedule": {
+        "time": "",
+        "days": ["Tuesday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 15,
+      "network": {
+        "id": 56,
+        "name": "BET",
+        "country": {
+          "name": "United States",
+          "code": "US",
+          "timezone": "America/New_York"
+        },
+        "officialSite": "https://www.bet.com/"
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 283778,
+        "imdb": "tt1095731"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/74/187372.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/74/187372.jpg"
+      },
+      "summary": "<p>On <b>College Hill: Interns</b>, college students across the U.S. are recruited for the internship of a lifetime. BET selects and places talented, high-achieving students with plenty of ambition in a position at a Fortune 500 corporation for hands-on work experience. It's no coincidence that these attractive, athletic, and highly entertaining students are challenged both professionally and personally. Will these students have what it takes to transition to the professional world?</p>",
+      "updated": 1503886079,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/21258"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/931727",
+          "name": "Not Just Goodbye"
+        }
+      }
+    }
+  }
+]

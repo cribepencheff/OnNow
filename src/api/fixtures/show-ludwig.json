@@ -1,0 +1,495 @@
+{
+  "id": 68919,
+  "url": "https://www.tvmaze.com/shows/68919/ludwig",
+  "name": "Ludwig",
+  "type": "Scripted",
+  "language": "English",
+  "genres": ["Drama", "Comedy", "Crime"],
+  "status": "Running",
+  "runtime": null,
+  "averageRuntime": 57,
+  "premiered": "2024-09-25",
+  "ended": null,
+  "officialSite": "https://www.bbc.co.uk/programmes/m0022wvz",
+  "schedule": {
+    "time": "",
+    "days": []
+  },
+  "rating": {
+    "average": 7.7
+  },
+  "weight": 99,
+  "network": null,
+  "webChannel": {
+    "id": 26,
+    "name": "BBC iPlayer",
+    "country": {
+      "name": "United Kingdom",
+      "code": "GB",
+      "timezone": "Europe/London"
+    },
+    "officialSite": "https://www.bbc.co.uk/iplayer"
+  },
+  "dvdCountry": null,
+  "externals": {
+    "tvrage": null,
+    "thetvdb": 435298,
+    "imdb": "tt27846061"
+  },
+  "image": {
+    "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/637/1594123.jpg",
+    "original": "https://static.tvmaze.com/uploads/images/original_untouched/637/1594123.jpg"
+  },
+  "summary": "<p>Can accidental detective John 'Ludwig' Taylor crack the biggest puzzle of his life - finding his missing brother?</p>",
+  "updated": 1789167140,
+  "_links": {
+    "self": {
+      "href": "https://api.tvmaze.com/shows/68919"
+    },
+    "previousepisode": {
+      "href": "https://api.tvmaze.com/episodes/3693738",
+      "name": "Episode 6"
+    }
+  },
+  "_embedded": {
+    "episodes": [
+      {
+        "id": 3002894,
+        "url": "https://www.tvmaze.com/episodes/3002894/ludwig-1x01-episode-1",
+        "name": "Episode 1",
+        "season": 1,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2024-09-25",
+        "airtime": "06:00",
+        "airstamp": "2024-09-25T05:00:00+00:00",
+        "runtime": 57,
+        "rating": {
+          "average": 7.9
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/536/1340206.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/536/1340206.jpg"
+        },
+        "summary": "<p>Puzzle setter John ‘Ludwig' Taylor's life of solitude is upended when his identical twin, DCI James Taylor, disappears. Drafted in by his sister-in-law Lucy, John reluctantly assumes his brother's identity as a detective in the Cambridge Police Authority in order to find clues to his brother's whereabouts.</p><p>John is tasked with infiltrating the Major Investigations Team, gathering information and solving a completely unconnected murder, all whilst remaining in character as his brother. A difficult ask for anyone, let alone a reclusive puzzle-setting genius who rarely leaves the house. Can this master of all things cryptic crack his biggest puzzle yet?</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3002894"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/68919",
+            "name": "Ludwig"
+          }
+        }
+      },
+      {
+        "id": 3002895,
+        "url": "https://www.tvmaze.com/episodes/3002895/ludwig-1x02-episode-2",
+        "name": "Episode 2",
+        "season": 1,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2024-09-25",
+        "airtime": "06:00",
+        "airstamp": "2024-09-25T05:00:00+00:00",
+        "runtime": 58,
+        "rating": {
+          "average": 8.1
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/536/1340207.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/536/1340207.jpg"
+        },
+        "summary": "<p>After a breakthrough finding a coded notebook, John decides to return to the police station to gather more information about his missing brother's last case.</p><p>Before John can make much progress, his thirst for all things cryptic sees him drawn to another grisly crime scene at a grand manor house. What looks like a missing person's case turns into something far more sinister as John puts his puzzle mind to work.</p><p>Back at home, a frustrated Lucy takes matters into her own hands and embarks on a fact-finding mission to the home of one of her husband's ex-colleagues.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3002895"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/68919",
+            "name": "Ludwig"
+          }
+        }
+      },
+      {
+        "id": 3002896,
+        "url": "https://www.tvmaze.com/episodes/3002896/ludwig-1x03-episode-3",
+        "name": "Episode 3",
+        "season": 1,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2024-09-25",
+        "airtime": "06:00",
+        "airstamp": "2024-09-25T05:00:00+00:00",
+        "runtime": 58,
+        "rating": {
+          "average": 8.1
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/536/1340208.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/536/1340208.jpg"
+        },
+        "summary": "<p>With new information about Chief Constable Ziegler, John is sent back to the police station to get closer to DI Russell Carter, his brother's new partner who mysteriously arrived around the same time that James disappeared.</p><p>A new case takes John and Russell on a walking tour of Cambridge, where they are faced with an impossible question: why would someone kill a tour guide that they'd only just met? To get closer to the truth about what happened to conspiracy blogger Roger Sinclair, Lucy goes undercover and makes a shocking discovery of her own.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3002896"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/68919",
+            "name": "Ludwig"
+          }
+        }
+      },
+      {
+        "id": 3002897,
+        "url": "https://www.tvmaze.com/episodes/3002897/ludwig-1x04-episode-4",
+        "name": "Episode 4",
+        "season": 1,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2024-09-25",
+        "airtime": "06:00",
+        "airstamp": "2024-09-25T05:00:00+00:00",
+        "runtime": 54,
+        "rating": {
+          "average": 8.2
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/536/1340209.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/536/1340209.jpg"
+        },
+        "summary": "<p>A body falls from the fourth storey of a construction site. Was it just a terrible accident, or a perfectly executed murder? John's team think he's losing his touch when he latches on to a far-fetched theory and starts pointing fingers. When things don't quite add up, John begins to question his abilities both at work and at home, whilst Lucy's frustration at their lack of progress in finding her husband reaches fever-pitch.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3002897"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/68919",
+            "name": "Ludwig"
+          }
+        }
+      },
+      {
+        "id": 3002898,
+        "url": "https://www.tvmaze.com/episodes/3002898/ludwig-1x05-episode-5",
+        "name": "Episode 5",
+        "season": 1,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2024-09-25",
+        "airtime": "06:00",
+        "airstamp": "2024-09-25T05:00:00+00:00",
+        "runtime": 58,
+        "rating": {
+          "average": 8.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/536/1340210.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/536/1340210.jpg"
+        },
+        "summary": "<p>John and the gang go back to school to investigate the suspicious death of a headmaster. In doing so, John is faced with his own bad memories of school but is pleasantly surprised when he reconnects with his old mentor, the man who taught him everything about puzzles.</p><p>With John distracted by the case, Lucy follows a new lead which she hopes will bring her closer to finding James. Lucy's covert mission takes her to Wales, but she's not the lone wolf she thinks she is, and her discoveries leave her rattled. A shocking revelation from IT consultant Holly forces John to question everything.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3002898"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/68919",
+            "name": "Ludwig"
+          }
+        }
+      },
+      {
+        "id": 3002899,
+        "url": "https://www.tvmaze.com/episodes/3002899/ludwig-1x06-episode-6",
+        "name": "Episode 6",
+        "season": 1,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2024-09-25",
+        "airtime": "06:00",
+        "airstamp": "2024-09-25T05:00:00+00:00",
+        "runtime": 59,
+        "rating": {
+          "average": 8.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/536/1340211.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/536/1340211.jpg"
+        },
+        "summary": "<p>With Lucy embroiled in a murder plot, all eyes are on John. The hunt for James takes a back seat as John desperately battles to prove Lucy's innocence. Angry at James for abandoning his family, John questions whether his brother is worth any of this.</p><p>As the pressure ramps up, Lucy admits that what she needs right now isn't James or John, it's Ludwig. Is it time for John to come clean and reveal his true identity to the team?</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3002899"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/68919",
+            "name": "Ludwig"
+          }
+        }
+      },
+      {
+        "id": 3693416,
+        "url": "https://www.tvmaze.com/episodes/3693416/ludwig-2x01-episode-1",
+        "name": "Episode 1",
+        "season": 2,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2026-08-20",
+        "airtime": "06:00",
+        "airstamp": "2026-08-20T05:00:00+00:00",
+        "runtime": 59,
+        "rating": {
+          "average": 7.6
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/636/1590832.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/636/1590832.jpg"
+        },
+        "summary": "<p>No longer having to impersonate his twin brother and following his successful closure rate for the major investigation team, puzzle setter John ‘Ludwig' Taylor returns under his new job title of crime scene consultant.</p><p>After retrieving the files from storage, John is determined to find the incriminating information that led to Sinclair's death and James's disappearance.</p><p>As the Cambridge Police Authority undergoes investigation in light of the Holly Pinder scandal, an unusual double confession at the theatre sees John take centre stage, where he must prove who didn't commit the crime. The case takes a turn when John meets a key witness who appears to recognise him – and not because he's Ludwig. Is there more to this witness than meets the eye?</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3693416"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/68919",
+            "name": "Ludwig"
+          }
+        }
+      },
+      {
+        "id": 3693734,
+        "url": "https://www.tvmaze.com/episodes/3693734/ludwig-2x02-episode-2",
+        "name": "Episode 2",
+        "season": 2,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2026-08-20",
+        "airtime": "06:00",
+        "airstamp": "2026-08-20T05:00:00+00:00",
+        "runtime": 53,
+        "rating": {
+          "average": 8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/636/1590833.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/636/1590833.jpg"
+        },
+        "summary": "<p>When a ceilidh is cut short by an unwelcome guest, John is left in a spin. Ironically, a murder witnessed by an entire wedding party proves to be quite the puzzle. While John feels overwhelmed by the variables, the crime stirs up difficult emotions for Russell.</p><p>Chief Constable Ziegler's abrupt holiday leave arouses suspicion from the Taylors. Now with too many strange pieces on their board, nothing seems like a coincidence. In a bid to get answers from the prime suspect embedded in their investigation, Lucy goes on a stakeout.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3693734"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/68919",
+            "name": "Ludwig"
+          }
+        }
+      },
+      {
+        "id": 3693735,
+        "url": "https://www.tvmaze.com/episodes/3693735/ludwig-2x03-episode-3",
+        "name": "Episode 3",
+        "season": 2,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2026-08-20",
+        "airtime": "06:00",
+        "airstamp": "2026-08-20T05:00:00+00:00",
+        "runtime": 54,
+        "rating": {
+          "average": 8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/636/1590834.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/636/1590834.jpg"
+        },
+        "summary": "<p>Disobeying station rules, John pops into the Cambridge Police Authority, hoping to find intel for Lucy's upcoming assignment. But keeping a low profile proves difficult for our puzzle genius when he finds himself unable to resist consulting on the murder of an influencer. Navigating his way through Cambridge's labyrinth, Ludwig must map out how the killer was able to dodge being seen on camera in an area saturated with CCTV.</p><p>Meanwhile, Lucy and Henry attempt to connect the dots in their investigation and reach a breakthrough revelation on their prime suspect. But as the pieces fall into place, they can't help but wonder whether their opponent is already one step ahead of them.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3693735"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/68919",
+            "name": "Ludwig"
+          }
+        }
+      },
+      {
+        "id": 3693736,
+        "url": "https://www.tvmaze.com/episodes/3693736/ludwig-2x04-episode-4",
+        "name": "Episode 4",
+        "season": 2,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2026-09-10",
+        "airtime": "06:00",
+        "airstamp": "2026-09-10T05:00:00+00:00",
+        "runtime": 57,
+        "rating": {
+          "average": 7.9
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/639/1599579.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/639/1599579.jpg"
+        },
+        "summary": "<p>It's Lucy's big day, and tensions are high. Ever resourceful, Lucy undergoes some last-minute undercover work to prepare for what's to come. She needs her brother-in-law's support, but John finds himself snookered by the latest murder. For once, a crime scene is the last place John wants to be. As the case twists from a whodunit to a howdunit, and an unexpected phone call sends shockwaves, John grows increasingly frustrated at how everyone seems to be playing games.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3693736"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/68919",
+            "name": "Ludwig"
+          }
+        }
+      },
+      {
+        "id": 3693737,
+        "url": "https://www.tvmaze.com/episodes/3693737/ludwig-2x05-episode-5",
+        "name": "Episode 5",
+        "season": 2,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2026-09-10",
+        "airtime": "06:00",
+        "airstamp": "2026-09-10T05:00:00+00:00",
+        "runtime": 59,
+        "rating": {
+          "average": 7.9
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/639/1599580.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/639/1599580.jpg"
+        },
+        "summary": "<p>Reeling from their recent discovery, John and Lucy struggle to see how this new piece of information fits into what they already know. When a sushi bar turns into a crime scene, an unlikely witness helps John in both of his investigations. Desperate for answers to questions of his own, Russell takes matters into his own hands. But when a cryptic thumb drive is left behind by the witness and decoded by John, Russell is crushed by what he learns. Are some truths better left hidden?</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3693737"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/68919",
+            "name": "Ludwig"
+          }
+        }
+      },
+      {
+        "id": 3693738,
+        "url": "https://www.tvmaze.com/episodes/3693738/ludwig-2x06-episode-6",
+        "name": "Episode 6",
+        "season": 2,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2026-09-10",
+        "airtime": "06:00",
+        "airstamp": "2026-09-10T05:00:00+00:00",
+        "runtime": 53,
+        "rating": {
+          "average": 8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/639/1599581.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/639/1599581.jpg"
+        },
+        "summary": "<p>A shocking death that strikes close to home leaves John shaken when all avenues point to Joanne Kemper. The clock is ticking, but the Taylors are no closer to understanding how it all fits together. With everything laid out on the table, John and Lucy must place their trust in those around them as the investigation comes to a head. Has Kemper finally made a wrong move? Will Ludwig ensure that justice is served before another life is lost?</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3693738"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/68919",
+            "name": "Ludwig"
+          }
+        }
+      }
+    ],
+    "seasons": [
+      {
+        "id": 152687,
+        "url": "https://www.tvmaze.com/seasons/152687/ludwig-season-1",
+        "number": 1,
+        "name": "",
+        "episodeOrder": 6,
+        "premiereDate": "2024-09-25",
+        "endDate": "2024-09-25",
+        "network": null,
+        "webChannel": {
+          "id": 26,
+          "name": "BBC iPlayer",
+          "country": {
+            "name": "United Kingdom",
+            "code": "GB",
+            "timezone": "Europe/London"
+          },
+          "officialSite": "https://www.bbc.co.uk/iplayer"
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/586/1465402.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/586/1465402.jpg"
+        },
+        "summary": "<p>When John ‘Ludwig' Taylor's identical twin, DCI James Taylor, disappears off the face of the earth, John takes over his brother's identity in a quest to discover his whereabouts. John has never married; never had a family and never really ventured further than his own front door. Without a computer, mobile phone or even a television, he lives in quiet solitude, designing puzzles for a living, under the nom-de-plume of ‘<b>Ludwig</b>'.</p><p>This genre bending detective series follows full-time luddite, John 'Ludwig' Taylor, as he assumes the identity of his missing twin brother in a bid to track him down and bring him home. However, filling the shoes of your identical twin is one thing - when your twin also happens to be a successful DCI leading Cambridge's busy inner-city major crimes team the stakes are much higher. John may be a master of all things cryptic, but can he crack the biggest puzzle of his life?</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/152687"
+          }
+        }
+      },
+      {
+        "id": 176753,
+        "url": "https://www.tvmaze.com/seasons/176753/ludwig-season-2",
+        "number": 2,
+        "name": "",
+        "episodeOrder": 6,
+        "premiereDate": "2026-08-20",
+        "endDate": "2026-09-10",
+        "network": null,
+        "webChannel": {
+          "id": 26,
+          "name": "BBC iPlayer",
+          "country": {
+            "name": "United Kingdom",
+            "code": "GB",
+            "timezone": "Europe/London"
+          },
+          "officialSite": "https://www.bbc.co.uk/iplayer"
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/637/1594124.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/637/1594124.jpg"
+        },
+        "summary": "<p>Picking up from where things were left at the end of series one, master puzzle-setter John ‘Ludwig' Taylor is now a Crime Scene Consultant working on ‘impossible' crimes for the Cambridge Police Authority. No longer having to masquerade as his brother, he's openly more ‘Ludwig' than ever - brilliant at solving puzzles but hopeless at everything else.</p><p>But John's identical twin brother, James, is still missing, and now that he's an official employee of the station, John is forbidden from using any police resources to look for his brother or uncover exactly what he was investigating.</p><p>Of course, John won't stop and neither will Lucy, John's sister-in-law and wife of his missing brother James - a puzzle needs solving and a husband and father needs bringing home. One masquerade may have ended, but a new one has just begun.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/176753"
+          }
+        }
+      },
+      {
+        "id": 203034,
+        "url": "https://www.tvmaze.com/seasons/203034/ludwig-season-3",
+        "number": 3,
+        "name": "",
+        "episodeOrder": 6,
+        "premiereDate": null,
+        "endDate": null,
+        "network": null,
+        "webChannel": {
+          "id": 26,
+          "name": "BBC iPlayer",
+          "country": {
+            "name": "United Kingdom",
+            "code": "GB",
+            "timezone": "Europe/London"
+          },
+          "officialSite": "https://www.bbc.co.uk/iplayer"
+        },
+        "image": null,
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/203034"
+          }
+        }
+      }
+    ]
+  }
+}

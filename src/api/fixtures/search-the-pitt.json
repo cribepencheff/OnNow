@@ -1,0 +1,279 @@
+[
+  {
+    "score": 1.1893096,
+    "show": {
+      "id": 75632,
+      "url": "https://www.tvmaze.com/shows/75632/the-pitt",
+      "name": "The Pitt",
+      "type": "Scripted",
+      "language": "English",
+      "genres": ["Drama", "Medical"],
+      "status": "Running",
+      "runtime": null,
+      "averageRuntime": 48,
+      "premiered": "2025-01-09",
+      "ended": null,
+      "officialSite": "https://www.hbomax.com/shows/pitt-2024/e6e7bad9-d48d-4434-b334-7c651ffc4bdf",
+      "schedule": {
+        "time": "",
+        "days": ["Thursday"]
+      },
+      "rating": {
+        "average": 8.5
+      },
+      "weight": 100,
+      "network": null,
+      "webChannel": {
+        "id": 329,
+        "name": "HBO Max",
+        "country": null,
+        "officialSite": "https://www.hbomax.com"
+      },
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 448176,
+        "imdb": "tt31938062"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/606/1516776.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/606/1516776.jpg"
+      },
+      "summary": "<p><b>The Pitt</b> is a realistic examination of the challenges facing healthcare workers in today's America as seen through the lens of the frontline heroes working in a modern-day hospital in Pittsburgh, Pennsylvania. Each episode follows an hour of Dr. Robby's 15-hour shift as the chief attendant in Pittsburgh Trauma Medical Hospital's emergency room.</p>",
+      "updated": 1787386433,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/75632"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/3489574",
+          "name": "9:00 P.M."
+        }
+      }
+    }
+  },
+  {
+    "score": 0.52534246,
+    "show": {
+      "id": 39348,
+      "url": "https://www.tvmaze.com/shows/39348/the-pitts",
+      "name": "The Pitts",
+      "type": "Scripted",
+      "language": "English",
+      "genres": ["Comedy"],
+      "status": "Ended",
+      "runtime": 30,
+      "averageRuntime": 30,
+      "premiered": "2003-03-30",
+      "ended": "2003-04-20",
+      "officialSite": null,
+      "schedule": {
+        "time": "21:30",
+        "days": ["Sunday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 75,
+      "network": {
+        "id": 4,
+        "name": "FOX",
+        "country": {
+          "name": "United States",
+          "code": "US",
+          "timezone": "America/New_York"
+        },
+        "officialSite": "https://www.fox.com/"
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 78565,
+        "imdb": "tt0338647"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/172/432125.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/172/432125.jpg"
+      },
+      "summary": "<p>The Pitts seem like a regular down-to-earth family but unfortunately not a day goes by without them having some sort of bad luck. From the probable to the outright zany, no matter what, they deal with it as a family.</p>",
+      "updated": 1617830156,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/39348"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/1553640",
+          "name": "Miss American Pipe"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.43674234,
+    "show": {
+      "id": 59863,
+      "url": "https://www.tvmaze.com/shows/59863/the-pit-stop",
+      "name": "The Pit Stop",
+      "type": "Talk Show",
+      "language": "English",
+      "genres": [],
+      "status": "Running",
+      "runtime": null,
+      "averageRuntime": 24,
+      "premiered": "2016-03-08",
+      "ended": null,
+      "officialSite": "https://www.youtube.com/playlist?list=PLGwZKkKxJCifo8yRSPVA_MMkRDunmmhQg",
+      "schedule": {
+        "time": "",
+        "days": ["Saturday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 62,
+      "network": null,
+      "webChannel": {
+        "id": 21,
+        "name": "YouTube",
+        "country": null,
+        "officialSite": "https://www.youtube.com"
+      },
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 316924,
+        "imdb": "tt6778324"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/464/1161445.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/464/1161445.jpg"
+      },
+      "summary": "<p><b>The Pit Stop</b> is the official RuPaul's Drag Race recap show.</p>",
+      "updated": 1784408023,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/59863"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/3614792",
+          "name": "Adore Delano"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.40993768,
+    "show": {
+      "id": 13467,
+      "url": "https://www.tvmaze.com/shows/13467/quatermass-and-the-pit",
+      "name": "Quatermass and the Pit",
+      "type": "Scripted",
+      "language": "English",
+      "genres": ["Drama", "Science-Fiction", "Thriller"],
+      "status": "Ended",
+      "runtime": 30,
+      "averageRuntime": 30,
+      "premiered": "1958-12-22",
+      "ended": "1959-01-26",
+      "officialSite": "http://www.bbc.co.uk/programmes/p00trhv3",
+      "schedule": {
+        "time": "20:00",
+        "days": ["Monday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 74,
+      "network": {
+        "id": 12,
+        "name": "BBC One",
+        "country": {
+          "name": "United Kingdom",
+          "code": "GB",
+          "timezone": "Europe/London"
+        },
+        "officialSite": "https://www.bbc.co.uk/bbcone"
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 94431,
+        "imdb": "tt0051305"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/465/1163270.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/465/1163270.jpg"
+      },
+      "summary": "<p>The series continues the loose chronology of the Quatermass adventures, and begins with Professor Bernard Quatermass being forced out of his role at the British Experimental Rocket Group, with the organisation being passed into military control by the British Government. Quatermass and his new colleague Colonel Breen become involved in the discovery of a bizarre object at an archaeological dig in Knightsbridge, London. As the serial progresses, Quatermass and his associates find that the contents of the object have a horrific influence over many of those who come into contact with it. As this influence increases, affecting Quatermass himself, darker implications are revealed about the entire nature and origins of mankind.</p>",
+      "updated": 1781364385,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/13467"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/631423",
+          "name": "Hob"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.36191523,
+    "show": {
+      "id": 9121,
+      "url": "https://www.tvmaze.com/shows/9121/i-pity-the-fool",
+      "name": "I Pity the Fool",
+      "type": "Reality",
+      "language": "English",
+      "genres": ["Comedy"],
+      "status": "Ended",
+      "runtime": 30,
+      "averageRuntime": 30,
+      "premiered": "2006-10-11",
+      "ended": "2006-11-15",
+      "officialSite": "http://www.tvland.com/originals/ipitythefool/",
+      "schedule": {
+        "time": "22:00",
+        "days": ["Wednesday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 27,
+      "network": {
+        "id": 57,
+        "name": "TV Land",
+        "country": {
+          "name": "United States",
+          "code": "US",
+          "timezone": "America/New_York"
+        },
+        "officialSite": null
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 79512,
+        "imdb": null
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/32/80618.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/32/80618.jpg"
+      },
+      "summary": "<p><b>I Pity the Fool</b> features former A-Team star Mr. T as he travels the country dispensing advice.</p>",
+      "updated": 1692697927,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/9121"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/493745",
+          "name": "Communication"
+        }
+      }
+    }
+  }
+]

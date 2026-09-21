@@ -1,0 +1,55 @@
+[
+  {
+    "score": 0.89641637,
+    "show": {
+      "id": 86175,
+      "url": "https://www.tvmaze.com/shows/86175/pluribus",
+      "name": "Pluribus",
+      "type": "Scripted",
+      "language": "English",
+      "genres": ["Drama", "Science-Fiction", "Thriller"],
+      "status": "Running",
+      "runtime": null,
+      "averageRuntime": 49,
+      "premiered": "2025-11-07",
+      "ended": null,
+      "officialSite": "https://tv.apple.com/us/show/pluribus/umc.cmc.37axgovs2yozlyh3c2cmwzlza",
+      "schedule": {
+        "time": "",
+        "days": ["Friday"]
+      },
+      "rating": {
+        "average": 7.8
+      },
+      "weight": 100,
+      "network": null,
+      "webChannel": {
+        "id": 310,
+        "name": "Apple TV",
+        "country": null,
+        "officialSite": "https://tv.apple.com/"
+      },
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 436457,
+        "imdb": "tt22202452"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/592/1481086.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/592/1481086.jpg"
+      },
+      "summary": "<p>The most miserable person on Earth must save the world from happiness.</p>",
+      "updated": 1783182724,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/86175"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/3314586",
+          "name": "La Chica o El Mundo"
+        }
+      }
+    }
+  }
+]

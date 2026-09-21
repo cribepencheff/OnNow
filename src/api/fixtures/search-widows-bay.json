@@ -1,0 +1,112 @@
+[
+  {
+    "score": 1.1893096,
+    "show": {
+      "id": 79390,
+      "url": "https://www.tvmaze.com/shows/79390/widows-bay",
+      "name": "Widow's Bay",
+      "type": "Scripted",
+      "language": "English",
+      "genres": ["Comedy", "Horror"],
+      "status": "Running",
+      "runtime": null,
+      "averageRuntime": 38,
+      "premiered": "2026-04-29",
+      "ended": null,
+      "officialSite": "https://tv.apple.com/show/widows-bay/umc.cmc.1zzly0vah46bnvnwf0qkrjhh2",
+      "schedule": {
+        "time": "",
+        "days": ["Wednesday"]
+      },
+      "rating": {
+        "average": 7.6
+      },
+      "weight": 100,
+      "network": null,
+      "webChannel": {
+        "id": 310,
+        "name": "Apple TV",
+        "country": null,
+        "officialSite": "https://tv.apple.com/"
+      },
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 454109,
+        "imdb": "tt33332385"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/623/1559488.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/623/1559488.jpg"
+      },
+      "summary": "<p><b>Widow's Bay</b> is about a mysteriously cursed New England island and its superstitious citizens, led by a mayor who refuses to believe their warnings.</p>",
+      "updated": 1787542262,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/79390"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/3477079",
+          "name": "We Hope You Enjoyed Your Time!"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.3010289,
+    "show": {
+      "id": 66588,
+      "url": "https://www.tvmaze.com/shows/66588/deadline-day-footballs-transfer-window",
+      "name": "Deadline Day: Football's Transfer Window",
+      "type": "Documentary",
+      "language": "English",
+      "genres": [],
+      "status": "Running",
+      "runtime": 60,
+      "averageRuntime": 60,
+      "premiered": "2023-01-15",
+      "ended": null,
+      "officialSite": null,
+      "schedule": {
+        "time": "21:00",
+        "days": ["Sunday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 36,
+      "network": {
+        "id": 1750,
+        "name": "Sky Documentaries",
+        "country": {
+          "name": "United Kingdom",
+          "code": "GB",
+          "timezone": "Europe/London"
+        },
+        "officialSite": "https://www.sky.com/watch/sky-documentaries"
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 429161,
+        "imdb": "tt25394378"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/443/1108142.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/443/1108142.jpg"
+      },
+      "summary": "<p>An insight into the most talked about but least understood aspect of modern football: the transfer market. With unprecedented behind-the-scenes access to world class players and Europe's premier agents, the series unmasks the men whose job it is to make footballers' dreams a reality and, for the first time, reveals how headline-grabbing multimillion pound deals get done.</p>",
+      "updated": 1678977874,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/66588"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/2476934",
+          "name": "Episode 4"
+        }
+      }
+    }
+  }
+]

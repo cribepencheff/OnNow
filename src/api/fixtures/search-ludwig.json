@@ -1,0 +1,561 @@
+[
+  {
+    "score": 0.89632607,
+    "show": {
+      "id": 68919,
+      "url": "https://www.tvmaze.com/shows/68919/ludwig",
+      "name": "Ludwig",
+      "type": "Scripted",
+      "language": "English",
+      "genres": ["Drama", "Comedy", "Crime"],
+      "status": "Running",
+      "runtime": null,
+      "averageRuntime": 57,
+      "premiered": "2024-09-25",
+      "ended": null,
+      "officialSite": "https://www.bbc.co.uk/programmes/m0022wvz",
+      "schedule": {
+        "time": "",
+        "days": []
+      },
+      "rating": {
+        "average": 7.7
+      },
+      "weight": 99,
+      "network": null,
+      "webChannel": {
+        "id": 26,
+        "name": "BBC iPlayer",
+        "country": {
+          "name": "United Kingdom",
+          "code": "GB",
+          "timezone": "Europe/London"
+        },
+        "officialSite": "https://www.bbc.co.uk/iplayer"
+      },
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 435298,
+        "imdb": "tt27846061"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/637/1594123.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/637/1594123.jpg"
+      },
+      "summary": "<p>Can accidental detective John 'Ludwig' Taylor crack the biggest puzzle of his life - finding his missing brother?</p>",
+      "updated": 1789167140,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/68919"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/3693738",
+          "name": "Episode 6"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.85504687,
+    "show": {
+      "id": 49611,
+      "url": "https://www.tvmaze.com/shows/49611/ludwig",
+      "name": "Ludwig",
+      "type": "Animation",
+      "language": "English",
+      "genres": ["Children"],
+      "status": "Ended",
+      "runtime": 5,
+      "averageRuntime": 5,
+      "premiered": null,
+      "ended": null,
+      "officialSite": null,
+      "schedule": {
+        "time": "",
+        "days": []
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 46,
+      "network": {
+        "id": 12,
+        "name": "BBC One",
+        "country": {
+          "name": "United Kingdom",
+          "code": "GB",
+          "timezone": "Europe/London"
+        },
+        "officialSite": "https://www.bbc.co.uk/bbcone"
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 258448,
+        "imdb": "tt0820430"
+      },
+      "image": null,
+      "summary": "Egg-shaped \"Ludwig\" arrives to share his music and fun adventures with the friendly animals in the forest. Simple and beautiful cut-out animation from the late seventies.",
+      "updated": 1597041966,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/49611"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.3264901,
+    "show": {
+      "id": 63198,
+      "url": "https://www.tvmaze.com/shows/63198/ludik",
+      "name": "Ludik",
+      "type": "Scripted",
+      "language": "Afrikaans",
+      "genres": ["Drama", "Crime"],
+      "status": "To Be Determined",
+      "runtime": null,
+      "averageRuntime": 58,
+      "premiered": "2022-08-26",
+      "ended": null,
+      "officialSite": "https://www.netflix.com/title/81467332",
+      "schedule": {
+        "time": "",
+        "days": []
+      },
+      "rating": {
+        "average": 5
+      },
+      "weight": 54,
+      "network": null,
+      "webChannel": {
+        "id": 1,
+        "name": "Netflix",
+        "country": null,
+        "officialSite": "https://www.netflix.com/"
+      },
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": null,
+        "imdb": "tt21341988"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/416/1041587.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/416/1041587.jpg"
+      },
+      "summary": "<p>The series revolves around Ludik, who appears to be a salt of the earth <i>oke</i>, styling himself as a wholesome family man running a successful furniture business. However, behind the veneer of respectability, Ludik is steeped in the underworld that sees him crossing paths with mobsters and murderers. With his family in turmoil, jail time on the horizon and death imminent, Ludik must rely on both his old and new allies to prevail and save his everything. </p>",
+      "updated": 1661606204,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/63198"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/2380530",
+          "name": "Who's Got Your Back"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.305744,
+    "show": {
+      "id": 16846,
+      "url": "https://www.tvmaze.com/shows/16846/de-ludwigs",
+      "name": "De Ludwigs",
+      "type": "Scripted",
+      "language": "Dutch",
+      "genres": ["Comedy", "Adventure", "Children"],
+      "status": "Running",
+      "runtime": 30,
+      "averageRuntime": 29,
+      "premiered": "2016-05-09",
+      "ended": null,
+      "officialSite": "http://www.nickelodeon.nl/deludwigs",
+      "schedule": {
+        "time": "19:20",
+        "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 40,
+      "network": {
+        "id": 436,
+        "name": "Nickelodeon",
+        "country": {
+          "name": "Netherlands",
+          "code": "NL",
+          "timezone": "Europe/Amsterdam"
+        },
+        "officialSite": null
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 311212,
+        "imdb": "tt5715140"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/60/150257.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/60/150257.jpg"
+      },
+      "summary": "<p>Benny is a boy who has been included in several foster families, but was forced to leave all of them. He has been given his final chance to be included with the young family of Ludwig. They live in a beautiful mansion on one of Amsterdam's canals together with their foster kids Anoosha, Sam, Yara and Daniel.</p>",
+      "updated": 1597044417,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/16846"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/1766509",
+          "name": "Episode 26"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.29379335,
+    "show": {
+      "id": 4921,
+      "url": "https://www.tvmaze.com/shows/4921/ludzie-chudego",
+      "name": "Ludzie Chudego",
+      "type": "Scripted",
+      "language": "Polish",
+      "genres": ["Comedy"],
+      "status": "Ended",
+      "runtime": 60,
+      "averageRuntime": 60,
+      "premiered": "2010-09-05",
+      "ended": "2011-11-24",
+      "officialSite": null,
+      "schedule": {
+        "time": "20:00",
+        "days": ["Thursday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 57,
+      "network": {
+        "id": 335,
+        "name": "Polsat",
+        "country": {
+          "name": "Poland",
+          "code": "PL",
+          "timezone": "Europe/Warsaw"
+        },
+        "officialSite": null
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": 26660,
+        "thetvdb": 188241,
+        "imdb": "tt1840698"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/21/53783.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/21/53783.jpg"
+      },
+      "summary": "<p><b>Ludzie Chudego</b> is a Polish version of the Spanish crime comedy \"Los Hombres de Paco\" (Paco's Men). 13 part series will tell about a group of police officers from Praga district. Not very competent, packing into various troubles. Notorious bad luck, absolute dedication and good intentions - are the hallmarks of police \"Three Musketeers.\" In their roles they take on - Cezary Zak, Peter Pręgowski and Maciej Zurawski. The first two known for their comedy \"ranches\", the third of the police \"pitbull\". For directing the TV series \"Woody and his men\" corresponds Wojciech Adamczyk, who had previously contributed to the success of \"Ranches\".</p>",
+      "updated": 1622233090,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/4921"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/309859",
+          "name": "Odcinek 26"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.25444025,
+    "show": {
+      "id": 54137,
+      "url": "https://www.tvmaze.com/shows/54137/ludvig-julemanden",
+      "name": "Ludvig & Julemanden",
+      "type": "Scripted",
+      "language": "Danish",
+      "genres": [],
+      "status": "Ended",
+      "runtime": 30,
+      "averageRuntime": 30,
+      "premiered": "2011-12-01",
+      "ended": "2011-12-24",
+      "officialSite": null,
+      "schedule": {
+        "time": "",
+        "days": [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday"
+        ]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 29,
+      "network": {
+        "id": 322,
+        "name": "TV2",
+        "country": {
+          "name": "Denmark",
+          "code": "DK",
+          "timezone": "Europe/Copenhagen"
+        },
+        "officialSite": null
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 263628,
+        "imdb": "tt1849444"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/300/750244.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/300/750244.jpg"
+      },
+      "summary": "<p><b>Ludvig og Julemanden</b> is a real Christmas adventure, with everything you could wish for in mystery, humor, elves, magic and a real Christmas atmosphere. 11-year-old Ludvig is temporarily moving in with his family at Børglum Kloster. Ludvig is quickly convinced that the monastery contains a secret treasure, and he therefore enters into an agreement with his father. If he finds the treasure, the family stays at the monastery. Santa Claus Nicholas is not allowed to hold a big 500 year Santa Claus anniversary for his wife Julie, and leaves the workshop and takes the rabbit to Børglum Monastery. Here he meets Ludvig, and the two become faithful partners in the hunt for the treasure. However, Ludvig and Santa Claus are not alone in the hunt for the treasure. Børglum Kloster also houses four ghosts who, under the leadership of Bishop Stygge Krumpen, want to regain power over Børglum Kloster.</p>",
+      "updated": 1615927890,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/54137"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/2048348",
+          "name": "Jul På Børglum"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.22848344,
+    "show": {
+      "id": 50337,
+      "url": "https://www.tvmaze.com/shows/50337/ludzie-i-bogowie",
+      "name": "Ludzie i Bogowie",
+      "type": "Scripted",
+      "language": "Polish",
+      "genres": ["Drama", "History"],
+      "status": "Ended",
+      "runtime": 45,
+      "averageRuntime": 45,
+      "premiered": "2020-09-13",
+      "ended": "2020-12-06",
+      "officialSite": "https://vod.tvp.pl/website/ludzie-i-bogowie,48844295",
+      "schedule": {
+        "time": "20:15",
+        "days": ["Sunday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 29,
+      "network": {
+        "id": 336,
+        "name": "TVP1",
+        "country": {
+          "name": "Poland",
+          "code": "PL",
+          "timezone": "Europe/Warsaw"
+        },
+        "officialSite": null
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": null,
+        "imdb": "tt10138386"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/272/682252.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/272/682252.jpg"
+      },
+      "summary": "<p>The series is based on real events that took place in the occupying Warsaw. In the series, these events are associated with the department, code-named 'Talon', which was active in Warsaw during the Second World War. Its main goal is the elimination of people convicted by underground courts. The main characters of the series are two friends: the commander of \"Claw\" Leszek Zaremba, pseudonym \"Onyx\", and Tadeusz Kozheniewski, pseudonym \"Daguerre\". The first is conscious and collected, he acts with one hundred percent accuracy and efficiency. However, every day he doubts the correctness of such behavior, and remorse does not give him rest. The second, on the contrary. The reality of the occupation awakens in him a growing desire to strike back at the Germans, he decides to use evil in the name of higher goals.</p>",
+      "updated": 1763574516,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/50337"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/1977801",
+          "name": "Odwet"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.20607363,
+    "show": {
+      "id": 80901,
+      "url": "https://www.tvmaze.com/shows/80901/ludi-jian-xian",
+      "name": "Ludi Jian Xian",
+      "type": "Scripted",
+      "language": null,
+      "genres": [],
+      "status": "Running",
+      "runtime": null,
+      "averageRuntime": 8,
+      "premiered": "2024-06-24",
+      "ended": null,
+      "officialSite": "https://www.iqiyi.com/v_1kj7kxfhcig.html",
+      "schedule": {
+        "time": "",
+        "days": ["Monday", "Thursday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 32,
+      "network": null,
+      "webChannel": {
+        "id": 67,
+        "name": "iQIYI",
+        "country": null,
+        "officialSite": "https://www.iq.com/"
+      },
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 449653,
+        "imdb": null
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/544/1360475.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/544/1360475.jpg"
+      },
+      "summary": null,
+      "updated": 1760977060,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/80901"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/3369082",
+          "name": "Episode 150"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.13235608,
+    "show": {
+      "id": 85525,
+      "url": "https://www.tvmaze.com/shows/85525/falsch-aber-anders-lustig",
+      "name": "falsch, aber anders lustig",
+      "type": "Game Show",
+      "language": "German",
+      "genres": [],
+      "status": "Ended",
+      "runtime": null,
+      "averageRuntime": null,
+      "premiered": "2024-11-27",
+      "ended": "2024-11-27",
+      "officialSite": "https://www.ardmediathek.de/serie/falsch-aber-anders-lustig/staffel-1/Y3JpZDovL3JiYi1vbmxpbmUuZGUvZmFsc2NoLWFiZXItYW5kZXJzLWx1c3RpZw/1",
+      "schedule": {
+        "time": "",
+        "days": []
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 6,
+      "network": null,
+      "webChannel": {
+        "id": 390,
+        "name": "ARD Mediathek",
+        "country": {
+          "name": "Germany",
+          "code": "DE",
+          "timezone": "Europe/Busingen"
+        },
+        "officialSite": null
+      },
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 457462,
+        "imdb": "tt34754674"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/575/1438124.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/575/1438124.jpg"
+      },
+      "summary": "<p>Laugh until the tears come: In this unique comedy show, it's not who's right that counts, but who has the best sense of humor. Two teams of two comedians compete in a witty battle for the most absurd answers to crazy questions. The comedy highlight is hosted by Moritz Neumeier - known for his biting humor and spot-on punchlines. \"Wrong, but funny in a different way\" guarantees entertainment at the highest level.</p>",
+      "updated": 1750519888,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/85525"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/3283308",
+          "name": "Hazel und Fabian in der Ehe-Krise"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.12259453,
+    "show": {
+      "id": 88474,
+      "url": "https://www.tvmaze.com/shows/88474/falsch-aber-lustig",
+      "name": "Falsch, aber lustig",
+      "type": "Variety",
+      "language": "German",
+      "genres": ["Comedy"],
+      "status": "Running",
+      "runtime": null,
+      "averageRuntime": null,
+      "premiered": "2022-09-08",
+      "ended": null,
+      "officialSite": null,
+      "schedule": {
+        "time": "",
+        "days": ["Thursday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 2,
+      "network": null,
+      "webChannel": {
+        "id": 21,
+        "name": "YouTube",
+        "country": null,
+        "officialSite": "https://www.youtube.com"
+      },
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 445373,
+        "imdb": null
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/599/1498390.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/599/1498390.jpg"
+      },
+      "summary": null,
+      "updated": 1763645861,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/88474"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/3447079",
+          "name": "Episode 12"
+        }
+      }
+    }
+  }
+]

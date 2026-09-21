@@ -1,0 +1,276 @@
+{
+  "id": 91311,
+  "url": "https://www.tvmaze.com/shows/91311/legends",
+  "name": "Legends",
+  "type": "Scripted",
+  "language": "English",
+  "genres": ["Crime", "Thriller"],
+  "status": "Running",
+  "runtime": null,
+  "averageRuntime": 59,
+  "premiered": "2026-05-07",
+  "ended": null,
+  "officialSite": "https://www.netflix.com/title/81708404",
+  "schedule": {
+    "time": "",
+    "days": []
+  },
+  "rating": {
+    "average": 6.9
+  },
+  "weight": 98,
+  "network": null,
+  "webChannel": {
+    "id": 1,
+    "name": "Netflix",
+    "country": null,
+    "officialSite": "https://www.netflix.com/"
+  },
+  "dvdCountry": null,
+  "externals": {
+    "tvrage": null,
+    "thetvdb": 453615,
+    "imdb": "tt33265765"
+  },
+  "image": {
+    "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/624/1560610.jpg",
+    "original": "https://static.tvmaze.com/uploads/images/original_untouched/624/1560610.jpg"
+  },
+  "summary": "<p>Surrounded by drug lords, a team of regular civil servants faces a nerve-racking undercover mission to take them down.</p>",
+  "updated": 1789180929,
+  "_links": {
+    "self": {
+      "href": "https://api.tvmaze.com/shows/91311"
+    },
+    "previousepisode": {
+      "href": "https://api.tvmaze.com/episodes/3592395",
+      "name": "Legends Never Die"
+    }
+  },
+  "_embedded": {
+    "episodes": [
+      {
+        "id": 3592390,
+        "url": "https://www.tvmaze.com/episodes/3592390/legends-1x01-could-you-offer-more",
+        "name": "Could You Offer More?",
+        "season": 1,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2026-05-07",
+        "airtime": "",
+        "airstamp": "2026-05-07T12:00:00+00:00",
+        "runtime": 48,
+        "rating": {
+          "average": 7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/624/1560602.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/624/1560602.jpg"
+        },
+        "summary": "<p>As drug deaths surge in '90s Britain, the government turns to a veteran customs investigator to recruit a novice unit for an unprecedented covert mission.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3592390"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/91311",
+            "name": "Legends"
+          }
+        }
+      },
+      {
+        "id": 3592391,
+        "url": "https://www.tvmaze.com/episodes/3592391/legends-1x02-alliance",
+        "name": "Alliance",
+        "season": 1,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2026-05-07",
+        "airtime": "",
+        "airstamp": "2026-05-07T12:00:00+00:00",
+        "runtime": 58,
+        "rating": {
+          "average": 7.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/624/1560603.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/624/1560603.jpg"
+        },
+        "summary": "<p>Customs recruit Guy faces tests that threaten to blow his cover. Meanwhile, the team in Liverpool chase the scent of a suspicious bakery.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3592391"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/91311",
+            "name": "Legends"
+          }
+        }
+      },
+      {
+        "id": 3592392,
+        "url": "https://www.tvmaze.com/episodes/3592392/legends-1x03-this-is-liverpool",
+        "name": "This is Liverpool",
+        "season": 1,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2026-05-07",
+        "airtime": "",
+        "airstamp": "2026-05-07T12:00:00+00:00",
+        "runtime": 57,
+        "rating": {
+          "average": 8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/624/1560604.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/624/1560604.jpg"
+        },
+        "summary": "<p>A volatile alliance puts Guy at the heart of a high-risk smuggling deal. The Legends in Liverpool embark on a surveillance mission that ends in trouble.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3592392"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/91311",
+            "name": "Legends"
+          }
+        }
+      },
+      {
+        "id": 3592393,
+        "url": "https://www.tvmaze.com/episodes/3592393/legends-1x04-the-war-on-drugs",
+        "name": "The War on Drugs",
+        "season": 1,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2026-05-07",
+        "airtime": "",
+        "airstamp": "2026-05-07T12:00:00+00:00",
+        "runtime": 56,
+        "rating": {
+          "average": 7.8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/624/1560605.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/624/1560605.jpg"
+        },
+        "summary": "<p>Cracks start to appear in both gangs as tensions, pressure and paranoia run high. Kate looks to exploit a possible weakness in Carter's armour.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3592393"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/91311",
+            "name": "Legends"
+          }
+        }
+      },
+      {
+        "id": 3592394,
+        "url": "https://www.tvmaze.com/episodes/3592394/legends-1x05-old-kings",
+        "name": "Old Kings",
+        "season": 1,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2026-05-07",
+        "airtime": "",
+        "airstamp": "2026-05-07T12:00:00+00:00",
+        "runtime": 58,
+        "rating": {
+          "average": 7.2
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/624/1560606.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/624/1560606.jpg"
+        },
+        "summary": "<p>While Kate chases a murky trail of corruption, a potential meeting with a feared drug lord sends Guy, Bailey and Don on a dangerous overseas mission.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3592394"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/91311",
+            "name": "Legends"
+          }
+        }
+      },
+      {
+        "id": 3592395,
+        "url": "https://www.tvmaze.com/episodes/3592395/legends-1x06-legends-never-die",
+        "name": "Legends Never Die",
+        "season": 1,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2026-05-07",
+        "airtime": "",
+        "airstamp": "2026-05-07T12:00:00+00:00",
+        "runtime": 74,
+        "rating": {
+          "average": 7.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/624/1560607.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/624/1560607.jpg"
+        },
+        "summary": "<p>Betrayal, distrust and ambition put the entire mission — and the Legends — at risk. Can they stop an unprecedented heroin shipment from reaching Britain?</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3592395"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/91311",
+            "name": "Legends"
+          }
+        }
+      }
+    ],
+    "seasons": [
+      {
+        "id": 199879,
+        "url": "https://www.tvmaze.com/seasons/199879/legends-season-1",
+        "number": 1,
+        "name": "",
+        "episodeOrder": 6,
+        "premiereDate": "2026-05-07",
+        "endDate": "2026-05-07",
+        "network": null,
+        "webChannel": {
+          "id": 1,
+          "name": "Netflix",
+          "country": null,
+          "officialSite": "https://www.netflix.com/"
+        },
+        "image": null,
+        "summary": "<p>In the early 1990s, Her Majesty's Customs and Excise was losing its battle with illegal drug smuggling across Britain's borders. The solution was extraordinary. In a top-secret operation, a small team of Customs employees were sent undercover. Their task - to infiltrate Britain's most dangerous drug gangs.<br />But these were not trained spies. They were normal men and women, plucked from ordinary lives around the UK, put through a basic training regime and tasked with building new identities in the criminal underworld. These identities were called <b>Legends</b>.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/199879"
+          }
+        }
+      },
+      {
+        "id": 205572,
+        "url": "https://www.tvmaze.com/seasons/205572/legends-season-2",
+        "number": 2,
+        "name": "",
+        "episodeOrder": 6,
+        "premiereDate": null,
+        "endDate": null,
+        "network": null,
+        "webChannel": {
+          "id": 1,
+          "name": "Netflix",
+          "country": null,
+          "officialSite": "https://www.netflix.com/"
+        },
+        "image": null,
+        "summary": "<p>Season 2 sees the unlikely team drawn back into the world of undercover maneuvering, with the outside world none the wiser.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/205572"
+          }
+        }
+      }
+    ]
+  }
+}

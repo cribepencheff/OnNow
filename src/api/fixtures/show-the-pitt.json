@@ -1,0 +1,1001 @@
+{
+  "id": 75632,
+  "url": "https://www.tvmaze.com/shows/75632/the-pitt",
+  "name": "The Pitt",
+  "type": "Scripted",
+  "language": "English",
+  "genres": ["Drama", "Medical"],
+  "status": "Running",
+  "runtime": null,
+  "averageRuntime": 48,
+  "premiered": "2025-01-09",
+  "ended": null,
+  "officialSite": "https://www.hbomax.com/shows/pitt-2024/e6e7bad9-d48d-4434-b334-7c651ffc4bdf",
+  "schedule": {
+    "time": "",
+    "days": ["Thursday"]
+  },
+  "rating": {
+    "average": 8.5
+  },
+  "weight": 100,
+  "network": null,
+  "webChannel": {
+    "id": 329,
+    "name": "HBO Max",
+    "country": null,
+    "officialSite": "https://www.hbomax.com"
+  },
+  "dvdCountry": null,
+  "externals": {
+    "tvrage": null,
+    "thetvdb": 448176,
+    "imdb": "tt31938062"
+  },
+  "image": {
+    "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/606/1516776.jpg",
+    "original": "https://static.tvmaze.com/uploads/images/original_untouched/606/1516776.jpg"
+  },
+  "summary": "<p><b>The Pitt</b> is a realistic examination of the challenges facing healthcare workers in today's America as seen through the lens of the frontline heroes working in a modern-day hospital in Pittsburgh, Pennsylvania. Each episode follows an hour of Dr. Robby's 15-hour shift as the chief attendant in Pittsburgh Trauma Medical Hospital's emergency room.</p>",
+  "updated": 1787386433,
+  "_links": {
+    "self": {
+      "href": "https://api.tvmaze.com/shows/75632"
+    },
+    "previousepisode": {
+      "href": "https://api.tvmaze.com/episodes/3489574",
+      "name": "9:00 P.M."
+    }
+  },
+  "_embedded": {
+    "episodes": [
+      {
+        "id": 3077365,
+        "url": "https://www.tvmaze.com/episodes/3077365/the-pitt-1x01-700-am",
+        "name": "7:00 A.M.",
+        "season": 1,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2025-01-09",
+        "airtime": "",
+        "airstamp": "2025-01-09T12:00:00+00:00",
+        "runtime": 53,
+        "rating": {
+          "average": 8.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/563/1408618.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/563/1408618.jpg"
+        },
+        "summary": "<p>While attempting to distract himself from the anniversary of his mentor's death, Dr. Robby introduces a fresh batch of interns to life in the ER.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3077365"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      },
+      {
+        "id": 3082176,
+        "url": "https://www.tvmaze.com/episodes/3082176/the-pitt-1x02-800-am",
+        "name": "8:00 A.M.",
+        "season": 1,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2025-01-09",
+        "airtime": "",
+        "airstamp": "2025-01-09T12:00:00+00:00",
+        "runtime": 51,
+        "rating": {
+          "average": 8.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/563/1408626.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/563/1408626.jpg"
+        },
+        "summary": "<p>Robby helps siblings navigate their elderly father's end of life care. Later, Samira fends off cops targeting a woman with a misunderstood condition.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3082176"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      },
+      {
+        "id": 3082177,
+        "url": "https://www.tvmaze.com/episodes/3082177/the-pitt-1x03-900-am",
+        "name": "9:00 A.M.",
+        "season": 1,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2025-01-16",
+        "airtime": "",
+        "airstamp": "2025-01-16T12:00:00+00:00",
+        "runtime": 51,
+        "rating": {
+          "average": 8.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/563/1408627.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/563/1408627.jpg"
+        },
+        "summary": "<p>Samira does her best to keep Whitaker on the right track. A teen overdose sparks conflict in the ER.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3082177"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      },
+      {
+        "id": 3082178,
+        "url": "https://www.tvmaze.com/episodes/3082178/the-pitt-1x04-1000-am",
+        "name": "10:00 A.M.",
+        "season": 1,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2025-01-23",
+        "airtime": "",
+        "airstamp": "2025-01-23T12:00:00+00:00",
+        "runtime": 50,
+        "rating": {
+          "average": 8.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/563/1408619.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/563/1408619.jpg"
+        },
+        "summary": "<p>Bets are taken on the whereabouts of a stolen ambulance, while Santos learns a hard lesson, and Whitaker helps to tame \"The Kraken.\"</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3082178"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      },
+      {
+        "id": 3082179,
+        "url": "https://www.tvmaze.com/episodes/3082179/the-pitt-1x05-1100-am",
+        "name": "11:00 A.M.",
+        "season": 1,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2025-01-30",
+        "airtime": "",
+        "airstamp": "2025-01-30T12:00:00+00:00",
+        "runtime": 48,
+        "rating": {
+          "average": 8.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/563/1408620.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/563/1408620.jpg"
+        },
+        "summary": "<p>Both Santos and Collins deal with their own moral – and legal – quandaries. Samira's careful approach earns praise from patients – and reproach from Robby. Javadi unintentionally upends McKay's attempts to help an unhoused patient.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3082179"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      },
+      {
+        "id": 3082180,
+        "url": "https://www.tvmaze.com/episodes/3082180/the-pitt-1x06-1200-pm",
+        "name": "12:00 P.M.",
+        "season": 1,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2025-02-06",
+        "airtime": "",
+        "airstamp": "2025-02-06T12:00:00+00:00",
+        "runtime": 49,
+        "rating": {
+          "average": 8.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/563/1408621.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/563/1408621.jpg"
+        },
+        "summary": "<p>While Robby handles an ultimatum from the hospital, Mel, Javadi, and Collins each handle unique mother-daughter dynamics.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3082180"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      },
+      {
+        "id": 3082181,
+        "url": "https://www.tvmaze.com/episodes/3082181/the-pitt-1x07-100-pm",
+        "name": "1:00 P.M.",
+        "season": 1,
+        "number": 7,
+        "type": "regular",
+        "airdate": "2025-02-13",
+        "airtime": "",
+        "airstamp": "2025-02-13T12:00:00+00:00",
+        "runtime": 48,
+        "rating": {
+          "average": 8.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/563/1408622.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/563/1408622.jpg"
+        },
+        "summary": "<p>After examining an influencer with strange symptoms, Samira pushes back against Robby. Santos contends with a patient accused of assault.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3082181"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      },
+      {
+        "id": 3082182,
+        "url": "https://www.tvmaze.com/episodes/3082182/the-pitt-1x08-200-pm",
+        "name": "2:00 P.M.",
+        "season": 1,
+        "number": 8,
+        "type": "regular",
+        "airdate": "2025-02-20",
+        "airtime": "",
+        "airstamp": "2025-02-20T12:00:00+00:00",
+        "runtime": 48,
+        "rating": {
+          "average": 8.8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/563/1408623.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/563/1408623.jpg"
+        },
+        "summary": "<p>While Robby attends to an elderly patient with ties to Pittsburgh's history, other members of the team attempt to resuscitate a young drowning victim.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3082182"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      },
+      {
+        "id": 3082183,
+        "url": "https://www.tvmaze.com/episodes/3082183/the-pitt-1x09-300-pm",
+        "name": "3:00 P.M.",
+        "season": 1,
+        "number": 9,
+        "type": "regular",
+        "airdate": "2025-02-27",
+        "airtime": "",
+        "airstamp": "2025-02-27T12:00:00+00:00",
+        "runtime": 45,
+        "rating": {
+          "average": 8.6
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/563/1408624.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/563/1408624.jpg"
+        },
+        "summary": "<p>After a staff debrief from Robby, Dana defuses a waiting room brawl, Whitaker finds common ground with \"The Kraken,\" and McKay faces a crucial error.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3082183"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      },
+      {
+        "id": 3082184,
+        "url": "https://www.tvmaze.com/episodes/3082184/the-pitt-1x10-400-pm",
+        "name": "4:00 P.M.",
+        "season": 1,
+        "number": 10,
+        "type": "regular",
+        "airdate": "2025-03-06",
+        "airtime": "",
+        "airstamp": "2025-03-06T12:00:00+00:00",
+        "runtime": 50,
+        "rating": {
+          "average": 8.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/563/1408628.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/563/1408628.jpg"
+        },
+        "summary": "<p>With the Pitt down a staff member, Robby relies on his team to pick up the slack. Later, Santos finally voices her suspicions.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3082184"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      },
+      {
+        "id": 3082185,
+        "url": "https://www.tvmaze.com/episodes/3082185/the-pitt-1x11-500-pm",
+        "name": "5:00 P.M.",
+        "season": 1,
+        "number": 11,
+        "type": "regular",
+        "airdate": "2025-03-13",
+        "airtime": "",
+        "airstamp": "2025-03-13T12:00:00+00:00",
+        "runtime": 49,
+        "rating": {
+          "average": 8.6
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/563/1408625.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/563/1408625.jpg"
+        },
+        "summary": "<p>As Collins guides a surrogate through a difficult delivery, Robby does his best to keep a developing staffing situation under wraps. Meanwhile, McKay confronts her ex's overstepping girlfriend, and Whitaker watches Samira sniff out a drug-seeking patient.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3082185"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      },
+      {
+        "id": 3082186,
+        "url": "https://www.tvmaze.com/episodes/3082186/the-pitt-1x12-600-pm",
+        "name": "6:00 P.M.",
+        "season": 1,
+        "number": 12,
+        "type": "regular",
+        "airdate": "2025-03-20",
+        "airtime": "",
+        "airstamp": "2025-03-20T12:00:00+00:00",
+        "runtime": 41,
+        "rating": {
+          "average": 9.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/563/1408629.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/563/1408629.jpg"
+        },
+        "summary": "<p>When dozens of critical patients flood the ER, Robby and his team struggle to keep up amid quickly diminished supplies.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3082186"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      },
+      {
+        "id": 3082187,
+        "url": "https://www.tvmaze.com/episodes/3082187/the-pitt-1x13-700-pm",
+        "name": "7:00 P.M.",
+        "season": 1,
+        "number": 13,
+        "type": "regular",
+        "airdate": "2025-03-27",
+        "airtime": "",
+        "airstamp": "2025-03-27T12:00:00+00:00",
+        "runtime": 44,
+        "rating": {
+          "average": 9
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/563/1408630.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/563/1408630.jpg"
+        },
+        "summary": "<p>As the night shift begins and the death toll rises, Robby refuses to give up on a mass casualty victim – even after Abbott intervenes. Unable to find an attending, Santos and Samira each attempt risky moves to save their patients' lives.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3082187"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      },
+      {
+        "id": 3082188,
+        "url": "https://www.tvmaze.com/episodes/3082188/the-pitt-1x14-800-pm",
+        "name": "8:00 P.M.",
+        "season": 1,
+        "number": 14,
+        "type": "regular",
+        "airdate": "2025-04-03",
+        "airtime": "",
+        "airstamp": "2025-04-03T12:00:00+00:00",
+        "runtime": 47,
+        "rating": {
+          "average": 9
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/563/1408594.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/563/1408594.jpg"
+        },
+        "summary": "<p>As the ER begins to quiet down, Robby struggles to cope with a loss, while Abbott and Samira are challenged by a patient's rapidly deteriorating condition.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3082188"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      },
+      {
+        "id": 3082189,
+        "url": "https://www.tvmaze.com/episodes/3082189/the-pitt-1x15-900-pm",
+        "name": "9:00 P.M.",
+        "season": 1,
+        "number": 15,
+        "type": "regular",
+        "airdate": "2025-04-10",
+        "airtime": "",
+        "airstamp": "2025-04-10T12:00:00+00:00",
+        "runtime": 60,
+        "rating": {
+          "average": 9
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/563/1408591.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/563/1408591.jpg"
+        },
+        "summary": "<p>Robby resorts to unorthodox methods to convince a father to allow treatment for his son. Later, Whitaker tracks down a missing patient.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3082189"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      },
+      {
+        "id": 3336835,
+        "url": "https://www.tvmaze.com/episodes/3336835/the-pitt-2x01-700-am",
+        "name": "7:00 A.M.",
+        "season": 2,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2026-01-08",
+        "airtime": "",
+        "airstamp": "2026-01-08T12:00:00+00:00",
+        "runtime": 53,
+        "rating": {
+          "average": 8.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/607/1518743.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/607/1518743.jpg"
+        },
+        "summary": "<p>On July 4th, Robby meets his replacement for his upcoming sabbatical, and a familiar face returns to the Pitt.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3336835"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      },
+      {
+        "id": 3489561,
+        "url": "https://www.tvmaze.com/episodes/3489561/the-pitt-2x02-800-am",
+        "name": "8:00 A.M.",
+        "season": 2,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2026-01-15",
+        "airtime": "",
+        "airstamp": "2026-01-15T12:00:00+00:00",
+        "runtime": 46,
+        "rating": {
+          "average": 8.7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/608/1521998.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/608/1521998.jpg"
+        },
+        "summary": "<p>Distracted by her impending deposition, King suffers a fall. Then, while Al-Hashimi attempts to revolutionize the department's technology, Javadi sizes up the competition.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3489561"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      },
+      {
+        "id": 3489562,
+        "url": "https://www.tvmaze.com/episodes/3489562/the-pitt-2x03-900-am",
+        "name": "9:00 A.M.",
+        "season": 2,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2026-01-22",
+        "airtime": "",
+        "airstamp": "2026-01-22T12:00:00+00:00",
+        "runtime": 45,
+        "rating": {
+          "average": 8.6
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/610/1525165.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/610/1525165.jpg"
+        },
+        "summary": "<p>After a fatal motorcycle collision, a husband and wife are rushed to the ER. As King and Javadi deal with a bickering family, Santos is forced to check her assumptions about a possible case of child abuse, and Robby bonds with a Tree of Life survivor.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3489562"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      },
+      {
+        "id": 3489563,
+        "url": "https://www.tvmaze.com/episodes/3489563/the-pitt-2x04-1000-am",
+        "name": "10:00 A.M.",
+        "season": 2,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2026-01-29",
+        "airtime": "",
+        "airstamp": "2026-01-29T12:00:00+00:00",
+        "runtime": 49,
+        "rating": {
+          "average": 8.6
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/611/1528007.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/611/1528007.jpg"
+        },
+        "summary": "<p>When a nearby hospital unexpectedly closes, Robby and his team take charge of the area's emergency cases – including a parkour mishap and a rare heart attack. Then, Langdon learns of Javadi's growing social media following.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3489563"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      },
+      {
+        "id": 3489564,
+        "url": "https://www.tvmaze.com/episodes/3489564/the-pitt-2x05-1100-am",
+        "name": "11:00 A.M.",
+        "season": 2,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2026-02-05",
+        "airtime": "",
+        "airstamp": "2026-02-05T12:00:00+00:00",
+        "runtime": 44,
+        "rating": {
+          "average": 8.6
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/612/1530940.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/612/1530940.jpg"
+        },
+        "summary": "<p>While the team receives an inmate transfer, Ogilvie gets his first exposure to several workplace hazards, and Robby attempts to prevent a patient from going septic. Later, Langdon and Robby must work together to save someone close to them.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3489564"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      },
+      {
+        "id": 3489565,
+        "url": "https://www.tvmaze.com/episodes/3489565/the-pitt-2x06-1200-pm",
+        "name": "12:00 P.M.",
+        "season": 2,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2026-02-12",
+        "airtime": "",
+        "airstamp": "2026-02-12T12:00:00+00:00",
+        "runtime": 49,
+        "rating": {
+          "average": 8.6
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/613/1533744.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/613/1533744.jpg"
+        },
+        "summary": "<p>As the crew reels from a loss, McKay and Javadi tend to a cancer patient, Langdon witnesses the aftermath of a hot dog eating contest, and Santos falls victim to the pitfalls of AI. Meanwhile, Al-Hashimi and Robby clash over how to deal with an inmate.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3489565"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      },
+      {
+        "id": 3489566,
+        "url": "https://www.tvmaze.com/episodes/3489566/the-pitt-2x07-100-pm",
+        "name": "1:00 P.M.",
+        "season": 2,
+        "number": 7,
+        "type": "regular",
+        "airdate": "2026-02-19",
+        "airtime": "",
+        "airstamp": "2026-02-19T12:00:00+00:00",
+        "runtime": 53,
+        "rating": {
+          "average": 8.7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/614/1536656.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/614/1536656.jpg"
+        },
+        "summary": "<p>While Dana tends to a sexual assault victim, Abbot helps an officer injured in the field, and Mohan attempts to keep her uninsured patient in the ER.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3489566"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      },
+      {
+        "id": 3489567,
+        "url": "https://www.tvmaze.com/episodes/3489567/the-pitt-2x08-200-pm",
+        "name": "2:00 P.M.",
+        "season": 2,
+        "number": 8,
+        "type": "regular",
+        "airdate": "2026-02-26",
+        "airtime": "",
+        "airstamp": "2026-02-26T12:00:00+00:00",
+        "runtime": 45,
+        "rating": {
+          "average": 8.9
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/615/1539139.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/615/1539139.jpg"
+        },
+        "summary": "<p>In the wake of an IT shutdown, Princess must manage a completely analog ER. Al-Hashimi, Mohan, and King assess a woman with sudden blindness.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3489567"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      },
+      {
+        "id": 3489568,
+        "url": "https://www.tvmaze.com/episodes/3489568/the-pitt-2x09-300-pm",
+        "name": "3:00 P.M.",
+        "season": 2,
+        "number": 9,
+        "type": "regular",
+        "airdate": "2026-03-05",
+        "airtime": "",
+        "airstamp": "2026-03-05T12:00:00+00:00",
+        "runtime": 49,
+        "rating": {
+          "average": 8.7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/616/1541526.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/616/1541526.jpg"
+        },
+        "summary": "<p>With systems still down, Dana calls in an old friend with experience running a low-tech ER - but not before one of Javadi's patients slips through the cracks. Santos tends to the young victim of a fireworks explosion and Robby makes Whitaker an offer.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3489568"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      },
+      {
+        "id": 3489569,
+        "url": "https://www.tvmaze.com/episodes/3489569/the-pitt-2x10-400-pm",
+        "name": "4:00 P.M.",
+        "season": 2,
+        "number": 10,
+        "type": "regular",
+        "airdate": "2026-03-12",
+        "airtime": "",
+        "airstamp": "2026-03-12T12:00:00+00:00",
+        "runtime": 43,
+        "rating": {
+          "average": 8.6
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/617/1544089.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/617/1544089.jpg"
+        },
+        "summary": "<p>After an incident at a nearby water park, several critical patients are rushed to the Pitt. Later, Al-Hashimi confronts Robby about his outburst.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3489569"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      },
+      {
+        "id": 3489570,
+        "url": "https://www.tvmaze.com/episodes/3489570/the-pitt-2x11-500-pm",
+        "name": "5:00 P.M.",
+        "season": 2,
+        "number": 11,
+        "type": "regular",
+        "airdate": "2026-03-19",
+        "airtime": "",
+        "airstamp": "2026-03-19T12:00:00+00:00",
+        "runtime": 48,
+        "rating": {
+          "average": 8.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/618/1546449.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/618/1546449.jpg"
+        },
+        "summary": "<p>While King struggles to cope with her sister's newfound independence, McKay brings Ogilvie along to help treat a patient in the field. Later, both patients and staff are put on edge by an unexpected presence in the ER.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3489570"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      },
+      {
+        "id": 3489571,
+        "url": "https://www.tvmaze.com/episodes/3489571/the-pitt-2x12-600-pm",
+        "name": "6:00 P.M.",
+        "season": 2,
+        "number": 12,
+        "type": "regular",
+        "airdate": "2026-03-26",
+        "airtime": "",
+        "airstamp": "2026-03-26T12:00:00+00:00",
+        "runtime": 51,
+        "rating": {
+          "average": 8.7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/619/1548802.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/619/1548802.jpg"
+        },
+        "summary": "<p>After she steps up to defend her trainee, Dana clashes with Robby about her methods – and his upcoming sabbatical.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3489571"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      },
+      {
+        "id": 3489572,
+        "url": "https://www.tvmaze.com/episodes/3489572/the-pitt-2x13-700-pm",
+        "name": "7:00 P.M.",
+        "season": 2,
+        "number": 13,
+        "type": "regular",
+        "airdate": "2026-04-02",
+        "airtime": "",
+        "airstamp": "2026-04-02T12:00:00+00:00",
+        "runtime": 48,
+        "rating": {
+          "average": 8.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/620/1550784.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/620/1550784.jpg"
+        },
+        "summary": "<p>As the night shift begins, Mohan's AMA patient is brought back to the ER, Langdon doubts his place in the Pitt, and Robby gets Duke's results.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3489572"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      },
+      {
+        "id": 3489573,
+        "url": "https://www.tvmaze.com/episodes/3489573/the-pitt-2x14-800-pm",
+        "name": "8:00 P.M.",
+        "season": 2,
+        "number": 14,
+        "type": "regular",
+        "airdate": "2026-04-09",
+        "airtime": "",
+        "airstamp": "2026-04-09T12:00:00+00:00",
+        "runtime": 41,
+        "rating": {
+          "average": 8.7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/621/1552819.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/621/1552819.jpg"
+        },
+        "summary": "<p>After his bike takes a hit in the ambulance bay, Robby levels with Duke. A spinal cord injury forces Langdon to attempt a risky procedure.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3489573"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      },
+      {
+        "id": 3489574,
+        "url": "https://www.tvmaze.com/episodes/3489574/the-pitt-2x15-900-pm",
+        "name": "9:00 P.M.",
+        "season": 2,
+        "number": 15,
+        "type": "regular",
+        "airdate": "2026-04-16",
+        "airtime": "",
+        "airstamp": "2026-04-16T12:00:00+00:00",
+        "runtime": 49,
+        "rating": {
+          "average": 9.2
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/621/1554679.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/621/1554679.jpg"
+        },
+        "summary": "<p>Al-Hashimi reveals details from her medical history, forcing Robby to face an ethical dilemma as he prepares to leave for his sabbatical.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3489574"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/75632",
+            "name": "The Pitt"
+          }
+        }
+      }
+    ],
+    "seasons": [
+      {
+        "id": 166199,
+        "url": "https://www.tvmaze.com/seasons/166199/the-pitt-season-1",
+        "number": 1,
+        "name": "",
+        "episodeOrder": 15,
+        "premiereDate": "2025-01-09",
+        "endDate": "2025-04-10",
+        "network": null,
+        "webChannel": {
+          "id": 329,
+          "name": "HBO Max",
+          "country": null,
+          "officialSite": "https://www.hbomax.com"
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/547/1368936.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/547/1368936.jpg"
+        },
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/166199"
+          }
+        }
+      },
+      {
+        "id": 181771,
+        "url": "https://www.tvmaze.com/seasons/181771/the-pitt-season-2",
+        "number": 2,
+        "name": "July 4",
+        "episodeOrder": 15,
+        "premiereDate": "2026-01-08",
+        "endDate": "2026-04-16",
+        "network": null,
+        "webChannel": {
+          "id": 329,
+          "name": "HBO Max",
+          "country": null,
+          "officialSite": "https://www.hbomax.com"
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/603/1509575.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/603/1509575.jpg"
+        },
+        "summary": "<p>Picking up 10 months after the intense events of Season 1, <i>The Pitt</i> Season 2 plunges viewers into a chaotic Fourth of July weekend at Pittsburgh Trauma Medical Center.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/181771"
+          }
+        }
+      },
+      {
+        "id": 196534,
+        "url": "https://www.tvmaze.com/seasons/196534/the-pitt-season-3",
+        "number": 3,
+        "name": "November 12",
+        "episodeOrder": null,
+        "premiereDate": null,
+        "endDate": null,
+        "network": null,
+        "webChannel": {
+          "id": 329,
+          "name": "HBO Max",
+          "country": null,
+          "officialSite": "https://www.hbomax.com"
+        },
+        "image": null,
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/196534"
+          }
+        }
+      }
+    ]
+  }
+}
