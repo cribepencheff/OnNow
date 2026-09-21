@@ -1,0 +1,574 @@
+[
+  {
+    "score": 0.8965063,
+    "show": {
+      "id": 75026,
+      "url": "https://www.tvmaze.com/shows/75026/mobland",
+      "name": "MobLand",
+      "type": "Scripted",
+      "language": "English",
+      "genres": ["Drama", "Crime"],
+      "status": "Running",
+      "runtime": null,
+      "averageRuntime": 46,
+      "premiered": "2025-03-30",
+      "ended": null,
+      "officialSite": "https://www.paramountplus.com/shows/mobland/",
+      "schedule": {
+        "time": "",
+        "days": ["Sunday"]
+      },
+      "rating": {
+        "average": 8.1
+      },
+      "weight": 100,
+      "network": null,
+      "webChannel": {
+        "id": 107,
+        "name": "Paramount+",
+        "country": null,
+        "officialSite": "https://www.paramountplus.com/"
+      },
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 446831,
+        "imdb": "tt31510819"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/641/1604671.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/641/1604671.jpg"
+      },
+      "summary": "<p>With the most powerful clients in Europe, <b>MobLand </b>will see family fortunes and reputations at risk, odd alliances unfold, and betrayal around every corner; and while the family might be London's most elite fixers today, the nature of their business means there is no guarantee what's in store tomorrow.</p><p><i>MobLand </i>follows two generations of gangsters, the businesses they run, the complex relationships they weave and the man they call upon to fix their problem.</p>",
+      "updated": 1789728671,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/75026"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/3667751",
+          "name": "I Wanna Be Your Dog"
+        },
+        "nextepisode": {
+          "href": "https://api.tvmaze.com/episodes/3704057",
+          "name": "Song 2"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.3670395,
+    "show": {
+      "id": 16495,
+      "url": "https://www.tvmaze.com/shows/16495/molang",
+      "name": "Molang",
+      "type": "Animation",
+      "language": null,
+      "genres": [],
+      "status": "Ended",
+      "runtime": null,
+      "averageRuntime": 13,
+      "premiered": "2016-05-12",
+      "ended": "2021-09-03",
+      "officialSite": null,
+      "schedule": {
+        "time": "",
+        "days": []
+      },
+      "rating": {
+        "average": 5.2
+      },
+      "weight": 80,
+      "network": null,
+      "webChannel": {
+        "id": 394,
+        "name": "Canal+",
+        "country": null,
+        "officialSite": "https://www.canalplus.com/"
+      },
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 325402,
+        "imdb": "tt6046238"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/529/1324489.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/529/1324489.jpg"
+      },
+      "summary": "<p>Whether they're flying to the moon or merely watering the vegetable patch, Molang (an enthusiastic rabbit) and Piu Piu (a friendly little chick) always have fun!</p>",
+      "updated": 1724618009,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/16495"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/2986396",
+          "name": "The Other Tribe"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.31069636,
+    "show": {
+      "id": 15560,
+      "url": "https://www.tvmaze.com/shows/15560/masterchef-holland",
+      "name": "MasterChef Holland",
+      "type": "Reality",
+      "language": "Dutch",
+      "genres": ["Food"],
+      "status": "Ended",
+      "runtime": 60,
+      "averageRuntime": 60,
+      "premiered": "2010-09-26",
+      "ended": "2018-06-13",
+      "officialSite": "http://www.sbs6.nl/programmas/masterchef-holland/",
+      "schedule": {
+        "time": "18:30",
+        "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 65,
+      "network": {
+        "id": 139,
+        "name": "SBS 6",
+        "country": {
+          "name": "Netherlands",
+          "code": "NL",
+          "timezone": "Europe/Amsterdam"
+        },
+        "officialSite": "http://www.sbs6.nl/"
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 278523,
+        "imdb": null
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/52/131927.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/52/131927.jpg"
+      },
+      "summary": null,
+      "updated": 1713117892,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/15560"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/1478226",
+          "name": "Aflevering 18"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.30006486,
+    "show": {
+      "id": 12870,
+      "url": "https://www.tvmaze.com/shows/12870/holland-sport",
+      "name": "Holland Sport",
+      "type": "Talk Show",
+      "language": "Dutch",
+      "genres": ["Sports"],
+      "status": "Ended",
+      "runtime": 35,
+      "averageRuntime": 35,
+      "premiered": "2003-10-19",
+      "ended": "2016-07-30",
+      "officialSite": "http://www.vpro.nl/programmas/holland-sport.html",
+      "schedule": {
+        "time": "21:15",
+        "days": []
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 54,
+      "network": {
+        "id": 1020,
+        "name": "NPO 3",
+        "country": {
+          "name": "Netherlands",
+          "code": "NL",
+          "timezone": "Europe/Amsterdam"
+        },
+        "officialSite": null
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 248152,
+        "imdb": null
+      },
+      "image": null,
+      "summary": null,
+      "updated": 1629413187,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/12870"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/1166662",
+          "name": "Sifan Hassan"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.29266047,
+    "show": {
+      "id": 15488,
+      "url": "https://www.tvmaze.com/shows/15488/noddy-toyland-detective",
+      "name": "Noddy: Toyland Detective",
+      "type": "Animation",
+      "language": "English",
+      "genres": ["Children"],
+      "status": "Ended",
+      "runtime": 15,
+      "averageRuntime": 13,
+      "premiered": "2016-04-18",
+      "ended": "2017-09-29",
+      "officialSite": "http://www.channel5.com/show/noddy-toyland-detective",
+      "schedule": {
+        "time": "07:35",
+        "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 76,
+      "network": {
+        "id": 135,
+        "name": "5",
+        "country": {
+          "name": "United Kingdom",
+          "code": "GB",
+          "timezone": "Europe/London"
+        },
+        "officialSite": "https://www.channel5.com/"
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": null,
+        "imdb": null
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/52/131307.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/52/131307.jpg"
+      },
+      "summary": "<p>CGI-animated series in which Enid Blyton's world-famous character becomes a detective.</p>",
+      "updated": 1591645912,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/15488"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/1577967",
+          "name": "Noddy and the Case of the Raining Carrots"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.28820935,
+    "show": {
+      "id": 3898,
+      "url": "https://www.tvmaze.com/shows/3898/top-model-poland",
+      "name": "Top Model Poland",
+      "type": "Reality",
+      "language": "Polish",
+      "genres": [],
+      "status": "Running",
+      "runtime": 60,
+      "averageRuntime": 60,
+      "premiered": "2010-09-08",
+      "ended": null,
+      "officialSite": "https://www.tvn.pl/programy/top-model,49,pc",
+      "schedule": {
+        "time": "21:30",
+        "days": ["Wednesday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 81,
+      "network": {
+        "id": 334,
+        "name": "TVN",
+        "country": {
+          "name": "Poland",
+          "code": "PL",
+          "timezone": "Europe/Warsaw"
+        },
+        "officialSite": null
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 197901,
+        "imdb": "tt1822120"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/389/973778.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/389/973778.jpg"
+      },
+      "summary": "<p>Aspiring Polish models fight it out for the title of Top Model.</p>",
+      "updated": 1704794784,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/3898"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/2442283",
+          "name": "Odcinek 14"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.28721195,
+    "show": {
+      "id": 34615,
+      "url": "https://www.tvmaze.com/shows/34615/holland",
+      "name": "Holland!",
+      "type": "Documentary",
+      "language": "Dutch",
+      "genres": [],
+      "status": "Ended",
+      "runtime": 40,
+      "averageRuntime": 40,
+      "premiered": "2018-01-08",
+      "ended": "2018-02-19",
+      "officialSite": "https://programma.bnnvara.nl/holland",
+      "schedule": {
+        "time": "20:25",
+        "days": ["Monday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 17,
+      "network": {
+        "id": 1020,
+        "name": "NPO 3",
+        "country": {
+          "name": "Netherlands",
+          "code": "NL",
+          "timezone": "Europe/Amsterdam"
+        },
+        "officialSite": null
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 340841,
+        "imdb": null
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/144/360545.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/144/360545.jpg"
+      },
+      "summary": "<p>Ryanne is searching for the Dutch identity. It's much spoken of, but if you ask the people in The Netherlands what their identity consists of, everyone answers differently.</p>",
+      "updated": 1631547698,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/34615"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/1596057",
+          "name": "Finale"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.28612763,
+    "show": {
+      "id": 3899,
+      "url": "https://www.tvmaze.com/shows/3899/masterchef-poland",
+      "name": "MasterChef Poland",
+      "type": "Reality",
+      "language": "Polish",
+      "genres": ["Food"],
+      "status": "Running",
+      "runtime": 60,
+      "averageRuntime": 68,
+      "premiered": "2012-09-02",
+      "ended": null,
+      "officialSite": "https://masterchef.tvn.pl",
+      "schedule": {
+        "time": "20:00",
+        "days": ["Sunday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 50,
+      "network": {
+        "id": 334,
+        "name": "TVN",
+        "country": {
+          "name": "Poland",
+          "code": "PL",
+          "timezone": "Europe/Warsaw"
+        },
+        "officialSite": null
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 289787,
+        "imdb": null
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/19/48740.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/19/48740.jpg"
+      },
+      "summary": null,
+      "updated": 1758649979,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/3899"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/3375301",
+          "name": "Odcinek 5"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.28013444,
+    "show": {
+      "id": 11657,
+      "url": "https://www.tvmaze.com/shows/11657/heel-holland-bakt",
+      "name": "Heel Holland Bakt",
+      "type": "Variety",
+      "language": "Dutch",
+      "genres": ["Food"],
+      "status": "Running",
+      "runtime": 60,
+      "averageRuntime": 57,
+      "premiered": "2013-06-05",
+      "ended": null,
+      "officialSite": "http://heelhollandbakt.omroepmax.nl/home/",
+      "schedule": {
+        "time": "20:25",
+        "days": ["Sunday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 60,
+      "network": {
+        "id": 1018,
+        "name": "NPO 1",
+        "country": {
+          "name": "Netherlands",
+          "code": "NL",
+          "timezone": "Europe/Amsterdam"
+        },
+        "officialSite": null
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 270594,
+        "imdb": "tt4250064"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/39/98391.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/39/98391.jpg"
+      },
+      "summary": null,
+      "updated": 1787898896,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/11657"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/3717301",
+          "name": "Finale"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.27852148,
+    "show": {
+      "id": 45547,
+      "url": "https://www.tvmaze.com/shows/45547/chateau-meiland",
+      "name": "Chateau Meiland",
+      "type": "Reality",
+      "language": "Dutch",
+      "genres": [],
+      "status": "Running",
+      "runtime": 60,
+      "averageRuntime": 60,
+      "premiered": "2019-05-20",
+      "ended": null,
+      "officialSite": null,
+      "schedule": {
+        "time": "20:30",
+        "days": ["Sunday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 38,
+      "network": {
+        "id": 139,
+        "name": "SBS 6",
+        "country": {
+          "name": "Netherlands",
+          "code": "NL",
+          "timezone": "Europe/Amsterdam"
+        },
+        "officialSite": "http://www.sbs6.nl/"
+      },
+      "webChannel": {
+        "id": 732,
+        "name": "KIJK",
+        "country": {
+          "name": "Netherlands",
+          "code": "NL",
+          "timezone": "Europe/Amsterdam"
+        },
+        "officialSite": "https://www.kijk.nl/"
+      },
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 364382,
+        "imdb": null
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/232/582238.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/232/582238.jpg"
+      },
+      "summary": null,
+      "updated": 1766856095,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/45547"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/2652758",
+          "name": "Episode 32"
+        }
+      }
+    }
+  }
+]

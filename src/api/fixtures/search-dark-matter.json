@@ -1,0 +1,401 @@
+[
+  {
+    "score": 1.1893996,
+    "show": {
+      "id": 61315,
+      "url": "https://www.tvmaze.com/shows/61315/dark-matter",
+      "name": "Dark Matter",
+      "type": "Scripted",
+      "language": "English",
+      "genres": ["Science-Fiction", "Thriller", "Mystery"],
+      "status": "Running",
+      "runtime": null,
+      "averageRuntime": 54,
+      "premiered": "2024-05-08",
+      "ended": null,
+      "officialSite": "https://tv.apple.com/show/dark-matter/umc.cmc.4luj45vtqpmjsvb6sc2675oeg",
+      "schedule": {
+        "time": "",
+        "days": ["Friday"]
+      },
+      "rating": {
+        "average": 7.5
+      },
+      "weight": 100,
+      "network": null,
+      "webChannel": {
+        "id": 310,
+        "name": "Apple TV",
+        "country": null,
+        "officialSite": "https://tv.apple.com/"
+      },
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 393159,
+        "imdb": "tt19231492"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/633/1584721.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/633/1584721.jpg"
+      },
+      "summary": "<p>Hailed as one of the best sci-fi novels of the decade, <b>Dark Matter</b> is a story about the road not taken. The series follows Jason Dessen, a physicist, professor, and family man who – one night while walking home on the streets of Chicago – is abducted into an alternate version of his life. Wonder quickly turns to nightmare when he tries to return to his reality amid the multiverse of lives he could have lived. In this labyrinth of mind-bending realities, he embarks on a harrowing journey to get back to his true family and save them from the most terrifying, unbeatable foe imaginable: himself.</p>",
+      "updated": 1789764895,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/61315"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/3591067",
+          "name": "Stars, Hide Your Fires"
+        },
+        "nextepisode": {
+          "href": "https://api.tvmaze.com/episodes/3591068",
+          "name": "Love and Be Loved"
+        }
+      }
+    }
+  },
+  {
+    "score": 1.1893996,
+    "show": {
+      "id": 1819,
+      "url": "https://www.tvmaze.com/shows/1819/dark-matter",
+      "name": "Dark Matter",
+      "type": "Scripted",
+      "language": "English",
+      "genres": ["Action", "Adventure", "Science-Fiction"],
+      "status": "Ended",
+      "runtime": 60,
+      "averageRuntime": 60,
+      "premiered": "2015-06-12",
+      "ended": "2017-08-25",
+      "officialSite": "http://www.space.ca/show/dark-matter/",
+      "schedule": {
+        "time": "21:00",
+        "days": ["Friday"]
+      },
+      "rating": {
+        "average": 8.2
+      },
+      "weight": 100,
+      "network": {
+        "id": 7,
+        "name": "CTV Sci-Fi Channel",
+        "country": {
+          "name": "Canada",
+          "code": "CA",
+          "timezone": "America/Toronto"
+        },
+        "officialSite": "https://www.ctv.ca/sci-fi"
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": 47282,
+        "thetvdb": 292174,
+        "imdb": "tt4159076"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/122/305066.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/122/305066.jpg"
+      },
+      "summary": "<p>In <b>Dark Matter</b>, the crew of a derelict spaceship is awakened from stasis with no memories of who they are or how they got on board. Facing threats at every turn, they have to work together to survive a voyage charged with vengeance, betrayal and hidden secrets.</p>",
+      "updated": 1787076277,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/1819"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/1170577",
+          "name": "Nowhere to Go"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.8940767,
+    "show": {
+      "id": 29035,
+      "url": "https://www.tvmaze.com/shows/29035/dark-matter-after-dark",
+      "name": "Dark Matter: After Dark",
+      "type": "Talk Show",
+      "language": "English",
+      "genres": [],
+      "status": "Ended",
+      "runtime": 10,
+      "averageRuntime": 10,
+      "premiered": "2017-06-09",
+      "ended": "2017-08-25",
+      "officialSite": null,
+      "schedule": {
+        "time": "",
+        "days": ["Friday"]
+      },
+      "rating": {
+        "average": 6.8
+      },
+      "weight": 95,
+      "network": null,
+      "webChannel": {
+        "id": 49,
+        "name": "Syfy.com",
+        "country": {
+          "name": "United States",
+          "code": "US",
+          "timezone": "America/New_York"
+        },
+        "officialSite": "https://www.syfy.com/"
+      },
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": null,
+        "imdb": null
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/404/1011800.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/404/1011800.jpg"
+      },
+      "summary": "<p><b>Dark Matter: After Dark</b> is a companion show to the SyFy series, <i>Dark Matter</i>, and airs directly afterwards with behind the scenes gossip and cast interviews. </p>",
+      "updated": 1650174000,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/29035"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/1258514",
+          "name": "Episode 13"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.45373255,
+    "show": {
+      "id": 57607,
+      "url": "https://www.tvmaze.com/shows/57607/battery-park",
+      "name": "Battery Park",
+      "type": "Scripted",
+      "language": "English",
+      "genres": ["Comedy", "Crime"],
+      "status": "Ended",
+      "runtime": 30,
+      "averageRuntime": 30,
+      "premiered": "2000-03-23",
+      "ended": "2000-04-13",
+      "officialSite": null,
+      "schedule": {
+        "time": "21:30",
+        "days": ["Thursday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 69,
+      "network": {
+        "id": 1,
+        "name": "NBC",
+        "country": {
+          "name": "United States",
+          "code": "US",
+          "timezone": "America/New_York"
+        },
+        "officialSite": "https://www.nbc.com/"
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 76913,
+        "imdb": "tt0238763"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/357/892848.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/357/892848.jpg"
+      },
+      "summary": "<p><b>Battery Park</b> is a comedic look at a group of police officers from every walk of life. They are led by their very competitive captain, Madeline Dunleavy who will stop at nothing to win the town's mayor seat.</p>",
+      "updated": 1631660617,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/57607"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/2170169",
+          "name": "You Give Law a Bad Name"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.44585124,
+    "show": {
+      "id": 26600,
+      "url": "https://www.tvmaze.com/shows/26600/heroes-reborn-dark-matters",
+      "name": "Heroes Reborn: Dark Matters",
+      "type": "Scripted",
+      "language": "English",
+      "genres": ["Drama", "Action", "Science-Fiction"],
+      "status": "Ended",
+      "runtime": 5,
+      "averageRuntime": 5,
+      "premiered": "2015-08-10",
+      "ended": "2015-08-10",
+      "officialSite": "https://web.archive.org/web/20150814002233/http://www.nbc.com/heroes-reborn/dark-matters/episodes",
+      "schedule": {
+        "time": "",
+        "days": []
+      },
+      "rating": {
+        "average": 6
+      },
+      "weight": 94,
+      "network": null,
+      "webChannel": {
+        "id": 11,
+        "name": "NBC.com",
+        "country": {
+          "name": "United States",
+          "code": "US",
+          "timezone": "America/New_York"
+        },
+        "officialSite": null
+      },
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": null,
+        "imdb": "tt4850642"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/197/493257.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/197/493257.jpg"
+      },
+      "summary": "<p>Five years after the public became aware of the existence of evolved humans - or \"EVOs.\" Said public is not entirely supportive of these EVOs. In fact, few people fall into the middle ground. Online, a community forms around the rallying cry of the anonymous Hero_Truther, who seeks to humanize EVOs in the wake of lies, slander and fear mongering. Among those posting their personal stories is Phoebe Frady, who is encouraged to document her origin story by her brother, Quentin. But as Phoebe struggles to control her power, she attracts unwanted attention from a mysterious new company.</p>",
+      "updated": 1661838406,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/26600"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/1117017",
+          "name": "Where the Truth Lies"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.41291302,
+    "show": {
+      "id": 4961,
+      "url": "https://www.tvmaze.com/shows/4961/dark-matters-twisted-but-true",
+      "name": "Dark Matters: Twisted But True",
+      "type": "Documentary",
+      "language": "English",
+      "genres": ["Horror", "Science-Fiction", "History"],
+      "status": "Ended",
+      "runtime": 60,
+      "averageRuntime": 60,
+      "premiered": "2011-08-31",
+      "ended": "2012-12-26",
+      "officialSite": null,
+      "schedule": {
+        "time": "22:00",
+        "days": ["Wednesday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 84,
+      "network": {
+        "id": 77,
+        "name": "Science",
+        "country": {
+          "name": "United States",
+          "code": "US",
+          "timezone": "America/New_York"
+        },
+        "officialSite": "https://www.sciencechannel.com/"
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": 29222,
+        "thetvdb": 250734,
+        "imdb": "tt2014554"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/21/53810.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/21/53810.jpg"
+      },
+      "summary": "<p><b>Dark Matters: Twisted But True</b> examines what happens when scientific research goes too far.</p>",
+      "updated": 1767483180,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/4961"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/310982",
+          "name": "Magickal Jet Propulsion, Missing Link Mystery, Typhoid Mary"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.39582026,
+    "show": {
+      "id": 64727,
+      "url": "https://www.tvmaze.com/shows/64727/dare-master",
+      "name": "Dare Master",
+      "type": "Variety",
+      "language": "English",
+      "genres": [],
+      "status": "To Be Determined",
+      "runtime": null,
+      "averageRuntime": 9,
+      "premiered": "2021-06-21",
+      "ended": null,
+      "officialSite": "https://www.itv.com/hub/dare-master/2a6715",
+      "schedule": {
+        "time": "",
+        "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 15,
+      "network": {
+        "id": 433,
+        "name": "CITV",
+        "country": {
+          "name": "United Kingdom",
+          "code": "GB",
+          "timezone": "Europe/London"
+        },
+        "officialSite": null
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 408610,
+        "imdb": null
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/427/1068122.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/427/1068122.jpg"
+      },
+      "summary": "<p>10 crazy dares equals 50 minutes of fun, original and inclusive television in CITV's 10-part series <b>Dare Master</b>. Teenage presenter Danny Murphy takes on crazy dares, from extreme window cleaning to bungee jumping. Presented in British Sign Language.</p>",
+      "updated": 1693857380,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/64727"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/2417551",
+          "name": "Episode 10"
+        }
+      }
+    }
+  }
+]

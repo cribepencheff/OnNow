@@ -1,0 +1,561 @@
+[
+  {
+    "score": 0.89577895,
+    "show": {
+      "id": 91311,
+      "url": "https://www.tvmaze.com/shows/91311/legends",
+      "name": "Legends",
+      "type": "Scripted",
+      "language": "English",
+      "genres": ["Crime", "Thriller"],
+      "status": "Running",
+      "runtime": null,
+      "averageRuntime": 59,
+      "premiered": "2026-05-07",
+      "ended": null,
+      "officialSite": "https://www.netflix.com/title/81708404",
+      "schedule": {
+        "time": "",
+        "days": []
+      },
+      "rating": {
+        "average": 6.9
+      },
+      "weight": 98,
+      "network": null,
+      "webChannel": {
+        "id": 1,
+        "name": "Netflix",
+        "country": null,
+        "officialSite": "https://www.netflix.com/"
+      },
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 453615,
+        "imdb": "tt33265765"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/624/1560610.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/624/1560610.jpg"
+      },
+      "summary": "<p>Surrounded by drug lords, a team of regular civil servants faces a nerve-racking undercover mission to take them down.</p>",
+      "updated": 1789180929,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/91311"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/3592395",
+          "name": "Legends Never Die"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.8955016,
+    "show": {
+      "id": 54,
+      "url": "https://www.tvmaze.com/shows/54/legends",
+      "name": "Legends",
+      "type": "Scripted",
+      "language": "English",
+      "genres": ["Drama", "Crime", "Thriller"],
+      "status": "Ended",
+      "runtime": 60,
+      "averageRuntime": 60,
+      "premiered": "2014-08-13",
+      "ended": "2015-12-28",
+      "officialSite": "http://www.tntdrama.com/shows/legends.html",
+      "schedule": {
+        "time": "22:00",
+        "days": ["Monday"]
+      },
+      "rating": {
+        "average": 7.5
+      },
+      "weight": 98,
+      "network": {
+        "id": 14,
+        "name": "TNT",
+        "country": {
+          "name": "United States",
+          "code": "US",
+          "timezone": "America/New_York"
+        },
+        "officialSite": "https://www.tntdrama.com/"
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": 33288,
+        "thetvdb": 265074,
+        "imdb": "tt2402137"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/36/92018.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/36/92018.jpg"
+      },
+      "summary": "<p>Sean Bean stars in <b>Legends, </b>a suspense-filled drama based on the award-winning book by master spy novelist Robert Littell. Bean plays Martin Odum, an undercover agent working for the FBI's Deep Cover Operations (DCO) division. Martin has the uncanny ability to transform himself into a completely different person for each job. But he begins to question his own identity when a mysterious stranger suggests that Martin isn't the man he believes himself to be.</p>",
+      "updated": 1704793873,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/54"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/500560",
+          "name": "The Legend of Alexei Volkov"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.8936855,
+    "show": {
+      "id": 93662,
+      "url": "https://www.tvmaze.com/shows/93662/legends",
+      "name": "Legends",
+      "type": "Scripted",
+      "language": "English",
+      "genres": ["Adventure", "Thriller"],
+      "status": "In Development",
+      "runtime": 60,
+      "averageRuntime": null,
+      "premiered": null,
+      "ended": null,
+      "officialSite": null,
+      "schedule": {
+        "time": "",
+        "days": []
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 94,
+      "network": {
+        "id": 13,
+        "name": "FX",
+        "country": {
+          "name": "United States",
+          "code": "US",
+          "timezone": "America/New_York"
+        },
+        "officialSite": null
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": null,
+        "imdb": null
+      },
+      "image": null,
+      "summary": "<p>When the cast of <i>Sons of Anarchy</i> reunites at a fan convention after more than a decade, the line between life and art blurs as the fractured brotherhood finds itself up against a real-world threat more dangerous than anything they ever faced in their show.</p>",
+      "updated": 1787245601,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/93662"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.87703824,
+    "show": {
+      "id": 13803,
+      "url": "https://www.tvmaze.com/shows/13803/legends",
+      "name": "Legends",
+      "type": "Documentary",
+      "language": "English",
+      "genres": ["Music"],
+      "status": "Ended",
+      "runtime": 60,
+      "averageRuntime": 60,
+      "premiered": "2007-07-02",
+      "ended": "2012-08-03",
+      "officialSite": "http://www.bbc.co.uk/programmes/b007j8zf",
+      "schedule": {
+        "time": "22:45",
+        "days": ["Friday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 68,
+      "network": {
+        "id": 51,
+        "name": "BBC Four",
+        "country": {
+          "name": "United Kingdom",
+          "code": "GB",
+          "timezone": "Europe/London"
+        },
+        "officialSite": "https://www.bbc.co.uk/bbcfour"
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 85831,
+        "imdb": "tt1134907"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/47/118635.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/47/118635.jpg"
+      },
+      "summary": "<p>A look at some true legends from the world of music.</p>",
+      "updated": 1582600330,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/13803"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/637329",
+          "name": "Iron Maiden: Behind the Beast"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.6768129,
+    "show": {
+      "id": 41073,
+      "url": "https://www.tvmaze.com/shows/41073/the-legends",
+      "name": "The Legends",
+      "type": "Scripted",
+      "language": "Chinese",
+      "genres": ["Drama", "Action", "Fantasy"],
+      "status": "Ended",
+      "runtime": 50,
+      "averageRuntime": 50,
+      "premiered": "2019-01-28",
+      "ended": "2019-04-03",
+      "officialSite": null,
+      "schedule": {
+        "time": "22:00",
+        "days": ["Monday", "Tuesday", "Wednesday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 77,
+      "network": {
+        "id": 276,
+        "name": "Hunan TV",
+        "country": {
+          "name": "China",
+          "code": "CN",
+          "timezone": "Asia/Shanghai"
+        },
+        "officialSite": null
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 357658,
+        "imdb": null
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/184/461833.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/184/461833.jpg"
+      },
+      "summary": "<p>While attempting to take her predecessor's Wanjun Sword, Lu Zhao Yao is ambushed by the ten immortal sects and dies. She mistakenly believes Li Chen Lan is related to the incident after he is revealed to be the previous cult leader's son. Five years later, Li Chen Lan has taken over the position of cult leader,and Zhao Yao decides to exact revenge. She who is now a spirit, possesses the body Qin Zhi Yan, a female disciple of the Immortal Sect, and with the help of the newly gained body, she becomes the direct disciple of Mo Qin aka Li Chen Lan with the aim of killing him. But she slowly starts to fall in love with him instead.</p>",
+      "updated": 1689575113,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/41073"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/1635051",
+          "name": "Episode 56"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.6760181,
+    "show": {
+      "id": 12549,
+      "url": "https://www.tvmaze.com/shows/12549/beast-legends",
+      "name": "Beast Legends",
+      "type": "Documentary",
+      "language": "English",
+      "genres": ["Action", "Adventure"],
+      "status": "Ended",
+      "runtime": 42,
+      "averageRuntime": 42,
+      "premiered": "2010-09-09",
+      "ended": "2010-10-14",
+      "officialSite": null,
+      "schedule": {
+        "time": "22:00",
+        "days": ["Thursday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 76,
+      "network": {
+        "id": 16,
+        "name": "Syfy",
+        "country": {
+          "name": "United States",
+          "code": "US",
+          "timezone": "America/New_York"
+        },
+        "officialSite": null
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": 26229,
+        "thetvdb": 187161,
+        "imdb": "tt1773132"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/42/107220.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/42/107220.jpg"
+      },
+      "summary": "<p>Ever wonder what the Kraken, a griffin or a fire dragon would have looked like -- if they were real, that is? So have some of the world's foremost experts in a variety of fields, and they are using this series to find out. The quartet of Beast Seekers gathers historical eyewitness accounts of the mythological beast in question and then constructs as accurate a picture as possible. Next, they head to the Beast Lab to build a replica of the creature, before bringing it to life with 3-D CGI technology.</p>",
+      "updated": 1704793413,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/12549"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/597869",
+          "name": "Bird Monster"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.67506874,
+    "show": {
+      "id": 2929,
+      "url": "https://www.tvmaze.com/shows/2929/rock-legends",
+      "name": "Rock Legends",
+      "type": "Documentary",
+      "language": "English",
+      "genres": ["Music", "History"],
+      "status": "Running",
+      "runtime": 30,
+      "averageRuntime": 33,
+      "premiered": "2014-06-03",
+      "ended": null,
+      "officialSite": "http://www.axs.tv/programs/rock-legends/",
+      "schedule": {
+        "time": "20:00",
+        "days": ["Monday", "Tuesday", "Wednesday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 75,
+      "network": {
+        "id": 170,
+        "name": "AXS TV",
+        "country": {
+          "name": "United States",
+          "code": "US",
+          "timezone": "America/New_York"
+        },
+        "officialSite": null
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": 43236,
+        "thetvdb": 293827,
+        "imdb": null
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/537/1343168.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/537/1343168.jpg"
+      },
+      "summary": "<p>Each 30-minute episode of <b>Rock Legends</b> focuses on one legendary act, examining the story of their lives and the impact they made on popular culture through in-depth interviews, archival footage, and live performances.</p>",
+      "updated": 1735639229,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/2929"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/3004283",
+          "name": "Politically-Charged Songs"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.67221695,
+    "show": {
+      "id": 55021,
+      "url": "https://www.tvmaze.com/shows/55021/twelve-legends",
+      "name": "Twelve Legends",
+      "type": "Scripted",
+      "language": "Chinese",
+      "genres": ["Drama", "Fantasy", "Romance"],
+      "status": "Ended",
+      "runtime": 45,
+      "averageRuntime": 45,
+      "premiered": "2021-03-27",
+      "ended": "2021-04-17",
+      "officialSite": "https://so.youku.com/search_video/q_%E5%8D%81%E4%BA%8C%E8%B0%AD?searchfrom=1",
+      "schedule": {
+        "time": "",
+        "days": ["Saturday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 71,
+      "network": null,
+      "webChannel": {
+        "id": 118,
+        "name": "Youku",
+        "country": {
+          "name": "China",
+          "code": "CN",
+          "timezone": "Asia/Shanghai"
+        },
+        "officialSite": null
+      },
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 400068,
+        "imdb": "tt15101094"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/311/778545.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/311/778545.jpg"
+      },
+      "summary": "<p>A creature born from a stone falls in love with a mythical woman and their romance spans two thousand years. Jin Xingjian, who was once a stone has turned into an extraordinary existence that makes him both similar to a deity and a demon. He runs a gallery that has attracted demons from all walks of life and he bears witness to the things they would do for love. When it comes to his own love life, he has a complicated relationship with Ye Ming, a woman shrouded in mystery and formed from the night pearl. This is a story about the world of humans and demons that is at times funny, at times moving, at times passionate and at times sweet.</p>",
+      "updated": 1651367224,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/55021"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/2092374",
+          "name": "Episode 32"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.6713186,
+    "show": {
+      "id": 39037,
+      "url": "https://www.tvmaze.com/shows/39037/comedy-legends",
+      "name": "Comedy Legends",
+      "type": "Documentary",
+      "language": "English",
+      "genres": ["Comedy"],
+      "status": "Running",
+      "runtime": 60,
+      "averageRuntime": 60,
+      "premiered": "2018-10-10",
+      "ended": null,
+      "officialSite": "https://www.sky.com/watch/channel/sky-arts/comedy-legends",
+      "schedule": {
+        "time": "21:00",
+        "days": ["Thursday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 70,
+      "network": {
+        "id": 69,
+        "name": "Sky Arts",
+        "country": {
+          "name": "United Kingdom",
+          "code": "GB",
+          "timezone": "Europe/London"
+        },
+        "officialSite": "https://www.sky.com/watch/channel/sky-arts"
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 354028,
+        "imdb": null
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/483/1208447.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/483/1208447.jpg"
+      },
+      "summary": "<p>Barry Cryer pays tribute to the heroes of comedy who he has worked with over his many years in the business. Each episode celebrates one legend and includes highlights from their comedy careers as Barry recalls some of his funniest moments working with each of them.</p>",
+      "updated": 1698340122,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/39037"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/2179128",
+          "name": "Tim Allen"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.6691395,
+    "show": {
+      "id": 15196,
+      "url": "https://www.tvmaze.com/shows/15196/hometown-legends",
+      "name": "Hometown Legends",
+      "type": "Scripted",
+      "language": "Korean",
+      "genres": ["Adventure", "Fantasy", "Horror"],
+      "status": "Ended",
+      "runtime": 70,
+      "averageRuntime": 70,
+      "premiered": "2008-08-06",
+      "ended": "2009-09-08",
+      "officialSite": "http://www.kbs.co.kr/drama/gohyang2009/",
+      "schedule": {
+        "time": "21:55",
+        "days": ["Monday", "Tuesday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 67,
+      "network": {
+        "id": 128,
+        "name": "KBS2",
+        "country": {
+          "name": "Korea, Republic of",
+          "code": "KR",
+          "timezone": "Asia/Seoul"
+        },
+        "officialSite": null
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 216471,
+        "imdb": "tt3043672"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/51/129278.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/51/129278.jpg"
+      },
+      "summary": "<p><b>Hometown Legends</b> is a series of one-act dramas. It is the continuation of a classic series of ghost stories which aired first on KBS between 1977 and 1989 and later between 1996 and 1999. This marks the return of the series after nine years.</p>",
+      "updated": 1768138107,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/15196"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/690663",
+          "name": "Gamyeongwi"
+        }
+      }
+    }
+  }
+]

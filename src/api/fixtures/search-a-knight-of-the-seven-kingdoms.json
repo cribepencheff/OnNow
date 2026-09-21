@@ -1,0 +1,59 @@
+[
+  {
+    "score": 1.9213604,
+    "show": {
+      "id": 53063,
+      "url": "https://www.tvmaze.com/shows/53063/a-knight-of-the-seven-kingdoms",
+      "name": "A Knight of the Seven Kingdoms",
+      "type": "Scripted",
+      "language": "English",
+      "genres": ["Drama", "Action", "Fantasy"],
+      "status": "Running",
+      "runtime": null,
+      "averageRuntime": 37,
+      "premiered": "2026-01-18",
+      "ended": null,
+      "officialSite": "https://www.hbomax.com/shows/knight-of-the-seven-kingdoms/3507a932-eace-46ea-bfe1-638ae819fa12",
+      "schedule": {
+        "time": "22:00",
+        "days": ["Sunday"]
+      },
+      "rating": {
+        "average": 8.2
+      },
+      "weight": 100,
+      "network": {
+        "id": 8,
+        "name": "HBO",
+        "country": {
+          "name": "United States",
+          "code": "US",
+          "timezone": "America/New_York"
+        },
+        "officialSite": "https://www.hbo.com/"
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 433631,
+        "imdb": "tt27497448"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/608/1521912.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/608/1521912.jpg"
+      },
+      "summary": "<p>A century before the events of <i>Game of Thrones</i>, two unlikely heroes wandered Westeros: a young, naive but courageous knight, Ser Duncan the Tall, and his diminutive squire, Egg. Set in an age when the Targaryen line still holds the Iron Throne and the last dragon has not yet passed from living memory, great destinies, powerful foes, and dangerous exploits await these improbable and incomparable friends.</p>",
+      "updated": 1786944532,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/53063"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/3391842",
+          "name": "The Morrow"
+        }
+      }
+    }
+  }
+]

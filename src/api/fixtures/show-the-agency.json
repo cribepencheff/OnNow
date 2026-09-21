@@ -1,0 +1,688 @@
+{
+  "id": 66840,
+  "url": "https://www.tvmaze.com/shows/66840/the-agency",
+  "name": "The Agency",
+  "type": "Scripted",
+  "language": "English",
+  "genres": ["Drama", "Thriller", "Espionage"],
+  "status": "To Be Determined",
+  "runtime": null,
+  "averageRuntime": 50,
+  "premiered": "2024-11-29",
+  "ended": null,
+  "officialSite": "https://www.paramountplus.com/shows/the-agency/",
+  "schedule": {
+    "time": "",
+    "days": []
+  },
+  "rating": {
+    "average": 7.2
+  },
+  "weight": 100,
+  "network": null,
+  "webChannel": {
+    "id": 107,
+    "name": "Paramount+",
+    "country": null,
+    "officialSite": "https://www.paramountplus.com/"
+  },
+  "dvdCountry": null,
+  "externals": {
+    "tvrage": null,
+    "thetvdb": 430769,
+    "imdb": "tt26656917"
+  },
+  "image": {
+    "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/629/1573992.jpg",
+    "original": "https://static.tvmaze.com/uploads/images/original_untouched/629/1573992.jpg"
+  },
+  "summary": "<p><b>The Agency</b> follows Martian, a covert CIA agent ordered to abandon his undercover life and return to London Station. When the love he left behind reappears, romance reignites. His career, his real identity and his mission are pitted against his heart; hurling them both into a deadly game of international intrigue and espionage.</p>",
+  "updated": 1783435115,
+  "_links": {
+    "self": {
+      "href": "https://api.tvmaze.com/shows/66840"
+    },
+    "previousepisode": {
+      "href": "https://api.tvmaze.com/episodes/3620672",
+      "name": "King Sacrifice"
+    }
+  },
+  "_embedded": {
+    "episodes": [
+      {
+        "id": 3034616,
+        "url": "https://www.tvmaze.com/episodes/3034616/the-agency-1x01-the-bends",
+        "name": "The Bends",
+        "season": 1,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2024-11-29",
+        "airtime": "",
+        "airstamp": "2024-11-29T12:00:00+00:00",
+        "runtime": 61,
+        "rating": {
+          "average": 7.1
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/545/1364542.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/545/1364542.jpg"
+        },
+        "summary": "<p>Covert CIA agent Martian is called back to London Station. An incident in Belarus puts Bosko and Henry on a collision course with Langley. Danny learns a lesson. Someone unexpectedly reappears in Martian's life. Series premiere.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3034616"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/66840",
+            "name": "The Agency"
+          }
+        }
+      },
+      {
+        "id": 3035506,
+        "url": "https://www.tvmaze.com/episodes/3035506/the-agency-1x02-the-wooden-duck",
+        "name": "The Wooden Duck",
+        "season": 1,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2024-11-29",
+        "airtime": "",
+        "airstamp": "2024-11-29T12:00:00+00:00",
+        "runtime": 50,
+        "rating": {
+          "average": 7.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/545/1364543.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/545/1364543.jpg"
+        },
+        "summary": "<p>Dr. Blake arrives from Langley and is put to a test by Martian and Henry. A spooked source threatens to put an operation at risk. Danny's cover is put in play. Martian, overtaken by events, begins to question Sami's motives.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3035506"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/66840",
+            "name": "The Agency"
+          }
+        }
+      },
+      {
+        "id": 3035507,
+        "url": "https://www.tvmaze.com/episodes/3035507/the-agency-1x03-hawk-from-a-handsaw",
+        "name": "Hawk from a Handsaw",
+        "season": 1,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2024-12-06",
+        "airtime": "",
+        "airstamp": "2024-12-06T12:00:00+00:00",
+        "runtime": 47,
+        "rating": {
+          "average": 7.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/546/1365982.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/546/1365982.jpg"
+        },
+        "summary": "<p>Henry questions Martian's thinking. Bosko is briefed by Langley on a top-secret operation. Poppy makes a startling discovery. Martian confronts Sami about why she's in London and finds a needle in a haystack, before a heated session with Dr. Blake.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3035507"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/66840",
+            "name": "The Agency"
+          }
+        }
+      },
+      {
+        "id": 3035508,
+        "url": "https://www.tvmaze.com/episodes/3035508/the-agency-1x04-quarterback-blitz",
+        "name": "Quarterback Blitz",
+        "season": 1,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2024-12-13",
+        "airtime": "",
+        "airstamp": "2024-12-13T12:00:00+00:00",
+        "runtime": 45,
+        "rating": {
+          "average": 7.2
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/547/1369072.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/547/1369072.jpg"
+        },
+        "summary": "<p>Henry and Martian wade into a diplomatic incident with the Belarusian delegation. Dropped into her mission by Naomi, Danny walks a tightrope. Poppy and Martian attempt a fresh start. Osman threatens Sami.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3035508"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/66840",
+            "name": "The Agency"
+          }
+        }
+      },
+      {
+        "id": 3035509,
+        "url": "https://www.tvmaze.com/episodes/3035509/the-agency-1x05-rat-trap",
+        "name": "Rat Trap",
+        "season": 1,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2024-12-20",
+        "airtime": "",
+        "airstamp": "2024-12-20T12:00:00+00:00",
+        "runtime": 54,
+        "rating": {
+          "average": 7.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/548/1371412.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/548/1371412.jpg"
+        },
+        "summary": "<p>Feeling the heat from Langley, Henry sends Owen to hunt for clues in Minsk. Danny's work with Reza generates an unexpected outcome. Sami is confronted by Osman about sensitive issues. Martian, seeing the size of the stakes, sets a rat trap.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3035509"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/66840",
+            "name": "The Agency"
+          }
+        }
+      },
+      {
+        "id": 3035510,
+        "url": "https://www.tvmaze.com/episodes/3035510/the-agency-1x06-spy-for-sale",
+        "name": "Spy for Sale",
+        "season": 1,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2024-12-27",
+        "airtime": "",
+        "airstamp": "2024-12-27T12:00:00+00:00",
+        "runtime": 46,
+        "rating": {
+          "average": 7.1
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/549/1373246.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/549/1373246.jpg"
+        },
+        "summary": "<p>Martian scrambles to unravel Cossack's game. Osman plays his hand.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3035510"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/66840",
+            "name": "The Agency"
+          }
+        }
+      },
+      {
+        "id": 3035511,
+        "url": "https://www.tvmaze.com/episodes/3035511/the-agency-1x07-hard-landing",
+        "name": "Hard Landing",
+        "season": 1,
+        "number": 7,
+        "type": "regular",
+        "airdate": "2025-01-03",
+        "airtime": "",
+        "airstamp": "2025-01-03T12:00:00+00:00",
+        "runtime": 45,
+        "rating": {
+          "average": 7.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/550/1375494.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/550/1375494.jpg"
+        },
+        "summary": "<p>Mr. Dalaga puts a lot of pressure on Sami. Bosko is briefed on how big of a scale Valhalla is. Jerome is warned that he should listen to his horoscope. Martian must force his hand when Poppy is threatened. Henry strategizes a high-risk recruitment.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3035511"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/66840",
+            "name": "The Agency"
+          }
+        }
+      },
+      {
+        "id": 3035512,
+        "url": "https://www.tvmaze.com/episodes/3035512/the-agency-1x08-truth-will-set-you-free",
+        "name": "Truth Will Set You Free",
+        "season": 1,
+        "number": 8,
+        "type": "regular",
+        "airdate": "2025-01-10",
+        "airtime": "",
+        "airstamp": "2025-01-10T12:00:00+00:00",
+        "runtime": 50,
+        "rating": {
+          "average": 7.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/551/1378316.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/551/1378316.jpg"
+        },
+        "summary": "<p>Martian's approach doesn't go to plan. Sami makes a startling confession.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3035512"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/66840",
+            "name": "The Agency"
+          }
+        }
+      },
+      {
+        "id": 3035513,
+        "url": "https://www.tvmaze.com/episodes/3035513/the-agency-1x09-the-rubicon",
+        "name": "The Rubicon",
+        "season": 1,
+        "number": 9,
+        "type": "regular",
+        "airdate": "2025-01-17",
+        "airtime": "",
+        "airstamp": "2025-01-17T12:00:00+00:00",
+        "runtime": 48,
+        "rating": {
+          "average": 7.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/552/1381296.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/552/1381296.jpg"
+        },
+        "summary": "<p>Martian buys time with a bluff to Langley. Danny crosses the Rubicon.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3035513"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/66840",
+            "name": "The Agency"
+          }
+        }
+      },
+      {
+        "id": 3035514,
+        "url": "https://www.tvmaze.com/episodes/3035514/the-agency-1x10-overtaken-by-events",
+        "name": "Overtaken By Events",
+        "season": 1,
+        "number": 10,
+        "type": "regular",
+        "airdate": "2025-01-24",
+        "airtime": "",
+        "airstamp": "2025-01-24T12:00:00+00:00",
+        "runtime": 50,
+        "rating": {
+          "average": 7.7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/553/1383362.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/553/1383362.jpg"
+        },
+        "summary": "<p>As command of the operation shifts out his hands, Bosko shares a grim reality. Naomi receives troubling news out of Iran. Richardson runs a rogue operation. Felix gets overtaken by events. Martian, desperate, makes a devil's bargain.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3035514"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/66840",
+            "name": "The Agency"
+          }
+        }
+      },
+      {
+        "id": 3620663,
+        "url": "https://www.tvmaze.com/episodes/3620663/the-agency-2x01-kick-the-wasps-nest",
+        "name": "Kick the Wasp's Nest",
+        "season": 2,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2026-06-21",
+        "airtime": "",
+        "airstamp": "2026-06-21T12:00:00+00:00",
+        "runtime": 49,
+        "rating": {
+          "average": 7.8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/629/1574005.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/629/1574005.jpg"
+        },
+        "summary": "<p>Martian and Owen debrief Coyote. Bosko, fearing a leak, pressures Henry to clean house. Richardson turns up at the Chicken Coop with news from Khartoum. Danny, in Iran, feels the ground move. Viking is escalated to a category one. Season premiere.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3620663"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/66840",
+            "name": "The Agency"
+          }
+        }
+      },
+      {
+        "id": 3620664,
+        "url": "https://www.tvmaze.com/episodes/3620664/the-agency-2x02-a-bear-in-wolfs-clothing",
+        "name": "A Bear in Wolf's Clothing",
+        "season": 2,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2026-06-21",
+        "airtime": "",
+        "airstamp": "2026-06-21T12:00:00+00:00",
+        "runtime": 47,
+        "rating": {
+          "average": 7.7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/629/1574007.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/629/1574007.jpg"
+        },
+        "summary": "<p>Confronted by Hassan, Danny holds her ground. Bosko briefs the State Department with a dye-test as Henry sends Owen back into the field. Martian, in search of an opening, questions Naomi's objectivity. Richardson promises Legoland a high value asset.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3620664"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/66840",
+            "name": "The Agency"
+          }
+        }
+      },
+      {
+        "id": 3620665,
+        "url": "https://www.tvmaze.com/episodes/3620665/the-agency-2x03-spymaster",
+        "name": "Spymaster",
+        "season": 2,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2026-06-21",
+        "airtime": "",
+        "airstamp": "2026-06-21T12:00:00+00:00",
+        "runtime": 49,
+        "rating": {
+          "average": 7.8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/629/1574008.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/629/1574008.jpg"
+        },
+        "summary": "<p>Martian exploits a means to an end as Henry breaks down the challenge to Bosko: drawing Viking out of Valhalla's territory. Hassan takes Danny - and a Persian proverb - to heart. Dr. Blake lays groundwork with Owen. A call to Antwerp pays dividends.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3620665"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/66840",
+            "name": "The Agency"
+          }
+        }
+      },
+      {
+        "id": 3620666,
+        "url": "https://www.tvmaze.com/episodes/3620666/the-agency-2x04-dead-end",
+        "name": "Dead End",
+        "season": 2,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2026-06-21",
+        "airtime": "",
+        "airstamp": "2026-06-21T12:00:00+00:00",
+        "runtime": 48,
+        "rating": {
+          "average": 8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/629/1574009.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/629/1574009.jpg"
+        },
+        "summary": "<p>Dalaga pushes his luck with Richardson. Danny, in Iran, learns grandmother is dead. Blair follows the money. Bosko and Henry talk game plans in the Crisis Room as Owen takes a deep breath. Poppy treats Martian to a discourse on Kant.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3620666"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/66840",
+            "name": "The Agency"
+          }
+        }
+      },
+      {
+        "id": 3620667,
+        "url": "https://www.tvmaze.com/episodes/3620667/the-agency-2x05-out-cold",
+        "name": "Out Cold",
+        "season": 2,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2026-06-21",
+        "airtime": "",
+        "airstamp": "2026-06-21T12:00:00+00:00",
+        "runtime": 46,
+        "rating": {
+          "average": 8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/629/1574010.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/629/1574010.jpg"
+        },
+        "summary": "<p>A simple office miscommunication raises red flags in the Chicken Coop.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3620667"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/66840",
+            "name": "The Agency"
+          }
+        }
+      },
+      {
+        "id": 3620668,
+        "url": "https://www.tvmaze.com/episodes/3620668/the-agency-2x06-officially-a-ghost",
+        "name": "Officially a Ghost",
+        "season": 2,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2026-06-21",
+        "airtime": "",
+        "airstamp": "2026-06-21T12:00:00+00:00",
+        "runtime": 58,
+        "rating": {
+          "average": 7.9
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/629/1574011.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/629/1574011.jpg"
+        },
+        "summary": "<p>Bosko is briefed on Snow White and the scope of Viking's game play.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3620668"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/66840",
+            "name": "The Agency"
+          }
+        }
+      },
+      {
+        "id": 3620669,
+        "url": "https://www.tvmaze.com/episodes/3620669/the-agency-2x07-drown-him-then-throw-him-a-lifejacket",
+        "name": "Drown Him Then Throw Him a Lifejacket",
+        "season": 2,
+        "number": 7,
+        "type": "regular",
+        "airdate": "2026-06-21",
+        "airtime": "",
+        "airstamp": "2026-06-21T12:00:00+00:00",
+        "runtime": 51,
+        "rating": {
+          "average": 8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/629/1574012.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/629/1574012.jpg"
+        },
+        "summary": "<p>Henry's suspicions reveal hidden treachery. Simon and Blair uncover a loose cannon in Antwerp. Bosko sets his sights on a strategic flip as Martian, in his element, offers up a life jacket. In Bahrain, Craig's pitch to Popeye yields unexpected intel.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3620669"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/66840",
+            "name": "The Agency"
+          }
+        }
+      },
+      {
+        "id": 3620670,
+        "url": "https://www.tvmaze.com/episodes/3620670/the-agency-2x08-false-flag-attack",
+        "name": "False Flag Attack",
+        "season": 2,
+        "number": 8,
+        "type": "regular",
+        "airdate": "2026-06-21",
+        "airtime": "",
+        "airstamp": "2026-06-21T12:00:00+00:00",
+        "runtime": 50,
+        "rating": {
+          "average": 8.1
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/629/1574013.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/629/1574013.jpg"
+        },
+        "summary": "<p>A stealth move in Bahrain pays dividends. Nils pitches De Bruyne a plan that could solve all their problems. Dr. Blake challenges Naomi on her camouflage. Meanwhile, Osman accepts his fate as, outside the University, Danny is met with a shock.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3620670"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/66840",
+            "name": "The Agency"
+          }
+        }
+      },
+      {
+        "id": 3620671,
+        "url": "https://www.tvmaze.com/episodes/3620671/the-agency-2x09-rogue-cell",
+        "name": "Rogue Cell",
+        "season": 2,
+        "number": 9,
+        "type": "regular",
+        "airdate": "2026-06-21",
+        "airtime": "",
+        "airstamp": "2026-06-21T12:00:00+00:00",
+        "runtime": 44,
+        "rating": {
+          "average": 8.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/629/1574014.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/629/1574014.jpg"
+        },
+        "summary": "<p>A cryptic message leads Poppy to reach out to Dozer. Henry cautions Naomi to not jump too soon. At the Chicken Coop, Richardson drops a bombshell on Bosko. Meanwhile, Viking delivers a message as Danny fights to give nothing away.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3620671"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/66840",
+            "name": "The Agency"
+          }
+        }
+      },
+      {
+        "id": 3620672,
+        "url": "https://www.tvmaze.com/episodes/3620672/the-agency-2x10-king-sacrifice",
+        "name": "King Sacrifice",
+        "season": 2,
+        "number": 10,
+        "type": "regular",
+        "airdate": "2026-06-21",
+        "airtime": "",
+        "airstamp": "2026-06-21T12:00:00+00:00",
+        "runtime": 55,
+        "rating": {
+          "average": 8.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/629/1574015.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/629/1574015.jpg"
+        },
+        "summary": "<p>In the Fishbowl, Naomi gives Craig a lesson in chess. Dr. Blake questions Blair. Nils gets a case of the yips, forcing Martian to pivot to keep plans in play. Season finale.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3620672"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/66840",
+            "name": "The Agency"
+          }
+        }
+      }
+    ],
+    "seasons": [
+      {
+        "id": 148544,
+        "url": "https://www.tvmaze.com/seasons/148544/the-agency-season-1",
+        "number": 1,
+        "name": "",
+        "episodeOrder": 10,
+        "premiereDate": "2024-11-29",
+        "endDate": "2025-01-24",
+        "network": null,
+        "webChannel": {
+          "id": 107,
+          "name": "Paramount+",
+          "country": null,
+          "officialSite": "https://www.paramountplus.com/"
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/545/1364949.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/545/1364949.jpg"
+        },
+        "summary": "<p>The series follows Martian, a covert CIA agent ordered to abandon his undercover life and return to London Station. When the love he left behind reappears, romance reignites. His career, his real identity and his mission are pitted against his heart; hurling them both into a deadly game of international intrigue and espionage.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/148544"
+          }
+        }
+      },
+      {
+        "id": 178361,
+        "url": "https://www.tvmaze.com/seasons/178361/the-agency-season-2",
+        "number": 2,
+        "name": "",
+        "episodeOrder": 10,
+        "premiereDate": "2026-06-21",
+        "endDate": "2026-06-21",
+        "network": null,
+        "webChannel": {
+          "id": 107,
+          "name": "Paramount+",
+          "country": null,
+          "officialSite": "https://www.paramountplus.com/"
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/628/1572299.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/628/1572299.jpg"
+        },
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/178361"
+          }
+        }
+      }
+    ]
+  }
+}

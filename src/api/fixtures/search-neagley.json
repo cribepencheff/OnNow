@@ -1,0 +1,565 @@
+[
+  {
+    "score": 0.89641637,
+    "show": {
+      "id": 82707,
+      "url": "https://www.tvmaze.com/shows/82707/neagley",
+      "name": "Neagley",
+      "type": "Scripted",
+      "language": "English",
+      "genres": ["Drama", "Action", "Thriller"],
+      "status": "To Be Determined",
+      "runtime": null,
+      "averageRuntime": 49,
+      "premiered": "2026-09-16",
+      "ended": null,
+      "officialSite": "https://www.amazon.com/dp/B0GY916X2W/",
+      "schedule": {
+        "time": "",
+        "days": []
+      },
+      "rating": {
+        "average": 7.6
+      },
+      "weight": 100,
+      "network": null,
+      "webChannel": {
+        "id": 3,
+        "name": "Prime Video",
+        "country": null,
+        "officialSite": "https://www.primevideo.com"
+      },
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 455064,
+        "imdb": "tt33539520"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/641/1604422.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/641/1604422.jpg"
+      },
+      "summary": "<p>Frances Neagley is a private investigator in Chicago and former military protege of Jack Reacher in the Army's 110th Special Investigations Unit. When she learns that a beloved friend from her past has been killed in a suspicious accident, she becomes hell-bent on justice. Using everything she's learned from Jack Reacher and her time as a member of the 110 Special Investigators, Neagley puts herself on a dangerous path to uncover a menacing evil.</p>",
+      "updated": 1789852392,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/82707"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/3658483",
+          "name": "Touched"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.3676598,
+    "show": {
+      "id": 41328,
+      "url": "https://www.tvmaze.com/shows/41328/eagles",
+      "name": "Eagles",
+      "type": "Scripted",
+      "language": "Swedish",
+      "genres": ["Drama", "Romance", "Sports"],
+      "status": "Ended",
+      "runtime": null,
+      "averageRuntime": 21,
+      "premiered": "2019-03-09",
+      "ended": "2022-02-25",
+      "officialSite": "https://www.svt.se/eagles/",
+      "schedule": {
+        "time": "",
+        "days": ["Friday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 81,
+      "network": null,
+      "webChannel": {
+        "id": 190,
+        "name": "SVT Play",
+        "country": {
+          "name": "Sweden",
+          "code": "SE",
+          "timezone": "Europe/Stockholm"
+        },
+        "officialSite": "https://www.svtplay.se/"
+      },
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 354873,
+        "imdb": "tt8422802"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/187/468760.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/187/468760.jpg"
+      },
+      "summary": "<p><b>Eagles</b> revolves around a few teenagers living in the Swedish ice hockey town Oskarshamn while experiencing friendship, love, and rivalry on the ice.</p>",
+      "updated": 1650287008,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/41328"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/2255094",
+          "name": "Farewell"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.29571274,
+    "show": {
+      "id": 28919,
+      "url": "https://www.tvmaze.com/shows/28919/nearly-famous",
+      "name": "Nearly Famous",
+      "type": "Scripted",
+      "language": "English",
+      "genres": ["Drama"],
+      "status": "Ended",
+      "runtime": 60,
+      "averageRuntime": 60,
+      "premiered": "2007-11-08",
+      "ended": "2007-12-13",
+      "officialSite": "https://web.archive.org/web/20170109200542/http://www.channel4.com/programmes/nearly-famous",
+      "schedule": {
+        "time": "20:00",
+        "days": ["Thursday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 59,
+      "network": {
+        "id": 41,
+        "name": "E4",
+        "country": {
+          "name": "United Kingdom",
+          "code": "GB",
+          "timezone": "Europe/London"
+        },
+        "officialSite": null
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 134061,
+        "imdb": "tt1090020"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/115/288094.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/115/288094.jpg"
+      },
+      "summary": "<p>Teen Drama set in the fictional Salanger School for performing arts in London. Four students; Owen, Lila, Kate and Joe try to make something of themselves.</p>",
+      "updated": 1630866161,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/28919"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/1203017",
+          "name": "Episode 6"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.27249482,
+    "show": {
+      "id": 11540,
+      "url": "https://www.tvmaze.com/shows/11540/once-an-eagle",
+      "name": "Once an Eagle",
+      "type": "Scripted",
+      "language": "English",
+      "genres": ["Drama", "War"],
+      "status": "Ended",
+      "runtime": 60,
+      "averageRuntime": 77,
+      "premiered": "1976-12-02",
+      "ended": "1977-01-13",
+      "officialSite": null,
+      "schedule": {
+        "time": "21:00",
+        "days": []
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 74,
+      "network": {
+        "id": 1,
+        "name": "NBC",
+        "country": {
+          "name": "United States",
+          "code": "US",
+          "timezone": "America/New_York"
+        },
+        "officialSite": "https://www.nbc.com/"
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 232801,
+        "imdb": "tt0074034"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/38/97494.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/38/97494.jpg"
+      },
+      "summary": "<p><b>Once an Eagle</b> is the epic story of America in the 20th Century, told through the lives of two career soldiers, spanning both World Wars. Based on the best-selling novel by Anton Myrer, Once an Eagle is one of the most acclaimed miniseries of all time, alongside \"Winds of War\" and \"War and Rememberance.\" Sam Elliot takes on the role of Sam Damon, a courageous and compassionate man who finds his calling leading his men in war and peace time. Cliff Potts, on the other hand, plays Coutney Massengale, a ruthless achiever who will let nothing stand in his way to the top. In the late days of WW1, Damon and Massengale become friends, but as events unfold, the vast differences in their personalities lead to a face-off in a life and death struggle of good vs. evil.</p>",
+      "updated": 1600847047,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/11540"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/568109",
+          "name": "Part 7"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.26693937,
+    "show": {
+      "id": 12126,
+      "url": "https://www.tvmaze.com/shows/12126/history-of-the-eagles",
+      "name": "History of the Eagles",
+      "type": "Documentary",
+      "language": "English",
+      "genres": ["Music"],
+      "status": "Ended",
+      "runtime": 120,
+      "averageRuntime": 95,
+      "premiered": "2013-02-15",
+      "ended": "2013-02-16",
+      "officialSite": "http://www.sho.com/sho/reality-docs/titles/3378379/history-of-the-eagles#/index",
+      "schedule": {
+        "time": "20:00",
+        "days": ["Friday", "Saturday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 71,
+      "network": {
+        "id": 9,
+        "name": "Paramount+ with Showtime",
+        "country": {
+          "name": "United States",
+          "code": "US",
+          "timezone": "America/New_York"
+        },
+        "officialSite": "https://www.sho.com/"
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": 34442,
+        "thetvdb": 274224,
+        "imdb": "tt2194326"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/40/101780.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/40/101780.jpg"
+      },
+      "summary": "<p>Directed by Alison Ellwood, this intimate, meticulously crafted patchwork of rare archival material, concert footage and never-before-seen home movies explores the evolution and enduring popularity of The Eagles from their creation to break-up to reunion.</p>",
+      "updated": 1640586211,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/12126"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/581595",
+          "name": "Episode 2"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.26631126,
+    "show": {
+      "id": 43048,
+      "url": "https://www.tvmaze.com/shows/43048/novoland-eagle-flag",
+      "name": "Novoland: Eagle Flag",
+      "type": "Scripted",
+      "language": "Chinese",
+      "genres": ["Drama", "Romance", "History"],
+      "status": "Ended",
+      "runtime": 45,
+      "averageRuntime": 45,
+      "premiered": "2019-07-16",
+      "ended": "2019-08-27",
+      "officialSite": null,
+      "schedule": {
+        "time": "22:00",
+        "days": ["Monday", "Tuesday", "Wednesday", "Thursday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 66,
+      "network": {
+        "id": 1012,
+        "name": "Zhejiang TV",
+        "country": {
+          "name": "China",
+          "code": "CN",
+          "timezone": "Asia/Shanghai"
+        },
+        "officialSite": null
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": null,
+        "imdb": null
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/205/513540.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/205/513540.jpg"
+      },
+      "summary": "<p>Lu Gui Chen is the heir of the nomadic Qingyang tribe, and is sent to the Eastern Land as hostage. He meets Ji Ye, an unfavoured illegitimate son who is training to become a warrior, and Yu Ran, the princess of the Winged tribe. The three become close friends, and the boys' feelings for Yu Ran soon turn romantic. At the same time, powerful warlord Ying Wu Yi has been maintaining a firm control over the Emperor, giving him unprecedented power over the nobles. Lu Gui Chen, Ji Ye, and Yu Ran decide to join the decisive battle against Ying Wu Yi at Shangyang Pass, but unbeknownst to them, an even darker conspiracy is yet to unfold.</p>",
+      "updated": 1749038020,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/43048"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/1747493",
+          "name": "Episode 56"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.26165438,
+    "show": {
+      "id": 19843,
+      "url": "https://www.tvmaze.com/shows/19843/eagle-evans",
+      "name": "Eagle & Evans",
+      "type": "Scripted",
+      "language": "English",
+      "genres": ["Comedy"],
+      "status": "Ended",
+      "runtime": 30,
+      "averageRuntime": 30,
+      "premiered": "2004-08-26",
+      "ended": "2005-04-22",
+      "officialSite": null,
+      "schedule": {
+        "time": "21:00",
+        "days": ["Friday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 61,
+      "network": {
+        "id": 114,
+        "name": "ABC",
+        "country": {
+          "name": "Australia",
+          "code": "AU",
+          "timezone": "Australia/Sydney"
+        },
+        "officialSite": "https://www.abc.net.au/"
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 314715,
+        "imdb": null
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/70/175211.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/70/175211.jpg"
+      },
+      "summary": "<p>Craig Eagle and Dailan Evans are the warm-up guys and general dogsbodies on the Blaze da Silva Experience - Australia's most popular television variety show. Their job is to hype up the audience for Blaze, then they hang around in the green room trying to put off anyone they think might do a better comedy routine than them.</p><p>What Craig and Dailan really want is for Blaze to give them a proper guest spot on the show. Every week we find them pitching their latest idea to him and this time, the boys are sure they've hit the nail on the head with their saucy nun sketch. However, Blaze does not seem so convinced.</p><p>Backstage with Craig and Dailan, the talk is of lucky thumbs and reality tv concepts... while Eagle and Evans use sketch to tackle moments such as locking the keys in the car, plastic surgery, pick up lines at parties and transplant surgery, an IT guy complains about his lost mail and June makes another welcome return.</p>",
+      "updated": 1470595259,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/19843"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/887530",
+          "name": "Episode 8"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.25940973,
+    "show": {
+      "id": 69140,
+      "url": "https://www.tvmaze.com/shows/69140/snow-eagle-lord",
+      "name": "Snow Eagle Lord",
+      "type": "Scripted",
+      "language": "Chinese",
+      "genres": ["Adventure", "Fantasy", "Romance"],
+      "status": "Ended",
+      "runtime": 45,
+      "averageRuntime": 45,
+      "premiered": "2023-06-21",
+      "ended": "2023-07-26",
+      "officialSite": "https://v.qq.com/x/cover/mzc00200qyw0epi.html",
+      "schedule": {
+        "time": "18:00",
+        "days": []
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 58,
+      "network": null,
+      "webChannel": {
+        "id": 104,
+        "name": "Tencent QQ",
+        "country": {
+          "name": "China",
+          "code": "CN",
+          "timezone": "Asia/Shanghai"
+        },
+        "officialSite": "https://v.qq.com/"
+      },
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 424986,
+        "imdb": "tt27162349"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/463/1159673.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/463/1159673.jpg"
+      },
+      "summary": "<p>Set in a mythical world in the Mainland continent, it tells the story of Dongbo Xueying who embarks on a journey to save his parents who were arrested by the Moyang Tribe for flouting the rules; and his growth in the process.</p>",
+      "updated": 1689614069,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/69140"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/2576084",
+          "name": "Episode 40"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.25643426,
+    "show": {
+      "id": 82166,
+      "url": "https://www.tvmaze.com/shows/82166/for-eagle-brothers",
+      "name": "For Eagle Brothers",
+      "type": "Scripted",
+      "language": "Korean",
+      "genres": ["Drama", "Comedy", "Romance"],
+      "status": "Ended",
+      "runtime": null,
+      "averageRuntime": 35,
+      "premiered": "2025-02-01",
+      "ended": "2025-08-03",
+      "officialSite": "https://program.kbs.co.kr/2tv/drama/foreaglebrothers/",
+      "schedule": {
+        "time": "19:55",
+        "days": ["Saturday", "Sunday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 55,
+      "network": {
+        "id": 128,
+        "name": "KBS2",
+        "country": {
+          "name": "Korea, Republic of",
+          "code": "KR",
+          "timezone": "Asia/Seoul"
+        },
+        "officialSite": null
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 458958,
+        "imdb": null
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/552/1382435.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/552/1382435.jpg"
+      },
+      "summary": "<p>The story of the eldest sister-in-law, who becomes the breadwinner after her husband's sudden death 10 days after marriage, and five brothers with a brewery that has been manufacturing traditional liquor for three generations.</p>",
+      "updated": 1767474121,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/82166"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/3315823",
+          "name": "Episode 54"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.2540585,
+    "show": {
+      "id": 83612,
+      "url": "https://www.tvmaze.com/shows/83612/the-eagles-return",
+      "name": "The Eagle's Return",
+      "type": "Documentary",
+      "language": "English",
+      "genres": [],
+      "status": "To Be Determined",
+      "runtime": null,
+      "averageRuntime": 33,
+      "premiered": "2025-03-16",
+      "ended": null,
+      "officialSite": null,
+      "schedule": {
+        "time": "",
+        "days": ["Sunday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 44,
+      "network": {
+        "id": 1054,
+        "name": "RTÉ2",
+        "country": {
+          "name": "Ireland",
+          "code": "IE",
+          "timezone": "Europe/Dublin"
+        },
+        "officialSite": "https://www.rte.ie/tv/"
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": null,
+        "imdb": null
+      },
+      "image": null,
+      "summary": "<p>This wildlife series follows the trial the trials of three teams bringing wild birds of prey back to Ireland after an absence of over 100 years. It is the most important Irish wildlife story in decades - the return of some of the largest birds of prey ever to darken Irish skies, the White Tailed Eagle, the Golden Eagle and the Red Kite.</p><p>From scaling cliffs in the wilds of Norway, Scotland and Wales on the hunt for new chicks, to hiring planes to fly them home, to nursing them through the first crucial months of freedom, the reintroduction involves a vast amount of work for a team of highly trained specialists. It follows their triumphs and tragedies as they track the birds from capture abroad through the first months of their release in Ireland. With radio &amp; satellite tags, the guardians follow the released birds' progress across the country and wait and hope they will survive through their first winter.</p><p>World-class wildlife photography, unfolding dramatic storylines, strong human &amp; animal interest, important environmental, cultural and heritage themes - all combine to make this a compelling and important series with appeal for a very wide audience.</p>",
+      "updated": 1745811122,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/83612"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/3187088",
+          "name": "Episode 4"
+        }
+      }
+    }
+  }
+]

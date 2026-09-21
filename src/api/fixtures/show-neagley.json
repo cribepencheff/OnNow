@@ -1,0 +1,311 @@
+{
+  "id": 82707,
+  "url": "https://www.tvmaze.com/shows/82707/neagley",
+  "name": "Neagley",
+  "type": "Scripted",
+  "language": "English",
+  "genres": ["Drama", "Action", "Thriller"],
+  "status": "To Be Determined",
+  "runtime": null,
+  "averageRuntime": 49,
+  "premiered": "2026-09-16",
+  "ended": null,
+  "officialSite": "https://www.amazon.com/dp/B0GY916X2W/",
+  "schedule": {
+    "time": "",
+    "days": []
+  },
+  "rating": {
+    "average": 7.6
+  },
+  "weight": 100,
+  "network": null,
+  "webChannel": {
+    "id": 3,
+    "name": "Prime Video",
+    "country": null,
+    "officialSite": "https://www.primevideo.com"
+  },
+  "dvdCountry": null,
+  "externals": {
+    "tvrage": null,
+    "thetvdb": 455064,
+    "imdb": "tt33539520"
+  },
+  "image": {
+    "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/641/1604422.jpg",
+    "original": "https://static.tvmaze.com/uploads/images/original_untouched/641/1604422.jpg"
+  },
+  "summary": "<p>Frances Neagley is a private investigator in Chicago and former military protege of Jack Reacher in the Army's 110th Special Investigations Unit. When she learns that a beloved friend from her past has been killed in a suspicious accident, she becomes hell-bent on justice. Using everything she's learned from Jack Reacher and her time as a member of the 110 Special Investigators, Neagley puts herself on a dangerous path to uncover a menacing evil.</p>",
+  "updated": 1789852392,
+  "_links": {
+    "self": {
+      "href": "https://api.tvmaze.com/shows/82707"
+    },
+    "previousepisode": {
+      "href": "https://api.tvmaze.com/episodes/3658483",
+      "name": "Touched"
+    }
+  },
+  "_embedded": {
+    "episodes": [
+      {
+        "id": 3658349,
+        "url": "https://www.tvmaze.com/episodes/3658349/neagley-1x01-l-train",
+        "name": "L Train",
+        "season": 1,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2026-09-16",
+        "airtime": "",
+        "airstamp": "2026-09-16T12:00:00+00:00",
+        "runtime": 57,
+        "rating": {
+          "average": 8.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/641/1604133.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/641/1604133.jpg"
+        },
+        "summary": "<p>When Neagley's childhood friend, Tommy, dies after walking into an oncoming train, the police are ready to label this as an apparent accident. But after receiving a mysterious message from the deceased, Neagley knows something is amiss.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3658349"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/82707",
+            "name": "Neagley"
+          }
+        }
+      },
+      {
+        "id": 3658477,
+        "url": "https://www.tvmaze.com/episodes/3658477/neagley-1x02-team-building-exercises",
+        "name": "Team Building Exercises",
+        "season": 1,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2026-09-16",
+        "airtime": "",
+        "airstamp": "2026-09-16T12:00:00+00:00",
+        "runtime": 47,
+        "rating": {
+          "average": 8.6
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/641/1604134.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/641/1604134.jpg"
+        },
+        "summary": "<p>With Neagley's investigation into the suspicious death of her childhood friend, Tommy Crane, hitting countless roadblocks, a long-buried secret from Neagley's past threatens to upend everything she once knew of her childhood.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3658477"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/82707",
+            "name": "Neagley"
+          }
+        }
+      },
+      {
+        "id": 3658478,
+        "url": "https://www.tvmaze.com/episodes/3658478/neagley-1x03-hammer-time",
+        "name": "Hammer Time",
+        "season": 1,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2026-09-16",
+        "airtime": "",
+        "airstamp": "2026-09-16T12:00:00+00:00",
+        "runtime": 53,
+        "rating": {
+          "average": 8.7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/641/1604135.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/641/1604135.jpg"
+        },
+        "summary": "<p>After an ambush turns up her best break in the case thus far, Neagley is blindsided by local law enforcement's attempts to sideline her.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3658478"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/82707",
+            "name": "Neagley"
+          }
+        }
+      },
+      {
+        "id": 3658479,
+        "url": "https://www.tvmaze.com/episodes/3658479/neagley-1x04-breaking-entering",
+        "name": "Breaking & Entering",
+        "season": 1,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2026-09-16",
+        "airtime": "",
+        "airstamp": "2026-09-16T12:00:00+00:00",
+        "runtime": 52,
+        "rating": {
+          "average": 8.7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/641/1604136.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/641/1604136.jpg"
+        },
+        "summary": "<p>Neagley's investigation into Tommy's death has drawn the focus of powerful enemies - putting herself and her team in danger.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3658479"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/82707",
+            "name": "Neagley"
+          }
+        }
+      },
+      {
+        "id": 3658480,
+        "url": "https://www.tvmaze.com/episodes/3658480/neagley-1x05-trip",
+        "name": "Trip",
+        "season": 1,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2026-09-16",
+        "airtime": "",
+        "airstamp": "2026-09-16T12:00:00+00:00",
+        "runtime": 41,
+        "rating": {
+          "average": 9.1
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/641/1604137.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/641/1604137.jpg"
+        },
+        "summary": "<p>Hidden truths from Neagley's past come rushing to the forefront, forcing her to rely on her newfound team more than ever.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3658480"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/82707",
+            "name": "Neagley"
+          }
+        }
+      },
+      {
+        "id": 3658481,
+        "url": "https://www.tvmaze.com/episodes/3658481/neagley-1x06-rocked",
+        "name": "Rocked",
+        "season": 1,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2026-09-16",
+        "airtime": "",
+        "airstamp": "2026-09-16T12:00:00+00:00",
+        "runtime": 46,
+        "rating": {
+          "average": 9.2
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/641/1604138.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/641/1604138.jpg"
+        },
+        "summary": "<p>With new evidence coming to light, Neagley realizes she is not only responsible for solving Tommy's murder, but countless others as well.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3658481"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/82707",
+            "name": "Neagley"
+          }
+        }
+      },
+      {
+        "id": 3658482,
+        "url": "https://www.tvmaze.com/episodes/3658482/neagley-1x07-lebrons-no-jordan",
+        "name": "Lebron's No Jordan",
+        "season": 1,
+        "number": 7,
+        "type": "regular",
+        "airdate": "2026-09-16",
+        "airtime": "",
+        "airstamp": "2026-09-16T12:00:00+00:00",
+        "runtime": 46,
+        "rating": {
+          "average": 9.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/641/1604139.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/641/1604139.jpg"
+        },
+        "summary": "<p>As clues dry up, Hudson is forced to make a devil's bargain to keep the case from going cold.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3658482"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/82707",
+            "name": "Neagley"
+          }
+        }
+      },
+      {
+        "id": 3658483,
+        "url": "https://www.tvmaze.com/episodes/3658483/neagley-1x08-touched",
+        "name": "Touched",
+        "season": 1,
+        "number": 8,
+        "type": "regular",
+        "airdate": "2026-09-16",
+        "airtime": "",
+        "airstamp": "2026-09-16T12:00:00+00:00",
+        "runtime": 53,
+        "rating": {
+          "average": 9.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/641/1604140.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/641/1604140.jpg"
+        },
+        "summary": "<p>With the legacy of her deceased childhood friend on the line, and the lives of her team under threat, Neagley mounts one last stand to bring Tommy's killers to justice.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3658483"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/82707",
+            "name": "Neagley"
+          }
+        }
+      }
+    ],
+    "seasons": [
+      {
+        "id": 181914,
+        "url": "https://www.tvmaze.com/seasons/181914/neagley-season-1",
+        "number": 1,
+        "name": "",
+        "episodeOrder": 8,
+        "premiereDate": "2026-09-16",
+        "endDate": "2026-09-16",
+        "network": null,
+        "webChannel": {
+          "id": 3,
+          "name": "Prime Video",
+          "country": null,
+          "officialSite": "https://www.primevideo.com"
+        },
+        "image": null,
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/181914"
+          }
+        }
+      }
+    ]
+  }
+}

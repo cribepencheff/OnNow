@@ -1,0 +1,1951 @@
+{
+  "id": 48830,
+  "url": "https://www.tvmaze.com/shows/48830/only-murders-in-the-building",
+  "name": "Only Murders in the Building",
+  "type": "Scripted",
+  "language": "English",
+  "genres": ["Comedy", "Crime", "Mystery"],
+  "status": "Running",
+  "runtime": null,
+  "averageRuntime": 35,
+  "premiered": "2021-08-31",
+  "ended": null,
+  "officialSite": "https://www.hulu.com/series/only-murders-in-the-building",
+  "schedule": {
+    "time": "",
+    "days": ["Tuesday"]
+  },
+  "rating": {
+    "average": 6.8
+  },
+  "weight": 100,
+  "network": null,
+  "webChannel": {
+    "id": 2,
+    "name": "Hulu",
+    "country": {
+      "name": "United States",
+      "code": "US",
+      "timezone": "America/New_York"
+    },
+    "officialSite": "https://www.hulu.com/"
+  },
+  "dvdCountry": null,
+  "externals": {
+    "tvrage": null,
+    "thetvdb": 399959,
+    "imdb": "tt11691774"
+  },
+  "image": {
+    "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/586/1466415.jpg",
+    "original": "https://static.tvmaze.com/uploads/images/original_untouched/586/1466415.jpg"
+  },
+  "summary": "<p><b>Only Murders in the Building</b> follows three New Yorkers who find they have a mutual interest in solving true crime – but limit their amateur sleuthing to only murders in their building.</p>",
+  "updated": 1787727502,
+  "_links": {
+    "self": {
+      "href": "https://api.tvmaze.com/shows/48830"
+    },
+    "previousepisode": {
+      "href": "https://api.tvmaze.com/episodes/3311578",
+      "name": "The House Always..."
+    },
+    "nextepisode": {
+      "href": "https://api.tvmaze.com/episodes/3714462",
+      "name": "TBA"
+    }
+  },
+  "_embedded": {
+    "episodes": [
+      {
+        "id": 2094676,
+        "url": "https://www.tvmaze.com/episodes/2094676/only-murders-in-the-building-1x01-true-crime",
+        "name": "True Crime",
+        "season": 1,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2021-08-31",
+        "airtime": "",
+        "airstamp": "2021-08-31T16:00:00+00:00",
+        "runtime": 33,
+        "rating": {
+          "average": 7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/351/878435.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/351/878435.jpg"
+        },
+        "summary": "<p>Upper West Side neighbors Charles, Oliver &amp; Mabel bond over a shared love of true crime. When a fellow resident dies in their building, the trio determine to solve the mystery and record an accompanying podcast.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2094676"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2154542,
+        "url": "https://www.tvmaze.com/episodes/2154542/only-murders-in-the-building-1x02-who-is-tim-kono",
+        "name": "Who Is Tim Kono?",
+        "season": 1,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2021-08-31",
+        "airtime": "",
+        "airstamp": "2021-08-31T16:00:00+00:00",
+        "runtime": 29,
+        "rating": {
+          "average": 7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/351/878436.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/351/878436.jpg"
+        },
+        "summary": "<p>The group begins researching the victim. Meanwhile, Mabel's secretive past starts to be unraveled.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2154542"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2154543,
+        "url": "https://www.tvmaze.com/episodes/2154543/only-murders-in-the-building-1x03-how-well-do-you-know-your-neighbors",
+        "name": "How Well Do You Know Your Neighbors?",
+        "season": 1,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2021-08-31",
+        "airtime": "",
+        "airstamp": "2021-08-31T16:00:00+00:00",
+        "runtime": 35,
+        "rating": {
+          "average": 7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/351/878437.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/351/878437.jpg"
+        },
+        "summary": "<p>Oliver employs his theater director skills to analyze the case. Charles &amp; Mabel question an obsessive cat lover.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2154543"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2154544,
+        "url": "https://www.tvmaze.com/episodes/2154544/only-murders-in-the-building-1x04-the-sting",
+        "name": "The Sting",
+        "season": 1,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2021-09-07",
+        "airtime": "",
+        "airstamp": "2021-09-07T16:00:00+00:00",
+        "runtime": 33,
+        "rating": {
+          "average": 7.1
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/357/893809.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/357/893809.jpg"
+        },
+        "summary": "<p>Believing the murderer might be a famous resident whom is difficult to access, the group seeks advice from a renowned podcasting host.</p><p> </p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2154544"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2159015,
+        "url": "https://www.tvmaze.com/episodes/2159015/only-murders-in-the-building-1x05-twist",
+        "name": "Twist",
+        "season": 1,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2021-09-14",
+        "airtime": "",
+        "airstamp": "2021-09-14T16:00:00+00:00",
+        "runtime": 26,
+        "rating": {
+          "average": 7.2
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/357/892792.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/357/892792.jpg"
+        },
+        "summary": "<p>Mabel slips away on a solo mission tracking the victim's final days. Suspicious, Charles &amp; Oliver follow her.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2159015"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2159016,
+        "url": "https://www.tvmaze.com/episodes/2159016/only-murders-in-the-building-1x06-to-protect-and-serve",
+        "name": "To Protect and Serve",
+        "season": 1,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2021-09-21",
+        "airtime": "",
+        "airstamp": "2021-09-21T16:00:00+00:00",
+        "runtime": 32,
+        "rating": {
+          "average": 7.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/357/893816.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/357/893816.jpg"
+        },
+        "summary": "<p>Mabel brings her new friends (and an old one) to her childhood home to meet her mother. Meanwhile, Detective Williams starts to have her own doubts about the case as she prepares for motherhood.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2159016"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2159017,
+        "url": "https://www.tvmaze.com/episodes/2159017/only-murders-in-the-building-1x07-the-boy-from-6b",
+        "name": "The Boy from 6B",
+        "season": 1,
+        "number": 7,
+        "type": "regular",
+        "airdate": "2021-09-28",
+        "airtime": "",
+        "airstamp": "2021-09-28T16:00:00+00:00",
+        "runtime": 31,
+        "rating": {
+          "average": 7.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/357/893817.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/357/893817.jpg"
+        },
+        "summary": "<p>With the investigation scratching at a web of old crimes originating inside the building, a mysterious young man turns the tables to spy on Charles, Oliver &amp; Mabel.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2159017"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2159018,
+        "url": "https://www.tvmaze.com/episodes/2159018/only-murders-in-the-building-1x08-fan-fiction",
+        "name": "Fan Fiction",
+        "season": 1,
+        "number": 8,
+        "type": "regular",
+        "airdate": "2021-10-05",
+        "airtime": "",
+        "airstamp": "2021-10-05T16:00:00+00:00",
+        "runtime": 31,
+        "rating": {
+          "average": 7.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/359/899403.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/359/899403.jpg"
+        },
+        "summary": "<p>Hitting a dead end, the group calls for reinforcements in the form of their podcast's Superfans.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2159018"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2171218,
+        "url": "https://www.tvmaze.com/episodes/2171218/only-murders-in-the-building-1x09-double-time",
+        "name": "Double Time",
+        "season": 1,
+        "number": 9,
+        "type": "regular",
+        "airdate": "2021-10-12",
+        "airtime": "",
+        "airstamp": "2021-10-12T16:00:00+00:00",
+        "runtime": 32,
+        "rating": {
+          "average": 7.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/361/903204.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/361/903204.jpg"
+        },
+        "summary": "<p>With the residents growing upset at the building's negative publicity, the trio faces a revolt. Charles is visited by an old colleague who sheds light on his past.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2171218"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2171219,
+        "url": "https://www.tvmaze.com/episodes/2171219/only-murders-in-the-building-1x10-open-and-shut",
+        "name": "Open and Shut",
+        "season": 1,
+        "number": 10,
+        "type": "regular",
+        "airdate": "2021-10-19",
+        "airtime": "",
+        "airstamp": "2021-10-19T16:00:00+00:00",
+        "runtime": 36,
+        "rating": {
+          "average": 7.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/363/908166.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/363/908166.jpg"
+        },
+        "summary": "<p>In the season finale, the trio races toward a resolution while their own lives are put in danger.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2171219"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2301579,
+        "url": "https://www.tvmaze.com/episodes/2301579/only-murders-in-the-building-2x01-persons-of-interest",
+        "name": "Persons of Interest",
+        "season": 2,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2022-06-28",
+        "airtime": "",
+        "airstamp": "2022-06-28T16:00:00+00:00",
+        "runtime": 36,
+        "rating": {
+          "average": 7.2
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/414/1035546.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/414/1035546.jpg"
+        },
+        "summary": "<p>Welcome home, Arconiacs! Minutes after Season 1's finale, Charles, Oliver and Mabel are now implicated in the murder of Board President, Bunny Folger. They must choose whether to lay low or risk their safety by catching the killer themselves.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2301579"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2329850,
+        "url": "https://www.tvmaze.com/episodes/2329850/only-murders-in-the-building-2x02-framed",
+        "name": "Framed",
+        "season": 2,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2022-06-28",
+        "airtime": "",
+        "airstamp": "2022-06-28T16:00:00+00:00",
+        "runtime": 35,
+        "rating": {
+          "average": 7.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/414/1035547.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/414/1035547.jpg"
+        },
+        "summary": "<p>A memorial for Bunny provides an opportunity for our trio to question their neighbors, while they also try to get rid of a very implicating piece of evidence. One of Bunny's relatives makes an appearance and if you thought Bunny was a force, get ready...</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2329850"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2329852,
+        "url": "https://www.tvmaze.com/episodes/2329852/only-murders-in-the-building-2x03-the-last-day-of-bunny-folger",
+        "name": "The Last Day of Bunny Folger",
+        "season": 2,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2022-07-05",
+        "airtime": "",
+        "airstamp": "2022-07-05T16:00:00+00:00",
+        "runtime": 31,
+        "rating": {
+          "average": 7.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/414/1035601.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/414/1035601.jpg"
+        },
+        "summary": "<p>A foul-mouthed parrot becomes a critical window into Bunny Folger's last day on Earth. Some of the individuals with whom Bunny crossed paths will surprise both you and our trio... Along the way, a reveal deepens our trio's need to solve Bunny's case.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2329852"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2329853,
+        "url": "https://www.tvmaze.com/episodes/2329853/only-murders-in-the-building-2x04-heres-looking-at-you",
+        "name": "Here's Looking at You",
+        "season": 2,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2022-07-12",
+        "airtime": "",
+        "airstamp": "2022-07-12T16:00:00+00:00",
+        "runtime": 37,
+        "rating": {
+          "average": 7.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/414/1037169.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/414/1037169.jpg"
+        },
+        "summary": "<p>Charles, Oliver and Mabel welcome an unexpected young visitor who reveals hidden secrets about the inner workings of the Arconia. We also discover Charles once recorded a hit single that was huge in Germany.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2329853"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2329854,
+        "url": "https://www.tvmaze.com/episodes/2329854/only-murders-in-the-building-2x05-the-tell",
+        "name": "The Tell",
+        "season": 2,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2022-07-19",
+        "airtime": "",
+        "airstamp": "2022-07-19T16:00:00+00:00",
+        "runtime": 35,
+        "rating": {
+          "average": 7.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/414/1037170.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/414/1037170.jpg"
+        },
+        "summary": "<p>Mabel hosts a party for an eclectic art crowd which also serves a double purpose for smoking out a liar in the trio's midst.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2329854"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2329855,
+        "url": "https://www.tvmaze.com/episodes/2329855/only-murders-in-the-building-2x06-performance-review",
+        "name": "Performance Review",
+        "season": 2,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2022-07-26",
+        "airtime": "",
+        "airstamp": "2022-07-26T16:00:00+00:00",
+        "runtime": 33,
+        "rating": {
+          "average": 7.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/417/1042766.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/417/1042766.jpg"
+        },
+        "summary": "<p>Charles, Oliver and Mabel collide with their podcasting mentor-turned-competitor, Cinda Canning. Subsequently, a key clue requires the trio to orchestrate a classic stakeout -- Brazzos-style. New York has never been more glittering.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2329855"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2329856,
+        "url": "https://www.tvmaze.com/episodes/2329856/only-murders-in-the-building-2x07-flipping-the-pieces",
+        "name": "Flipping the Pieces",
+        "season": 2,
+        "number": 7,
+        "type": "regular",
+        "airdate": "2022-08-02",
+        "airtime": "",
+        "airstamp": "2022-08-02T16:00:00+00:00",
+        "runtime": 32,
+        "rating": {
+          "average": 7.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/417/1043081.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/417/1043081.jpg"
+        },
+        "summary": "<p>Mabel's incident on the subway leads her to gain help from an unlikely ally. Their journey takes them to a legendary amusement park which turns out to be full of terror -- while amusements and evidence reside back in the Arconia with Charles and Oliver.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2329856"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2329857,
+        "url": "https://www.tvmaze.com/episodes/2329857/only-murders-in-the-building-2x08-hello-darkness",
+        "name": "Hello, Darkness",
+        "season": 2,
+        "number": 8,
+        "type": "regular",
+        "airdate": "2022-08-09",
+        "airtime": "",
+        "airstamp": "2022-08-09T16:00:00+00:00",
+        "runtime": 30,
+        "rating": {
+          "average": 7.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/417/1044038.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/417/1044038.jpg"
+        },
+        "summary": "<p>A blackout throws the city into chaos. As the trio races to save a loved one from the killer, other Arconia residents begin to explore unexpected connections in the midst of darkness -- all enhanced by Gut Milk and a yodel or two.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2329857"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2329858,
+        "url": "https://www.tvmaze.com/episodes/2329858/only-murders-in-the-building-2x09-sparring-partners",
+        "name": "Sparring Partners",
+        "season": 2,
+        "number": 9,
+        "type": "regular",
+        "airdate": "2022-08-16",
+        "airtime": "",
+        "airstamp": "2022-08-16T16:00:00+00:00",
+        "runtime": 29,
+        "rating": {
+          "average": 7.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/418/1045007.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/418/1045007.jpg"
+        },
+        "summary": "<p>Closing in on the killer, Mabel takes her investigative talents into the ring. Oliver and Charles duke it out over a birdcage only to end up confronting their deepest paternal struggles.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2329858"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2329859,
+        "url": "https://www.tvmaze.com/episodes/2329859/only-murders-in-the-building-2x10-i-know-who-did-it",
+        "name": "I Know Who Did It",
+        "season": 2,
+        "number": 10,
+        "type": "regular",
+        "airdate": "2022-08-23",
+        "airtime": "",
+        "airstamp": "2022-08-23T16:00:00+00:00",
+        "runtime": 38,
+        "rating": {
+          "average": 7.9
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/418/1047144.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/418/1047144.jpg"
+        },
+        "summary": "<p>One question remains: Who did it??? Oh, who are we kidding -- there's a few more questions raised, too.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2329859"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2538691,
+        "url": "https://www.tvmaze.com/episodes/2538691/only-murders-in-the-building-3x01-the-show-must",
+        "name": "The Show Must...",
+        "season": 3,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2023-08-08",
+        "airtime": "",
+        "airstamp": "2023-08-08T16:00:00+00:00",
+        "runtime": 37,
+        "rating": {
+          "average": 7.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/472/1180075.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/472/1180075.jpg"
+        },
+        "summary": "<p>Curtain up on Season 3! And Leading Man down! After Ben Glenroy's collapse on stage, Charles, Oliver &amp; Mabel piece together the show's first days with a suspicious cast &amp; crew to determine if foul play was involved. Spoiler alert…</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2538691"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2555463,
+        "url": "https://www.tvmaze.com/episodes/2555463/only-murders-in-the-building-3x02-the-beat-goes-on",
+        "name": "The Beat Goes On",
+        "season": 3,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2023-08-08",
+        "airtime": "",
+        "airstamp": "2023-08-08T16:00:00+00:00",
+        "runtime": 34,
+        "rating": {
+          "average": 7.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/472/1180077.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/472/1180077.jpg"
+        },
+        "summary": "<p>Mabel, Oliver &amp; Charles attend Ben's lavish memorial full of fans and those with more dubious motives. As the actor's sudden death is mourned, Oliver works to revive his shaky Broadway show.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2555463"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2555464,
+        "url": "https://www.tvmaze.com/episodes/2555464/only-murders-in-the-building-3x03-grab-your-hankies",
+        "name": "Grab Your Hankies",
+        "season": 3,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2023-08-15",
+        "airtime": "",
+        "airstamp": "2023-08-15T16:00:00+00:00",
+        "runtime": 39,
+        "rating": {
+          "average": 7.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/472/1180638.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/472/1180638.jpg"
+        },
+        "summary": "<p>Oliver races to bring new life to his show as Mabel's investigation into the actual murder collides with a surprising ally. Charles bonds with the cast, and Loretta proves her voice is invaluable.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2555464"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2555465,
+        "url": "https://www.tvmaze.com/episodes/2555465/only-murders-in-the-building-3x04-the-white-room",
+        "name": "The White Room",
+        "season": 3,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2023-08-22",
+        "airtime": "",
+        "airstamp": "2023-08-22T16:00:00+00:00",
+        "runtime": 35,
+        "rating": {
+          "average": 7.2
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/473/1183129.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/473/1183129.jpg"
+        },
+        "summary": "<p>Charles's stage fright reaches unimaginable heights, involving a break from reality and multiple baby dolls. Mabel is confronted by a mysterious individual from her past with a pivotal proposal.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2555465"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2555466,
+        "url": "https://www.tvmaze.com/episodes/2555466/only-murders-in-the-building-3x05-ah-love",
+        "name": "Ah, Love!",
+        "season": 3,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2023-08-29",
+        "airtime": "",
+        "airstamp": "2023-08-29T16:00:00+00:00",
+        "runtime": 36,
+        "rating": {
+          "average": 7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/474/1185338.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/474/1185338.jpg"
+        },
+        "summary": "<p>Date night! New York proves itself both a jewel box and a fish tank of romance as Charles, Mabel &amp; Oliver take their relationships to the next stage. And dating can reveal many hidden secrets, too...</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2555466"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2555467,
+        "url": "https://www.tvmaze.com/episodes/2555467/only-murders-in-the-building-3x06-ghost-light",
+        "name": "Ghost Light",
+        "season": 3,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2023-09-05",
+        "airtime": "",
+        "airstamp": "2023-09-05T16:00:00+00:00",
+        "runtime": 34,
+        "rating": {
+          "average": 7.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/475/1188641.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/475/1188641.jpg"
+        },
+        "summary": "<p>All roads lead the trio back to the Goosebury Theater during a nerve-rattling thunderstorm. With Howard as their jittery guide, they track a legendary ghost who's haunted the theater for generations. Boo.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2555467"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2555468,
+        "url": "https://www.tvmaze.com/episodes/2555468/only-murders-in-the-building-3x07-cobro",
+        "name": "CoBro",
+        "season": 3,
+        "number": 7,
+        "type": "regular",
+        "airdate": "2023-09-12",
+        "airtime": "",
+        "airstamp": "2023-09-12T16:00:00+00:00",
+        "runtime": 36,
+        "rating": {
+          "average": 7.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/475/1188643.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/475/1188643.jpg"
+        },
+        "summary": "<p>Charles finds an unexpected source for a major clue. A Broadway icon comes knocking at Oliver's door. And Mabel forms an alternate trio to pursue a lead that sheds light on Ben's bro and CoBro history.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2555468"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2555469,
+        "url": "https://www.tvmaze.com/episodes/2555469/only-murders-in-the-building-3x08-sitzprobe",
+        "name": "Sitzprobe",
+        "season": 3,
+        "number": 8,
+        "type": "regular",
+        "airdate": "2023-09-19",
+        "airtime": "",
+        "airstamp": "2023-09-19T16:00:00+00:00",
+        "runtime": 39,
+        "rating": {
+          "average": 7.9
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/475/1188809.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/475/1188809.jpg"
+        },
+        "summary": "<p>On the day of the show's most critical rehearsal, the pressure mounts. A familiar official returns to upend the case, Loretta's complex past threatens to upend all else and Charles must finally sing his number without losing his marbles.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2555469"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2555470,
+        "url": "https://www.tvmaze.com/episodes/2555470/only-murders-in-the-building-3x09-thirty",
+        "name": "Thirty",
+        "season": 3,
+        "number": 9,
+        "type": "regular",
+        "airdate": "2023-09-26",
+        "airtime": "",
+        "airstamp": "2023-09-26T16:00:00+00:00",
+        "runtime": 38,
+        "rating": {
+          "average": 7.9
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/476/1191645.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/476/1191645.jpg"
+        },
+        "summary": "<p>The trio have amassed a plethora (oh yes, a plethora) of clues, suspects &amp; theories but find no concrete answers about Ben's murder. They devise a peculiar method of throwing themselves into the actual case to recreate the final moments of Ben's life.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2555470"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2555471,
+        "url": "https://www.tvmaze.com/episodes/2555471/only-murders-in-the-building-3x10-opening-night",
+        "name": "Opening Night",
+        "season": 3,
+        "number": 10,
+        "type": "regular",
+        "airdate": "2023-10-03",
+        "airtime": "",
+        "airstamp": "2023-10-03T16:00:00+00:00",
+        "runtime": 38,
+        "rating": {
+          "average": 7.9
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/477/1193686.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/477/1193686.jpg"
+        },
+        "summary": "<p>Curtain call on Season 3! Charles, Mabel &amp; Oliver race to entrap the killer on Opening Night. As the musical thrills its Broadway audience, the trio brave further twists &amp; turns from behind, above and all around the stage.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2555471"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2869512,
+        "url": "https://www.tvmaze.com/episodes/2869512/only-murders-in-the-building-4x01-once-upon-a-time-in-the-west",
+        "name": "Once Upon a Time in the West",
+        "season": 4,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2024-08-27",
+        "airtime": "",
+        "airstamp": "2024-08-27T16:00:00+00:00",
+        "runtime": 39,
+        "rating": {
+          "average": 7.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/531/1328682.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/531/1328682.jpg"
+        },
+        "summary": "<p>Charles, Oliver &amp; Mabel are whisked to Los Angeles where a legendary film studio intends to adapt their podcast. However, Hollywood's glitz is overshadowed by a stunning clue about Charles' stunt double &amp; friend Sazz Pataki.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2869512"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2980116,
+        "url": "https://www.tvmaze.com/episodes/2980116/only-murders-in-the-building-4x02-gates-of-heaven",
+        "name": "Gates of Heaven",
+        "season": 4,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2024-09-03",
+        "airtime": "",
+        "airstamp": "2024-09-03T16:00:00+00:00",
+        "runtime": 36,
+        "rating": {
+          "average": 7.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/532/1331284.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/532/1331284.jpg"
+        },
+        "summary": "<p>Mabel &amp; Oliver begin investigating Arconia's West Tower and get trapped inside an ominous game. Meanwhile, Charles is visited by two individuals from his complex past.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2980116"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2980117,
+        "url": "https://www.tvmaze.com/episodes/2980117/only-murders-in-the-building-4x03-two-for-the-road",
+        "name": "Two for the Road",
+        "season": 4,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2024-09-10",
+        "airtime": "",
+        "airstamp": "2024-09-10T16:00:00+00:00",
+        "runtime": 40,
+        "rating": {
+          "average": 7.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/533/1332962.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/533/1332962.jpg"
+        },
+        "summary": "<p>Charles, Oliver &amp; Mabel begrudgingly pair off with new investigators... actors Eugene Levy, Zach Galifianakis &amp; Eva Longoria.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2980117"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2980118,
+        "url": "https://www.tvmaze.com/episodes/2980118/only-murders-in-the-building-4x04-the-stunt-man",
+        "name": "The Stunt Man",
+        "season": 4,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2024-09-17",
+        "airtime": "",
+        "airstamp": "2024-09-17T16:00:00+00:00",
+        "runtime": 35,
+        "rating": {
+          "average": 7.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/533/1334724.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/533/1334724.jpg"
+        },
+        "summary": "<p>Charles, Oliver &amp; Mabel delve into the particular universe of stunt people. They encounter a suspect with an incredibly... familiar... face.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2980118"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2980119,
+        "url": "https://www.tvmaze.com/episodes/2980119/only-murders-in-the-building-4x05-adaptation",
+        "name": "Adaptation",
+        "season": 4,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2024-09-24",
+        "airtime": "",
+        "airstamp": "2024-09-24T16:00:00+00:00",
+        "runtime": 34,
+        "rating": {
+          "average": 7.7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/534/1337269.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/534/1337269.jpg"
+        },
+        "summary": "<p>The trio face off against a collection of individuals who deceive, manipulate, and threaten as second nature - a Hollywood cast &amp; crew.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2980119"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2980121,
+        "url": "https://www.tvmaze.com/episodes/2980121/only-murders-in-the-building-4x06-blow-up",
+        "name": "Blow-Up",
+        "season": 4,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2024-10-01",
+        "airtime": "",
+        "airstamp": "2024-10-01T16:00:00+00:00",
+        "runtime": 34,
+        "rating": {
+          "average": 7.7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/535/1339546.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/535/1339546.jpg"
+        },
+        "summary": "<p>A documentary film is made by The Brothers Sisters.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2980121"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2980122,
+        "url": "https://www.tvmaze.com/episodes/2980122/only-murders-in-the-building-4x07-valley-of-the-dolls",
+        "name": "Valley of the Dolls",
+        "season": 4,
+        "number": 7,
+        "type": "regular",
+        "airdate": "2024-10-08",
+        "airtime": "",
+        "airstamp": "2024-10-08T16:00:00+00:00",
+        "runtime": 40,
+        "rating": {
+          "average": 7.8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/536/1341923.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/536/1341923.jpg"
+        },
+        "summary": "<p>Terrified by a threat inside the Arconia, the trio race out of the city. A member of Charles' family provides refuge and yet, this safe house proves to be anything but.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2980122"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2980123,
+        "url": "https://www.tvmaze.com/episodes/2980123/only-murders-in-the-building-4x08-lifeboat",
+        "name": "Lifeboat",
+        "season": 4,
+        "number": 8,
+        "type": "regular",
+        "airdate": "2024-10-15",
+        "airtime": "",
+        "airstamp": "2024-10-15T16:00:00+00:00",
+        "runtime": 37,
+        "rating": {
+          "average": 7.7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/537/1344038.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/537/1344038.jpg"
+        },
+        "summary": "<p>Charles, Oliver &amp; Mabel combine forces with the film actors in an epic showdown against the Westies. You can't handle the truth.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2980123"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2980124,
+        "url": "https://www.tvmaze.com/episodes/2980124/only-murders-in-the-building-4x09-escape-from-planet-klongo",
+        "name": "Escape From Planet Klongo",
+        "season": 4,
+        "number": 9,
+        "type": "regular",
+        "airdate": "2024-10-22",
+        "airtime": "",
+        "airstamp": "2024-10-22T16:00:00+00:00",
+        "runtime": 35,
+        "rating": {
+          "average": 7.7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/538/1346190.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/538/1346190.jpg"
+        },
+        "summary": "<p>Seeking a critical clue, Charles, Oliver &amp; Mabel must infiltrate a film set to get the real \"background\" on why Sazz was killed.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2980124"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 2980125,
+        "url": "https://www.tvmaze.com/episodes/2980125/only-murders-in-the-building-4x10-my-best-friends-wedding",
+        "name": "My Best Friend's Wedding",
+        "season": 4,
+        "number": 10,
+        "type": "regular",
+        "airdate": "2024-10-29",
+        "airtime": "",
+        "airstamp": "2024-10-29T16:00:00+00:00",
+        "runtime": 36,
+        "rating": {
+          "average": 7.9
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/539/1348567.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/539/1348567.jpg"
+        },
+        "summary": "<p>The final answers to our season are revealed - but not before the trio faces mortal danger and an Arconia wedding.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2980125"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 3311557,
+        "url": "https://www.tvmaze.com/episodes/3311557/only-murders-in-the-building-5x01-nail-in-the-coffin",
+        "name": "Nail in the Coffin",
+        "season": 5,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2025-09-09",
+        "airtime": "",
+        "airstamp": "2025-09-09T16:00:00+00:00",
+        "runtime": 39,
+        "rating": {
+          "average": 7.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/586/1465604.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/586/1465604.jpg"
+        },
+        "summary": "<p>While investigating Lester's mysterious \"accidental\" death, the clues lure Charles, Oliver, and Mabel out of Manhattan — and straight into some dangerous new \"old\" territory.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3311557"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 3311558,
+        "url": "https://www.tvmaze.com/episodes/3311558/only-murders-in-the-building-5x02-after-you",
+        "name": "After You",
+        "season": 5,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2025-09-09",
+        "airtime": "",
+        "airstamp": "2025-09-09T16:00:00+00:00",
+        "runtime": 32,
+        "rating": {
+          "average": 7.6
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/586/1465606.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/586/1465606.jpg"
+        },
+        "summary": "<p>A look back at Lester's early days at the Arconia reveals how a young dreamer became a steadfast doorman — sacrificing his future to protect the residents from the building's secrets.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3311558"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 3311561,
+        "url": "https://www.tvmaze.com/episodes/3311561/only-murders-in-the-building-5x03-rigor",
+        "name": "Rigor",
+        "season": 5,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2025-09-09",
+        "airtime": "",
+        "airstamp": "2025-09-09T16:00:00+00:00",
+        "runtime": 37,
+        "rating": {
+          "average": 7.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/586/1465608.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/586/1465608.jpg"
+        },
+        "summary": "<p>The trio stumbles upon a crucial piece of evidence... and promptly compromises it. With time running out, they scramble to solve the mystery before the police close in on them.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3311561"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 3311563,
+        "url": "https://www.tvmaze.com/episodes/3311563/only-murders-in-the-building-5x04-dirty-birds",
+        "name": "Dirty Birds",
+        "season": 5,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2025-09-16",
+        "airtime": "",
+        "airstamp": "2025-09-16T16:00:00+00:00",
+        "runtime": 37,
+        "rating": {
+          "average": 7.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/587/1467971.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/587/1467971.jpg"
+        },
+        "summary": "<p>Snooping goes sideways when three billionaire suspects catch the trio and invite themselves over for an evening at Oliver's.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3311563"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 3311566,
+        "url": "https://www.tvmaze.com/episodes/3311566/only-murders-in-the-building-5x05-tongue-tied",
+        "name": "Tongue Tied",
+        "season": 5,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2025-09-23",
+        "airtime": "",
+        "airstamp": "2025-09-23T16:00:00+00:00",
+        "runtime": 36,
+        "rating": {
+          "average": 7.2
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/588/1472202.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/588/1472202.jpg"
+        },
+        "summary": "<p>Thwarted in their investigative podcast plans, Mabel and Oliver look for help from the Arconia support staff — as Charles dines with another suspect and gets caught up in \"catching\" more than he bargained for.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3311566"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 3311567,
+        "url": "https://www.tvmaze.com/episodes/3311567/only-murders-in-the-building-5x06-flatbush",
+        "name": "Flatbush",
+        "season": 5,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2025-09-30",
+        "airtime": "",
+        "airstamp": "2025-09-30T16:00:00+00:00",
+        "runtime": 38,
+        "rating": {
+          "average": 7.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/589/1472512.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/589/1472512.jpg"
+        },
+        "summary": "<p>The investigation takes Oliver and Loretta back to the streets of his childhood, where buried memories surface and secrets about Lester and Nicky's widows emerge.  Mabel and Charles follow leads after a break-in.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3311567"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 3311570,
+        "url": "https://www.tvmaze.com/episodes/3311570/only-murders-in-the-building-5x07-silver-alert",
+        "name": "Silver Alert",
+        "season": 5,
+        "number": 7,
+        "type": "regular",
+        "airdate": "2025-10-07",
+        "airtime": "",
+        "airstamp": "2025-10-07T16:00:00+00:00",
+        "runtime": 37,
+        "rating": {
+          "average": 7.1
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/590/1475434.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/590/1475434.jpg"
+        },
+        "summary": "<p>The mayor warns the trio about the billionaires, sending them to investigate further at a villainous lair upstate — as Oliver boots it in an attempted escape.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3311570"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 3311573,
+        "url": "https://www.tvmaze.com/episodes/3311573/only-murders-in-the-building-5x08-cuckoo-chicks",
+        "name": "Cuckoo Chicks",
+        "season": 5,
+        "number": 8,
+        "type": "regular",
+        "airdate": "2025-10-14",
+        "airtime": "",
+        "airstamp": "2025-10-14T16:00:00+00:00",
+        "runtime": 40,
+        "rating": {
+          "average": 7.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/592/1480811.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/592/1480811.jpg"
+        },
+        "summary": "<p>Mabel gathers a ragtag group to crash an exclusive ladies night. While trying to save the Arconia from being sold, Charles and Oliver accidentally end up in couples' therapy.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3311573"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 3311575,
+        "url": "https://www.tvmaze.com/episodes/3311575/only-murders-in-the-building-5x09-lestr",
+        "name": "LESTR",
+        "season": 5,
+        "number": 9,
+        "type": "regular",
+        "airdate": "2025-10-21",
+        "airtime": "",
+        "airstamp": "2025-10-21T16:00:00+00:00",
+        "runtime": 35,
+        "rating": {
+          "average": 7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/592/1481447.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/592/1481447.jpg"
+        },
+        "summary": "<p>Told through the lens of one annoying robot who may hold the keys to more secrets than anyone realized — the Arconia throws one last party as the residents discover that a killer may still be in their building.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3311575"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 3311578,
+        "url": "https://www.tvmaze.com/episodes/3311578/only-murders-in-the-building-5x10-the-house-always",
+        "name": "The House Always...",
+        "season": 5,
+        "number": 10,
+        "type": "regular",
+        "airdate": "2025-10-28",
+        "airtime": "",
+        "airstamp": "2025-10-28T16:00:00+00:00",
+        "runtime": 40,
+        "rating": {
+          "average": 7.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/594/1485099.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/594/1485099.jpg"
+        },
+        "summary": "<p>With the clock ticking, the trio doubles down to bring \"new\" and \"old\" forces together to bring down a killer — ending in one explosive showdown and the reveals they've been chasing all season.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3311578"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 3714462,
+        "url": "https://www.tvmaze.com/episodes/3714462/only-murders-in-the-building-6x01-tba",
+        "name": "TBA",
+        "season": 6,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2026-12-08",
+        "airtime": "",
+        "airstamp": "2026-12-08T17:00:00+00:00",
+        "runtime": null,
+        "rating": {
+          "average": null
+        },
+        "image": null,
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3714462"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 3714463,
+        "url": "https://www.tvmaze.com/episodes/3714463/only-murders-in-the-building-6x02-tba",
+        "name": "TBA",
+        "season": 6,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2026-12-15",
+        "airtime": "",
+        "airstamp": "2026-12-15T17:00:00+00:00",
+        "runtime": null,
+        "rating": {
+          "average": null
+        },
+        "image": null,
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3714463"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 3714464,
+        "url": "https://www.tvmaze.com/episodes/3714464/only-murders-in-the-building-6x03-tba",
+        "name": "TBA",
+        "season": 6,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2026-12-22",
+        "airtime": "",
+        "airstamp": "2026-12-22T17:00:00+00:00",
+        "runtime": null,
+        "rating": {
+          "average": null
+        },
+        "image": null,
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3714464"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 3714468,
+        "url": "https://www.tvmaze.com/episodes/3714468/only-murders-in-the-building-6x04-tba",
+        "name": "TBA",
+        "season": 6,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2026-12-29",
+        "airtime": "",
+        "airstamp": "2026-12-29T17:00:00+00:00",
+        "runtime": null,
+        "rating": {
+          "average": null
+        },
+        "image": null,
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3714468"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 3714473,
+        "url": "https://www.tvmaze.com/episodes/3714473/only-murders-in-the-building-6x05-tba",
+        "name": "TBA",
+        "season": 6,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2027-01-05",
+        "airtime": "",
+        "airstamp": "2027-01-05T17:00:00+00:00",
+        "runtime": null,
+        "rating": {
+          "average": null
+        },
+        "image": null,
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3714473"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 3714480,
+        "url": "https://www.tvmaze.com/episodes/3714480/only-murders-in-the-building-6x06-tba",
+        "name": "TBA",
+        "season": 6,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2027-01-12",
+        "airtime": "",
+        "airstamp": "2027-01-12T17:00:00+00:00",
+        "runtime": null,
+        "rating": {
+          "average": null
+        },
+        "image": null,
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3714480"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 3714485,
+        "url": "https://www.tvmaze.com/episodes/3714485/only-murders-in-the-building-6x07-tba",
+        "name": "TBA",
+        "season": 6,
+        "number": 7,
+        "type": "regular",
+        "airdate": "2027-01-19",
+        "airtime": "",
+        "airstamp": "2027-01-19T17:00:00+00:00",
+        "runtime": null,
+        "rating": {
+          "average": null
+        },
+        "image": null,
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3714485"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 3714490,
+        "url": "https://www.tvmaze.com/episodes/3714490/only-murders-in-the-building-6x08-tba",
+        "name": "TBA",
+        "season": 6,
+        "number": 8,
+        "type": "regular",
+        "airdate": "2027-01-26",
+        "airtime": "",
+        "airstamp": "2027-01-26T17:00:00+00:00",
+        "runtime": null,
+        "rating": {
+          "average": null
+        },
+        "image": null,
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3714490"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 3714495,
+        "url": "https://www.tvmaze.com/episodes/3714495/only-murders-in-the-building-6x09-tba",
+        "name": "TBA",
+        "season": 6,
+        "number": 9,
+        "type": "regular",
+        "airdate": "2027-02-02",
+        "airtime": "",
+        "airstamp": "2027-02-02T17:00:00+00:00",
+        "runtime": null,
+        "rating": {
+          "average": null
+        },
+        "image": null,
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3714495"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      },
+      {
+        "id": 3714501,
+        "url": "https://www.tvmaze.com/episodes/3714501/only-murders-in-the-building-6x10-tba",
+        "name": "TBA",
+        "season": 6,
+        "number": 10,
+        "type": "regular",
+        "airdate": "2027-02-09",
+        "airtime": "",
+        "airstamp": "2027-02-09T17:00:00+00:00",
+        "runtime": null,
+        "rating": {
+          "average": null
+        },
+        "image": null,
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3714501"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/48830",
+            "name": "Only Murders in the Building"
+          }
+        }
+      }
+    ],
+    "seasons": [
+      {
+        "id": 111201,
+        "url": "https://www.tvmaze.com/seasons/111201/only-murders-in-the-building-season-1",
+        "number": 1,
+        "name": "",
+        "episodeOrder": 10,
+        "premiereDate": "2021-08-31",
+        "endDate": "2021-10-19",
+        "network": null,
+        "webChannel": {
+          "id": 2,
+          "name": "Hulu",
+          "country": {
+            "name": "United States",
+            "code": "US",
+            "timezone": "America/New_York"
+          },
+          "officialSite": "https://www.hulu.com/"
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/413/1034232.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/413/1034232.jpg"
+        },
+        "summary": "<p><b>Only Murders in the Building</b> follows three strangers who share an obsession with true crime and suddenly find themselves wrapped up in one. When a grisly death occurs inside their exclusive Upper West Side apartment building, the trio suspects murder and employs their precise knowledge of true crime to investigate the truth. As they record a podcast of their own to document the case, the three unravel the complex secrets of the building which stretch back years. Perhaps even more explosive are the lies they tell one another. Soon, the endangered trio comes to realize a killer might be living amongst them as they race to decipher the mounting clues before it's too late.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/111201"
+          }
+        }
+      },
+      {
+        "id": 129041,
+        "url": "https://www.tvmaze.com/seasons/129041/only-murders-in-the-building-season-2",
+        "number": 2,
+        "name": "",
+        "episodeOrder": 10,
+        "premiereDate": "2022-06-28",
+        "endDate": "2022-08-23",
+        "network": null,
+        "webChannel": {
+          "id": 2,
+          "name": "Hulu",
+          "country": {
+            "name": "United States",
+            "code": "US",
+            "timezone": "America/New_York"
+          },
+          "officialSite": "https://www.hulu.com/"
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/413/1034233.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/413/1034233.jpg"
+        },
+        "summary": "<p>Following the shocking death of Arconia Board President Bunny Folger, Charles, Oliver &amp; Mabel race to unmask her killer. However, three (unfortunate) complications ensue - the trio is publicly implicated in Bunny's homicide, they are now the subjects of a competing podcast, and they have to deal with a bunch of New York neighbors who all think they committed murder.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/129041"
+          }
+        }
+      },
+      {
+        "id": 140517,
+        "url": "https://www.tvmaze.com/seasons/140517/only-murders-in-the-building-season-3",
+        "number": 3,
+        "name": "",
+        "episodeOrder": 10,
+        "premiereDate": "2023-08-08",
+        "endDate": "2023-10-03",
+        "network": null,
+        "webChannel": {
+          "id": 2,
+          "name": "Hulu",
+          "country": {
+            "name": "United States",
+            "code": "US",
+            "timezone": "America/New_York"
+          },
+          "officialSite": "https://www.hulu.com/"
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/473/1184627.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/473/1184627.jpg"
+        },
+        "summary": "<p>Following the death of a leading man on opening night of Putnam`s new show, it appears that the killer is someone involved in the show, so the Only Murders team starts to dig into the show's cast of theater actors with big personalities and potentially even bigger secrets to figure out who is the murderer among them.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/140517"
+          }
+        }
+      },
+      {
+        "id": 158163,
+        "url": "https://www.tvmaze.com/seasons/158163/only-murders-in-the-building-season-4",
+        "number": 4,
+        "name": "",
+        "episodeOrder": 10,
+        "premiereDate": "2024-08-27",
+        "endDate": "2024-10-29",
+        "network": null,
+        "webChannel": {
+          "id": 2,
+          "name": "Hulu",
+          "country": {
+            "name": "United States",
+            "code": "US",
+            "timezone": "America/New_York"
+          },
+          "officialSite": "https://www.hulu.com/"
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/531/1328599.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/531/1328599.jpg"
+        },
+        "summary": "<p>In season four, Charles, Oliver &amp; Mabel wrestle with the shocking events at the end of season three surrounding Charles's stunt double &amp; friend Sazz Pataki. Questioning whether Sazz or Charles was the intended victim, our trio's investigation leads them all the way to Los Angeles where a Hollywood studio is readying a film about the Only Murders podcast. As our amateur sleuths race back to New York, they embark on an even more epic journey - traversing their building's courtyard to delve into the twisted lives of the Arconia's West Tower residents.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/158163"
+          }
+        }
+      },
+      {
+        "id": 174573,
+        "url": "https://www.tvmaze.com/seasons/174573/only-murders-in-the-building-season-5",
+        "number": 5,
+        "name": "",
+        "episodeOrder": 10,
+        "premiereDate": "2025-09-09",
+        "endDate": "2025-10-28",
+        "network": null,
+        "webChannel": {
+          "id": 2,
+          "name": "Hulu",
+          "country": {
+            "name": "United States",
+            "code": "US",
+            "timezone": "America/New_York"
+          },
+          "officialSite": "https://www.hulu.com/"
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/592/1481193.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/592/1481193.jpg"
+        },
+        "summary": "<p>After their beloved doorman, Lester, dies under suspicious circumstances, Charles, Oliver, and Mabel refuse to believe it was an accident. Their investigation plunges them into the shadowy corners of New York and beyond - where the trio uncovers a dangerous web of secrets connecting powerful billionaires, old-school mobsters, and the mysterious residents of the Arconia. The trio discovers a deeper divide between their storied city they thought they knew and the new New York evolving around them - one where the old mob fights to hold on as newer, even more dangerous players emerge.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/174573"
+          }
+        }
+      },
+      {
+        "id": 192751,
+        "url": "https://www.tvmaze.com/seasons/192751/only-murders-in-the-building-season-6",
+        "number": 6,
+        "name": "",
+        "episodeOrder": 10,
+        "premiereDate": "2026-12-08",
+        "endDate": "2027-02-09",
+        "network": null,
+        "webChannel": {
+          "id": 2,
+          "name": "Hulu",
+          "country": {
+            "name": "United States",
+            "code": "US",
+            "timezone": "America/New_York"
+          },
+          "officialSite": "https://www.hulu.com/"
+        },
+        "image": null,
+        "summary": "<p>After successfully bringing the guilty to justice once again, Charles, Oliver and Mabel embark on their hardest case yet when the next victim - Cinda Canning - arrives at their doorstep, summoning them to London to catch her killer. Our beloved trio of true crime-solving podcasters must now navigate their way through the home of the cozy murder mystery, replete with a whole new collection of suspicious and particularly English-eccentric characters. But can they follow in the footsteps of the woman whose podcast started it all for them... without having their story end the same as hers?</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/192751"
+          }
+        }
+      }
+    ]
+  }
+}
