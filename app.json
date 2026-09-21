@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "onnow-boilerplate",
-    "slug": "onnow-boilerplate",
+    "name": "On Now",
+    "slug": "onnow",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "onnowboilerplate",
+    "scheme": "onnow",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon"
