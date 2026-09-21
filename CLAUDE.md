@@ -81,9 +81,15 @@ Expo with React Native and TypeScript (ADR 0007).
 - Planning and status live in Linear (project "On Now", issues CRI-xx).
   Decisions and content live in `docs/`. Do not copy docs into Linear.
 - Do not commit or push unless asked.
-- One Linear issue, one branch, one pull request. Use the branch name Linear
-  suggests (for example `cribe/cri-60-poc-1-project-setup`), and put the
-  issue ID in the PR title (for example `CRI-60: Project setup`). Reference
-  requirement IDs (`FR-004`) and ADRs in PR descriptions.
+- One Linear issue, one branch, one pull request. Branch names use a type
+  prefix and a short description, without the issue ID: `feat/`, `fix/`,
+  `chore/`, `docs/`, `test/` (for example `chore/project-setup`,
+  `feat/home`). `feat` is for things the user notices; `chore` is for
+  tooling and infrastructure. Put the issue ID first in commit titles and
+  PR titles (for example `CRI-60: Project setup`). Reference requirement
+  IDs (`FR-004`) and ADRs in PR descriptions.
+- Never add `Co-Authored-By` trailers, "Generated with Claude Code" lines or
+  similar attribution to commit messages or PR descriptions, including in
+  suggested messages.
 - Explain what a Git operation will do before running anything that rewrites
   history or touches shared branches.
