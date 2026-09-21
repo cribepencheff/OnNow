@@ -1,0 +1,369 @@
+{
+  "id": 79390,
+  "url": "https://www.tvmaze.com/shows/79390/widows-bay",
+  "name": "Widow's Bay",
+  "type": "Scripted",
+  "language": "English",
+  "genres": ["Comedy", "Horror"],
+  "status": "Running",
+  "runtime": null,
+  "averageRuntime": 38,
+  "premiered": "2026-04-29",
+  "ended": null,
+  "officialSite": "https://tv.apple.com/show/widows-bay/umc.cmc.1zzly0vah46bnvnwf0qkrjhh2",
+  "schedule": {
+    "time": "",
+    "days": ["Wednesday"]
+  },
+  "rating": {
+    "average": 7.6
+  },
+  "weight": 100,
+  "network": null,
+  "webChannel": {
+    "id": 310,
+    "name": "Apple TV",
+    "country": null,
+    "officialSite": "https://tv.apple.com/"
+  },
+  "dvdCountry": null,
+  "externals": {
+    "tvrage": null,
+    "thetvdb": 454109,
+    "imdb": "tt33332385"
+  },
+  "image": {
+    "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/623/1559488.jpg",
+    "original": "https://static.tvmaze.com/uploads/images/original_untouched/623/1559488.jpg"
+  },
+  "summary": "<p><b>Widow's Bay</b> is about a mysteriously cursed New England island and its superstitious citizens, led by a mayor who refuses to believe their warnings.</p>",
+  "updated": 1787542262,
+  "_links": {
+    "self": {
+      "href": "https://api.tvmaze.com/shows/79390"
+    },
+    "previousepisode": {
+      "href": "https://api.tvmaze.com/episodes/3477079",
+      "name": "We Hope You Enjoyed Your Time!"
+    }
+  },
+  "_embedded": {
+    "episodes": [
+      {
+        "id": 3476610,
+        "url": "https://www.tvmaze.com/episodes/3476610/widows-bay-1x01-welcome-to-widows-bay",
+        "name": "Welcome to Widow's Bay!",
+        "season": 1,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2026-04-29",
+        "airtime": "",
+        "airstamp": "2026-04-29T12:00:00+00:00",
+        "runtime": 41,
+        "rating": {
+          "average": 7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/623/1558087.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/623/1558087.jpg"
+        },
+        "summary": "<p>We hope you enjoyed the three hour ferry to New England's best kept secret! Ignore the warnings about the fog. Everything's fine.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3476610"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/79390",
+            "name": "Widow's Bay"
+          }
+        }
+      },
+      {
+        "id": 3477071,
+        "url": "https://www.tvmaze.com/episodes/3477071/widows-bay-1x02-lodging",
+        "name": "Lodging",
+        "season": 1,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2026-04-29",
+        "airtime": "",
+        "airstamp": "2026-04-29T12:00:00+00:00",
+        "runtime": 36,
+        "rating": {
+          "average": 7.2
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/623/1558092.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/623/1558092.jpg"
+        },
+        "summary": "<p>Cherish the historical charm of our local inn, which Mayor Loftis will prove is safe by spending a night there alone.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3477071"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/79390",
+            "name": "Widow's Bay"
+          }
+        }
+      },
+      {
+        "id": 3477072,
+        "url": "https://www.tvmaze.com/episodes/3477072/widows-bay-1x03-the-inaugural-swim",
+        "name": "The Inaugural Swim",
+        "season": 1,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2026-05-06",
+        "airtime": "",
+        "airstamp": "2026-05-06T12:00:00+00:00",
+        "runtime": 37,
+        "rating": {
+          "average": 7.7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/623/1558093.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/623/1558093.jpg"
+        },
+        "summary": "<p>It's time for the annual beach opening. Lay out a towel as the mayor \"tests the waters.\" Unrelated: Do not pick up hitchhikers.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3477072"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/79390",
+            "name": "Widow's Bay"
+          }
+        }
+      },
+      {
+        "id": 3477073,
+        "url": "https://www.tvmaze.com/episodes/3477073/widows-bay-1x04-beach-reads",
+        "name": "Beach Reads",
+        "season": 1,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2026-05-13",
+        "airtime": "",
+        "airstamp": "2026-05-13T12:00:00+00:00",
+        "runtime": 36,
+        "rating": {
+          "average": 8.1
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/624/1562298.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/624/1562298.jpg"
+        },
+        "summary": "<p>Make sure you pack a good read for the beach! (We do not recommend self-help books on the island.)</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3477073"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/79390",
+            "name": "Widow's Bay"
+          }
+        }
+      },
+      {
+        "id": 3477074,
+        "url": "https://www.tvmaze.com/episodes/3477074/widows-bay-1x05-what-to-expect-on-your-trip",
+        "name": "What to Expect on Your Trip",
+        "season": 1,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2026-05-20",
+        "airtime": "",
+        "airstamp": "2026-05-20T12:00:00+00:00",
+        "runtime": 37,
+        "rating": {
+          "average": 7.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/625/1564706.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/625/1564706.jpg"
+        },
+        "summary": "<p>We apologize for the curfew. Please remain calm as we determine what's happening. On a separate note, keep your teenagers inside after dark.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3477074"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/79390",
+            "name": "Widow's Bay"
+          }
+        }
+      },
+      {
+        "id": 3477075,
+        "url": "https://www.tvmaze.com/episodes/3477075/widows-bay-1x06-our-history",
+        "name": "Our History",
+        "season": 1,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2026-05-27",
+        "airtime": "",
+        "airstamp": "2026-05-27T12:00:00+00:00",
+        "runtime": 37,
+        "rating": {
+          "average": 7.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/625/1564732.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/625/1564732.jpg"
+        },
+        "summary": "<p>The history of Widow's Bay is a beautiful tale of marriage, loyalty, and a love that endures beyond lifetimes. That's all.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3477075"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/79390",
+            "name": "Widow's Bay"
+          }
+        }
+      },
+      {
+        "id": 3477076,
+        "url": "https://www.tvmaze.com/episodes/3477076/widows-bay-1x07-seasickness",
+        "name": "Seasickness",
+        "season": 1,
+        "number": 7,
+        "type": "regular",
+        "airdate": "2026-05-27",
+        "airtime": "",
+        "airstamp": "2026-05-27T12:00:00+00:00",
+        "runtime": 42,
+        "rating": {
+          "average": 7.7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/625/1564734.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/625/1564734.jpg"
+        },
+        "summary": "<p>Set out to sea with Mayor Loftis and cherished local figure, Wyck! They are attending to some business - best to simply enjoy the voyage.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3477076"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/79390",
+            "name": "Widow's Bay"
+          }
+        }
+      },
+      {
+        "id": 3477077,
+        "url": "https://www.tvmaze.com/episodes/3477077/widows-bay-1x08-your-baggage",
+        "name": "Your Baggage",
+        "season": 1,
+        "number": 8,
+        "type": "regular",
+        "airdate": "2026-06-03",
+        "airtime": "",
+        "airstamp": "2026-06-03T12:00:00+00:00",
+        "runtime": 34,
+        "rating": {
+          "average": 8.1
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/627/1568813.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/627/1568813.jpg"
+        },
+        "summary": "<p>Don't worry about misplaced luggage. Old baggage always resurfaces in Widow's Bay.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3477077"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/79390",
+            "name": "Widow's Bay"
+          }
+        }
+      },
+      {
+        "id": 3477078,
+        "url": "https://www.tvmaze.com/episodes/3477078/widows-bay-1x09-emergency-shelter",
+        "name": "Emergency Shelter",
+        "season": 1,
+        "number": 9,
+        "type": "regular",
+        "airdate": "2026-06-10",
+        "airtime": "",
+        "airstamp": "2026-06-10T12:00:00+00:00",
+        "runtime": 31,
+        "rating": {
+          "average": 7.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/627/1568814.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/627/1568814.jpg"
+        },
+        "summary": "<p>Please seek shelter should a centuries-old storm rage toward the island and plunge us into darkness. Enjoy a card game.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3477078"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/79390",
+            "name": "Widow's Bay"
+          }
+        }
+      },
+      {
+        "id": 3477079,
+        "url": "https://www.tvmaze.com/episodes/3477079/widows-bay-1x10-we-hope-you-enjoyed-your-time",
+        "name": "We Hope You Enjoyed Your Time!",
+        "season": 1,
+        "number": 10,
+        "type": "regular",
+        "airdate": "2026-06-17",
+        "airtime": "",
+        "airstamp": "2026-06-17T12:00:00+00:00",
+        "runtime": 48,
+        "rating": {
+          "average": 7.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/629/1572950.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/629/1572950.jpg"
+        },
+        "summary": "<p>Season finale. We understand that hard choices had to be made and we may never be the same, but we hope you'll visit again!</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3477079"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/79390",
+            "name": "Widow's Bay"
+          }
+        }
+      }
+    ],
+    "seasons": [
+      {
+        "id": 174534,
+        "url": "https://www.tvmaze.com/seasons/174534/widows-bay-season-1",
+        "number": 1,
+        "name": "",
+        "episodeOrder": 10,
+        "premiereDate": "2026-04-29",
+        "endDate": "2026-06-17",
+        "network": null,
+        "webChannel": {
+          "id": 310,
+          "name": "Apple TV",
+          "country": null,
+          "officialSite": "https://tv.apple.com/"
+        },
+        "image": null,
+        "summary": "<p>Widow's Bay is a quaint island town 40 miles off the coast of New England. But something lurks beneath the surface. Mayor Tom Loftis is desperate to revive his struggling community. There's no Wi-Fi, spotty cellular reception and he must contend with superstitious locals who believe their island is cursed. He wants these people to respect him. They don't. They think he is soft and cowardly. And he is. But Loftis is determined to build a better future for his teenage son and turn the island into a tourist destination. Miraculously, he succeeds: tourists are finally coming. Unfortunately, the locals were right. After decades of calm, the old stories that seemed too ludicrous to be true start happening again.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/174534"
+          }
+        }
+      }
+    ]
+  }
+}

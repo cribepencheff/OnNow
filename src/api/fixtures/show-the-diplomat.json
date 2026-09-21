@@ -1,0 +1,825 @@
+{
+  "id": 60213,
+  "url": "https://www.tvmaze.com/shows/60213/the-diplomat",
+  "name": "The Diplomat",
+  "type": "Scripted",
+  "language": "English",
+  "genres": ["Drama", "Thriller"],
+  "status": "Running",
+  "runtime": null,
+  "averageRuntime": 49,
+  "premiered": "2023-04-20",
+  "ended": null,
+  "officialSite": "https://www.netflix.com/title/81288983",
+  "schedule": {
+    "time": "",
+    "days": []
+  },
+  "rating": {
+    "average": 8
+  },
+  "weight": 100,
+  "network": null,
+  "webChannel": {
+    "id": 1,
+    "name": "Netflix",
+    "country": null,
+    "officialSite": "https://www.netflix.com/"
+  },
+  "dvdCountry": null,
+  "externals": {
+    "tvrage": null,
+    "thetvdb": 415239,
+    "imdb": "tt17491088"
+  },
+  "image": {
+    "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/641/1604939.jpg",
+    "original": "https://static.tvmaze.com/uploads/images/original_untouched/641/1604939.jpg"
+  },
+  "summary": "<p>In the midst of an international crisis, a career diplomat lands in a high-profile job she's unsuited for, with tectonic implications for her marriage and her political future.</p>",
+  "updated": 1789755875,
+  "_links": {
+    "self": {
+      "href": "https://api.tvmaze.com/shows/60213"
+    },
+    "previousepisode": {
+      "href": "https://api.tvmaze.com/episodes/3334744",
+      "name": "Schrodinger's Wife"
+    },
+    "nextepisode": {
+      "href": "https://api.tvmaze.com/episodes/3701737",
+      "name": "TBA"
+    }
+  },
+  "_embedded": {
+    "episodes": [
+      {
+        "id": 2506901,
+        "url": "https://www.tvmaze.com/episodes/2506901/the-diplomat-1x01-the-cinderella-thing",
+        "name": "The Cinderella Thing",
+        "season": 1,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2023-04-20",
+        "airtime": "",
+        "airstamp": "2023-04-20T12:00:00+00:00",
+        "runtime": 51,
+        "rating": {
+          "average": 8.2
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/457/1144997.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/457/1144997.jpg"
+        },
+        "summary": "<p>After a hostile attack on a British vessel, seasoned diplomat Kate Wyler assumes a new role in the UK that puts her skills — and marriage — to the test.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2506901"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/60213",
+            "name": "The Diplomat"
+          }
+        }
+      },
+      {
+        "id": 2506990,
+        "url": "https://www.tvmaze.com/episodes/2506990/the-diplomat-1x02-dont-call-it-a-kidnapping",
+        "name": "Don't Call It a Kidnapping",
+        "season": 1,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2023-04-20",
+        "airtime": "",
+        "airstamp": "2023-04-20T12:00:00+00:00",
+        "runtime": 54,
+        "rating": {
+          "average": 8.2
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/457/1144998.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/457/1144998.jpg"
+        },
+        "summary": "<p>As new details about the bombing emerge, Kate struggles to see eye-to-eye with Hal. Prime Minister Trowbridge's fiery remarks at a funeral cause a stir.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2506990"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/60213",
+            "name": "The Diplomat"
+          }
+        }
+      },
+      {
+        "id": 2506991,
+        "url": "https://www.tvmaze.com/episodes/2506991/the-diplomat-1x03-lambs-in-the-dark",
+        "name": "Lambs in the Dark",
+        "season": 1,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2023-04-20",
+        "airtime": "",
+        "airstamp": "2023-04-20T12:00:00+00:00",
+        "runtime": 52,
+        "rating": {
+          "average": 8.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/457/1144999.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/457/1144999.jpg"
+        },
+        "summary": "<p>At Winfield, President Rayburn's plans in the Gulf have the staff on edge as tensions between a determined Hal and a strong-willed Kate come to a head.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2506991"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/60213",
+            "name": "The Diplomat"
+          }
+        }
+      },
+      {
+        "id": 2506992,
+        "url": "https://www.tvmaze.com/episodes/2506992/the-diplomat-1x04-he-bought-a-hat",
+        "name": "He Bought a Hat",
+        "season": 1,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2023-04-20",
+        "airtime": "",
+        "airstamp": "2023-04-20T12:00:00+00:00",
+        "runtime": 48,
+        "rating": {
+          "average": 8.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/458/1145000.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/458/1145000.jpg"
+        },
+        "summary": "<p>As Rayburn's rep takes a hit, Kate drops in on Dennison's private meeting at the UK Foreign Office and learns startling information about the attack.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2506992"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/60213",
+            "name": "The Diplomat"
+          }
+        }
+      },
+      {
+        "id": 2506993,
+        "url": "https://www.tvmaze.com/episodes/2506993/the-diplomat-1x05-the-dogcatcher",
+        "name": "The Dogcatcher",
+        "season": 1,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2023-04-20",
+        "airtime": "",
+        "airstamp": "2023-04-20T12:00:00+00:00",
+        "runtime": 56,
+        "rating": {
+          "average": 8.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/458/1145001.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/458/1145001.jpg"
+        },
+        "summary": "<p>Tempers flare at Chevening House, where an unexpected guest's arrival sends Kate and Dennison scrambling for a resolution. Hal makes a new connection.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2506993"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/60213",
+            "name": "The Diplomat"
+          }
+        }
+      },
+      {
+        "id": 2506994,
+        "url": "https://www.tvmaze.com/episodes/2506994/the-diplomat-1x06-some-lusty-tornado",
+        "name": "Some Lusty Tornado",
+        "season": 1,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2023-04-20",
+        "airtime": "",
+        "airstamp": "2023-04-20T12:00:00+00:00",
+        "runtime": 56,
+        "rating": {
+          "average": 8.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/458/1145002.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/458/1145002.jpg"
+        },
+        "summary": "<p>To appease Trowbridge, Kate seeks Hal's help with a high-profile visitor and consults an informed source in secret as complicated feelings begin to grow.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2506994"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/60213",
+            "name": "The Diplomat"
+          }
+        }
+      },
+      {
+        "id": 2506995,
+        "url": "https://www.tvmaze.com/episodes/2506995/the-diplomat-1x07-keep-your-enemies-closer",
+        "name": "Keep Your Enemies Closer",
+        "season": 1,
+        "number": 7,
+        "type": "regular",
+        "airdate": "2023-04-20",
+        "airtime": "",
+        "airstamp": "2023-04-20T12:00:00+00:00",
+        "runtime": 44,
+        "rating": {
+          "average": 8.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/458/1145003.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/458/1145003.jpg"
+        },
+        "summary": "<p>After a sit-down with a Russian ambassador leads to new intel and mixed messages, Kate takes a trip to the Oval Office and reconnects with an old friend.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2506995"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/60213",
+            "name": "The Diplomat"
+          }
+        }
+      },
+      {
+        "id": 2506996,
+        "url": "https://www.tvmaze.com/episodes/2506996/the-diplomat-1x08-the-james-bond-clause",
+        "name": "The James Bond Clause",
+        "season": 1,
+        "number": 8,
+        "type": "regular",
+        "airdate": "2023-04-20",
+        "airtime": "",
+        "airstamp": "2023-04-20T12:00:00+00:00",
+        "runtime": 45,
+        "rating": {
+          "average": 8.6
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/458/1145004.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/458/1145004.jpg"
+        },
+        "summary": "<p>In London, Hal's actions cause friction as Kate heads to Paris with Dennison to get a handle on the Lenkov situation, which soon takes a shocking turn.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2506996"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/60213",
+            "name": "The Diplomat"
+          }
+        }
+      },
+      {
+        "id": 2975690,
+        "url": "https://www.tvmaze.com/episodes/2975690/the-diplomat-2x01-when-a-stranger-calls",
+        "name": "When a Stranger Calls",
+        "season": 2,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2024-10-31",
+        "airtime": "",
+        "airstamp": "2024-10-31T12:00:00+00:00",
+        "runtime": 45,
+        "rating": {
+          "average": 8.1
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/541/1354188.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/541/1354188.jpg"
+        },
+        "summary": "<p>After rushing back to London, Kate shares her suspicions about the bombing. The search is on for Lenkov — and Roylin. Eidra delivers devastating news.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2975690"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/60213",
+            "name": "The Diplomat"
+          }
+        }
+      },
+      {
+        "id": 3025686,
+        "url": "https://www.tvmaze.com/episodes/3025686/the-diplomat-2x02-st-pauls",
+        "name": "St. Paul's",
+        "season": 2,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2024-10-31",
+        "airtime": "",
+        "airstamp": "2024-10-31T12:00:00+00:00",
+        "runtime": 43,
+        "rating": {
+          "average": 8.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/541/1354189.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/541/1354189.jpg"
+        },
+        "summary": "<p>Eidra helps sneak an unannounced guest into Grove's funeral, Kate realizes she might have made a bad call before the bombing, and Stuart speaks his mind.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3025686"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/60213",
+            "name": "The Diplomat"
+          }
+        }
+      },
+      {
+        "id": 3025687,
+        "url": "https://www.tvmaze.com/episodes/3025687/the-diplomat-2x03-the-ides-of-march",
+        "name": "The Ides of March",
+        "season": 2,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2024-10-31",
+        "airtime": "",
+        "airstamp": "2024-10-31T12:00:00+00:00",
+        "runtime": 50,
+        "rating": {
+          "average": 8.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/541/1354190.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/541/1354190.jpg"
+        },
+        "summary": "<p>A lavish Fourth of July party gives Kate a chance to help Dennison, who sees an opportunity after the prime minister's announcement about Lenkov.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3025687"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/60213",
+            "name": "The Diplomat"
+          }
+        }
+      },
+      {
+        "id": 3025688,
+        "url": "https://www.tvmaze.com/episodes/3025688/the-diplomat-2x04-the-other-army",
+        "name": "The Other Army",
+        "season": 2,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2024-10-31",
+        "airtime": "",
+        "airstamp": "2024-10-31T12:00:00+00:00",
+        "runtime": 56,
+        "rating": {
+          "average": 8.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/541/1354191.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/541/1354191.jpg"
+        },
+        "summary": "<p>Kate proposes a unique solution to the Roylin problem. A risky plan unfolds at the prime minister's event in Scotland. Stuart confronts his feelings.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3025688"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/60213",
+            "name": "The Diplomat"
+          }
+        }
+      },
+      {
+        "id": 3025689,
+        "url": "https://www.tvmaze.com/episodes/3025689/the-diplomat-2x05-our-lady-of-immaculate-deception",
+        "name": "Our Lady of Immaculate Deception",
+        "season": 2,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2024-10-31",
+        "airtime": "",
+        "airstamp": "2024-10-31T12:00:00+00:00",
+        "runtime": 47,
+        "rating": {
+          "average": 8.7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/541/1354192.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/541/1354192.jpg"
+        },
+        "summary": "<p>Vice President Grace Penn arrives in London with an agenda — and advice — as fallout from Roylin's bombshell affects Kate's relationship with Trowbridge.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3025689"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/60213",
+            "name": "The Diplomat"
+          }
+        }
+      },
+      {
+        "id": 3025690,
+        "url": "https://www.tvmaze.com/episodes/3025690/the-diplomat-2x06-dreadnought",
+        "name": "Dreadnought",
+        "season": 2,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2024-10-31",
+        "airtime": "",
+        "airstamp": "2024-10-31T12:00:00+00:00",
+        "runtime": 52,
+        "rating": {
+          "average": 9
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/541/1354193.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/541/1354193.jpg"
+        },
+        "summary": "<p>Kate puts her best foot forward after pillow talk with Hal forces her to face hard truths, and Vice President Penn offers a blunt lesson in geopolitics</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3025690"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/60213",
+            "name": "The Diplomat"
+          }
+        }
+      },
+      {
+        "id": 3334680,
+        "url": "https://www.tvmaze.com/episodes/3334680/the-diplomat-3x01-emperor-dead",
+        "name": "Emperor Dead",
+        "season": 3,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2025-10-16",
+        "airtime": "",
+        "airstamp": "2025-10-16T12:00:00+00:00",
+        "runtime": 41,
+        "rating": {
+          "average": 8.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/593/1482575.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/593/1482575.jpg"
+        },
+        "summary": "<p>Amid a growing constitutional crisis, the staff scrambles to stage an impromptu inauguration, while Hal exploits the chaos behind the scenes.</p><p><br /> </p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3334680"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/60213",
+            "name": "The Diplomat"
+          }
+        }
+      },
+      {
+        "id": 3334681,
+        "url": "https://www.tvmaze.com/episodes/3334681/the-diplomat-3x02-last-dance-at-the-country-club",
+        "name": "Last Dance at the Country Club",
+        "season": 3,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2025-10-16",
+        "airtime": "",
+        "airstamp": "2025-10-16T12:00:00+00:00",
+        "runtime": 46,
+        "rating": {
+          "average": 8.2
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/593/1482576.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/593/1482576.jpg"
+        },
+        "summary": "<p>Kate weighs a compelling offer. Eidra faces scrutiny over fallout from the Roylin debacle. Stuart pitches a proposal that goes far deeper than policy.</p><p><br /> </p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3334681"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/60213",
+            "name": "The Diplomat"
+          }
+        }
+      },
+      {
+        "id": 3334682,
+        "url": "https://www.tvmaze.com/episodes/3334682/the-diplomat-3x03-the-riderless-horse",
+        "name": "The Riderless Horse",
+        "season": 3,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2025-10-16",
+        "airtime": "",
+        "airstamp": "2025-10-16T12:00:00+00:00",
+        "runtime": 51,
+        "rating": {
+          "average": 8.2
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/593/1482577.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/593/1482577.jpg"
+        },
+        "summary": "<p>As the nation pauses to mourn, Grace considers the framework of her administration. Private strain threatens Kate and Hal's polished public image.</p><p><br /> </p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3334682"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/60213",
+            "name": "The Diplomat"
+          }
+        }
+      },
+      {
+        "id": 3334683,
+        "url": "https://www.tvmaze.com/episodes/3334683/the-diplomat-3x04-arden",
+        "name": "Arden",
+        "season": 3,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2025-10-16",
+        "airtime": "",
+        "airstamp": "2025-10-16T12:00:00+00:00",
+        "runtime": 50,
+        "rating": {
+          "average": 8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/593/1482578.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/593/1482578.jpg"
+        },
+        "summary": "<p>Kate's unique role grants her access to anyone she wants — except the one person she needs. Dennison puts actionable intelligence to personal use.</p><p><br /> </p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3334683"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/60213",
+            "name": "The Diplomat"
+          }
+        }
+      },
+      {
+        "id": 3334684,
+        "url": "https://www.tvmaze.com/episodes/3334684/the-diplomat-3x05-birdwatchers",
+        "name": "Birdwatchers",
+        "season": 3,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2025-10-16",
+        "airtime": "",
+        "airstamp": "2025-10-16T12:00:00+00:00",
+        "runtime": 42,
+        "rating": {
+          "average": 7.8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/593/1482579.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/593/1482579.jpg"
+        },
+        "summary": "<p>Forced to play the perfect couple, Kate and Hal confront a looming problem in international waters and a development that could torpedo U.S. credibility.</p><p><br /> </p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3334684"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/60213",
+            "name": "The Diplomat"
+          }
+        }
+      },
+      {
+        "id": 3334685,
+        "url": "https://www.tvmaze.com/episodes/3334685/the-diplomat-3x06-amagansett",
+        "name": "Amagansett",
+        "season": 3,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2025-10-16",
+        "airtime": "",
+        "airstamp": "2025-10-16T12:00:00+00:00",
+        "runtime": 49,
+        "rating": {
+          "average": 8.1
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/593/1482580.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/593/1482580.jpg"
+        },
+        "summary": "<p>At an emergency strategy session, Grace weighs unthinkable choices, while Kate rolls the dice on a gamble that could alter the course of history.</p><p><br /> </p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3334685"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/60213",
+            "name": "The Diplomat"
+          }
+        }
+      },
+      {
+        "id": 3334743,
+        "url": "https://www.tvmaze.com/episodes/3334743/the-diplomat-3x07-png",
+        "name": "PNG",
+        "season": 3,
+        "number": 7,
+        "type": "regular",
+        "airdate": "2025-10-16",
+        "airtime": "",
+        "airstamp": "2025-10-16T12:00:00+00:00",
+        "runtime": 51,
+        "rating": {
+          "average": 7.9
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/593/1482581.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/593/1482581.jpg"
+        },
+        "summary": "<p>Sequestered inside Winfield House as embassies go on alert and allies fall silent, Kate and Callum race to contain a potential disaster.</p><p><br /> </p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3334743"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/60213",
+            "name": "The Diplomat"
+          }
+        }
+      },
+      {
+        "id": 3334744,
+        "url": "https://www.tvmaze.com/episodes/3334744/the-diplomat-3x08-schrodingers-wife",
+        "name": "Schrodinger's Wife",
+        "season": 3,
+        "number": 8,
+        "type": "regular",
+        "airdate": "2025-10-16",
+        "airtime": "",
+        "airstamp": "2025-10-16T12:00:00+00:00",
+        "runtime": 54,
+        "rating": {
+          "average": 8.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/593/1482582.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/593/1482582.jpg"
+        },
+        "summary": "<p>Kate must use all her leverage and political instincts to avert a catastrophe at a high-stakes summit — with the fate of nations hanging in the balance.</p><p><br /> </p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3334744"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/60213",
+            "name": "The Diplomat"
+          }
+        }
+      },
+      {
+        "id": 3701737,
+        "url": "https://www.tvmaze.com/episodes/3701737/the-diplomat-4x01-tba",
+        "name": "TBA",
+        "season": 4,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2026-10-15",
+        "airtime": "",
+        "airstamp": "2026-10-15T12:00:00+00:00",
+        "runtime": 54,
+        "rating": {
+          "average": null
+        },
+        "image": null,
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3701737"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/60213",
+            "name": "The Diplomat"
+          }
+        }
+      }
+    ],
+    "seasons": [
+      {
+        "id": 134710,
+        "url": "https://www.tvmaze.com/seasons/134710/the-diplomat-season-1",
+        "number": 1,
+        "name": "",
+        "episodeOrder": 8,
+        "premiereDate": "2023-04-20",
+        "endDate": "2023-04-20",
+        "network": null,
+        "webChannel": {
+          "id": 1,
+          "name": "Netflix",
+          "country": null,
+          "officialSite": "https://www.netflix.com/"
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/538/1347260.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/538/1347260.jpg"
+        },
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/134710"
+          }
+        }
+      },
+      {
+        "id": 157882,
+        "url": "https://www.tvmaze.com/seasons/157882/the-diplomat-season-2",
+        "number": 2,
+        "name": "",
+        "episodeOrder": 6,
+        "premiereDate": "2024-10-31",
+        "endDate": "2024-10-31",
+        "network": null,
+        "webChannel": {
+          "id": 1,
+          "name": "Netflix",
+          "country": null,
+          "officialSite": "https://www.netflix.com/"
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/547/1368061.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/547/1368061.jpg"
+        },
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/157882"
+          }
+        }
+      },
+      {
+        "id": 175953,
+        "url": "https://www.tvmaze.com/seasons/175953/the-diplomat-season-3",
+        "number": 3,
+        "name": "",
+        "episodeOrder": 8,
+        "premiereDate": "2025-10-16",
+        "endDate": "2025-10-16",
+        "network": null,
+        "webChannel": {
+          "id": 1,
+          "name": "Netflix",
+          "country": null,
+          "officialSite": "https://www.netflix.com/"
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/590/1476864.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/590/1476864.jpg"
+        },
+        "summary": "<p>In Season 3, Ambassador Kate Wyler lives the particular nightmare that is getting what you want. She just accused Vice President Grace Penn of hatching a terrorist plot and admitted she's after the VP's job. But now the President is dead, Kate's husband Hal may have inadvertently killed him, and Grace Penn is the leader of the free world. None of this slows Hal's campaign to land Kate the vice presidency. Kate steps into a role she never wanted, with a freedom she never expected, an increasingly complicated friendship with Foreign Secretary Austin Dennison, and an unnerving bond with First Gentleman Todd Penn.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/175953"
+          }
+        }
+      },
+      {
+        "id": 192301,
+        "url": "https://www.tvmaze.com/seasons/192301/the-diplomat-season-4",
+        "number": 4,
+        "name": "",
+        "episodeOrder": 8,
+        "premiereDate": "2026-10-15",
+        "endDate": "2026-10-15",
+        "network": null,
+        "webChannel": {
+          "id": 1,
+          "name": "Netflix",
+          "country": null,
+          "officialSite": "https://www.netflix.com/"
+        },
+        "image": null,
+        "summary": "<p>In Season Four of The Diplomat, two marriages threaten to eat each other alive. One catastrophic moment shatters the fragile peace Kate Wyler brokered between the US and UK, as well as the crumbling marriage she's trying to save. While she fights to stem the bleeding, President Grace Penn and VP Hal Wyler's conspiracy to steal Russia's most powerful weapon hurtles the United States toward war. Kate and Todd, at best an uneasy pair, unite to stop the Grace-Hal alliance from upending the balance of power abroad and at home. Four Emmy nominees paint an unmissable portrait of two marriages: Keri Russell as Ambassador Kate Wyler, Rufus Sewell as Vice President Hal Wyler, Allison Janney as President Grace Penn, and Bradley Whitford as Todd Penn.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/192301"
+          }
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,1105 @@
+{
+  "id": 22904,
+  "url": "https://www.tvmaze.com/shows/22904/killing-eve",
+  "name": "Killing Eve",
+  "type": "Scripted",
+  "language": "English",
+  "genres": ["Drama", "Crime", "Thriller"],
+  "status": "Ended",
+  "runtime": null,
+  "averageRuntime": 55,
+  "premiered": "2018-04-08",
+  "ended": "2022-04-10",
+  "officialSite": "https://www.amcplus.com/pages/killingeve",
+  "schedule": {
+    "time": "",
+    "days": ["Sunday"]
+  },
+  "rating": {
+    "average": 8
+  },
+  "weight": 98,
+  "network": null,
+  "webChannel": {
+    "id": 453,
+    "name": "AMC+",
+    "country": {
+      "name": "United States",
+      "code": "US",
+      "timezone": "America/New_York"
+    },
+    "officialSite": "https://www.amcplus.com/"
+  },
+  "dvdCountry": null,
+  "externals": {
+    "tvrage": null,
+    "thetvdb": 340959,
+    "imdb": "tt7016936"
+  },
+  "image": {
+    "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/397/994197.jpg",
+    "original": "https://static.tvmaze.com/uploads/images/original_untouched/397/994197.jpg"
+  },
+  "summary": "<p>Based on the novellas by Luke Jennings, <b>Killing Eve</b> centers on two women; Eve is a bored, whip-smart, pay-grade security services operative whose desk-bound job doesn't fulfill her fantasies of being a spy. Villanelle is an elegant, talented killer who clings to the luxuries her violent job affords her. Killing Eve topples the typical spy-action thriller as these two fiercely intelligent women, equally obsessed with each other, go head to head in an epic game of cat and mouse.</p>",
+  "updated": 1736713478,
+  "_links": {
+    "self": {
+      "href": "https://api.tvmaze.com/shows/22904"
+    },
+    "previousepisode": {
+      "href": "https://api.tvmaze.com/episodes/2298866",
+      "name": "Hello, Losers"
+    }
+  },
+  "_embedded": {
+    "episodes": [
+      {
+        "id": 1388508,
+        "url": "https://www.tvmaze.com/episodes/1388508/killing-eve-1x01-nice-face",
+        "name": "Nice Face",
+        "season": 1,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2018-04-08",
+        "airtime": "20:00",
+        "airstamp": "2018-04-09T00:00:00+00:00",
+        "runtime": 60,
+        "rating": {
+          "average": 7.8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/152/380220.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/152/380220.jpg"
+        },
+        "summary": "<p>MI5 security officer Eve Polastri is bored in her job and yearns for a more exciting life. When a Russian politician is murdered, Eve is tasked with protecting the only witness and soon finds herself on a collision course with violent and extraordinary assassin, Villanelle.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/1388508"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 1422629,
+        "url": "https://www.tvmaze.com/episodes/1422629/killing-eve-1x02-ill-deal-with-him-later",
+        "name": "I'll Deal with Him Later",
+        "season": 1,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2018-04-15",
+        "airtime": "20:00",
+        "airstamp": "2018-04-16T00:00:00+00:00",
+        "runtime": 60,
+        "rating": {
+          "average": 8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/152/382391.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/152/382391.jpg"
+        },
+        "summary": "<p>In the aftermath of her recent assignment, Villanelle is ordered to take a break. Never one to do as she's told, she goes ahead with her next mission regardless. Meanwhile, Eve is given a dream opportunity to join a secret MI6 unit tracking Villanelle and the shady organisation she works for.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/1422629"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 1422630,
+        "url": "https://www.tvmaze.com/episodes/1422630/killing-eve-1x03-dont-i-know-you",
+        "name": "Don't I Know You?",
+        "season": 1,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2018-04-22",
+        "airtime": "20:00",
+        "airstamp": "2018-04-23T00:00:00+00:00",
+        "runtime": 60,
+        "rating": {
+          "average": 8.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/153/384843.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/153/384843.jpg"
+        },
+        "summary": "<p>When Villanelle kills a Chinese Colonel at a kink clinic in Berlin, Eve and Bill travel out to investigate. While Eve and Bill chase up a number of promising leads, Villanelle enjoys the cat and mouse of their proximity. But as they draw closer, Eve comes to realise that this is much more than a game.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/1422630"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 1422631,
+        "url": "https://www.tvmaze.com/episodes/1422631/killing-eve-1x04-sorry-baby",
+        "name": "Sorry Baby",
+        "season": 1,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2018-04-29",
+        "airtime": "20:00",
+        "airstamp": "2018-04-30T00:00:00+00:00",
+        "runtime": 60,
+        "rating": {
+          "average": 8.2
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/399/998449.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/399/998449.jpg"
+        },
+        "summary": "<p>Intel from Berlin points to the existence of a mole, prompting Eve to undertake her first surveillance operation. Meanwhile, Villanelle is sent to England to eliminate a member of British Intelligence. Villanelle wonders, could it be Eve? Meanwhile Eve, in emotional turmoil, now knows how high the stakes are.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/1422631"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 1446136,
+        "url": "https://www.tvmaze.com/episodes/1446136/killing-eve-1x05-i-have-a-thing-about-bathrooms",
+        "name": "I Have a Thing About Bathrooms",
+        "season": 1,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2018-05-06",
+        "airtime": "20:00",
+        "airstamp": "2018-05-07T00:00:00+00:00",
+        "runtime": 60,
+        "rating": {
+          "average": 8.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/399/998450.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/399/998450.jpg"
+        },
+        "summary": "<p>Having survived a terrifying close call with Villanelle, Eve now has the mole ensconced in a safe house and is buzzing. They have an exciting opportunity to glean information and crack this thing open.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/1446136"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 1456746,
+        "url": "https://www.tvmaze.com/episodes/1456746/killing-eve-1x06-take-me-to-the-hole",
+        "name": "Take Me to the Hole!",
+        "season": 1,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2018-05-13",
+        "airtime": "20:00",
+        "airstamp": "2018-05-14T00:00:00+00:00",
+        "runtime": 60,
+        "rating": {
+          "average": 8.2
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/399/998451.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/399/998451.jpg"
+        },
+        "summary": "<p>A female assassin is taken into custody in Russia, and Eve and Carolyn head out to Moscow to negotiate access. She could hold the key to the organization that runs Villanelle. Meanwhile, Villanelle is smuggled into the same Russian jail.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/1456746"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 1459783,
+        "url": "https://www.tvmaze.com/episodes/1459783/killing-eve-1x07-i-dont-want-to-be-free",
+        "name": "I Don't Want to Be Free",
+        "season": 1,
+        "number": 7,
+        "type": "regular",
+        "airdate": "2018-05-20",
+        "airtime": "20:00",
+        "airstamp": "2018-05-21T00:00:00+00:00",
+        "runtime": 60,
+        "rating": {
+          "average": 8.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/399/998452.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/399/998452.jpg"
+        },
+        "summary": "<p>Tensions are running high as the situation in Moscow escalates, and Eve starts to question who she can trust. Despite the danger, with her sights firmly set on Villanelle, Eve goes rogue. With both women under pressure, the stakes are higher than ever.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/1459783"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 1462892,
+        "url": "https://www.tvmaze.com/episodes/1462892/killing-eve-1x08-god-im-tired",
+        "name": "God, I'm Tired",
+        "season": 1,
+        "number": 8,
+        "type": "regular",
+        "airdate": "2018-05-27",
+        "airtime": "20:00",
+        "airstamp": "2018-05-28T00:00:00+00:00",
+        "runtime": 60,
+        "rating": {
+          "average": 8.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/399/998453.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/399/998453.jpg"
+        },
+        "summary": "<p>Villanelle's mission is proving anything but straightforward, forcing her to take drastic measures. Meanwhile, Eve makes a shocking discovery, which leads her right to Villanelle and an electrifying confrontation from which neither will emerge unscathed.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/1462892"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 1586543,
+        "url": "https://www.tvmaze.com/episodes/1586543/killing-eve-2x01-do-you-know-how-to-dispose-of-a-body",
+        "name": "Do You Know How to Dispose of a Body?",
+        "season": 2,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2019-04-07",
+        "airtime": "20:00",
+        "airstamp": "2019-04-08T00:00:00+00:00",
+        "runtime": 60,
+        "rating": {
+          "average": 8.2
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/399/998454.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/399/998454.jpg"
+        },
+        "summary": "<p>Eve is reeling from her act of violence against Villanelle and doesn't know whether she is alive or dead. A paranoid and severely injured Villanelle manages to get herself to the hospital for treatment. Carolyn approaches Eve with an intriguing opportunity.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/1586543"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 1616258,
+        "url": "https://www.tvmaze.com/episodes/1616258/killing-eve-2x02-nice-and-neat",
+        "name": "Nice and Neat",
+        "season": 2,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2019-04-14",
+        "airtime": "20:00",
+        "airstamp": "2019-04-15T00:00:00+00:00",
+        "runtime": 60,
+        "rating": {
+          "average": 8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/399/998455.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/399/998455.jpg"
+        },
+        "summary": "<p>Carolyn introduces Eve to her new team before Eve briefs them on the Villanelle case. Villanelle, needing to lie low while she recovers, finds a good Samaritan to take her in and care for her.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/1616258"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 1627221,
+        "url": "https://www.tvmaze.com/episodes/1627221/killing-eve-2x03-the-hungry-caterpillar",
+        "name": "The Hungry Caterpillar",
+        "season": 2,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2019-04-21",
+        "airtime": "20:00",
+        "airstamp": "2019-04-22T00:00:00+00:00",
+        "runtime": 60,
+        "rating": {
+          "average": 8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/399/998456.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/399/998456.jpg"
+        },
+        "summary": "<p>Villanelle's new circumstances are looking bleak; Eve makes a dangerous deal with an old acquaintance; Villanelle is surprised when she is approached by a figure from her past.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/1627221"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 1627222,
+        "url": "https://www.tvmaze.com/episodes/1627222/killing-eve-2x04-desperate-times",
+        "name": "Desperate Times",
+        "season": 2,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2019-04-28",
+        "airtime": "20:00",
+        "airstamp": "2019-04-29T00:00:00+00:00",
+        "runtime": 60,
+        "rating": {
+          "average": 8.1
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/399/998457.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/399/998457.jpg"
+        },
+        "summary": "<p>Villanelle decides to take matters into her own hands on a trip to Amsterdam. Carolyn is called in to face the music with her boss. After the discovery of another dead body, Eve and her new team make a break in their case.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/1627222"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 1636170,
+        "url": "https://www.tvmaze.com/episodes/1636170/killing-eve-2x05-smell-ya-later",
+        "name": "Smell Ya Later",
+        "season": 2,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2019-05-05",
+        "airtime": "20:00",
+        "airstamp": "2019-05-06T00:00:00+00:00",
+        "runtime": 60,
+        "rating": {
+          "average": 7.9
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/399/998458.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/399/998458.jpg"
+        },
+        "summary": "<p>The MI6 team make a pact with the devil in order to get information from The Ghost. A visitor from Broadmoor comes with a dire warning. And Eve and Villanelle find themselves closer than ever.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/1636170"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 1636173,
+        "url": "https://www.tvmaze.com/episodes/1636173/killing-eve-2x06-i-hope-you-like-missionary",
+        "name": "I Hope You Like Missionary!",
+        "season": 2,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2019-05-12",
+        "airtime": "20:00",
+        "airstamp": "2019-05-13T00:00:00+00:00",
+        "runtime": 60,
+        "rating": {
+          "average": 8.2
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/399/998459.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/399/998459.jpg"
+        },
+        "summary": "<p>The point of no return. Villanelle uses her unrivaled infiltration skills to immerse herself in the world of a new target. Their relationship on the rocks, Eve and Niko confront each other about their future.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/1636173"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 1636174,
+        "url": "https://www.tvmaze.com/episodes/1636174/killing-eve-2x07-wide-awake",
+        "name": "Wide Awake",
+        "season": 2,
+        "number": 7,
+        "type": "regular",
+        "airdate": "2019-05-19",
+        "airtime": "20:00",
+        "airstamp": "2019-05-20T00:00:00+00:00",
+        "runtime": 60,
+        "rating": {
+          "average": 8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/399/998460.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/399/998460.jpg"
+        },
+        "summary": "<p>Villanelle dives deep into the dangerous world of her target under the guise of her newfound persona, Billie. Eve may have worrying competition for Villanelle's affections.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/1636174"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 1636175,
+        "url": "https://www.tvmaze.com/episodes/1636175/killing-eve-2x08-youre-mine",
+        "name": "You're Mine",
+        "season": 2,
+        "number": 8,
+        "type": "regular",
+        "airdate": "2019-05-26",
+        "airtime": "20:00",
+        "airstamp": "2019-05-27T00:00:00+00:00",
+        "runtime": 60,
+        "rating": {
+          "average": 8.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/399/998461.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/399/998461.jpg"
+        },
+        "summary": "<p>Eve's mission is disastrously compromised. Carolyn briefs Eve on her current status as an employee of the British government and leaves Eve's future in her own hands. Villanelle does everything she can in order to get to her ultimate target.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/1636175"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 1801808,
+        "url": "https://www.tvmaze.com/episodes/1801808/killing-eve-3x01-slowly-slowly-catchy-monkey",
+        "name": "Slowly Slowly Catchy Monkey",
+        "season": 3,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2020-04-12",
+        "airtime": "21:00",
+        "airstamp": "2020-04-13T01:00:00+00:00",
+        "runtime": 60,
+        "rating": {
+          "average": 7.6
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/251/629081.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/251/629081.jpg"
+        },
+        "summary": "<p>Eve is attempting to rebuild her life, having been shot by Villanelle. Villanelle is also moving on, until she is approached by an old foe. Carolyn is being undermined at work and Kenny can't leave his own investigation into The Twelve alone.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/1801808"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 1838435,
+        "url": "https://www.tvmaze.com/episodes/1838435/killing-eve-3x02-management-sucks",
+        "name": "Management Sucks",
+        "season": 3,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2020-04-19",
+        "airtime": "21:00",
+        "airstamp": "2020-04-20T01:00:00+00:00",
+        "runtime": 60,
+        "rating": {
+          "average": 7.9
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/251/629137.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/251/629137.jpg"
+        },
+        "summary": "<p>Eve and Carolyn are reeling. Eve strikes up an unlikely alliance with Kenny's colleagues at the Bitter Pill. Villanelle finds that management isn't all it's cracked up to be.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/1838435"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 1838471,
+        "url": "https://www.tvmaze.com/episodes/1838471/killing-eve-3x03-meetings-have-biscuits",
+        "name": "Meetings Have Biscuits",
+        "season": 3,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2020-04-26",
+        "airtime": "21:00",
+        "airstamp": "2020-04-27T01:00:00+00:00",
+        "runtime": 60,
+        "rating": {
+          "average": 8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/399/998462.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/399/998462.jpg"
+        },
+        "summary": "<p>Villanelle agrees to a job which will take her back to London; Carolyn's Moscow contacts come in use when Eve and the Bitter Pill team unravel a potential lead to The Twelve; Konstantin finds himself under pressure from all sides.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/1838471"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 1842738,
+        "url": "https://www.tvmaze.com/episodes/1842738/killing-eve-3x04-still-got-it",
+        "name": "Still Got It",
+        "season": 3,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2020-05-03",
+        "airtime": "21:00",
+        "airstamp": "2020-05-04T01:00:00+00:00",
+        "runtime": 60,
+        "rating": {
+          "average": 7.8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/255/638330.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/255/638330.jpg"
+        },
+        "summary": "<p>Villanelle receives good news about her upcoming promotion but can't shake the feeling that there's still something missing from her life. Dasha seeks a solution to Villanelle's erratic behavior.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/1842738"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 1842739,
+        "url": "https://www.tvmaze.com/episodes/1842739/killing-eve-3x05-are-you-from-pinner",
+        "name": "Are You from Pinner?",
+        "season": 3,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2020-05-10",
+        "airtime": "21:00",
+        "airstamp": "2020-05-11T01:00:00+00:00",
+        "runtime": 60,
+        "rating": {
+          "average": 8.2
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/256/640501.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/256/640501.jpg"
+        },
+        "summary": "<p>Villanelle returns home to Mother Russia to try to find her family. Perhaps a new connection to her roots will give her back what's been missing in her life.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/1842739"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 1842740,
+        "url": "https://www.tvmaze.com/episodes/1842740/killing-eve-3x06-end-of-game",
+        "name": "End of Game",
+        "season": 3,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2020-05-17",
+        "airtime": "21:00",
+        "airstamp": "2020-05-18T01:00:00+00:00",
+        "runtime": 60,
+        "rating": {
+          "average": 7.7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/399/998463.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/399/998463.jpg"
+        },
+        "summary": "<p>Carolyn finds out information is being withheld by those close to her. Eve finds a lead on Villanelle. Meanwhile, Villanelle has had enough and decides on a different path. Konstantin's loyalties are split.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/1842740"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 1842741,
+        "url": "https://www.tvmaze.com/episodes/1842741/killing-eve-3x07-beautiful-monster",
+        "name": "Beautiful Monster",
+        "season": 3,
+        "number": 7,
+        "type": "regular",
+        "airdate": "2020-05-24",
+        "airtime": "21:00",
+        "airstamp": "2020-05-25T01:00:00+00:00",
+        "runtime": 60,
+        "rating": {
+          "average": 8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/258/645783.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/258/645783.jpg"
+        },
+        "summary": "<p>Eve finds a clue to Villanelle's whereabouts in the most unlikely of places, Villanelle and Dasha work together on a hug, and the pressure is getting to Konstantin.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/1842741"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 1842742,
+        "url": "https://www.tvmaze.com/episodes/1842742/killing-eve-3x08-are-you-leading-or-am-i",
+        "name": "Are You Leading or Am I?",
+        "season": 3,
+        "number": 8,
+        "type": "regular",
+        "airdate": "2020-05-31",
+        "airtime": "21:00",
+        "airstamp": "2020-06-01T01:00:00+00:00",
+        "runtime": 60,
+        "rating": {
+          "average": 7.8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/399/998464.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/399/998464.jpg"
+        },
+        "summary": "<p>Konstantin makes a break for it. Carolyn might have finally found what she's looking for. Eve and Villanelle try to work out what the future may hold for them.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/1842742"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 2238307,
+        "url": "https://www.tvmaze.com/episodes/2238307/killing-eve-4x01-just-dunk-me",
+        "name": "Just Dunk Me",
+        "season": 4,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2022-02-20",
+        "airtime": "",
+        "airstamp": "2022-02-20T17:00:00+00:00",
+        "runtime": 42,
+        "rating": {
+          "average": 7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/397/994418.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/397/994418.jpg"
+        },
+        "summary": "<p>Eve tracks Helene with help from one of her assassins on her quest for revenge against The Twelve; Villanelle strives to become good, so she joins a church community; after being pushed into an embassy role, Carolyn tries to get back in the game.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2238307"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 2238557,
+        "url": "https://www.tvmaze.com/episodes/2238557/killing-eve-4x02-dont-get-eaten",
+        "name": "Don't Get Eaten",
+        "season": 4,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2022-02-27",
+        "airtime": "",
+        "airstamp": "2022-02-27T17:00:00+00:00",
+        "runtime": 41,
+        "rating": {
+          "average": 6.8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/397/994419.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/397/994419.jpg"
+        },
+        "summary": "<p>Eve locates Helene; Villanelle's quest for change goes awry; Carolyn is pushed aside by MI6.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2238557"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 2286042,
+        "url": "https://www.tvmaze.com/episodes/2286042/killing-eve-4x03-a-rainbow-in-beige-boots",
+        "name": "A Rainbow in Beige Boots",
+        "season": 4,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2022-03-06",
+        "airtime": "",
+        "airstamp": "2022-03-06T17:00:00+00:00",
+        "runtime": 42,
+        "rating": {
+          "average": 7.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/399/998465.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/399/998465.jpg"
+        },
+        "summary": "<p>Having stalked Helene, a new lead allows Eve to uncover a name in The Twelve's top tier; Villanelle is rejected by Eve when she seeks help; operating abroad, Carolyn discovers more promising intel on a spate of torturous murders linked to The Twelve.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2286042"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 2286043,
+        "url": "https://www.tvmaze.com/episodes/2286043/killing-eve-4x04-its-agony-and-im-ravenous",
+        "name": "It's Agony and I'm Ravenous",
+        "season": 4,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2022-03-13",
+        "airtime": "",
+        "airstamp": "2022-03-13T16:00:00+00:00",
+        "runtime": 42,
+        "rating": {
+          "average": 7.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/401/1004194.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/401/1004194.jpg"
+        },
+        "summary": "<p>Eve struggles to identify her lead in The Twelve; Villanelle gets her mojo back -- she decides to be good by embracing what she's good at: killing; Carolyn discovers an old acquaintance in Cuba and decides to go rogue.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2286043"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 2286044,
+        "url": "https://www.tvmaze.com/episodes/2286044/killing-eve-4x05-dont-get-attached",
+        "name": "Don't Get Attached",
+        "season": 4,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2022-03-20",
+        "airtime": "",
+        "airstamp": "2022-03-20T16:00:00+00:00",
+        "runtime": 42,
+        "rating": {
+          "average": 7.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/401/1004378.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/401/1004378.jpg"
+        },
+        "summary": "<p>Eve delves into the past of her target and unearths some secrets; Villanelle embraces killing again, but she tries doing it altruistically before deciding to kill those who oppressed her; Carolyn tracks down a top member of The Twelve.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2286044"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 2298864,
+        "url": "https://www.tvmaze.com/episodes/2298864/killing-eve-4x06-oh-goodie-im-the-winner",
+        "name": "Oh Goodie, I'm the Winner",
+        "season": 4,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2022-03-27",
+        "airtime": "",
+        "airstamp": "2022-03-27T16:00:00+00:00",
+        "runtime": 42,
+        "rating": {
+          "average": 7.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/401/1004379.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/401/1004379.jpg"
+        },
+        "summary": "<p>Eve and Villanelle reunite before parting to pursue their own missions, which leads Villanelle to another assassin in the Twelve. Eve moves closer to achieving her revenge mission, and Carolyn is forced to face a ghost from her past.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2298864"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 2298865,
+        "url": "https://www.tvmaze.com/episodes/2298865/killing-eve-4x07-making-dead-things-look-nice",
+        "name": "Making Dead Things Look Nice",
+        "season": 4,
+        "number": 7,
+        "type": "regular",
+        "airdate": "2022-04-03",
+        "airtime": "",
+        "airstamp": "2022-04-03T16:00:00+00:00",
+        "runtime": 41,
+        "rating": {
+          "average": 7.2
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/401/1004381.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/401/1004381.jpg"
+        },
+        "summary": "<p>Eve takes on an even bigger revenge mission against the Twelve, and realises she may need Villanelle's help. Villanelle has a dalliance with the new assassin, while Carolyn's latest string of intel may lead her home.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2298865"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      },
+      {
+        "id": 2298866,
+        "url": "https://www.tvmaze.com/episodes/2298866/killing-eve-4x08-hello-losers",
+        "name": "Hello, Losers",
+        "season": 4,
+        "number": 8,
+        "type": "regular",
+        "airdate": "2022-04-10",
+        "airtime": "",
+        "airstamp": "2022-04-10T16:00:00+00:00",
+        "runtime": 42,
+        "rating": {
+          "average": 6.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/551/1379604.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/551/1379604.jpg"
+        },
+        "summary": "<p>Eve and Villanelle focus on making a seismic stab at The Twelve, even if it means risking their own lives. With fresh intel, they pursue the mission before it's too late. Carolyn arrives home as a traitor and has a finite amount of time to use her intel as leverage to get herself back in the game.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2298866"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/22904",
+            "name": "Killing Eve"
+          }
+        }
+      }
+    ],
+    "seasons": [
+      {
+        "id": 57013,
+        "url": "https://www.tvmaze.com/seasons/57013/killing-eve-season-1",
+        "number": 1,
+        "name": "",
+        "episodeOrder": 8,
+        "premiereDate": "2018-04-08",
+        "endDate": "2018-05-27",
+        "network": {
+          "id": 15,
+          "name": "BBC America",
+          "country": {
+            "name": "United States",
+            "code": "US",
+            "timezone": "America/New_York"
+          },
+          "officialSite": null
+        },
+        "webChannel": null,
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/160/402180.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/160/402180.jpg"
+        },
+        "summary": "<p>Two women, a psychopathic assassin and a brilliant MI5 agent. Both tasked with the same deadly mission: Find Her.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/57013"
+          }
+        }
+      },
+      {
+        "id": 86922,
+        "url": "https://www.tvmaze.com/seasons/86922/killing-eve-season-2",
+        "number": 2,
+        "name": "",
+        "episodeOrder": 8,
+        "premiereDate": "2019-04-07",
+        "endDate": "2019-05-26",
+        "network": {
+          "id": 15,
+          "name": "BBC America",
+          "country": {
+            "name": "United States",
+            "code": "US",
+            "timezone": "America/New_York"
+          },
+          "officialSite": null
+        },
+        "webChannel": null,
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/254/637283.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/254/637283.jpg"
+        },
+        "summary": "<p>Season 2 begins 30 seconds after the final episode of the first season; Eve is reeling and Villanelle has disappeared. Eve has no idea if the woman she stabbed is alive or dead, and now both of them are in deep trouble. Eve has to find Villanelle before someone else does, but unfortunately, she's not the only person looking for her.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/86922"
+          }
+        }
+      },
+      {
+        "id": 104519,
+        "url": "https://www.tvmaze.com/seasons/104519/killing-eve-season-3",
+        "number": 3,
+        "name": "",
+        "episodeOrder": 8,
+        "premiereDate": "2020-04-12",
+        "endDate": "2020-05-31",
+        "network": {
+          "id": 15,
+          "name": "BBC America",
+          "country": {
+            "name": "United States",
+            "code": "US",
+            "timezone": "America/New_York"
+          },
+          "officialSite": null
+        },
+        "webChannel": null,
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/254/637284.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/254/637284.jpg"
+        },
+        "summary": "<p>The third season of the award-winning drama continues the story of two women with brutal pasts, addicted to each other but now trying desperately to live their lives without their drug of choice. For Villanelle, the assassin without a job, Eve is dead. For Eve, the ex-MI6 operative hiding in plain sight, Villanelle will never find her. All seems fine until a shocking and personal death sets them on a collision course yet again. The journey back to each other will cost both of them friends, family, and allegiances... and perhaps a share of their souls.</p><p><br /> </p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/104519"
+          }
+        }
+      },
+      {
+        "id": 104520,
+        "url": "https://www.tvmaze.com/seasons/104520/killing-eve-season-4",
+        "number": 4,
+        "name": "",
+        "episodeOrder": 8,
+        "premiereDate": "2022-02-20",
+        "endDate": "2022-04-10",
+        "network": null,
+        "webChannel": {
+          "id": 453,
+          "name": "AMC+",
+          "country": {
+            "name": "United States",
+            "code": "US",
+            "timezone": "America/New_York"
+          },
+          "officialSite": "https://www.amcplus.com/"
+        },
+        "image": null,
+        "summary": "<p>After the emotional climax of Season Three, Eve, Villanelle and Carolyn are in very different places. Following Eve and Villanelle's exchange on the bridge, Eve is on a revenge mission, while Villanelle has found a brand-new community in an attempt to prove she's not a \"monster.\" Having killed Paul, Carolyn goes to extraordinary lengths to continue to chase down The Twelve and the person that ordered Kenny's hit. This season follows our extraordinary women, each driven by passion, revenge and obsession, building towards a messy, nuanced and totally glorious series finale.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/104520"
+          }
+        }
+      }
+    ]
+  }
+}

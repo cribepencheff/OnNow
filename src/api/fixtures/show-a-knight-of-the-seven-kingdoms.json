@@ -1,0 +1,291 @@
+{
+  "id": 53063,
+  "url": "https://www.tvmaze.com/shows/53063/a-knight-of-the-seven-kingdoms",
+  "name": "A Knight of the Seven Kingdoms",
+  "type": "Scripted",
+  "language": "English",
+  "genres": ["Drama", "Action", "Fantasy"],
+  "status": "Running",
+  "runtime": null,
+  "averageRuntime": 37,
+  "premiered": "2026-01-18",
+  "ended": null,
+  "officialSite": "https://www.hbomax.com/shows/knight-of-the-seven-kingdoms/3507a932-eace-46ea-bfe1-638ae819fa12",
+  "schedule": {
+    "time": "22:00",
+    "days": ["Sunday"]
+  },
+  "rating": {
+    "average": 8.2
+  },
+  "weight": 100,
+  "network": {
+    "id": 8,
+    "name": "HBO",
+    "country": {
+      "name": "United States",
+      "code": "US",
+      "timezone": "America/New_York"
+    },
+    "officialSite": "https://www.hbo.com/"
+  },
+  "webChannel": null,
+  "dvdCountry": null,
+  "externals": {
+    "tvrage": null,
+    "thetvdb": 433631,
+    "imdb": "tt27497448"
+  },
+  "image": {
+    "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/608/1521912.jpg",
+    "original": "https://static.tvmaze.com/uploads/images/original_untouched/608/1521912.jpg"
+  },
+  "summary": "<p>A century before the events of <i>Game of Thrones</i>, two unlikely heroes wandered Westeros: a young, naive but courageous knight, Ser Duncan the Tall, and his diminutive squire, Egg. Set in an age when the Targaryen line still holds the Iron Throne and the last dragon has not yet passed from living memory, great destinies, powerful foes, and dangerous exploits await these improbable and incomparable friends.</p>",
+  "updated": 1786944532,
+  "_links": {
+    "self": {
+      "href": "https://api.tvmaze.com/shows/53063"
+    },
+    "previousepisode": {
+      "href": "https://api.tvmaze.com/episodes/3391842",
+      "name": "The Morrow"
+    }
+  },
+  "_embedded": {
+    "episodes": [
+      {
+        "id": 3391836,
+        "url": "https://www.tvmaze.com/episodes/3391836/a-knight-of-the-seven-kingdoms-1x01-the-hedge-knight",
+        "name": "The Hedge Knight",
+        "season": 1,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2026-01-18",
+        "airtime": "22:02",
+        "airstamp": "2026-01-19T03:02:00+00:00",
+        "runtime": 42,
+        "rating": {
+          "average": 8.1
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/609/1523273.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/609/1523273.jpg"
+        },
+        "summary": "<p>On his journey to the forthcoming tournament in Ashford, Dunk meets a clever young boy named Egg, who offers to be his squire.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3391836"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/53063",
+            "name": "A Knight of the Seven Kingdoms"
+          }
+        }
+      },
+      {
+        "id": 3391838,
+        "url": "https://www.tvmaze.com/episodes/3391838/a-knight-of-the-seven-kingdoms-1x02-hard-salt-beef",
+        "name": "Hard Salt Beef",
+        "season": 1,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2026-01-25",
+        "airtime": "22:02",
+        "airstamp": "2026-01-26T03:02:00+00:00",
+        "runtime": 36,
+        "rating": {
+          "average": 8.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/610/1526352.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/610/1526352.jpg"
+        },
+        "summary": "<p>Dunk appeals to various lords in order to gain entrance into the tournament...but Egg advises him to hold onto his pride. When the Targaryens arrive at Ashford, Dunk seizes his moment with Prince Baelor.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3391838"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/53063",
+            "name": "A Knight of the Seven Kingdoms"
+          }
+        }
+      },
+      {
+        "id": 3391839,
+        "url": "https://www.tvmaze.com/episodes/3391839/a-knight-of-the-seven-kingdoms-1x03-the-squire",
+        "name": "The Squire",
+        "season": 1,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2026-02-01",
+        "airtime": "22:04",
+        "airstamp": "2026-02-02T03:04:00+00:00",
+        "runtime": 31,
+        "rating": {
+          "average": 8.7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/611/1529296.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/611/1529296.jpg"
+        },
+        "summary": "<p>After Egg attempts to train Dunk's uncooperative horse, Dunk teaches his new squire an important skill. As they take in the tourney's first full day of events, Dunk receives a proposition from the Ashford steward that could help secure his future.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3391839"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/53063",
+            "name": "A Knight of the Seven Kingdoms"
+          }
+        }
+      },
+      {
+        "id": 3391840,
+        "url": "https://www.tvmaze.com/episodes/3391840/a-knight-of-the-seven-kingdoms-1x04-seven",
+        "name": "Seven",
+        "season": 1,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2026-02-08",
+        "airtime": "22:02",
+        "airstamp": "2026-02-09T03:02:00+00:00",
+        "runtime": 38,
+        "rating": {
+          "average": 9.1
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/612/1531956.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/612/1531956.jpg"
+        },
+        "summary": "<p>After landing himself in the Targaryens' crosshairs, Dunk exercises his right to request a trial by combat. But when Aerion insists on a trial of seven instead, Dunk is faced with the daunting task of finding six others to fight alongside him.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3391840"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/53063",
+            "name": "A Knight of the Seven Kingdoms"
+          }
+        }
+      },
+      {
+        "id": 3391841,
+        "url": "https://www.tvmaze.com/episodes/3391841/a-knight-of-the-seven-kingdoms-1x05-in-the-name-of-the-mother",
+        "name": "In the Name of the Mother",
+        "season": 1,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2026-02-15",
+        "airtime": "22:03",
+        "airstamp": "2026-02-16T03:03:00+00:00",
+        "runtime": 39,
+        "rating": {
+          "average": 9.1
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/613/1534848.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/613/1534848.jpg"
+        },
+        "summary": "<p>Dunk's mettle is put to the test in the brutal trial of seven. Years earlier, Dunk finds himself drawn to the promise of a new future.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3391841"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/53063",
+            "name": "A Knight of the Seven Kingdoms"
+          }
+        }
+      },
+      {
+        "id": 3391842,
+        "url": "https://www.tvmaze.com/episodes/3391842/a-knight-of-the-seven-kingdoms-1x06-the-morrow",
+        "name": "The Morrow",
+        "season": 1,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2026-02-22",
+        "airtime": "22:05",
+        "airstamp": "2026-02-23T03:05:00+00:00",
+        "runtime": 33,
+        "rating": {
+          "average": 8.8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/614/1536610.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/614/1536610.jpg"
+        },
+        "summary": "<p>As Ashford mourns a great loss, Dunk considers his next move... and whether to keep Egg as his squire.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3391842"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/53063",
+            "name": "A Knight of the Seven Kingdoms"
+          }
+        }
+      }
+    ],
+    "seasons": [
+      {
+        "id": 119365,
+        "url": "https://www.tvmaze.com/seasons/119365/a-knight-of-the-seven-kingdoms-season-1",
+        "number": 1,
+        "name": "",
+        "episodeOrder": 6,
+        "premiereDate": "2026-01-18",
+        "endDate": "2026-02-22",
+        "network": {
+          "id": 8,
+          "name": "HBO",
+          "country": {
+            "name": "United States",
+            "code": "US",
+            "timezone": "America/New_York"
+          },
+          "officialSite": "https://www.hbo.com/"
+        },
+        "webChannel": null,
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/609/1524078.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/609/1524078.jpg"
+        },
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/119365"
+          }
+        }
+      },
+      {
+        "id": 196968,
+        "url": "https://www.tvmaze.com/seasons/196968/a-knight-of-the-seven-kingdoms-season-2",
+        "number": 2,
+        "name": "",
+        "episodeOrder": null,
+        "premiereDate": null,
+        "endDate": null,
+        "network": {
+          "id": 8,
+          "name": "HBO",
+          "country": {
+            "name": "United States",
+            "code": "US",
+            "timezone": "America/New_York"
+          },
+          "officialSite": "https://www.hbo.com/"
+        },
+        "webChannel": null,
+        "image": null,
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/196968"
+          }
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,645 @@
+{
+  "id": 61315,
+  "url": "https://www.tvmaze.com/shows/61315/dark-matter",
+  "name": "Dark Matter",
+  "type": "Scripted",
+  "language": "English",
+  "genres": ["Science-Fiction", "Thriller", "Mystery"],
+  "status": "Running",
+  "runtime": null,
+  "averageRuntime": 54,
+  "premiered": "2024-05-08",
+  "ended": null,
+  "officialSite": "https://tv.apple.com/show/dark-matter/umc.cmc.4luj45vtqpmjsvb6sc2675oeg",
+  "schedule": {
+    "time": "",
+    "days": ["Friday"]
+  },
+  "rating": {
+    "average": 7.5
+  },
+  "weight": 100,
+  "network": null,
+  "webChannel": {
+    "id": 310,
+    "name": "Apple TV",
+    "country": null,
+    "officialSite": "https://tv.apple.com/"
+  },
+  "dvdCountry": null,
+  "externals": {
+    "tvrage": null,
+    "thetvdb": 393159,
+    "imdb": "tt19231492"
+  },
+  "image": {
+    "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/633/1584721.jpg",
+    "original": "https://static.tvmaze.com/uploads/images/original_untouched/633/1584721.jpg"
+  },
+  "summary": "<p>Hailed as one of the best sci-fi novels of the decade, <b>Dark Matter</b> is a story about the road not taken. The series follows Jason Dessen, a physicist, professor, and family man who – one night while walking home on the streets of Chicago – is abducted into an alternate version of his life. Wonder quickly turns to nightmare when he tries to return to his reality amid the multiverse of lives he could have lived. In this labyrinth of mind-bending realities, he embarks on a harrowing journey to get back to his true family and save them from the most terrifying, unbeatable foe imaginable: himself.</p>",
+  "updated": 1789764895,
+  "_links": {
+    "self": {
+      "href": "https://api.tvmaze.com/shows/61315"
+    },
+    "previousepisode": {
+      "href": "https://api.tvmaze.com/episodes/3591067",
+      "name": "Stars, Hide Your Fires"
+    },
+    "nextepisode": {
+      "href": "https://api.tvmaze.com/episodes/3591068",
+      "name": "Love and Be Loved"
+    }
+  },
+  "_embedded": {
+    "episodes": [
+      {
+        "id": 2630005,
+        "url": "https://www.tvmaze.com/episodes/2630005/dark-matter-1x01-are-you-happy-in-your-life",
+        "name": "Are You Happy in Your Life?",
+        "season": 1,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2024-05-08",
+        "airtime": "",
+        "airstamp": "2024-05-08T12:00:00+00:00",
+        "runtime": 46,
+        "rating": {
+          "average": 7.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/518/1295471.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/518/1295471.jpg"
+        },
+        "summary": "<p>Physics professor and family man Jason Dessen is abducted from everything he loves.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2630005"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/61315",
+            "name": "Dark Matter"
+          }
+        }
+      },
+      {
+        "id": 2630006,
+        "url": "https://www.tvmaze.com/episodes/2630006/dark-matter-1x02-trip-of-a-lifetime",
+        "name": "Trip of a Lifetime",
+        "season": 1,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2024-05-08",
+        "airtime": "",
+        "airstamp": "2024-05-08T12:00:00+00:00",
+        "runtime": 53,
+        "rating": {
+          "average": 7.2
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/518/1295472.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/518/1295472.jpg"
+        },
+        "summary": "<p>Jason wakes to a life that makes no sense - he doesn't have a family and he's created something extraordinary.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2630006"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/61315",
+            "name": "Dark Matter"
+          }
+        }
+      },
+      {
+        "id": 2630007,
+        "url": "https://www.tvmaze.com/episodes/2630007/dark-matter-1x03-the-box",
+        "name": "The Box",
+        "season": 1,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2024-05-15",
+        "airtime": "",
+        "airstamp": "2024-05-15T12:00:00+00:00",
+        "runtime": 49,
+        "rating": {
+          "average": 7.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/518/1295473.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/518/1295473.jpg"
+        },
+        "summary": "<p>Leighton and Amanda show Jason his groundbreaking invention. Daniela and Jason2 throw a dinner party.</p><p><br /> </p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2630007"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/61315",
+            "name": "Dark Matter"
+          }
+        }
+      },
+      {
+        "id": 2630008,
+        "url": "https://www.tvmaze.com/episodes/2630008/dark-matter-1x04-the-corridor",
+        "name": "The Corridor",
+        "season": 1,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2024-05-22",
+        "airtime": "",
+        "airstamp": "2024-05-22T12:00:00+00:00",
+        "runtime": 59,
+        "rating": {
+          "average": 7.7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/519/1298505.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/519/1298505.jpg"
+        },
+        "summary": "<p>Jason and Amanda fight to stay alive in the dangerous Corridor. Jason2 makes some life changes and visits an old friend.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2630008"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/61315",
+            "name": "Dark Matter"
+          }
+        }
+      },
+      {
+        "id": 2630009,
+        "url": "https://www.tvmaze.com/episodes/2630009/dark-matter-1x05-worldless",
+        "name": "Worldless",
+        "season": 1,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2024-05-29",
+        "airtime": "",
+        "airstamp": "2024-05-29T12:00:00+00:00",
+        "runtime": 56,
+        "rating": {
+          "average": 7.6
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/521/1303353.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/521/1303353.jpg"
+        },
+        "summary": "<p>As they learn more about the Box, Jason and Amanda see alternate versions of their lives. Jason2 begins training a potential investor.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2630009"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/61315",
+            "name": "Dark Matter"
+          }
+        }
+      },
+      {
+        "id": 2630010,
+        "url": "https://www.tvmaze.com/episodes/2630010/dark-matter-1x06-superposition",
+        "name": "Superposition",
+        "season": 1,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2024-06-05",
+        "airtime": "",
+        "airstamp": "2024-06-05T12:00:00+00:00",
+        "runtime": 55,
+        "rating": {
+          "average": 7.8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/521/1303354.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/521/1303354.jpg"
+        },
+        "summary": "<p>Daniela suspects something's not right with her husband. Jason and Amanda grow closer.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2630010"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/61315",
+            "name": "Dark Matter"
+          }
+        }
+      },
+      {
+        "id": 2630011,
+        "url": "https://www.tvmaze.com/episodes/2630011/dark-matter-1x07-in-the-fires-of-dead-stars",
+        "name": "In the Fires of Dead Stars",
+        "season": 1,
+        "number": 7,
+        "type": "regular",
+        "airdate": "2024-06-12",
+        "airtime": "",
+        "airstamp": "2024-06-12T12:00:00+00:00",
+        "runtime": 51,
+        "rating": {
+          "average": 7.9
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/523/1308140.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/523/1308140.jpg"
+        },
+        "summary": "<p>Jason and Amanda visit a breathtaking world. To hide the truth from Daniela, Jason2 takes desperate action.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2630011"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/61315",
+            "name": "Dark Matter"
+          }
+        }
+      },
+      {
+        "id": 2630012,
+        "url": "https://www.tvmaze.com/episodes/2630012/dark-matter-1x08-jupiter",
+        "name": "Jupiter",
+        "season": 1,
+        "number": 8,
+        "type": "regular",
+        "airdate": "2024-06-19",
+        "airtime": "",
+        "airstamp": "2024-06-19T12:00:00+00:00",
+        "runtime": 47,
+        "rating": {
+          "average": 8.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/523/1308141.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/523/1308141.jpg"
+        },
+        "summary": "<p>Panicked and cornered, Jason2 tells Daniela and Charlie they need to leave town immediately.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2630012"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/61315",
+            "name": "Dark Matter"
+          }
+        }
+      },
+      {
+        "id": 2630013,
+        "url": "https://www.tvmaze.com/episodes/2630013/dark-matter-1x09-entanglement",
+        "name": "Entanglement",
+        "season": 1,
+        "number": 9,
+        "type": "regular",
+        "airdate": "2024-06-26",
+        "airtime": "",
+        "airstamp": "2024-06-26T12:00:00+00:00",
+        "runtime": 58,
+        "rating": {
+          "average": 8.2
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/524/1310358.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/524/1310358.jpg"
+        },
+        "summary": "<p>Season finale. The Dessens' world comes crashing down.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2630013"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/61315",
+            "name": "Dark Matter"
+          }
+        }
+      },
+      {
+        "id": 3590535,
+        "url": "https://www.tvmaze.com/episodes/3590535/dark-matter-2x01-a-quiet-life",
+        "name": "A Quiet Life",
+        "season": 2,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2026-08-28",
+        "airtime": "",
+        "airstamp": "2026-08-28T12:00:00+00:00",
+        "runtime": 53,
+        "rating": {
+          "average": 8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/638/1596798.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/638/1596798.jpg"
+        },
+        "summary": "<p>The Dessens receive an unwelcome visitor. Ryan finds Amanda. Leighton finds himself.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3590535"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/61315",
+            "name": "Dark Matter"
+          }
+        }
+      },
+      {
+        "id": 3591065,
+        "url": "https://www.tvmaze.com/episodes/3591065/dark-matter-2x02-a-perfect-world",
+        "name": "A Perfect World",
+        "season": 2,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2026-09-04",
+        "airtime": "",
+        "airstamp": "2026-09-04T12:00:00+00:00",
+        "runtime": 58,
+        "rating": {
+          "average": 8.1
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/638/1596799.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/638/1596799.jpg"
+        },
+        "summary": "<p>The search for a new home starts again. Amanda and Ryan set off on a quest.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3591065"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/61315",
+            "name": "Dark Matter"
+          }
+        }
+      },
+      {
+        "id": 3591066,
+        "url": "https://www.tvmaze.com/episodes/3591066/dark-matter-2x03-everything-beautiful-everything-terrible",
+        "name": "Everything Beautiful, Everything Terrible",
+        "season": 2,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2026-09-11",
+        "airtime": "",
+        "airstamp": "2026-09-11T12:00:00+00:00",
+        "runtime": 58,
+        "rating": {
+          "average": 8.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/640/1601937.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/640/1601937.jpg"
+        },
+        "summary": "<p>Jason's fixation on the Box tests his marriage. Ryan and Amanda step into a world forever changed.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3591066"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/61315",
+            "name": "Dark Matter"
+          }
+        }
+      },
+      {
+        "id": 3591067,
+        "url": "https://www.tvmaze.com/episodes/3591067/dark-matter-2x04-stars-hide-your-fires",
+        "name": "Stars, Hide Your Fires",
+        "season": 2,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2026-09-18",
+        "airtime": "",
+        "airstamp": "2026-09-18T12:00:00+00:00",
+        "runtime": 51,
+        "rating": {
+          "average": 8.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/641/1604648.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/641/1604648.jpg"
+        },
+        "summary": "<p>The Dessens reach their breaking point.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3591067"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/61315",
+            "name": "Dark Matter"
+          }
+        }
+      },
+      {
+        "id": 3591068,
+        "url": "https://www.tvmaze.com/episodes/3591068/dark-matter-2x05-love-and-be-loved",
+        "name": "Love and Be Loved",
+        "season": 2,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2026-09-25",
+        "airtime": "",
+        "airstamp": "2026-09-25T12:00:00+00:00",
+        "runtime": 55,
+        "rating": {
+          "average": null
+        },
+        "image": null,
+        "summary": "<p>The story of a Jason who lost his family.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3591068"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/61315",
+            "name": "Dark Matter"
+          }
+        }
+      },
+      {
+        "id": 3591069,
+        "url": "https://www.tvmaze.com/episodes/3591069/dark-matter-2x06-what-the-universe-is-made-of",
+        "name": "What the Universe Is Made Of",
+        "season": 2,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2026-10-02",
+        "airtime": "",
+        "airstamp": "2026-10-02T12:00:00+00:00",
+        "runtime": null,
+        "rating": {
+          "average": null
+        },
+        "image": null,
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3591069"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/61315",
+            "name": "Dark Matter"
+          }
+        }
+      },
+      {
+        "id": 3591070,
+        "url": "https://www.tvmaze.com/episodes/3591070/dark-matter-2x07-the-pyramid",
+        "name": "The Pyramid",
+        "season": 2,
+        "number": 7,
+        "type": "regular",
+        "airdate": "2026-10-09",
+        "airtime": "",
+        "airstamp": "2026-10-09T12:00:00+00:00",
+        "runtime": null,
+        "rating": {
+          "average": null
+        },
+        "image": null,
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3591070"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/61315",
+            "name": "Dark Matter"
+          }
+        }
+      },
+      {
+        "id": 3591071,
+        "url": "https://www.tvmaze.com/episodes/3591071/dark-matter-2x08-the-basic-oneness-of-everything",
+        "name": "The Basic Oneness of Everything",
+        "season": 2,
+        "number": 8,
+        "type": "regular",
+        "airdate": "2026-10-16",
+        "airtime": "",
+        "airstamp": "2026-10-16T12:00:00+00:00",
+        "runtime": null,
+        "rating": {
+          "average": null
+        },
+        "image": null,
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3591071"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/61315",
+            "name": "Dark Matter"
+          }
+        }
+      },
+      {
+        "id": 3591072,
+        "url": "https://www.tvmaze.com/episodes/3591072/dark-matter-2x09-how-to-build-the-box",
+        "name": "How to Build the Box",
+        "season": 2,
+        "number": 9,
+        "type": "regular",
+        "airdate": "2026-10-23",
+        "airtime": "",
+        "airstamp": "2026-10-23T12:00:00+00:00",
+        "runtime": null,
+        "rating": {
+          "average": null
+        },
+        "image": null,
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3591072"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/61315",
+            "name": "Dark Matter"
+          }
+        }
+      },
+      {
+        "id": 3591073,
+        "url": "https://www.tvmaze.com/episodes/3591073/dark-matter-2x10-no-quiet-life",
+        "name": "No Quiet Life",
+        "season": 2,
+        "number": 10,
+        "type": "regular",
+        "airdate": "2026-10-30",
+        "airtime": "",
+        "airstamp": "2026-10-30T12:00:00+00:00",
+        "runtime": null,
+        "rating": {
+          "average": null
+        },
+        "image": null,
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3591073"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/61315",
+            "name": "Dark Matter"
+          }
+        }
+      }
+    ],
+    "seasons": [
+      {
+        "id": 137012,
+        "url": "https://www.tvmaze.com/seasons/137012/dark-matter-season-1",
+        "number": 1,
+        "name": "",
+        "episodeOrder": 9,
+        "premiereDate": "2024-05-08",
+        "endDate": "2024-06-26",
+        "network": null,
+        "webChannel": {
+          "id": 310,
+          "name": "Apple TV",
+          "country": null,
+          "officialSite": "https://tv.apple.com/"
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/633/1584792.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/633/1584792.jpg"
+        },
+        "summary": "<p>The series follows Jason Dessen, a physicist, professor, and family man who - one night while walking home on the streets of Chicago - is abducted into an alternate version of his life. Wonder quickly turns to nightmare when he tries to return to his reality amid the mind-bending landscape of lives he could have lived. In this labyrinth of realities, he embarks on a harrowing journey to get back to his true family and save them from the most terrifying, unbeatable foe imaginable: himself.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/137012"
+          }
+        }
+      },
+      {
+        "id": 173798,
+        "url": "https://www.tvmaze.com/seasons/173798/dark-matter-season-2",
+        "number": 2,
+        "name": "",
+        "episodeOrder": 10,
+        "premiereDate": "2026-08-28",
+        "endDate": "2026-10-30",
+        "network": null,
+        "webChannel": {
+          "id": 310,
+          "name": "Apple TV",
+          "country": null,
+          "officialSite": "https://tv.apple.com/"
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/633/1584791.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/633/1584791.jpg"
+        },
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/173798"
+          }
+        }
+      }
+    ]
+  }
+}

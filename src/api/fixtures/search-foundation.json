@@ -1,0 +1,222 @@
+[
+  {
+    "score": 0.8965063,
+    "show": {
+      "id": 35951,
+      "url": "https://www.tvmaze.com/shows/35951/foundation",
+      "name": "Foundation",
+      "type": "Scripted",
+      "language": "English",
+      "genres": ["Drama", "Science-Fiction", "Mystery"],
+      "status": "Running",
+      "runtime": null,
+      "averageRuntime": 53,
+      "premiered": "2021-09-24",
+      "ended": null,
+      "officialSite": "https://tv.apple.com/us/show/foundation/umc.cmc.5983fipzqbicvrve6jdfep4x3?l=en",
+      "schedule": {
+        "time": "",
+        "days": ["Friday"]
+      },
+      "rating": {
+        "average": 7.6
+      },
+      "weight": 100,
+      "network": null,
+      "webChannel": {
+        "id": 310,
+        "name": "Apple TV",
+        "country": null,
+        "officialSite": "https://tv.apple.com/"
+      },
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 366972,
+        "imdb": "tt0804484"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/573/1433544.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/573/1433544.jpg"
+      },
+      "summary": "<p>When revolutionary Dr. Hari Seldon predicts the impending fall of the Empire, he and a band of loyal followers venture to the far reaches of the galaxy to establish The Foundation in an attempt to rebuild and preserve the future of civilization. Enraged by Hari's claims, the ruling Cleons – a long line of emperor clones – fear their grasp on the galaxy may be weakening as they're forced to reckon with the potential reality of losing their legacy forever.</p>",
+      "updated": 1757672516,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/35951"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/3231345",
+          "name": "The Darkness"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.64585984,
+    "show": {
+      "id": 39012,
+      "url": "https://www.tvmaze.com/shows/39012/the-foundation",
+      "name": "The Foundation",
+      "type": "Scripted",
+      "language": "English",
+      "genres": ["Comedy"],
+      "status": "Ended",
+      "runtime": 25,
+      "averageRuntime": 25,
+      "premiered": "2009-09-13",
+      "ended": "2009-10-11",
+      "officialSite": "https://www.showcase.ca/thefoundation/",
+      "schedule": {
+        "time": "",
+        "days": ["Sunday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 45,
+      "network": {
+        "id": 6,
+        "name": "Showcase",
+        "country": {
+          "name": "Canada",
+          "code": "CA",
+          "timezone": "America/Toronto"
+        },
+        "officialSite": null
+      },
+      "webChannel": null,
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 292144,
+        "imdb": "tt1512813"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/170/426349.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/170/426349.jpg"
+      },
+      "summary": "<p><b>The Foundation</b> is an irreverent comedy series about an uncharitable man at the helm of a charitable organization. The series revolves around an irresponsible, corrupt man holding the reins of a powerful non-profit organization. Michael Valmont-Selkirk is an impressive hypocrite doing much wrong in the face of great righteousness. <i>The Foundation</i> wags its fat cat finger at the well-heeled philanthropists and donators who earnestly relieve their guilt in the high stakes world of philanthropy and non-profit charity fund-raising. In this world of so many worthy causes, Michael Valmont-Selkirk has but one cause dear to his heart - himself.</p>",
+      "updated": 1667163190,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/39012"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/1543181",
+          "name": "Springing Jett"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.56150275,
+    "show": {
+      "id": 20709,
+      "url": "https://www.tvmaze.com/shows/20709/better-life-foundation",
+      "name": "Better Life Foundation",
+      "type": "Scripted",
+      "language": "English",
+      "genres": ["Comedy"],
+      "status": "Ended",
+      "runtime": 24,
+      "averageRuntime": 24,
+      "premiered": "2016-06-07",
+      "ended": "2018-08-10",
+      "officialSite": "https://www.youtube.com/playlist?list=PLFM6PquCUdebrv_iQmSHlQwOERwsFCPA2",
+      "schedule": {
+        "time": "",
+        "days": ["Friday"]
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 51,
+      "network": null,
+      "webChannel": {
+        "id": 21,
+        "name": "YouTube",
+        "country": null,
+        "officialSite": "https://www.youtube.com"
+      },
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 313581,
+        "imdb": "tt5987936"
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/73/182882.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/73/182882.jpg"
+      },
+      "summary": "<p>A documentary crew follows a group of five passionate NGO workers and a reluctant volunteer, trying to make the world a better place.</p>",
+      "updated": 1633462155,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/20709"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/1513014",
+          "name": "Parent Trap"
+        }
+      }
+    }
+  },
+  {
+    "score": 0.2894704,
+    "show": {
+      "id": 80733,
+      "url": "https://www.tvmaze.com/shows/80733/foundations-of-the-west",
+      "name": "Foundations of the West",
+      "type": "Documentary",
+      "language": "English",
+      "genres": [],
+      "status": "Running",
+      "runtime": null,
+      "averageRuntime": null,
+      "premiered": "2024-08-14",
+      "ended": null,
+      "officialSite": "https://www.dailywire.com/show/foundations-of-the-west",
+      "schedule": {
+        "time": "00:00",
+        "days": []
+      },
+      "rating": {
+        "average": null
+      },
+      "weight": 59,
+      "network": null,
+      "webChannel": {
+        "id": 580,
+        "name": "DailyWire+",
+        "country": {
+          "name": "United States",
+          "code": "US",
+          "timezone": "America/New_York"
+        },
+        "officialSite": "https://www.dailywire.com/watch"
+      },
+      "dvdCountry": null,
+      "externals": {
+        "tvrage": null,
+        "thetvdb": 453833,
+        "imdb": null
+      },
+      "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/548/1371590.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/548/1371590.jpg"
+      },
+      "summary": "<p>Explore ancient Western cities with Dr. Jordan Peterson &amp; experts in a 5-part series, uncovering their impact on the modern world.</p>",
+      "updated": 1734736087,
+      "_links": {
+        "self": {
+          "href": "https://api.tvmaze.com/shows/80733"
+        },
+        "previousepisode": {
+          "href": "https://api.tvmaze.com/episodes/3049353",
+          "name": "Symposium: War on the West"
+        }
+      }
+    }
+  }
+]

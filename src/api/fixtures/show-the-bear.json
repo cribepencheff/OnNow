@@ -1,0 +1,1541 @@
+{
+  "id": 54198,
+  "url": "https://www.tvmaze.com/shows/54198/the-bear",
+  "name": "The Bear",
+  "type": "Scripted",
+  "language": "English",
+  "genres": ["Drama", "Comedy", "Food"],
+  "status": "Ended",
+  "runtime": null,
+  "averageRuntime": 35,
+  "premiered": "2022-06-23",
+  "ended": "2026-06-25",
+  "officialSite": "https://www.hulu.com/series/the-bear-05eb6a8e-90ed-4947-8c0b-e6536cbddd5f",
+  "schedule": {
+    "time": "",
+    "days": []
+  },
+  "rating": {
+    "average": 7.4
+  },
+  "weight": 100,
+  "network": null,
+  "webChannel": {
+    "id": 2,
+    "name": "Hulu",
+    "country": {
+      "name": "United States",
+      "code": "US",
+      "timezone": "America/New_York"
+    },
+    "officialSite": "https://www.hulu.com/"
+  },
+  "dvdCountry": null,
+  "externals": {
+    "tvrage": null,
+    "thetvdb": 403294,
+    "imdb": "tt14452776"
+  },
+  "image": {
+    "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/629/1574642.jpg",
+    "original": "https://static.tvmaze.com/uploads/images/original_untouched/629/1574642.jpg"
+  },
+  "summary": "<p>Carmy, a young fine-dining chef, comes home to Chicago to run his family sandwich shop. As he fights to transform the shop and himself, he works alongside a rough-around-the-edges crew that ultimately reveal themselves as his chosen family.</p>",
+  "updated": 1782836072,
+  "_links": {
+    "self": {
+      "href": "https://api.tvmaze.com/shows/54198"
+    },
+    "previousepisode": {
+      "href": "https://api.tvmaze.com/episodes/3610948",
+      "name": "The Original Beef of Chicagoland"
+    }
+  },
+  "_embedded": {
+    "episodes": [
+      {
+        "id": 2328025,
+        "url": "https://www.tvmaze.com/episodes/2328025/the-bear-1x01-system",
+        "name": "System",
+        "season": 1,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2022-06-23",
+        "airtime": "",
+        "airstamp": "2022-06-23T16:00:00+00:00",
+        "runtime": 28,
+        "rating": {
+          "average": 7.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/413/1034362.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/413/1034362.jpg"
+        },
+        "summary": "<p>Carmy attempts to retrain the employees of The Original Beef of Chicagoland, but is faced with resistance. In need of back-up, he brings on a talented young chef to help.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2328025"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 2328026,
+        "url": "https://www.tvmaze.com/episodes/2328026/the-bear-1x02-hands",
+        "name": "Hands",
+        "season": 1,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2022-06-23",
+        "airtime": "",
+        "airstamp": "2022-06-23T16:00:00+00:00",
+        "runtime": 31,
+        "rating": {
+          "average": 7.7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/465/1164943.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/465/1164943.jpg"
+        },
+        "summary": "<p>A surprise health inspection reveals the cracks in the restaurant's foundation. Carmy goes head-to-head with Richie.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2328026"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 2328027,
+        "url": "https://www.tvmaze.com/episodes/2328027/the-bear-1x03-brigade",
+        "name": "Brigade",
+        "season": 1,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2022-06-23",
+        "airtime": "",
+        "airstamp": "2022-06-23T16:00:00+00:00",
+        "runtime": 29,
+        "rating": {
+          "average": 7.9
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/465/1164944.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/465/1164944.jpg"
+        },
+        "summary": "<p>Carmy attends Al-Anon. Sydney struggles to gain the respect of the staff.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2328027"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 2328028,
+        "url": "https://www.tvmaze.com/episodes/2328028/the-bear-1x04-dogs",
+        "name": "Dogs",
+        "season": 1,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2022-06-23",
+        "airtime": "",
+        "airstamp": "2022-06-23T16:00:00+00:00",
+        "runtime": 30,
+        "rating": {
+          "average": 8.1
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/465/1164945.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/465/1164945.jpg"
+        },
+        "summary": "<p>Carmy and Richie cater a kid's birthday party. Tina and Sydney work together while Marcus makes donuts.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2328028"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 2328029,
+        "url": "https://www.tvmaze.com/episodes/2328029/the-bear-1x05-sheridan",
+        "name": "Sheridan",
+        "season": 1,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2022-06-23",
+        "airtime": "",
+        "airstamp": "2022-06-23T16:00:00+00:00",
+        "runtime": 25,
+        "rating": {
+          "average": 8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/465/1164946.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/465/1164946.jpg"
+        },
+        "summary": "<p>Things go wrong in the kitchen. Sydney finds solutions.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2328029"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 2328030,
+        "url": "https://www.tvmaze.com/episodes/2328030/the-bear-1x06-ceres",
+        "name": "Ceres",
+        "season": 1,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2022-06-23",
+        "airtime": "",
+        "airstamp": "2022-06-23T16:00:00+00:00",
+        "runtime": 31,
+        "rating": {
+          "average": 8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/465/1164947.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/465/1164947.jpg"
+        },
+        "summary": "<p>Richie notices the neighborhood is changing. Sugar and Carmy clean up the office.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2328030"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 2328031,
+        "url": "https://www.tvmaze.com/episodes/2328031/the-bear-1x07-review",
+        "name": "Review",
+        "season": 1,
+        "number": 7,
+        "type": "regular",
+        "airdate": "2022-06-23",
+        "airtime": "",
+        "airstamp": "2022-06-23T16:00:00+00:00",
+        "runtime": 20,
+        "rating": {
+          "average": 8.7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/465/1164948.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/465/1164948.jpg"
+        },
+        "summary": "<p>A bad day in the kitchen. Tensions rise.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2328031"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 2328032,
+        "url": "https://www.tvmaze.com/episodes/2328032/the-bear-1x08-braciole",
+        "name": "Braciole",
+        "season": 1,
+        "number": 8,
+        "type": "regular",
+        "airdate": "2022-06-23",
+        "airtime": "",
+        "airstamp": "2022-06-23T16:00:00+00:00",
+        "runtime": 48,
+        "rating": {
+          "average": 8.6
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/465/1164949.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/465/1164949.jpg"
+        },
+        "summary": "<p>Things get out of control. Carmy is faced with a decision.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2328032"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 2544237,
+        "url": "https://www.tvmaze.com/episodes/2544237/the-bear-2x01-beef",
+        "name": "Beef",
+        "season": 2,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2023-06-22",
+        "airtime": "",
+        "airstamp": "2023-06-22T16:00:00+00:00",
+        "runtime": 29,
+        "rating": {
+          "average": 7.9
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/465/1164933.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/465/1164933.jpg"
+        },
+        "summary": "<p>Faced with the reality of opening a new restaurant, the crew must make a plan.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2544237"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 2570357,
+        "url": "https://www.tvmaze.com/episodes/2570357/the-bear-2x02-pasta",
+        "name": "Pasta",
+        "season": 2,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2023-06-22",
+        "airtime": "",
+        "airstamp": "2023-06-22T16:00:00+00:00",
+        "runtime": 30,
+        "rating": {
+          "average": 8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/465/1162969.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/465/1162969.jpg"
+        },
+        "summary": "<p>The crew splits up to work towards their new vision.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2570357"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 2570358,
+        "url": "https://www.tvmaze.com/episodes/2570358/the-bear-2x03-sundae",
+        "name": "Sundae",
+        "season": 2,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2023-06-22",
+        "airtime": "",
+        "airstamp": "2023-06-22T16:00:00+00:00",
+        "runtime": 26,
+        "rating": {
+          "average": 7.9
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/465/1164935.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/465/1164935.jpg"
+        },
+        "summary": "<p>Sydney searches Chicago for culinary inspiration.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2570358"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 2570359,
+        "url": "https://www.tvmaze.com/episodes/2570359/the-bear-2x04-honeydew",
+        "name": "Honeydew",
+        "season": 2,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2023-06-22",
+        "airtime": "",
+        "airstamp": "2023-06-22T16:00:00+00:00",
+        "runtime": 30,
+        "rating": {
+          "average": 8.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/465/1164936.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/465/1164936.jpg"
+        },
+        "summary": "<p>Marcus challenges himself.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2570359"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 2570360,
+        "url": "https://www.tvmaze.com/episodes/2570360/the-bear-2x05-pop",
+        "name": "Pop",
+        "season": 2,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2023-06-22",
+        "airtime": "",
+        "airstamp": "2023-06-22T16:00:00+00:00",
+        "runtime": 33,
+        "rating": {
+          "average": 8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/465/1164937.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/465/1164937.jpg"
+        },
+        "summary": "<p>The renovation gets off track.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2570360"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 2570361,
+        "url": "https://www.tvmaze.com/episodes/2570361/the-bear-2x06-fishes",
+        "name": "Fishes",
+        "season": 2,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2023-06-22",
+        "airtime": "",
+        "airstamp": "2023-06-22T16:00:00+00:00",
+        "runtime": 66,
+        "rating": {
+          "average": 8.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/465/1164938.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/465/1164938.jpg"
+        },
+        "summary": "<p>Feast of the Seven Fishes.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2570361"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 2570362,
+        "url": "https://www.tvmaze.com/episodes/2570362/the-bear-2x07-forks",
+        "name": "Forks",
+        "season": 2,
+        "number": 7,
+        "type": "regular",
+        "airdate": "2023-06-22",
+        "airtime": "",
+        "airstamp": "2023-06-22T16:00:00+00:00",
+        "runtime": 35,
+        "rating": {
+          "average": 8.8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/465/1164939.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/465/1164939.jpg"
+        },
+        "summary": "<p>Richie stages.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2570362"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 2570363,
+        "url": "https://www.tvmaze.com/episodes/2570363/the-bear-2x08-bolognese",
+        "name": "Bolognese",
+        "season": 2,
+        "number": 8,
+        "type": "regular",
+        "airdate": "2023-06-22",
+        "airtime": "",
+        "airstamp": "2023-06-22T16:00:00+00:00",
+        "runtime": 32,
+        "rating": {
+          "average": 8.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/465/1164942.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/465/1164942.jpg"
+        },
+        "summary": "<p>The crew awaits a do or die fire suppression test.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2570363"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 2570364,
+        "url": "https://www.tvmaze.com/episodes/2570364/the-bear-2x09-omelette",
+        "name": "Omelette",
+        "season": 2,
+        "number": 9,
+        "type": "regular",
+        "airdate": "2023-06-22",
+        "airtime": "",
+        "airstamp": "2023-06-22T16:00:00+00:00",
+        "runtime": 39,
+        "rating": {
+          "average": 8.2
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/465/1164940.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/465/1164940.jpg"
+        },
+        "summary": "<p>Final preparations are made for The Bear's first service.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2570364"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 2570365,
+        "url": "https://www.tvmaze.com/episodes/2570365/the-bear-2x10-the-bear",
+        "name": "The Bear",
+        "season": 2,
+        "number": 10,
+        "type": "regular",
+        "airdate": "2023-06-22",
+        "airtime": "",
+        "airstamp": "2023-06-22T16:00:00+00:00",
+        "runtime": 41,
+        "rating": {
+          "average": 8.6
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/465/1164941.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/465/1164941.jpg"
+        },
+        "summary": "<p>Friends and family night at The Bear.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2570365"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 2859042,
+        "url": "https://www.tvmaze.com/episodes/2859042/the-bear-3x01-tomorrow",
+        "name": "Tomorrow",
+        "season": 3,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2024-06-26",
+        "airtime": "21:00",
+        "airstamp": "2024-06-27T01:00:00+00:00",
+        "runtime": 37,
+        "rating": {
+          "average": 7.9
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/524/1312449.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/524/1312449.jpg"
+        },
+        "summary": "<p>The next day and the days that led to it.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2859042"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 2895676,
+        "url": "https://www.tvmaze.com/episodes/2895676/the-bear-3x02-next",
+        "name": "Next",
+        "season": 3,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2024-06-26",
+        "airtime": "21:00",
+        "airstamp": "2024-06-27T01:00:00+00:00",
+        "runtime": 27,
+        "rating": {
+          "average": 7.7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/524/1312450.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/524/1312450.jpg"
+        },
+        "summary": "<p>Carmy sets a new standard.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2895676"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 2895677,
+        "url": "https://www.tvmaze.com/episodes/2895677/the-bear-3x03-doors",
+        "name": "Doors",
+        "season": 3,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2024-06-26",
+        "airtime": "21:00",
+        "airstamp": "2024-06-27T01:00:00+00:00",
+        "runtime": 30,
+        "rating": {
+          "average": 7.6
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/524/1312451.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/524/1312451.jpg"
+        },
+        "summary": "<p>The staff slogs through a month of service.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2895677"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 2895678,
+        "url": "https://www.tvmaze.com/episodes/2895678/the-bear-3x04-violet",
+        "name": "Violet",
+        "season": 3,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2024-06-26",
+        "airtime": "21:00",
+        "airstamp": "2024-06-27T01:00:00+00:00",
+        "runtime": 33,
+        "rating": {
+          "average": 7.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/524/1312452.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/524/1312452.jpg"
+        },
+        "summary": "<p>Sydney gets a new apartment. Marcus finds inspiration.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2895678"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 2895679,
+        "url": "https://www.tvmaze.com/episodes/2895679/the-bear-3x05-children",
+        "name": "Children",
+        "season": 3,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2024-06-26",
+        "airtime": "21:00",
+        "airstamp": "2024-06-27T01:00:00+00:00",
+        "runtime": 34,
+        "rating": {
+          "average": 7.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/524/1312453.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/524/1312453.jpg"
+        },
+        "summary": "<p>The Computer gives The Bear its odds.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2895679"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 2895680,
+        "url": "https://www.tvmaze.com/episodes/2895680/the-bear-3x06-napkins",
+        "name": "Napkins",
+        "season": 3,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2024-06-26",
+        "airtime": "21:00",
+        "airstamp": "2024-06-27T01:00:00+00:00",
+        "runtime": 33,
+        "rating": {
+          "average": 8.1
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/524/1312454.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/524/1312454.jpg"
+        },
+        "summary": "<p>Tina looks for a new opportunity.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2895680"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 2895681,
+        "url": "https://www.tvmaze.com/episodes/2895681/the-bear-3x07-legacy",
+        "name": "Legacy",
+        "season": 3,
+        "number": 7,
+        "type": "regular",
+        "airdate": "2024-06-26",
+        "airtime": "21:00",
+        "airstamp": "2024-06-27T01:00:00+00:00",
+        "runtime": 29,
+        "rating": {
+          "average": 7.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/524/1312455.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/524/1312455.jpg"
+        },
+        "summary": "<p>The restaurant is out of C-Folds. Sydney is presented with an opportunity.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2895681"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 2895682,
+        "url": "https://www.tvmaze.com/episodes/2895682/the-bear-3x08-ice-chips",
+        "name": "Ice Chips",
+        "season": 3,
+        "number": 8,
+        "type": "regular",
+        "airdate": "2024-06-26",
+        "airtime": "21:00",
+        "airstamp": "2024-06-27T01:00:00+00:00",
+        "runtime": 40,
+        "rating": {
+          "average": 7.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/524/1312456.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/524/1312456.jpg"
+        },
+        "summary": "<p>Sugar finds support in an unexpected place.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2895682"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 2895683,
+        "url": "https://www.tvmaze.com/episodes/2895683/the-bear-3x09-apologies",
+        "name": "Apologies",
+        "season": 3,
+        "number": 9,
+        "type": "regular",
+        "airdate": "2024-06-26",
+        "airtime": "21:00",
+        "airstamp": "2024-06-27T01:00:00+00:00",
+        "runtime": 43,
+        "rating": {
+          "average": 7.1
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/524/1312457.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/524/1312457.jpg"
+        },
+        "summary": "<p>Carmy thinks about apologizing.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2895683"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 2895684,
+        "url": "https://www.tvmaze.com/episodes/2895684/the-bear-3x10-forever",
+        "name": "Forever",
+        "season": 3,
+        "number": 10,
+        "type": "regular",
+        "airdate": "2024-06-26",
+        "airtime": "21:00",
+        "airstamp": "2024-06-27T01:00:00+00:00",
+        "runtime": 43,
+        "rating": {
+          "average": 7.7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/524/1312458.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/524/1312458.jpg"
+        },
+        "summary": "<p>Another funeral.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/2895684"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 3228093,
+        "url": "https://www.tvmaze.com/episodes/3228093/the-bear-4x01-groundhogs",
+        "name": "Groundhogs",
+        "season": 4,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2025-06-25",
+        "airtime": "",
+        "airstamp": "2025-06-25T16:00:00+00:00",
+        "runtime": 32,
+        "rating": {
+          "average": 7.6
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/576/1440377.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/576/1440377.jpg"
+        },
+        "summary": "<p>Today looks like yesterday.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3228093"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 3267179,
+        "url": "https://www.tvmaze.com/episodes/3267179/the-bear-4x02-soubise",
+        "name": "Soubise",
+        "season": 4,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2025-06-25",
+        "airtime": "",
+        "airstamp": "2025-06-25T16:00:00+00:00",
+        "runtime": 31,
+        "rating": {
+          "average": 7.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/576/1440378.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/576/1440378.jpg"
+        },
+        "summary": "<p>Gears start to turn.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3267179"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 3267180,
+        "url": "https://www.tvmaze.com/episodes/3267180/the-bear-4x03-scallop",
+        "name": "Scallop",
+        "season": 4,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2025-06-25",
+        "airtime": "",
+        "airstamp": "2025-06-25T16:00:00+00:00",
+        "runtime": 37,
+        "rating": {
+          "average": 7.8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/576/1440379.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/576/1440379.jpg"
+        },
+        "summary": "<p>Opportunity.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3267180"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 3267181,
+        "url": "https://www.tvmaze.com/episodes/3267181/the-bear-4x04-worms",
+        "name": "Worms",
+        "season": 4,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2025-06-25",
+        "airtime": "",
+        "airstamp": "2025-06-25T16:00:00+00:00",
+        "runtime": 32,
+        "rating": {
+          "average": 7.8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/576/1440380.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/576/1440380.jpg"
+        },
+        "summary": "<p>Decisions.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3267181"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 3267182,
+        "url": "https://www.tvmaze.com/episodes/3267182/the-bear-4x05-replicants",
+        "name": "Replicants",
+        "season": 4,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2025-06-25",
+        "airtime": "",
+        "airstamp": "2025-06-25T16:00:00+00:00",
+        "runtime": 33,
+        "rating": {
+          "average": 7.7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/576/1440381.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/576/1440381.jpg"
+        },
+        "summary": "<p>The team resets.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3267182"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 3267183,
+        "url": "https://www.tvmaze.com/episodes/3267183/the-bear-4x06-sophie",
+        "name": "Sophie",
+        "season": 4,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2025-06-25",
+        "airtime": "",
+        "airstamp": "2025-06-25T16:00:00+00:00",
+        "runtime": 29,
+        "rating": {
+          "average": 7.1
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/576/1440382.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/576/1440382.jpg"
+        },
+        "summary": "<p>Sophie's here.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3267183"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 3267184,
+        "url": "https://www.tvmaze.com/episodes/3267184/the-bear-4x07-bears",
+        "name": "Bears",
+        "season": 4,
+        "number": 7,
+        "type": "regular",
+        "airdate": "2025-06-25",
+        "airtime": "",
+        "airstamp": "2025-06-25T16:00:00+00:00",
+        "runtime": 69,
+        "rating": {
+          "average": 8.6
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/576/1440383.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/576/1440383.jpg"
+        },
+        "summary": "<p>The wedding.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3267184"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 3267185,
+        "url": "https://www.tvmaze.com/episodes/3267185/the-bear-4x08-green",
+        "name": "Green",
+        "season": 4,
+        "number": 8,
+        "type": "regular",
+        "airdate": "2025-06-25",
+        "airtime": "",
+        "airstamp": "2025-06-25T16:00:00+00:00",
+        "runtime": 36,
+        "rating": {
+          "average": 7.6
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/576/1440384.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/576/1440384.jpg"
+        },
+        "summary": "<p>Everyone keeps going.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3267185"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 3267186,
+        "url": "https://www.tvmaze.com/episodes/3267186/the-bear-4x09-tonnato",
+        "name": "Tonnato",
+        "season": 4,
+        "number": 9,
+        "type": "regular",
+        "airdate": "2025-06-25",
+        "airtime": "",
+        "airstamp": "2025-06-25T16:00:00+00:00",
+        "runtime": 38,
+        "rating": {
+          "average": 8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/576/1440385.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/576/1440385.jpg"
+        },
+        "summary": "<p>Carmy takes a ride.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3267186"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 3267187,
+        "url": "https://www.tvmaze.com/episodes/3267187/the-bear-4x10-goodbye",
+        "name": "Goodbye",
+        "season": 4,
+        "number": 10,
+        "type": "regular",
+        "airdate": "2025-06-25",
+        "airtime": "",
+        "airstamp": "2025-06-25T16:00:00+00:00",
+        "runtime": 34,
+        "rating": {
+          "average": 8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/576/1440386.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/576/1440386.jpg"
+        },
+        "summary": "<p>Time waits for no one.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3267187"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 3610941,
+        "url": "https://www.tvmaze.com/episodes/3610941/the-bear-5x01-soda",
+        "name": "Soda",
+        "season": 5,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2026-06-25",
+        "airtime": "",
+        "airstamp": "2026-06-25T16:00:00+00:00",
+        "runtime": 21,
+        "rating": {
+          "average": 8.1
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/630/1575211.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/630/1575211.jpg"
+        },
+        "summary": "<p>A storm hits. </p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3610941"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 3610942,
+        "url": "https://www.tvmaze.com/episodes/3610942/the-bear-5x02-lamb",
+        "name": "Lamb",
+        "season": 5,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2026-06-25",
+        "airtime": "",
+        "airstamp": "2026-06-25T16:00:00+00:00",
+        "runtime": 25,
+        "rating": {
+          "average": 8.3
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/630/1575212.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/630/1575212.jpg"
+        },
+        "summary": "<p>The staff prepares for the day. </p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3610942"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 3610943,
+        "url": "https://www.tvmaze.com/episodes/3610943/the-bear-5x03-mint",
+        "name": "Mint",
+        "season": 5,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2026-06-25",
+        "airtime": "",
+        "airstamp": "2026-06-25T16:00:00+00:00",
+        "runtime": 23,
+        "rating": {
+          "average": 8.1
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/630/1575213.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/630/1575213.jpg"
+        },
+        "summary": "<p>A new direction. </p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3610943"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 3610944,
+        "url": "https://www.tvmaze.com/episodes/3610944/the-bear-5x04-ribs",
+        "name": "Ribs",
+        "season": 5,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2026-06-25",
+        "airtime": "",
+        "airstamp": "2026-06-25T16:00:00+00:00",
+        "runtime": 39,
+        "rating": {
+          "average": 8.4
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/630/1575214.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/630/1575214.jpg"
+        },
+        "summary": "<p>Family meal.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3610944"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 3610945,
+        "url": "https://www.tvmaze.com/episodes/3610945/the-bear-5x05-raspberries",
+        "name": "Raspberries",
+        "season": 5,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2026-06-25",
+        "airtime": "",
+        "airstamp": "2026-06-25T16:00:00+00:00",
+        "runtime": 28,
+        "rating": {
+          "average": 8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/630/1575215.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/630/1575215.jpg"
+        },
+        "summary": "<p>A traffic jam.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3610945"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 3610946,
+        "url": "https://www.tvmaze.com/episodes/3610946/the-bear-5x06-focaccia",
+        "name": "Focaccia",
+        "season": 5,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2026-06-25",
+        "airtime": "",
+        "airstamp": "2026-06-25T16:00:00+00:00",
+        "runtime": 28,
+        "rating": {
+          "average": 8.5
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/630/1575216.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/630/1575216.jpg"
+        },
+        "summary": "<p>A seating chart.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3610946"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 3610947,
+        "url": "https://www.tvmaze.com/episodes/3610947/the-bear-5x07-caramel",
+        "name": "Caramel",
+        "season": 5,
+        "number": 7,
+        "type": "regular",
+        "airdate": "2026-06-25",
+        "airtime": "",
+        "airstamp": "2026-06-25T16:00:00+00:00",
+        "runtime": 52,
+        "rating": {
+          "average": 8.8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/630/1575217.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/630/1575217.jpg"
+        },
+        "summary": "<p>A hard service.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3610947"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      },
+      {
+        "id": 3610948,
+        "url": "https://www.tvmaze.com/episodes/3610948/the-bear-5x08-the-original-beef-of-chicagoland",
+        "name": "The Original Beef of Chicagoland",
+        "season": 5,
+        "number": 8,
+        "type": "regular",
+        "airdate": "2026-06-25",
+        "airtime": "",
+        "airstamp": "2026-06-25T16:00:00+00:00",
+        "runtime": 61,
+        "rating": {
+          "average": 8.7
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/630/1575218.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/630/1575218.jpg"
+        },
+        "summary": "<p>After service.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3610948"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/54198",
+            "name": "The Bear"
+          }
+        }
+      }
+    ],
+    "seasons": [
+      {
+        "id": 121642,
+        "url": "https://www.tvmaze.com/seasons/121642/the-bear-season-1",
+        "number": 1,
+        "name": "",
+        "episodeOrder": 8,
+        "premiereDate": "2022-06-23",
+        "endDate": "2022-06-23",
+        "network": null,
+        "webChannel": {
+          "id": 2,
+          "name": "Hulu",
+          "country": {
+            "name": "United States",
+            "code": "US",
+            "timezone": "America/New_York"
+          },
+          "officialSite": "https://www.hulu.com/"
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/460/1151771.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/460/1151771.jpg"
+        },
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/121642"
+          }
+        }
+      },
+      {
+        "id": 147631,
+        "url": "https://www.tvmaze.com/seasons/147631/the-bear-season-2",
+        "number": 2,
+        "name": "",
+        "episodeOrder": 10,
+        "premiereDate": "2023-06-22",
+        "endDate": "2023-06-22",
+        "network": null,
+        "webChannel": {
+          "id": 2,
+          "name": "Hulu",
+          "country": {
+            "name": "United States",
+            "code": "US",
+            "timezone": "America/New_York"
+          },
+          "officialSite": "https://www.hulu.com/"
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/460/1151772.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/460/1151772.jpg"
+        },
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/147631"
+          }
+        }
+      },
+      {
+        "id": 159702,
+        "url": "https://www.tvmaze.com/seasons/159702/the-bear-season-3",
+        "number": 3,
+        "name": "Part III",
+        "episodeOrder": 10,
+        "premiereDate": "2024-06-26",
+        "endDate": "2024-06-26",
+        "network": null,
+        "webChannel": {
+          "id": 2,
+          "name": "Hulu",
+          "country": {
+            "name": "United States",
+            "code": "US",
+            "timezone": "America/New_York"
+          },
+          "officialSite": "https://www.hulu.com/"
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/569/1423892.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/569/1423892.jpg"
+        },
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/159702"
+          }
+        }
+      },
+      {
+        "id": 172143,
+        "url": "https://www.tvmaze.com/seasons/172143/the-bear-season-4",
+        "number": 4,
+        "name": "",
+        "episodeOrder": 10,
+        "premiereDate": "2025-06-25",
+        "endDate": "2025-06-25",
+        "network": null,
+        "webChannel": {
+          "id": 2,
+          "name": "Hulu",
+          "country": {
+            "name": "United States",
+            "code": "US",
+            "timezone": "America/New_York"
+          },
+          "officialSite": "https://www.hulu.com/"
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/569/1423891.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/569/1423891.jpg"
+        },
+        "summary": "<p>Season four finds our chefs pushing forward, determined not only to survive, but also to take The Bear to the next level.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/172143"
+          }
+        }
+      },
+      {
+        "id": 200702,
+        "url": "https://www.tvmaze.com/seasons/200702/the-bear-season-5",
+        "number": 5,
+        "name": "",
+        "episodeOrder": 8,
+        "premiereDate": "2026-05-05",
+        "endDate": "2026-06-25",
+        "network": null,
+        "webChannel": {
+          "id": 2,
+          "name": "Hulu",
+          "country": {
+            "name": "United States",
+            "code": "US",
+            "timezone": "America/New_York"
+          },
+          "officialSite": "https://www.hulu.com/"
+        },
+        "image": null,
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/200702"
+          }
+        }
+      }
+    ]
+  }
+}

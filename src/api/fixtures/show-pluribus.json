@@ -1,0 +1,366 @@
+{
+  "id": 86175,
+  "url": "https://www.tvmaze.com/shows/86175/pluribus",
+  "name": "Pluribus",
+  "type": "Scripted",
+  "language": "English",
+  "genres": ["Drama", "Science-Fiction", "Thriller"],
+  "status": "Running",
+  "runtime": null,
+  "averageRuntime": 49,
+  "premiered": "2025-11-07",
+  "ended": null,
+  "officialSite": "https://tv.apple.com/us/show/pluribus/umc.cmc.37axgovs2yozlyh3c2cmwzlza",
+  "schedule": {
+    "time": "",
+    "days": ["Friday"]
+  },
+  "rating": {
+    "average": 7.8
+  },
+  "weight": 100,
+  "network": null,
+  "webChannel": {
+    "id": 310,
+    "name": "Apple TV",
+    "country": null,
+    "officialSite": "https://tv.apple.com/"
+  },
+  "dvdCountry": null,
+  "externals": {
+    "tvrage": null,
+    "thetvdb": 436457,
+    "imdb": "tt22202452"
+  },
+  "image": {
+    "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/592/1481086.jpg",
+    "original": "https://static.tvmaze.com/uploads/images/original_untouched/592/1481086.jpg"
+  },
+  "summary": "<p>The most miserable person on Earth must save the world from happiness.</p>",
+  "updated": 1783182724,
+  "_links": {
+    "self": {
+      "href": "https://api.tvmaze.com/shows/86175"
+    },
+    "previousepisode": {
+      "href": "https://api.tvmaze.com/episodes/3314586",
+      "name": "La Chica o El Mundo"
+    }
+  },
+  "_embedded": {
+    "episodes": [
+      {
+        "id": 3314578,
+        "url": "https://www.tvmaze.com/episodes/3314578/pluribus-1x01-we-is-us",
+        "name": "We Is Us",
+        "season": 1,
+        "number": 1,
+        "type": "regular",
+        "airdate": "2025-11-07",
+        "airtime": "",
+        "airstamp": "2025-11-07T12:00:00+00:00",
+        "runtime": 56,
+        "rating": {
+          "average": 8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/596/1492097.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/596/1492097.jpg"
+        },
+        "summary": "<p>An astronomer's discovery turns the planet upside down. Carol Sturka, a curmudgeonly novelist, is terrified by this strange new world.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3314578"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/86175",
+            "name": "Pluribus"
+          }
+        }
+      },
+      {
+        "id": 3314579,
+        "url": "https://www.tvmaze.com/episodes/3314579/pluribus-1x02-pirate-lady",
+        "name": "Pirate Lady",
+        "season": 1,
+        "number": 2,
+        "type": "regular",
+        "airdate": "2025-11-07",
+        "airtime": "",
+        "airstamp": "2025-11-07T12:00:00+00:00",
+        "runtime": 62,
+        "rating": {
+          "average": 8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/596/1492093.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/596/1492093.jpg"
+        },
+        "summary": "<p>A curiously familiar face introduces Carol to the bizarre new normal. A gathering in Europe brings strangers together…and causes friction.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3314579"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/86175",
+            "name": "Pluribus"
+          }
+        }
+      },
+      {
+        "id": 3314580,
+        "url": "https://www.tvmaze.com/episodes/3314580/pluribus-1x03-grenade",
+        "name": "Grenade",
+        "season": 1,
+        "number": 3,
+        "type": "regular",
+        "airdate": "2025-11-14",
+        "airtime": "",
+        "airstamp": "2025-11-14T12:00:00+00:00",
+        "runtime": 43,
+        "rating": {
+          "average": 7.8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/596/1492094.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/596/1492094.jpg"
+        },
+        "summary": "<p>The World just wants to help—which infuriates Carol. A heart-to-heart conversation ends with a bang.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3314580"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/86175",
+            "name": "Pluribus"
+          }
+        }
+      },
+      {
+        "id": 3314581,
+        "url": "https://www.tvmaze.com/episodes/3314581/pluribus-1x04-please-carol",
+        "name": "Please, Carol",
+        "season": 1,
+        "number": 4,
+        "type": "regular",
+        "airdate": "2025-11-21",
+        "airtime": "",
+        "airstamp": "2025-11-21T12:00:00+00:00",
+        "runtime": 45,
+        "rating": {
+          "average": 8.2
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/598/1495285.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/598/1495285.jpg"
+        },
+        "summary": "<p>Carol tests the boundaries of this weirdly honest world at the expense of her ego. Far away, a resolute individual learns he's not alone.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3314581"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/86175",
+            "name": "Pluribus"
+          }
+        }
+      },
+      {
+        "id": 3314582,
+        "url": "https://www.tvmaze.com/episodes/3314582/pluribus-1x05-got-milk",
+        "name": "Got Milk",
+        "season": 1,
+        "number": 5,
+        "type": "regular",
+        "airdate": "2025-11-26",
+        "airtime": "",
+        "airstamp": "2025-11-26T12:00:00+00:00",
+        "runtime": 45,
+        "rating": {
+          "average": 8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/599/1499521.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/599/1499521.jpg"
+        },
+        "summary": "<p>Carol doubles down on her investigation—loneliness be damned. Meanwhile, howls in the night reveal a new source of danger.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3314582"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/86175",
+            "name": "Pluribus"
+          }
+        }
+      },
+      {
+        "id": 3314583,
+        "url": "https://www.tvmaze.com/episodes/3314583/pluribus-1x06-hdp",
+        "name": "HDP",
+        "season": 1,
+        "number": 6,
+        "type": "regular",
+        "airdate": "2025-12-05",
+        "airtime": "",
+        "airstamp": "2025-12-05T12:00:00+00:00",
+        "runtime": 49,
+        "rating": {
+          "average": 8.2
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/600/1501060.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/600/1501060.jpg"
+        },
+        "summary": "<p>Carol shares a horrific discovery and learns new truths in the process. Mr. Diabaté lives life to the fullest in Sin City.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3314583"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/86175",
+            "name": "Pluribus"
+          }
+        }
+      },
+      {
+        "id": 3314584,
+        "url": "https://www.tvmaze.com/episodes/3314584/pluribus-1x07-the-gap",
+        "name": "The Gap",
+        "season": 1,
+        "number": 7,
+        "type": "regular",
+        "airdate": "2025-12-12",
+        "airtime": "",
+        "airstamp": "2025-12-12T12:00:00+00:00",
+        "runtime": 45,
+        "rating": {
+          "average": 8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/601/1504814.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/601/1504814.jpg"
+        },
+        "summary": "<p>Manousos begins a dangerous trek to meet Carol. Returning home from Las Vegas, Carol gets creative with her rebellion.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3314584"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/86175",
+            "name": "Pluribus"
+          }
+        }
+      },
+      {
+        "id": 3314585,
+        "url": "https://www.tvmaze.com/episodes/3314585/pluribus-1x08-charm-offensive",
+        "name": "Charm Offensive",
+        "season": 1,
+        "number": 8,
+        "type": "regular",
+        "airdate": "2025-12-19",
+        "airtime": "",
+        "airstamp": "2025-12-19T12:00:00+00:00",
+        "runtime": 42,
+        "rating": {
+          "average": 8.2
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/604/1512492.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/604/1512492.jpg"
+        },
+        "summary": "<p>Carol takes a different tack with The Others and discovers more than she anticipated. Manousos awakens in unfamiliar surroundings.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3314585"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/86175",
+            "name": "Pluribus"
+          }
+        }
+      },
+      {
+        "id": 3314586,
+        "url": "https://www.tvmaze.com/episodes/3314586/pluribus-1x09-la-chica-o-el-mundo",
+        "name": "La Chica o El Mundo",
+        "season": 1,
+        "number": 9,
+        "type": "regular",
+        "airdate": "2025-12-24",
+        "airtime": "",
+        "airstamp": "2025-12-24T12:00:00+00:00",
+        "runtime": 57,
+        "rating": {
+          "average": 8
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/604/1512493.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/604/1512493.jpg"
+        },
+        "summary": "<p>Season finale. Manousos arrives in Albuquerque and complications ensue. Carol visits the last best place on Earth.</p>",
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/episodes/3314586"
+          },
+          "show": {
+            "href": "https://api.tvmaze.com/shows/86175",
+            "name": "Pluribus"
+          }
+        }
+      }
+    ],
+    "seasons": [
+      {
+        "id": 189068,
+        "url": "https://www.tvmaze.com/seasons/189068/pluribus-season-1",
+        "number": 1,
+        "name": "",
+        "episodeOrder": 9,
+        "premiereDate": "2025-11-07",
+        "endDate": "2025-12-24",
+        "network": null,
+        "webChannel": {
+          "id": 310,
+          "name": "Apple TV",
+          "country": null,
+          "officialSite": "https://tv.apple.com/"
+        },
+        "image": {
+          "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/596/1492430.jpg",
+          "original": "https://static.tvmaze.com/uploads/images/original_untouched/596/1492430.jpg"
+        },
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/189068"
+          }
+        }
+      },
+      {
+        "id": 195486,
+        "url": "https://www.tvmaze.com/seasons/195486/pluribus-season-2",
+        "number": 2,
+        "name": "",
+        "episodeOrder": null,
+        "premiereDate": null,
+        "endDate": null,
+        "network": null,
+        "webChannel": {
+          "id": 310,
+          "name": "Apple TV",
+          "country": null,
+          "officialSite": "https://tv.apple.com/"
+        },
+        "image": null,
+        "summary": null,
+        "_links": {
+          "self": {
+            "href": "https://api.tvmaze.com/seasons/195486"
+          }
+        }
+      }
+    ]
+  }
+}
