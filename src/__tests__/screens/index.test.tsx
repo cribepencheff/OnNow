@@ -2,7 +2,6 @@ import { fireEvent, render, screen } from "@testing-library/react-native";
 
 import HomeScreen, { HomeHeaderAddButton } from "@/app/(tabs)/index";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
-import { useShow } from "@/hooks/useShow";
 import type { TvMazeEpisode, TvMazeShow } from "@/api/tvmaze-types";
 
 const mockPush = jest.fn();
@@ -13,9 +12,6 @@ jest.mock("expo-router", () => ({
 jest.mock("@/hooks/useFollowedEpisodes", () => ({
   useFollowedEpisodes: jest.fn(),
 }));
-jest.mock("@/hooks/useShow", () => ({
-  useShow: jest.fn(),
-}));
 jest.mock("@/hooks/useToday", () => ({
   useToday: () => "2026-09-21",
 }));
@@ -23,7 +19,6 @@ jest.mock("@/hooks/useToday", () => ({
 const mockedUseFollowedEpisodes = useFollowedEpisodes as jest.MockedFunction<
   typeof useFollowedEpisodes
 >;
-const mockedUseShow = useShow as jest.MockedFunction<typeof useShow>;
 
 function makeShow(overrides: Partial<TvMazeShow> = {}): TvMazeShow {
   return {
@@ -78,6 +73,7 @@ function mockFollowedEpisodes(
     isError: false,
     dataUpdatedAt: null,
     showsWithEpisodeToday: [],
+    nextDayEpisodes: null,
     nextByShow: [],
     refetch,
     ...overrides,
@@ -90,7 +86,6 @@ describe("HomeScreen", () => {
   beforeEach(() => {
     mockPush.mockClear();
     refetch.mockClear();
-    mockedUseShow.mockReturnValue({ data: undefined } as never);
   });
 
   it("renders one card when one followed show has an episode today (FR-004)", async () => {
@@ -147,7 +142,7 @@ describe("HomeScreen", () => {
     expect(screen.getByText("Episodes 1–3 · AMC")).toBeTruthy();
   });
 
-  it("shows the next upcoming episode labelled with its day when today is empty (FR-006)", async () => {
+  it("shows one card labelled TOMORROW · 1/1 when one show releases on the next day with episodes (FR-006)", async () => {
     const show = makeShow({ name: "Silo" });
     const episode = makeEpisode({
       season: 2,
@@ -155,15 +150,81 @@ describe("HomeScreen", () => {
       airstamp: "2026-09-22T18:00:00+00:00",
     });
     mockFollowedEpisodes({
-      nextByShow: [{ showId: show.id, next: { kind: "episode", episode } }],
+      nextDayEpisodes: {
+        localDate: "2026-09-22",
+        shows: [{ show, episodes: [episode] }],
+      },
     });
-    mockedUseShow.mockReturnValue({ data: show } as never);
 
     await render(<HomeScreen />);
 
-    expect(screen.getByText("TOMORROW")).toBeTruthy();
+    expect(screen.getAllByTestId("home-card")).toHaveLength(1);
+    expect(screen.getByText("TOMORROW · 1/1")).toBeTruthy();
     expect(screen.getByText("Silo")).toBeTruthy();
     expect(screen.getByText("S2E3 · AMC")).toBeTruthy();
+  });
+
+  it("shows two cards labelled TOMORROW · 1/2 and 2/2 when two shows release on the next day with episodes (FR-006)", async () => {
+    const showA = makeShow({ id: 1, name: "Slow Horses" });
+    const showB = makeShow({ id: 2, name: "Silo" });
+    const episodeA = makeEpisode({ airstamp: "2026-09-22T18:00:00+00:00" });
+    const episodeB = makeEpisode({ airstamp: "2026-09-22T20:00:00+00:00" });
+    mockFollowedEpisodes({
+      nextDayEpisodes: {
+        localDate: "2026-09-22",
+        shows: [
+          { show: showA, episodes: [episodeA] },
+          { show: showB, episodes: [episodeB] },
+        ],
+      },
+    });
+
+    await render(<HomeScreen />);
+
+    expect(screen.getAllByTestId("home-card")).toHaveLength(2);
+    expect(screen.getByText("TOMORROW · 1/2")).toBeTruthy();
+
+    await fireEvent(screen.getByTestId("home-pager"), "momentumScrollEnd", {
+      nativeEvent: {
+        contentOffset: { x: 400 },
+        layoutMeasurement: { width: 400 },
+      },
+    });
+
+    expect(screen.getByText("TOMORROW · 2/2")).toBeTruthy();
+  });
+
+  it("labels the next day with episodes by its date, not TOMORROW, when it is further away (FR-006)", async () => {
+    const show = makeShow({ name: "Silo" });
+    const episode = makeEpisode({ airstamp: "2026-09-24T18:00:00+00:00" });
+    mockFollowedEpisodes({
+      nextDayEpisodes: {
+        localDate: "2026-09-24",
+        shows: [{ show, episodes: [episode] }],
+      },
+    });
+
+    await render(<HomeScreen />);
+
+    expect(screen.getByText("THU 24 SEP · 1/1")).toBeTruthy();
+  });
+
+  it("shows several episodes of one show on the next day as one card (FR-012)", async () => {
+    const show = makeShow({ name: "The Bear" });
+    const episodes = [1, 2, 3].map((number) =>
+      makeEpisode({ number, airstamp: "2026-09-22T18:00:00+00:00" }),
+    );
+    mockFollowedEpisodes({
+      nextDayEpisodes: {
+        localDate: "2026-09-22",
+        shows: [{ show, episodes }],
+      },
+    });
+
+    await render(<HomeScreen />);
+
+    expect(screen.getAllByTestId("home-card")).toHaveLength(1);
+    expect(screen.getByText("Episodes 1–3 · AMC")).toBeTruthy();
   });
 
   it("shows Add your first show when the follow list is empty and opens Search (backlog CRI-66, PRD FR-013)", async () => {
@@ -183,10 +244,7 @@ describe("HomeScreen", () => {
   it("shows a quiet line when followed shows exist but none has a known upcoming episode", async () => {
     mockFollowedEpisodes({
       followedCount: 2,
-      nextByShow: [
-        { showId: 1, next: { kind: "status", status: "Ended" } },
-        { showId: 2, next: { kind: "status", status: "To Be Determined" } },
-      ],
+      nextDayEpisodes: null,
     });
 
     await render(<HomeScreen />);

@@ -21,22 +21,15 @@ import { SymbolView } from "expo-symbols";
 
 import { HomeCard } from "@/components/HomeCard";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
-import { useShow } from "@/hooks/useShow";
 import { useToday } from "@/hooks/useToday";
 import {
   deriveHomeViewState,
   homeCardMetaLine,
+  nextDayCountLabel,
   todayCountLabel,
-  upcomingDayLabel,
 } from "@/logic/home";
-import { localDateFromAirstamp, type LocalDate } from "@/logic/local-date";
 import type { ShowEpisodesToday } from "@/logic/episodes-today";
-import type { TvMazeEpisode } from "@/api/tvmaze-types";
 import { accent } from "@/theme/color";
-
-function deviceTimeZone(): string {
-  return Intl.DateTimeFormat().resolvedOptions().timeZone;
-}
 
 // FR-007: the "+" in Home's header, opening Search. Rendered through the
 // tab navigator's own `headerRight` (configured in `(tabs)/_layout.tsx`)
@@ -68,7 +61,6 @@ export default function HomeScreen() {
   const router = useRouter();
   const { width } = useWindowDimensions();
   const todayDate = useToday();
-  const timeZone = deviceTimeZone();
 
   const {
     followedCount,
@@ -76,7 +68,7 @@ export default function HomeScreen() {
     isRefetching,
     isError,
     showsWithEpisodeToday,
-    nextByShow,
+    nextDayEpisodes,
     refetch,
   } = useFollowedEpisodes();
 
@@ -87,7 +79,7 @@ export default function HomeScreen() {
     isLoading,
     isError,
     showsWithEpisodeToday,
-    nextByShow,
+    nextDayEpisodes,
   });
 
   const openSearch = useCallback(() => router.push("/search"), [router]);
@@ -117,20 +109,27 @@ export default function HomeScreen() {
         }
       >
         {state.kind === "today" && (
-          <TodayPager
+          <EpisodePager
             shows={state.shows}
+            badgeLabel={todayCountLabel(pageIndex, state.shows.length)}
             width={width}
             pageIndex={pageIndex}
             onMomentumScrollEnd={handleMomentumScrollEnd}
           />
         )}
 
-        {state.kind === "next-episode" && (
-          <NextEpisodeCard
-            showId={state.showId}
-            episode={state.episode}
-            todayDate={todayDate}
-            timeZone={timeZone}
+        {state.kind === "next-day" && (
+          <EpisodePager
+            shows={state.shows}
+            badgeLabel={nextDayCountLabel(
+              state.localDate,
+              todayDate,
+              pageIndex,
+              state.shows.length,
+            )}
+            width={width}
+            pageIndex={pageIndex}
+            onMomentumScrollEnd={handleMomentumScrollEnd}
           />
         )}
 
@@ -156,27 +155,27 @@ export default function HomeScreen() {
   );
 }
 
-interface TodayPagerProps {
+interface EpisodePagerProps {
   shows: ShowEpisodesToday[];
+  badgeLabel: string;
   width: number;
   pageIndex: number;
   onMomentumScrollEnd: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
 }
 
-function TodayPager({
+// Today's shows (FR-004, FR-005) and the next day with episodes (FR-006)
+// use the same pager: one card per show, paged horizontally, with a badge
+// above (the count, or the day and the count) and page dots below.
+function EpisodePager({
   shows,
+  badgeLabel,
   width,
   pageIndex,
   onMomentumScrollEnd,
-}: TodayPagerProps) {
+}: EpisodePagerProps) {
   return (
     <View style={styles.pagerContainer}>
-      <Text
-        style={styles.badge}
-        accessibilityLabel={`New today, show ${pageIndex + 1} of ${shows.length}`}
-      >
-        {todayCountLabel(pageIndex, shows.length)}
-      </Text>
+      <Text style={styles.badge}>{badgeLabel}</Text>
       <FlatList
         testID="home-pager"
         data={shows}
@@ -207,35 +206,6 @@ function TodayPager({
           ))}
         </View>
       )}
-    </View>
-  );
-}
-
-interface NextEpisodeCardProps {
-  showId: number;
-  episode: TvMazeEpisode;
-  todayDate: LocalDate;
-  timeZone: string;
-}
-
-function NextEpisodeCard({
-  showId,
-  episode,
-  todayDate,
-  timeZone,
-}: NextEpisodeCardProps) {
-  const { data: show } = useShow(showId);
-
-  if (!show) {
-    return null;
-  }
-
-  const localDate = localDateFromAirstamp(episode.airstamp, timeZone);
-
-  return (
-    <View style={styles.pagerContainer}>
-      <Text style={styles.badge}>{upcomingDayLabel(localDate, todayDate)}</Text>
-      <HomeCard show={show} metaLine={homeCardMetaLine(show, [episode])} />
     </View>
   );
 }

@@ -1,9 +1,10 @@
 import {
   deriveHomeViewState,
-  earliestUpcomingEpisode,
   episodeCode,
   episodesLabel,
+  findNextDayWithEpisodes,
   homeCardMetaLine,
+  nextDayCountLabel,
   todayCountLabel,
   upcomingDayLabel,
 } from "./home";
@@ -94,43 +95,95 @@ describe("todayCountLabel (FR-005)", () => {
   });
 });
 
-describe("earliestUpcomingEpisode (FR-006)", () => {
-  it("returns null when no followed show has a known upcoming episode", () => {
-    const result = earliestUpcomingEpisode([
-      { showId: 1, next: { kind: "status", status: "Ended" } },
-      {
-        showId: 2,
-        next: {
-          kind: "announced-season",
-          season: {
-            id: 1,
-            url: "",
-            number: 2,
-            name: "",
-            episodeOrder: null,
-            premiereDate: "2026-10-01",
-            endDate: null,
-            network: null,
-            webChannel: null,
-            image: null,
-            summary: null,
-          },
-        },
-      },
-    ]);
+describe("findNextDayWithEpisodes (FR-006, FR-012, FR-037)", () => {
+  const todayDate = "2026-09-21";
+
+  it("returns null when no followed show has an episode after today", () => {
+    const show = makeShow();
+    const episode = makeEpisode({ airstamp: "2026-09-21T18:00:00+00:00" }); // today, not after
+    const result = findNextDayWithEpisodes(
+      [{ show, episodes: [episode] }],
+      "UTC",
+      todayDate,
+    );
     expect(result).toBeNull();
   });
 
-  it("picks the show with the nearest upcoming episode across all followed shows", () => {
-    const later = makeEpisode({ airstamp: "2026-10-01T20:00:00+00:00" });
-    const sooner = makeEpisode({ airstamp: "2026-09-24T20:00:00+00:00" });
+  it("gives one show on the next day one card, position 1 of 1", () => {
+    const show = makeShow({ name: "Silo" });
+    const episode = makeEpisode({ airstamp: "2026-09-22T18:00:00+00:00" });
 
-    const result = earliestUpcomingEpisode([
-      { showId: 1, next: { kind: "episode", episode: later } },
-      { showId: 2, next: { kind: "episode", episode: sooner } },
+    const result = findNextDayWithEpisodes(
+      [{ show, episodes: [episode] }],
+      "UTC",
+      todayDate,
+    );
+
+    expect(result).toEqual({
+      localDate: "2026-09-22",
+      shows: [{ show, episodes: [episode] }],
+    });
+  });
+
+  it("gives two shows releasing the same next day two cards", () => {
+    const showA = makeShow({ id: 1, name: "Slow Horses" });
+    const showB = makeShow({ id: 2, name: "Silo" });
+    const episodeA = makeEpisode({ airstamp: "2026-09-22T18:00:00+00:00" });
+    const episodeB = makeEpisode({ airstamp: "2026-09-22T20:00:00+00:00" });
+
+    const result = findNextDayWithEpisodes(
+      [
+        { show: showA, episodes: [episodeA] },
+        { show: showB, episodes: [episodeB] },
+      ],
+      "UTC",
+      todayDate,
+    );
+
+    expect(result?.localDate).toBe("2026-09-22");
+    expect(result?.shows).toEqual([
+      { show: showA, episodes: [episodeA] },
+      { show: showB, episodes: [episodeB] },
     ]);
+  });
 
-    expect(result).toEqual({ showId: 2, episode: sooner });
+  it("picks the nearest day with episodes, ignoring a later one, one day only", () => {
+    const showSoon = makeShow({ id: 1, name: "Soon" });
+    const showLater = makeShow({ id: 2, name: "Later" });
+    const episodeSoon = makeEpisode({ airstamp: "2026-09-22T18:00:00+00:00" });
+    const episodeLater = makeEpisode({
+      airstamp: "2026-09-26T18:00:00+00:00",
+    });
+
+    const result = findNextDayWithEpisodes(
+      [
+        { show: showSoon, episodes: [episodeSoon] },
+        { show: showLater, episodes: [episodeLater] },
+      ],
+      "UTC",
+      todayDate,
+    );
+
+    expect(result?.localDate).toBe("2026-09-22");
+    expect(result?.shows).toEqual([
+      { show: showSoon, episodes: [episodeSoon] },
+    ]);
+  });
+
+  it("groups several episodes of one show on that day into one card (FR-012)", () => {
+    const show = makeShow({ name: "The Bear" });
+    const episodes = [1, 2, 3].map((number) =>
+      makeEpisode({ number, airstamp: "2026-09-22T18:00:00+00:00" }),
+    );
+
+    const result = findNextDayWithEpisodes(
+      [{ show, episodes }],
+      "UTC",
+      todayDate,
+    );
+
+    expect(result?.shows).toHaveLength(1);
+    expect(result?.shows[0].episodes).toHaveLength(3);
   });
 });
 
@@ -143,8 +196,28 @@ describe("upcomingDayLabel (FR-006, ADR 0001)", () => {
     expect(upcomingDayLabel("2026-10-01", "2026-09-30")).toBe("TOMORROW");
   });
 
-  it("labels any other day with its weekday, day and month, never a time", () => {
-    expect(upcomingDayLabel("2026-09-26", "2026-09-21")).toBe("Sat 26 Sep");
+  it("labels any other day with its weekday, day and month in upper case, never a time", () => {
+    expect(upcomingDayLabel("2026-09-26", "2026-09-21")).toBe("SAT 26 SEP");
+  });
+});
+
+describe("nextDayCountLabel (FR-005 style badge, FR-006)", () => {
+  it("formats TOMORROW with a 1-based position, for example one show on the next day", () => {
+    expect(nextDayCountLabel("2026-09-22", "2026-09-21", 0, 1)).toBe(
+      "TOMORROW · 1/1",
+    );
+  });
+
+  it("formats TOMORROW with the position for several shows the same day", () => {
+    expect(nextDayCountLabel("2026-09-22", "2026-09-21", 1, 2)).toBe(
+      "TOMORROW · 2/2",
+    );
+  });
+
+  it("formats a day further away as a date, not TOMORROW", () => {
+    expect(nextDayCountLabel("2026-09-24", "2026-09-21", 0, 1)).toBe(
+      "THU 24 SEP · 1/1",
+    );
   });
 });
 
@@ -154,7 +227,7 @@ describe("deriveHomeViewState", () => {
     isLoading: false,
     isError: false,
     showsWithEpisodeToday: [],
-    nextByShow: [],
+    nextDayEpisodes: null,
   };
 
   it("shows today's shows when at least one has an episode today (FR-004)", () => {
@@ -170,13 +243,21 @@ describe("deriveHomeViewState", () => {
     });
   });
 
-  it("shows the next upcoming episode when today is empty (FR-006)", () => {
-    const episode = makeEpisode({ airstamp: "2026-09-24T20:00:00+00:00" });
+  it("shows the next day's episodes when today is empty (FR-006)", () => {
+    const show = makeShow();
+    const episodes = [makeEpisode({ airstamp: "2026-09-24T20:00:00+00:00" })];
     const state = deriveHomeViewState({
       ...baseInput,
-      nextByShow: [{ showId: 7, next: { kind: "episode", episode } }],
+      nextDayEpisodes: {
+        localDate: "2026-09-24",
+        shows: [{ show, episodes }],
+      },
     });
-    expect(state).toEqual({ kind: "next-episode", showId: 7, episode });
+    expect(state).toEqual({
+      kind: "next-day",
+      localDate: "2026-09-24",
+      shows: [{ show, episodes }],
+    });
   });
 
   it("shows the empty follow list state when nothing is followed (backlog CRI-66, PRD FR-013)", () => {
@@ -188,10 +269,7 @@ describe("deriveHomeViewState", () => {
     const state = deriveHomeViewState({
       ...baseInput,
       followedCount: 2,
-      nextByShow: [
-        { showId: 1, next: { kind: "status", status: "Ended" } },
-        { showId: 2, next: { kind: "status", status: "To Be Determined" } },
-      ],
+      nextDayEpisodes: null,
     });
     expect(state).toEqual({ kind: "no-upcoming" });
   });
