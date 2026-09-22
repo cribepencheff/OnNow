@@ -50,7 +50,7 @@
     "test": "jest",
     "test:watch": "jest --watchAll",
     "test:ci": "jest --ci",
-    "fixtures:update": "node scripts/fetch-fixtures.ts"
+    "fixtures:update": "node scripts/fetch-fixtures.mts"
   },
   "jest": {
     "preset": "jest-expo"
