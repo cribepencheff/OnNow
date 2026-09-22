@@ -100,7 +100,7 @@ followed states.
 
 ## 7. Home
 Labels: `poc`, `ui`
-**Requirements:** FR-004, FR-005, FR-006, FR-012, PRD 5.1
+**Requirements:** FR-004, FR-005, FR-006, FR-012, FR-013, PRD 5.1
 **Goal:** today's shows, in simple form (visual design comes later).
 **Includes:**
 - One card per show with an episode today, swipe between cards
