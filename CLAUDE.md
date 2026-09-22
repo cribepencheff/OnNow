@@ -95,6 +95,12 @@ Expo with React Native and TypeScript (ADR 0007).
   suggested messages.
 - Explain what a Git operation will do before running anything that rewrites
   history or touches shared branches.
+- For issues with no visible UI change (pure logic, data, storage, hooks),
+  once verification passes: commit, push, open the PR and merge it without
+  waiting for review.
+- For issues with a visible UI change (screens and views the owner would
+  look at in Expo Go): open the PR as usual, but do not merge it. Wait for
+  the owner to confirm it looks and feels right first.
 
 ## When to check in with the owner
 - A decision is not resolvable from the PRD, ADRs or spikes: ask rather
