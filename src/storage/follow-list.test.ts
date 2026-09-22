@@ -60,4 +60,19 @@ describe("follow list storage", () => {
     expect(await getFollowedIds()).toEqual([1, 2]);
     expect(await isFollowed(2)).toBe(true);
   });
+
+  it("does not resurrect a show when several unfollows race, as when unfollowing several shows quickly in Search", async () => {
+    await follow(1);
+    await follow(2);
+    await follow(3);
+
+    // Each unfollow reads the current list, then writes the filtered
+    // result. Fired without awaiting between them (unlike the sequential
+    // `unfollow(1); unfollow(2);` above), a later call can read the list
+    // before an earlier call's write has landed, and overwrite it with a
+    // stale snapshot that still has the earlier show in it.
+    await Promise.all([unfollow(1), unfollow(2), unfollow(3)]);
+
+    expect(await getFollowedIds()).toEqual([]);
+  });
 });
