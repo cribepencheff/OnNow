@@ -15,6 +15,10 @@ export default function RootLayout() {
     >
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="search"
+          options={{ presentation: "modal", headerShown: false }}
+        />
       </Stack>
     </PersistQueryClientProvider>
   );
