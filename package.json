@@ -36,6 +36,7 @@
     "eslint-config-expo": "~57.0.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.6",
+    "husky": "^9.1.7",
     "jest": "~29.7.0",
     "jest-expo": "~57.0.5",
     "prettier": "^3.9.8",
@@ -50,7 +51,8 @@
     "test": "jest",
     "test:watch": "jest --watchAll",
     "test:ci": "jest --ci",
-    "fixtures:update": "node scripts/fetch-fixtures.mts"
+    "fixtures:update": "node scripts/fetch-fixtures.mts",
+    "prepare": "husky"
   },
   "jest": {
     "preset": "jest-expo"
