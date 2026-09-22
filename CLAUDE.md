@@ -69,6 +69,8 @@ Expo with React Native and TypeScript (ADR 0007).
 - Reference requirement IDs (for example `FR-004`) in test names.
 - Never merge with failing checks. Do not weaken or delete a test to make it
   pass; explain the failure instead.
+- A Husky pre-push hook (`.husky/pre-push`) runs `tsc --noEmit`, `expo lint`
+  and `test:ci`, and blocks the push if any of them fail.
 
 ## Spikes
 - Spike code is throwaway. Put it in `spikes-scratch/` (git ignored), never
