@@ -1,10 +1,12 @@
 // Derived values for Home (PRD 5.1, FR-004, FR-005, FR-006, FR-012). Views
 // and hooks only render this; they do not decide it (ADR 0009).
 
+import { localDateFromAirstamp, type LocalDate } from "./local-date";
+import {
+  findShowsWithEpisodeToday,
+  type ShowEpisodesToday,
+} from "./episodes-today";
 import { formatLabelDate } from "./next-episode-label";
-import type { ShowEpisodesToday } from "./episodes-today";
-import type { NextForShow } from "./next-episode";
-import type { LocalDate } from "./local-date";
 import { searchResultNetworkName } from "./search-results";
 import type { TvMazeEpisode, TvMazeShow } from "@/api/tvmaze-types";
 
@@ -50,40 +52,41 @@ export function todayCountLabel(pageIndex: number, total: number): string {
   return `NEW TODAY · ${pageIndex + 1}/${total}`;
 }
 
-export interface EarliestUpcoming {
-  showId: number;
-  episode: TvMazeEpisode;
+export interface NextDayEpisodes {
+  localDate: LocalDate;
+  shows: ShowEpisodesToday[];
 }
 
-// FR-006: the single nearest upcoming episode across all followed shows.
-// Only an actual episode counts, not an announced season or a status; those
-// belong to Show detail (MVP), not Home.
-export function earliestUpcomingEpisode(
-  nextByShow: { showId: number; next: NextForShow }[],
-): EarliestUpcoming | null {
-  const withEpisode = nextByShow.filter(
-    (
-      entry,
-    ): entry is {
-      showId: number;
-      next: Extract<NextForShow, { kind: "episode" }>;
-    } => entry.next.kind === "episode",
-  );
+// FR-006: on a day without episodes, Home shows the episodes of the next
+// day that has any, across all followed shows, one day only. Same grouping
+// as today (FR-012): several episodes of one show that day are one card.
+// Specials are already excluded upstream, by relying on the default TVmaze
+// episode list (FR-037, see episodes-today.ts).
+export function findNextDayWithEpisodes(
+  followedShows: { show: TvMazeShow; episodes: TvMazeEpisode[] }[],
+  timeZone: string,
+  todayDate: LocalDate,
+): NextDayEpisodes | null {
+  const upcomingDates = followedShows
+    .flatMap(({ episodes }) => episodes)
+    .map((episode) => localDateFromAirstamp(episode.airstamp, timeZone))
+    .filter((localDate) => localDate > todayDate)
+    .sort();
 
-  if (withEpisode.length === 0) {
+  const nextDate = upcomingDates[0];
+  if (!nextDate) {
     return null;
   }
 
-  return withEpisode
-    .map((entry) => ({ showId: entry.showId, episode: entry.next.episode }))
-    .sort(
-      (a, b) =>
-        new Date(a.episode.airstamp).getTime() -
-        new Date(b.episode.airstamp).getTime(),
-    )[0];
+  return {
+    localDate: nextDate,
+    shows: findShowsWithEpisodeToday(followedShows, timeZone, nextDate),
+  };
 }
 
-// FR-006, ADR 0001: "TOMORROW" or a plain date, never a time of day.
+// FR-006, ADR 0001: "TOMORROW" or a plain date, never a time of day. Upper
+// case throughout, to match the "NEW TODAY" badge style, for example
+// "THU 24 SEP".
 export function upcomingDayLabel(
   localDate: LocalDate,
   todayDate: LocalDate,
@@ -91,7 +94,7 @@ export function upcomingDayLabel(
   if (isNextDay(todayDate, localDate)) {
     return "TOMORROW";
   }
-  return formatLabelDate(localDate);
+  return formatLabelDate(localDate).toUpperCase();
 }
 
 function isNextDay(todayDate: LocalDate, localDate: LocalDate): boolean {
@@ -103,44 +106,54 @@ function toUtcMillis(isoDate: LocalDate): number {
   return Date.UTC(year, month - 1, day);
 }
 
+// FR-005-style badge for the next-day pager: "TOMORROW · 1/2" or
+// "THU 24 SEP · 1/2", pageIndex is 0-based.
+export function nextDayCountLabel(
+  localDate: LocalDate,
+  todayDate: LocalDate,
+  pageIndex: number,
+  total: number,
+): string {
+  return `${upcomingDayLabel(localDate, todayDate)} · ${pageIndex + 1}/${total}`;
+}
+
 export type HomeViewState =
   | { kind: "loading" }
   | { kind: "empty-follow-list" }
   | { kind: "error" }
   | { kind: "today"; shows: ShowEpisodesToday[] }
-  | { kind: "next-episode"; showId: number; episode: TvMazeEpisode }
+  | { kind: "next-day"; localDate: LocalDate; shows: ShowEpisodesToday[] }
   | { kind: "no-upcoming" };
 
-// The priority a state is decided in: any data we already have (today, or a
-// known next episode) is shown first, even if a background refetch is
-// loading or has failed (NFR-001, NFR-002, data first). Only when there is
-// truly nothing loaded yet do loading, the empty follow list and the
+// The priority a state is decided in: any data we already have (today, or
+// the next day with episodes) is shown first, even if a background refetch
+// is loading or has failed (NFR-001, NFR-002, data first). Only when there
+// is truly nothing loaded yet do loading, the empty follow list and the
 // no-data error states apply.
 export function deriveHomeViewState(input: {
   followedCount: number;
   isLoading: boolean;
   isError: boolean;
   showsWithEpisodeToday: ShowEpisodesToday[];
-  nextByShow: { showId: number; next: NextForShow }[];
+  nextDayEpisodes: NextDayEpisodes | null;
 }): HomeViewState {
   const {
     followedCount,
     isLoading,
     isError,
     showsWithEpisodeToday,
-    nextByShow,
+    nextDayEpisodes,
   } = input;
 
   if (showsWithEpisodeToday.length > 0) {
     return { kind: "today", shows: showsWithEpisodeToday };
   }
 
-  const next = earliestUpcomingEpisode(nextByShow);
-  if (next) {
+  if (nextDayEpisodes) {
     return {
-      kind: "next-episode",
-      showId: next.showId,
-      episode: next.episode,
+      kind: "next-day",
+      localDate: nextDayEpisodes.localDate,
+      shows: nextDayEpisodes.shows,
     };
   }
 

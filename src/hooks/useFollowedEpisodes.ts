@@ -1,6 +1,6 @@
-// Followed shows with an episode today, and the next upcoming episode when
-// today is empty (FR-004, FR-006, ADR 0009). Reads the follow list from its
-// own storage, then queries each followed show.
+// Followed shows with an episode today, and the episodes of the next day
+// with any when today is empty (FR-004, FR-006, ADR 0009). Reads the follow
+// list from its own storage, then queries each followed show.
 
 import { useMemo } from "react";
 import { useQueries, useQuery } from "@tanstack/react-query";
@@ -11,6 +11,7 @@ import {
   findShowsWithEpisodeToday,
   type ShowEpisodesToday,
 } from "@/logic/episodes-today";
+import { findNextDayWithEpisodes, type NextDayEpisodes } from "@/logic/home";
 import { nextForShow, type NextForShow } from "@/logic/next-episode";
 import { showQueryKey } from "./useShow";
 import { useToday } from "./useToday";
@@ -27,6 +28,7 @@ export interface FollowedEpisodesResult {
   isError: boolean;
   dataUpdatedAt: number | null;
   showsWithEpisodeToday: ShowEpisodesToday[];
+  nextDayEpisodes: NextDayEpisodes | null;
   nextByShow: FollowedShowNext[];
   refetch: () => Promise<void>;
 }
@@ -101,6 +103,19 @@ export function useFollowedEpisodes(): FollowedEpisodesResult {
     [loadedShows, timeZone, todayDate],
   );
 
+  const nextDayEpisodes = useMemo(
+    () =>
+      findNextDayWithEpisodes(
+        loadedShows.map((show) => ({
+          show,
+          episodes: show._embedded.episodes,
+        })),
+        timeZone,
+        todayDate,
+      ),
+    [loadedShows, timeZone, todayDate],
+  );
+
   const showsWithEpisodeTodayIds = useMemo(
     () => new Set(showsWithEpisodeToday.map(({ show }) => show.id)),
     [showsWithEpisodeToday],
@@ -135,6 +150,7 @@ export function useFollowedEpisodes(): FollowedEpisodesResult {
     isError,
     dataUpdatedAt,
     showsWithEpisodeToday,
+    nextDayEpisodes,
     nextByShow,
     refetch,
   };
