@@ -93,3 +93,26 @@ Expo with React Native and TypeScript (ADR 0007).
   suggested messages.
 - Explain what a Git operation will do before running anything that rewrites
   history or touches shared branches.
+
+## When to check in with the owner
+- A decision is not resolvable from the PRD, ADRs or spikes: ask rather
+  than assume.
+- The work would deviate from an existing ADR or from the stack and
+  principles above.
+- A test failure repeats after reasonable troubleshooting and cannot be
+  resolved.
+- Scope is expanding beyond the current Linear issue or the current phase
+  (Discovery / PoC).
+
+Otherwise, complete the issue and report without waiting for a check-in
+first. Keep reports in this shape:
+- **Done**: what was built, file by file, with the relevant `FR-xxx` and
+  ADR references
+- **Bundled fixes**: anything unrelated included per an earlier decision,
+  and why
+- **Decisions made**: anything decided along the way and the reasoning,
+  even small things, so it can be reviewed after the fact
+- **Verification**: typecheck, lint, test counts, and any tooling checks
+  (for example `expo-doctor`)
+- **Suggested commit message**: matching the format in "Git and planning"
+  above (issue ID first, no attribution trailers)
