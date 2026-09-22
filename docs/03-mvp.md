@@ -8,8 +8,8 @@ use, and so do a few friends.
 
 ## Scope
 - The visual design from the Design phase applied to all views
-- An excellent add flow, including the first run experience (FR-013) and
-  "New this week" in Search (FR-026)
+- An excellent add flow, including the first run experience and "New this
+  week" in Search (FR-026)
 - Show detail view (FR-028 to FR-030)
 - "Open in [service]" with a menu for several services (FR-014, FR-015)
 - Territory setting and service availability (FR-016, FR-017)
