@@ -82,7 +82,8 @@ Expo with React Native and TypeScript (ADR 0007).
 ## Git and planning
 - Planning and status live in Linear (project "On Now", issues CRI-xx).
   Decisions and content live in `docs/`. Do not copy docs into Linear.
-- Do not commit or push unless asked.
+- Do not commit or push unless asked, or unless the work falls under an
+  "Owner review gates" rule below that already authorizes it.
 - One Linear issue, one branch, one pull request. Branch names use a type
   prefix and a short description, without the issue ID: `feat/`, `fix/`,
   `chore/`, `docs/`, `test/` (for example `chore/project-setup`,
@@ -101,6 +102,36 @@ Expo with React Native and TypeScript (ADR 0007).
 - For issues with a visible UI change (screens and views the owner would
   look at in Expo Go): open the PR as usual, but do not merge it. Wait for
   the owner to confirm it looks and feels right first.
+
+## Owner review gates
+This is separate from "When to check in with the owner" below. That section
+is Claude Code's own judgment call when something is uncertain. This section
+is the owner's fixed control points, and they apply whether or not Claude
+Code itself would think to ask.
+
+Three things decide whether a gate is needed for a given piece of work:
+- Can it be verified by machine (tests, typecheck, lint), or does it need
+  taste or feel that only a human can judge?
+- Is it cheap to reverse (an unmerged branch) or costly (a merge to `main`,
+  a store submission, a call against live external state)?
+- Is it already covered by an existing decision (PRD/ADR), or new ground?
+
+Current gates for this project, by category. Revisit these at each phase
+transition rather than assuming they carry over unchanged:
+- **PoC, logic/data/storage/hooks** (no visible UI): no gate, see "Git and
+  planning" above.
+- **PoC, screens and views** (Search, Home, Calendar, Shows, and anything
+  the owner would look at in Expo Go): PR opened but not merged by Claude
+  Code, see "Git and planning" above.
+- **PoC, end-to-end flow and the PoC week log** (CRI-69, CRI-70): full
+  review by the owner, not just a merge click. This is where the PoC proves
+  whether it delivers on the core promise, not just where the code is
+  correct.
+- **MVP and Release**: not yet defined. New categories of risk appear here
+  (notifications, opening other apps, territory and store data, a public
+  App Store submission). Do not assume the PoC gates carry over: stop and
+  ask the owner to define gates for the new phase before treating any of
+  its issues as gate-free.
 
 ## When to check in with the owner
 - A decision is not resolvable from the PRD, ADRs or spikes: ask rather
