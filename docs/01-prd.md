@@ -173,7 +173,7 @@ Reached from an icon. Territory and notifications.
 | FR-010 | Shows lists followed series with next episode or status | PoC |
 | FR-011 | Data refreshes on app start when stale, and on pull to refresh | PoC |
 | FR-012 | Several episodes of one show on the same day appear as one item | PoC |
-| FR-013 | First run shows an empty Home with "Add your first show" | MVP |
+| FR-013 | An empty follow list shows an empty Home with "Add your first show", which opens Search | PoC |
 | FR-014 | "Open in [service]" opens the show in the service's app when the ID is known, otherwise the service's app | MVP |
 | FR-015 | When a show is on several services, a menu lets the user choose; the choice is remembered per show | MVP |
 | FR-016 | Territory setting, defaulting to the phone's region | MVP |
