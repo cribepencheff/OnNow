@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
-import HomeScreen from "@/app/(tabs)/index";
+import HomeScreen, { HomeHeaderAddButton } from "@/app/(tabs)/index";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useShow } from "@/hooks/useShow";
 import type { TvMazeEpisode, TvMazeShow } from "@/api/tvmaze-types";
@@ -191,17 +191,7 @@ describe("HomeScreen", () => {
 
     await render(<HomeScreen />);
 
-    expect(screen.getByText("Nothing upcoming yet.")).toBeTruthy();
-  });
-
-  it("opens Search from the + button (FR-007)", async () => {
-    mockFollowedEpisodes({});
-
-    await render(<HomeScreen />);
-
-    fireEvent.press(screen.getByRole("button", { name: "Add show" }));
-
-    expect(mockPush).toHaveBeenCalledWith("/search");
+    expect(screen.getByText("Nothing upcoming.")).toBeTruthy();
   });
 
   it("shows a quiet line while nothing has loaded yet, never a blank screen (NFR-001)", async () => {
@@ -220,5 +210,18 @@ describe("HomeScreen", () => {
     expect(
       screen.getByText("Couldn't load your shows. Pull to refresh."),
     ).toBeTruthy();
+  });
+});
+
+// Rendered through the Home tab's native header (`(tabs)/_layout.tsx`), not
+// HomeScreen itself; see home-header.test.tsx for coverage of it actually
+// appearing in the real navigation header.
+describe("HomeHeaderAddButton (FR-007)", () => {
+  it("opens Search when pressed", async () => {
+    await render(<HomeHeaderAddButton />);
+
+    fireEvent.press(screen.getByRole("button", { name: "Add show" }));
+
+    expect(mockPush).toHaveBeenCalledWith("/search");
   });
 });

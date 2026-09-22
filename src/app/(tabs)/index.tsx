@@ -38,6 +38,32 @@ function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
 }
 
+// FR-007: the "+" in Home's header, opening Search. Rendered through the
+// tab navigator's own `headerRight` (configured in `(tabs)/_layout.tsx`)
+// rather than as custom content inside the screen body: a previous version
+// placed it in an in-screen row, which did not render in Expo Go. Using the
+// native header slot puts it under React Navigation's own header layout
+// instead of this screen's.
+export function HomeHeaderAddButton() {
+  const router = useRouter();
+
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel="Add show"
+      onPress={() => router.push("/search")}
+      hitSlop={16}
+      style={styles.headerAddButton}
+    >
+      <SymbolView
+        name={{ ios: "plus", android: "add", web: "add" }}
+        tintColor={accent}
+        size={22}
+      />
+    </Pressable>
+  );
+}
+
 export default function HomeScreen() {
   const router = useRouter();
   const { width } = useWindowDimensions();
@@ -79,21 +105,6 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Add show"
-          onPress={openSearch}
-          hitSlop={16}
-        >
-          <SymbolView
-            name={{ ios: "plus", android: "add", web: "add" }}
-            tintColor={accent}
-            size={24}
-          />
-        </Pressable>
-      </View>
-
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         alwaysBounceVertical
@@ -128,7 +139,7 @@ export default function HomeScreen() {
         )}
 
         {state.kind === "no-upcoming" && (
-          <Text style={styles.quietLine}>Nothing upcoming yet.</Text>
+          <Text style={styles.quietLine}>Nothing upcoming.</Text>
         )}
 
         {state.kind === "error" && (
@@ -246,12 +257,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
+  headerAddButton: {
     paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 4,
   },
   scrollContent: {
     flexGrow: 1,
