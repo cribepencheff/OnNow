@@ -4,17 +4,14 @@
     "strict": true,
     "types": ["jest"],
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@/assets/*": [
-        "./assets/*"
-      ]
+      "@/*": ["./src/*"],
+      "@/assets/*": ["./assets/*"]
     }
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
+    "**/*.mts",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
   ]
