@@ -84,7 +84,20 @@ Expo with React Native and TypeScript (ADR 0007).
   Decisions and content live in `docs/`. Do not copy docs into Linear.
 - Do not commit or push unless asked, or unless the work falls under an
   "Owner review gates" rule below that already authorizes it.
-- One Linear issue, one branch, one pull request. Branch names use a type
+- One Linear issue, one branch, one pull request is the default, not a hard
+  rule. There is no other reviewer on this project, so the point of a PR
+  boundary is a clean revision history and a clear record of what changed
+  and why, not a small diff for someone else to read. When several backlog
+  issues are small, non-UI, and naturally related (for example they touch
+  the same layer, or one exists mainly to unblock the next), batch them
+  into a single branch and PR instead of one each. Reference every issue ID
+  the branch covers in the PR title and description (for example
+  `CRI-63, CRI-64: Follow list storage and data fetching hooks`). Update
+  each covered issue's Linear status individually. Keep issues with a
+  visible UI change on their own PR, since those already have a separate
+  review gate below and merging them together would block that gate on
+  unrelated work.
+  Branch names use a type
   prefix and a short description, without the issue ID: `feat/`, `fix/`,
   `chore/`, `docs/`, `test/` (for example `chore/project-setup`,
   `feat/home`). `feat` is for things the user notices; `chore` is for
@@ -102,6 +115,11 @@ Expo with React Native and TypeScript (ADR 0007).
 - For issues with a visible UI change (screens and views the owner would
   look at in Expo Go): open the PR as usual, but do not merge it. Wait for
   the owner to confirm it looks and feels right first.
+- Keep the full report shape below for PR-opening and PR-merging moments.
+  For intermediate steps within a batched PR (finishing one of several
+  issues it covers, a retry after a fix), a short status line is enough;
+  save the full report for when there's something to actually review or
+  act on.
 
 ## Owner review gates
 This is separate from "When to check in with the owner" below. That section
