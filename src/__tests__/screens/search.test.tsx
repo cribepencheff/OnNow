@@ -5,7 +5,7 @@ import {
   waitFor,
 } from "@testing-library/react-native";
 
-import SearchScreen from "./search";
+import SearchScreen from "@/app/search";
 import { tvMazeClient } from "@/api/tvmaze-client";
 import { follow, getFollowedIds, unfollow } from "@/storage/follow-list";
 import searchSlowHorsesFixture from "@/api/fixtures/search-slow-horses.json";
