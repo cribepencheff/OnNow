@@ -21,8 +21,10 @@ export interface FollowedShowNext {
 }
 
 export interface FollowedEpisodesResult {
+  followedCount: number;
   isLoading: boolean;
   isRefetching: boolean;
+  isError: boolean;
   dataUpdatedAt: number | null;
   showsWithEpisodeToday: ShowEpisodesToday[];
   nextByShow: FollowedShowNext[];
@@ -77,6 +79,15 @@ export function useFollowedEpisodes(): FollowedEpisodesResult {
     [showQueries],
   );
 
+  // Nothing loaded at all, with at least one followed show that failed to
+  // fetch: a genuine error, not just "nothing upcoming" (data first). A
+  // failed background refetch with prior data is not an error state; the
+  // prior data in `loadedShows` is shown instead.
+  const isError =
+    loadedShows.length === 0 &&
+    followedIds.length > 0 &&
+    showQueries.some((query) => query.isError);
+
   const showsWithEpisodeToday = useMemo(
     () =>
       findShowsWithEpisodeToday(
@@ -118,8 +129,10 @@ export function useFollowedEpisodes(): FollowedEpisodesResult {
   }
 
   return {
+    followedCount: followedIds.length,
     isLoading,
     isRefetching,
+    isError,
     dataUpdatedAt,
     showsWithEpisodeToday,
     nextByShow,
