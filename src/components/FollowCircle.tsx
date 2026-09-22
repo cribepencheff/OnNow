@@ -32,7 +32,7 @@ export function FollowCircle({ followed, onPress }: FollowCircleProps) {
       accessibilityLabel={followed ? "Followed" : "Follow"}
       accessibilityState={{ selected: followed }}
       onPress={handlePress}
-      hitSlop={8}
+      hitSlop={16}
     >
       <View
         style={[
