@@ -76,6 +76,10 @@ describe("useFollowedEpisodes", () => {
     expect(result.current.showsWithEpisodeToday[0].show.name).toBe(
       "Slow Horses",
     );
+    expect(result.current.followedShows).toHaveLength(2);
+    expect(
+      result.current.followedShows.map(({ show }) => show.name).sort(),
+    ).toEqual(["Slow Horses", "The Bear"]);
 
     await unmount();
     client.unmount();
@@ -123,6 +127,7 @@ describe("useFollowedEpisodes", () => {
 
     expect(result.current.showsWithEpisodeToday).toEqual([]);
     expect(result.current.nextByShow).toEqual([]);
+    expect(result.current.followedShows).toEqual([]);
     expect(mockedGetShow).not.toHaveBeenCalled();
 
     await unmount();

@@ -12,6 +12,7 @@ import {
   type ShowEpisodesToday,
 } from "@/logic/episodes-today";
 import { nextForShow, type NextForShow } from "@/logic/next-episode";
+import type { TvMazeEpisode, TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 import { showQueryKey } from "./useShow";
 import { useToday } from "./useToday";
 
@@ -20,10 +21,16 @@ export interface FollowedShowNext {
   next: NextForShow;
 }
 
+export interface FollowedShowEpisodes {
+  show: TvMazeShowWithEmbeds;
+  episodes: TvMazeEpisode[];
+}
+
 export interface FollowedEpisodesResult {
   isLoading: boolean;
   isRefetching: boolean;
   dataUpdatedAt: number | null;
+  followedShows: FollowedShowEpisodes[];
   showsWithEpisodeToday: ShowEpisodesToday[];
   nextByShow: FollowedShowNext[];
   refetch: () => Promise<void>;
@@ -77,17 +84,18 @@ export function useFollowedEpisodes(): FollowedEpisodesResult {
     [showQueries],
   );
 
-  const showsWithEpisodeToday = useMemo(
+  const followedShows = useMemo(
     () =>
-      findShowsWithEpisodeToday(
-        loadedShows.map((show) => ({
-          show,
-          episodes: show._embedded.episodes,
-        })),
-        timeZone,
-        todayDate,
-      ),
-    [loadedShows, timeZone, todayDate],
+      loadedShows.map((show) => ({
+        show,
+        episodes: show._embedded.episodes,
+      })),
+    [loadedShows],
+  );
+
+  const showsWithEpisodeToday = useMemo(
+    () => findShowsWithEpisodeToday(followedShows, timeZone, todayDate),
+    [followedShows, timeZone, todayDate],
   );
 
   const showsWithEpisodeTodayIds = useMemo(
@@ -121,6 +129,7 @@ export function useFollowedEpisodes(): FollowedEpisodesResult {
     isLoading,
     isRefetching,
     dataUpdatedAt,
+    followedShows,
     showsWithEpisodeToday,
     nextByShow,
     refetch,
