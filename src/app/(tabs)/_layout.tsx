@@ -1,6 +1,8 @@
 import { SymbolView } from "expo-symbols";
 import { Tabs } from "expo-router";
 
+import { HomeHeaderAddButton } from "./index";
+
 export default function TabLayout() {
   return (
     <Tabs>
@@ -15,6 +17,9 @@ export default function TabLayout() {
               size={size}
             />
           ),
+          headerShown: true,
+          headerTitle: () => null,
+          headerRight: () => <HomeHeaderAddButton />,
         }}
       />
       <Tabs.Screen
