@@ -121,9 +121,52 @@ describe("useFollowedEpisodes", () => {
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
+    expect(result.current.followedCount).toBe(0);
     expect(result.current.showsWithEpisodeToday).toEqual([]);
     expect(result.current.nextByShow).toEqual([]);
     expect(mockedGetShow).not.toHaveBeenCalled();
+
+    await unmount();
+    client.unmount();
+  });
+
+  it("reports the followed count for the empty follow list state (FR-013)", async () => {
+    mockedGetFollowedIds.mockResolvedValue([
+      showSlowHorsesFixture.id,
+      showTheBearFixture.id,
+    ]);
+    mockedGetShow.mockImplementation(async (id) => {
+      if (id === showSlowHorsesFixture.id) {
+        return showSlowHorsesFixture as never;
+      }
+      return showTheBearFixture as never;
+    });
+    const client = createTestQueryClient();
+
+    const { result, unmount } = await renderHook(() => useFollowedEpisodes(), {
+      wrapper: wrapperWithQueryClient(client),
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(result.current.followedCount).toBe(2);
+
+    await unmount();
+    client.unmount();
+  });
+
+  it("reports an error only when nothing loaded for a followed show, not on a failed refetch with cached data", async () => {
+    mockedGetFollowedIds.mockResolvedValue([showSlowHorsesFixture.id]);
+    mockedGetShow.mockRejectedValue(new Error("network down"));
+    const client = createTestQueryClient();
+
+    const { result, unmount } = await renderHook(() => useFollowedEpisodes(), {
+      wrapper: wrapperWithQueryClient(client),
+    });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+
+    expect(result.current.showsWithEpisodeToday).toEqual([]);
 
     await unmount();
     client.unmount();
