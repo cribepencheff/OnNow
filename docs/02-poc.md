@@ -10,15 +10,18 @@ design comes in the Design phase.
 
 ## In scope
 - Home, Calendar, Shows and Search as described in `01-prd.md`, in simple form
-- Show detail, PoC slice (no services, no Open in, no territory)
+- Show detail, PoC slice (no services, no territory)
+- "Open in [service]", keyless version from TVmaze's official site, for
+  Apple TV, Netflix and HBO Max only (ADR 0004 amendment, CRI-80)
 - Requirements FR-001 to FR-013, FR-024, FR-025, FR-028 to FR-030,
-  FR-032 to FR-037 (FR-028, FR-029 and FR-032 in part, see `01-prd.md`
-  section 6)
+  FR-032 to FR-037, and FR-014 (FR-014, FR-028, FR-029 and FR-032 in part,
+  see `01-prd.md` section 6)
 - Local storage of the follow list
 - One data source, no key if possible
 
 ## Out of scope
-Everything tagged MVP or later in `01-prd.md`: "Open in", territory,
+Everything tagged MVP or later in `01-prd.md`: "Open in" beyond the keyless
+version, territory,
 notifications, settings, widget, polished visuals.
 
 ## Success criteria
