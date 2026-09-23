@@ -1,6 +1,6 @@
-// Followed shows with an episode today, and the next upcoming episode when
-// today is empty (FR-004, FR-006, ADR 0009). Reads the follow list from its
-// own storage, then queries each followed show.
+// Followed shows with an episode today, and the episodes of the next day
+// with any when today is empty (FR-004, FR-006, ADR 0009). Reads the follow
+// list from its own storage, then queries each followed show.
 
 import { useMemo } from "react";
 import { useQueries, useQuery } from "@tanstack/react-query";
@@ -11,6 +11,7 @@ import {
   findShowsWithEpisodeToday,
   type ShowEpisodesToday,
 } from "@/logic/episodes-today";
+import { findNextDayWithEpisodes, type NextDayEpisodes } from "@/logic/home";
 import { nextForShow, type NextForShow } from "@/logic/next-episode";
 import type { TvMazeEpisode, TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 import { showQueryKey } from "./useShow";
@@ -27,11 +28,14 @@ export interface FollowedShowEpisodes {
 }
 
 export interface FollowedEpisodesResult {
+  followedCount: number;
   isLoading: boolean;
   isRefetching: boolean;
+  isError: boolean;
   dataUpdatedAt: number | null;
   followedShows: FollowedShowEpisodes[];
   showsWithEpisodeToday: ShowEpisodesToday[];
+  nextDayEpisodes: NextDayEpisodes | null;
   nextByShow: FollowedShowNext[];
   refetch: () => Promise<void>;
 }
@@ -93,8 +97,22 @@ export function useFollowedEpisodes(): FollowedEpisodesResult {
     [loadedShows],
   );
 
+  // Nothing loaded at all, with at least one followed show that failed to
+  // fetch: a genuine error, not just "nothing upcoming" (data first). A
+  // failed background refetch with prior data is not an error state; the
+  // prior data in `loadedShows` is shown instead.
+  const isError =
+    loadedShows.length === 0 &&
+    followedIds.length > 0 &&
+    showQueries.some((query) => query.isError);
+
   const showsWithEpisodeToday = useMemo(
     () => findShowsWithEpisodeToday(followedShows, timeZone, todayDate),
+    [followedShows, timeZone, todayDate],
+  );
+
+  const nextDayEpisodes = useMemo(
+    () => findNextDayWithEpisodes(followedShows, timeZone, todayDate),
     [followedShows, timeZone, todayDate],
   );
 
@@ -126,11 +144,14 @@ export function useFollowedEpisodes(): FollowedEpisodesResult {
   }
 
   return {
+    followedCount: followedIds.length,
     isLoading,
     isRefetching,
+    isError,
     dataUpdatedAt,
     followedShows,
     showsWithEpisodeToday,
+    nextDayEpisodes,
     nextByShow,
     refetch,
   };

@@ -84,6 +84,7 @@ Expo with React Native and TypeScript (ADR 0007).
   Decisions and content live in `docs/`. Do not copy docs into Linear.
 - Do not commit or push unless asked, or unless the work falls under an
   "Owner review gates" rule below that already authorizes it.
+- Always pull `main` before creating a new branch.
 - One Linear issue, one branch, one pull request is the default, not a hard
   rule. There is no other reviewer on this project, so the point of a PR
   boundary is a clean revision history and a clear record of what changed
@@ -114,7 +115,11 @@ Expo with React Native and TypeScript (ADR 0007).
   waiting for review.
 - For issues with a visible UI change (screens and views the owner would
   look at in Expo Go): open the PR as usual, but do not merge it. Wait for
-  the owner to confirm it looks and feels right first.
+  the owner to test it in Expo Go and approve it explicitly in chat, for
+  example "approved #11". Passing tests and Claude Code's own review are
+  not approval. Never merge a gated PR without that explicit approval.
+- After merging any PR: move its Linear issue to Done, pull `main`, and
+  merge `main` into any other open branch that was created before it.
 - Keep the full report shape below for PR-opening and PR-merging moments.
   For intermediate steps within a batched PR (finishing one of several
   issues it covers, a retry after a fix), a short status line is enough;
@@ -140,7 +145,8 @@ transition rather than assuming they carry over unchanged:
   planning" above.
 - **PoC, screens and views** (Search, Home, Calendar, Shows, and anything
   the owner would look at in Expo Go): PR opened but not merged by Claude
-  Code, see "Git and planning" above.
+  Code. Merging requires the owner to test it in Expo Go and approve it
+  explicitly in chat, see "Git and planning" above.
 - **PoC, end-to-end flow and the PoC week log** (CRI-69, CRI-70): full
   review by the owner, not just a merge click. This is where the PoC proves
   whether it delivers on the core promise, not just where the code is

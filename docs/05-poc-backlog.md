@@ -105,7 +105,8 @@ Labels: `poc`, `ui`
 **Includes:**
 - One card per show with an episode today, swipe between cards
 - Count label ("NEW TODAY · 1/3")
-- Empty day shows the next upcoming episode
+- Empty day shows the episodes of the next day with episodes, in the same
+  pager as today
 - "+" in the header
 - Empty follow list shows "Add your first show"
 **Done when:** component tests cover today with one, several and no shows,
