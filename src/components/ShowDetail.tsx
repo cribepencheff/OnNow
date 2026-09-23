@@ -16,12 +16,13 @@ import { useShow } from "@/hooks/useShow";
 import { useToday } from "@/hooks/useToday";
 import { plainTextSummary } from "@/logic/search-results";
 import {
+  allEpisodesAvailable,
   currentSeasonNumber,
   episodeDateLabel,
   episodeOfLabel,
   episodeState,
   isFinale,
-  latestEpisode,
+  latestCard,
   nextCard,
   regularEpisodes,
   seasonTabs,
@@ -63,7 +64,7 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
   const seasons = show._embedded.seasons;
 
   const summary = plainTextSummary(show.summary);
-  const latest = latestEpisode(episodes, timeZone, todayDate);
+  const latest = latestCard(episodes, seasons, timeZone, todayDate);
   const next = nextCard(show, episodes, seasons, timeZone, todayDate);
   const tabs = seasonTabs(seasons, episodes, todayDate);
 
@@ -86,6 +87,9 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
       <View style={styles.section}>
         <Text style={styles.title}>{show.name}</Text>
         <Text style={styles.meta}>{showDetailMetaLine(show)}</Text>
+        {allEpisodesAvailable(episodes, seasons, timeZone, todayDate) && (
+          <Text style={styles.meta}>All episodes available</Text>
+        )}
         <FollowAction showId={show.id} />
         {summary && <Text style={styles.summary}>{summary}</Text>}
       </View>
@@ -103,12 +107,17 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
       {latest && (
         <View style={styles.section} testID="show-detail-latest">
           <Text style={styles.sectionLabel}>LATEST</Text>
-          <EpisodeCard
-            episode={latest}
-            seasons={seasons}
-            timeZone={timeZone}
-            todayDate={todayDate}
-          />
+          {latest.kind === "episode" ? (
+            <EpisodeCard
+              episode={latest.episode}
+              seasons={seasons}
+              timeZone={timeZone}
+              todayDate={todayDate}
+            />
+          ) : (
+            // A season drop is one item (FR-012, CRI-81).
+            <Text style={styles.nextLine}>{latest.label}</Text>
+          )}
         </View>
       )}
 
@@ -187,7 +196,7 @@ function NextCardView({
   }
   return (
     <Text style={styles.nextLine}>
-      {card.kind === "season-premiere" ? card.label : card.status}
+      {card.kind === "status" ? card.status : card.label}
     </Text>
   );
 }

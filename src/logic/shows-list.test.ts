@@ -123,6 +123,17 @@ describe("showsRowLine (PRD 5.3, FR-010, FR-035)", () => {
     ).toBe("Running");
   });
 
+  it("shows TVmaze's status in plain words when nothing is announced (CRI-81)", () => {
+    expect(
+      showsRowLine(
+        { kind: "status", status: "To Be Determined" },
+        "To Be Determined",
+        "UTC",
+        "2026-09-23",
+      ),
+    ).toBe("Renewal not announced");
+  });
+
   it("shows the status verbatim for an ended show", () => {
     expect(
       showsRowLine(
