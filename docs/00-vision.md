@@ -48,8 +48,9 @@ a glance, not a tracker. The first user is me.
 Details are settled in the Design phase. These ideas guide it:
 - **One primary action per view.** It gets the accent colour, or white
   against the dark app. Everything else stays quiet.
-- "+" on Home and "Done" in Search are primary actions. A filled accent
-  circle with a check marks a followed show; it is a status, not an action.
+- "+" on Home is a primary action. Search closes with a quiet round close
+  button, as iOS sheets do. A filled accent circle with a check marks a
+  followed show; it is a status, not an action.
 - The accent colour has two uses only: the one primary action per view, and
   small status marks (follow check, calendar day line).
 - **Visual references:** a dark, soft interface with deep near-black

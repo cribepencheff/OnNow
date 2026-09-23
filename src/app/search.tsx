@@ -1,7 +1,8 @@
 // Search sheet (PRD 5.4, FR-001, FR-007): a sheet over the current view
-// with the keyboard open on entry, results while typing, and a "Done"
-// button that returns to where the user came from. Following is saved
-// immediately; there is no "Cancel".
+// with the keyboard open on entry, results while typing, and a round close
+// button next to the search field that returns to where the user came
+// from. It sits at the top so the keyboard never covers it (CRI-77).
+// Following is saved immediately; there is no "Cancel".
 
 import { useState } from "react";
 import {
@@ -13,11 +14,11 @@ import {
   View,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { SymbolView } from "expo-symbols";
 
 import { SearchResultRow } from "@/components/SearchResultRow";
 import { useFollowList } from "@/hooks/useFollowList";
 import { useSearchShows } from "@/hooks/useSearchShows";
-import { accent } from "@/theme/color";
 
 export default function SearchScreen() {
   const router = useRouter();
@@ -28,20 +29,45 @@ export default function SearchScreen() {
 
   return (
     <View style={styles.container}>
-      <TextInput
-        autoFocus
-        value={query}
-        onChangeText={setQuery}
-        placeholder="Search shows"
-        style={styles.searchField}
-        returnKeyType="search"
-        accessibilityLabel="Search shows"
-        clearButtonMode="while-editing"
-        testID="search-input"
-      />
+      <View style={styles.header} testID="search-header">
+        <TextInput
+          autoFocus
+          value={query}
+          onChangeText={setQuery}
+          placeholder="Search shows"
+          style={styles.searchField}
+          returnKeyType="search"
+          // The return key ("Search") closes the keyboard; results already
+          // appear while typing.
+          submitBehavior="blurAndSubmit"
+          // Show titles are names, not dictionary words: autocorrect would
+          // rewrite them.
+          autoCorrect={false}
+          spellCheck={false}
+          accessibilityLabel="Search shows"
+          clearButtonMode="while-editing"
+          testID="search-input"
+        />
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Close"
+          onPress={() => router.back()}
+          hitSlop={8}
+          style={styles.closeButton}
+          testID="search-close"
+        >
+          <SymbolView
+            name={{ ios: "xmark", android: "close", web: "close" }}
+            tintColor={CLOSE_ICON_COLOR}
+            size={14}
+            weight="semibold"
+          />
+        </Pressable>
+      </View>
 
       {query.trim().length > 0 && (
         <FlatList
+          testID="search-results"
           data={results ?? []}
           keyExtractor={(result) => String(result.show.id)}
           renderItem={({ item }) => (
@@ -63,21 +89,18 @@ export default function SearchScreen() {
             ) : null
           }
           contentContainerStyle={styles.resultsContent}
+          // A tap on a follow circle is handled without closing the
+          // keyboard first, so several shows can be followed in a row.
           keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
         />
       )}
-
-      <Pressable
-        accessibilityRole="button"
-        style={styles.doneButton}
-        onPress={() => router.back()}
-        testID="search-done"
-      >
-        <Text style={styles.doneLabel}>Done</Text>
-      </Pressable>
     </View>
   );
 }
+
+const CLOSE_BUTTON_SIZE = 32;
+const CLOSE_ICON_COLOR = "#666666";
 
 const styles = StyleSheet.create({
   container: {
@@ -85,36 +108,36 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     paddingTop: 16,
   },
-  searchField: {
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
     marginHorizontal: 16,
     marginBottom: 12,
+  },
+  searchField: {
+    flex: 1,
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 12,
     backgroundColor: "#F0F0F0",
     fontSize: 20,
   },
+  closeButton: {
+    width: CLOSE_BUTTON_SIZE,
+    height: CLOSE_BUTTON_SIZE,
+    borderRadius: CLOSE_BUTTON_SIZE / 2,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F0F0F0",
+  },
   resultsContent: {
-    paddingBottom: 96,
+    paddingBottom: 32,
   },
   noResults: {
     textAlign: "center",
     marginTop: 32,
     paddingHorizontal: 32,
     color: "#666666",
-  },
-  doneButton: {
-    position: "absolute",
-    bottom: 32,
-    alignSelf: "center",
-    backgroundColor: accent,
-    paddingHorizontal: 32,
-    paddingVertical: 14,
-    borderRadius: 24,
-  },
-  doneLabel: {
-    color: "#FFFFFF",
-    fontWeight: "700",
-    fontSize: 16,
   },
 });
