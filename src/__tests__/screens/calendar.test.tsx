@@ -72,11 +72,14 @@ function mockFollowedEpisodes(
   overrides: Partial<ReturnType<typeof useFollowedEpisodes>>,
 ) {
   mockedUseFollowedEpisodes.mockReturnValue({
+    followedCount: 0,
     isLoading: false,
     isRefetching: false,
+    isError: false,
     dataUpdatedAt: null,
     followedShows: [],
     showsWithEpisodeToday: [],
+    nextDayEpisodes: null,
     nextByShow: [],
     refetch,
     ...overrides,
