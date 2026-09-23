@@ -29,8 +29,9 @@ first user is the author, who currently uses Next Episode.
   card. Horizontal swipe between today's shows, page dots below. A label such
   as "NEW TODAY · 1/3" carries the count. Metadata line with episode code and
   service. "+" in the header.
-- **Empty day:** the card shows the next upcoming episode, labelled with its
-  day ("TOMORROW" or a date).
+- **Empty day:** the cards show the episodes of the next day with episodes,
+  labelled with that day ("TOMORROW" or a date) and the count, in the same
+  pager as today.
 - **Below the card:** nothing, or at most one thin row. Decided in the Design
   phase.
 
@@ -164,7 +165,7 @@ Reached from an icon. Territory and notifications.
 | FR-003 | The follow list is stored on the device and survives a restart | PoC |
 | FR-004 | Home shows followed series with an episode released today | PoC |
 | FR-005 | Home shows the count of today's shows (for example "NEW TODAY · 1/3") | PoC |
-| FR-006 | On a day without episodes, Home shows the next upcoming episode | PoC |
+| FR-006 | On a day without episodes, Home shows the episodes of the next day with episodes | PoC |
 | FR-007 | "+" on Home opens Search as a sheet; "Done" or swipe down returns to Home | PoC |
 | FR-008 | Calendar shows a month grid with days that have episodes marked, today preselected | PoC |
 | FR-009 | Selecting a day in Calendar lists that day's episodes | PoC |
