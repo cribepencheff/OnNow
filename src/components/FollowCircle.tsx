@@ -1,8 +1,7 @@
 // The follow control at the right edge of a Search result row (PRD 5.4,
 // FR-002). Not followed: hollow circle with a "+" at lower opacity.
 // Followed: filled with the accent color and a check, with light haptic
-// feedback. A status, not a competing action: "Done" stays the one primary
-// action in the view.
+// feedback. The filled state is a status, not a competing action.
 
 import { useCallback } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
