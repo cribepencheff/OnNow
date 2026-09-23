@@ -39,7 +39,7 @@ export function ShowsRow({
     timeZone,
     todayDate,
   );
-  const line = showsRowLine(next, show.status);
+  const line = showsRowLine(next, show.status, timeZone, todayDate);
   const network = searchResultNetworkName(show);
   const label = [show.name, network, line].filter(Boolean).join(", ");
 

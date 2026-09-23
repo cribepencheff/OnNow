@@ -49,7 +49,7 @@ describe("SearchResultRow", () => {
     );
 
     expect(screen.queryByText(/Slow Horses follows the story/)).toBeNull();
-    expect(screen.getByText(/^(Next:|No date yet)/)).toBeTruthy();
+    expect(screen.getByText(/^(New today|Next:|No date yet)/)).toBeTruthy();
   });
 
   it("calls onToggleFollow when the follow circle is pressed", async () => {

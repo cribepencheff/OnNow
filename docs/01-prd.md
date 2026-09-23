@@ -85,8 +85,9 @@ first user is the author, who currently uses Next Episode.
   filled with the accent colour and a check, with light haptic feedback. The
   filled state is a status, not a competing action, so "Done" stays the one
   primary action in the view.
-- **After following:** the row shows the next episode ("Next: Tue 24 Sep" or
-  "No date yet"), confirming the app knows the show.
+- **After following:** the row shows the next episode ("New today",
+  "Next: Tomorrow", "Next: Tue 24 Sep", or "No date yet"), confirming the
+  app knows the show.
 - **Before typing:** "New this week": shows with a series premiere or a new
   season starting this week, each with a Follow button. "Trending" is a
   possible secondary list, added only if "New this week" proves too thin.
