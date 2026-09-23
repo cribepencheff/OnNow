@@ -30,8 +30,8 @@ first user is the author, who currently uses Next Episode.
   as "NEW TODAY · 1/3" carries the count. Metadata line with episode code and
   service. "+" in the header.
 - **Empty day:** the cards show the episodes of the next day with episodes,
-  labelled with that day ("TOMORROW" or a date) and the count, in the same
-  pager as today.
+  labelled with that day ("TOMORROW" or a date, with the year when it is
+  not in the current year) and the count, in the same pager as today.
 - **Below the card:** nothing, or at most one thin row. Decided in the Design
   phase.
 
@@ -92,7 +92,12 @@ first user is the author, who currently uses Next Episode.
   filled state is a status, not a competing action.
 - **After following:** the row shows the next episode ("New today",
   "Next: Tomorrow", "Next: Tue 24 Sep", or "No date yet"), confirming the
-  app knows the show.
+  app knows the show. A date in another year than the current one shows
+  its year ("Next: Fri 9 Jul 2027"), so a date far ahead does not read like
+  one that has passed. When the next episode is episode 1 of a season, or
+  an announced season's premiere date, it reads as a premiere instead of
+  "Next:" ("Season 4 premiere · Fri 9 Jul 2027"). Data first: episode 1
+  means a premiere, nothing is guessed. The Shows list uses the same labels.
 - **Before typing:** "New this week": shows with a series premiere or a new
   season starting this week, each with a Follow button. "Trending" is a
   possible secondary list, added only if "New this week" proves too thin.
