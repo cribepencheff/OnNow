@@ -10,6 +10,7 @@ Working name: **On Now**
 | `03-mvp.md` | MVP scope and success criteria |
 | `04-roadmap.md` | Phases, gates and what comes after MVP |
 | `05-poc-backlog.md` | The PoC split into issues, in build order |
+| `poc-log.md` | Log template for the PoC one week test |
 | `decisions/` | Architecture and product decisions (ADRs) |
 
 Conventions:
