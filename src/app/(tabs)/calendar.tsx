@@ -1,35 +1,36 @@
 // Calendar (PRD 5.2, FR-008, FR-009, FR-012, FR-036, FR-037): a month grid
 // for followed series, and the selected day's episodes below. Visual design
 // comes later, so styling here stays minimal and functional.
+//
+// The month grid itself is react-native-calendars (ADR 0010): a proven
+// library, not our own flex layout, after a hand-rolled grid wrapped to six
+// columns instead of seven on some screen widths (CRI-67). We keep our own
+// day rendering (dayComponent) so "today" and "selected" stay driven by our
+// own useToday()/selectedDate, never the library's own device-clock check
+// (ADR 0001), and the day list, marking data and "Today" button are ours.
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
-  FlatList,
   Pressable,
   RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
   View,
-  useWindowDimensions,
-  type NativeScrollEvent,
-  type NativeSyntheticEvent,
 } from "react-native";
 import { Image } from "expo-image";
+import { Calendar, type DateData } from "react-native-calendars";
 
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useToday } from "@/hooks/useToday";
 import { useWeekStart } from "@/hooks/useWeekStart";
 import {
-  addMonths,
   calendarDayCell,
   calendarRowLine,
   datesWithEpisodes,
   fullDateLabel,
-  monthGridWeeks,
   monthOf,
   monthTitle,
-  type CalendarDayCell,
   type YearMonth,
 } from "@/logic/calendar";
 import {
@@ -53,8 +54,11 @@ function sameMonth(a: YearMonth, b: YearMonth): boolean {
   return a.year === b.year && a.month === b.month;
 }
 
+function monthKey({ year, month }: YearMonth): string {
+  return `${year}-${String(month).padStart(2, "0")}-01`;
+}
+
 export default function CalendarScreen() {
-  const { width } = useWindowDimensions();
   const todayDate = useToday();
   const weekStart = useWeekStart();
   const timeZone = deviceTimeZone();
@@ -88,33 +92,24 @@ export default function CalendarScreen() {
     setSelectedDate(date);
   }, []);
 
-  const pagerRef = useRef<FlatList<YearMonth>>(null);
-  const months = useMemo(
-    () => [
-      addMonths(visibleMonth, -1),
-      visibleMonth,
-      addMonths(visibleMonth, 1),
-    ],
-    [visibleMonth],
-  );
+  const handleMonthChange = useCallback((date: DateData) => {
+    setVisibleMonth({ year: date.year, month: date.month });
+  }, []);
 
-  useEffect(() => {
-    pagerRef.current?.scrollToIndex({ index: 1, animated: false });
-  }, [visibleMonth]);
-
-  const handleMomentumScrollEnd = useCallback(
-    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const { contentOffset, layoutMeasurement } = event.nativeEvent;
-      if (layoutMeasurement.width === 0) {
-        return;
-      }
-      const index = Math.round(contentOffset.x / layoutMeasurement.width);
-      if (index === 1) {
-        return;
-      }
-      setVisibleMonth((month) => addMonths(month, index - 1));
-    },
-    [],
+  const renderDay = useCallback(
+    (dayProps: {
+      date?: DateData;
+      state?: string;
+      onPress?: (date?: DateData) => void;
+    }) => (
+      <DayCell
+        {...dayProps}
+        todayDate={todayDate}
+        selectedDate={selectedDate}
+        episodeDates={episodeDates}
+      />
+    ),
+    [todayDate, selectedDate, episodeDates],
   );
 
   return (
@@ -142,32 +137,25 @@ export default function CalendarScreen() {
           ))}
         </View>
 
-        <FlatList
-          ref={pagerRef}
-          testID="calendar-pager"
-          data={months}
-          horizontal
-          pagingEnabled
-          showsHorizontalScrollIndicator={false}
-          initialScrollIndex={1}
-          getItemLayout={(_, index) => ({
-            length: width,
-            offset: width * index,
-            index,
-          })}
-          keyExtractor={(item) => `${item.year}-${item.month}`}
-          onMomentumScrollEnd={handleMomentumScrollEnd}
-          renderItem={({ item }) => (
-            <MonthPage
-              yearMonth={item}
-              weekStart={weekStart}
-              todayDate={todayDate}
-              selectedDate={selectedDate}
-              episodeDates={episodeDates}
-              width={width}
-              onSelectDate={selectDate}
-            />
-          )}
+        <Calendar
+          testID="calendar-grid"
+          initialDate={monthKey(visibleMonth)}
+          firstDay={weekStart}
+          enableSwipeMonths
+          hideExtraDays={false}
+          showSixWeeks
+          hideDayNames
+          // The library's own header title is accessibility-hidden by
+          // design (importantForAccessibility="no-hide-descendants" on its
+          // wrapper, so a screen reader treats the whole header as one
+          // "adjustable" control). We render our own title above instead,
+          // as a plain, always-queryable Text, and only keep the library's
+          // arrows for paging.
+          renderHeader={() => null}
+          dayComponent={renderDay}
+          onDayPress={(date) => selectDate(date.dateString)}
+          onMonthChange={handleMonthChange}
+          style={styles.calendarGrid}
         />
 
         <View style={styles.dayList}>
@@ -197,73 +185,38 @@ export default function CalendarScreen() {
   );
 }
 
-interface MonthPageProps {
-  yearMonth: YearMonth;
-  weekStart: number;
+interface DayCellProps {
+  date?: DateData;
+  state?: string;
+  onPress?: (date?: DateData) => void;
   todayDate: LocalDate;
   selectedDate: LocalDate;
   episodeDates: Set<LocalDate>;
-  width: number;
-  onSelectDate: (date: LocalDate) => void;
-}
-
-function MonthPage({
-  yearMonth,
-  weekStart,
-  todayDate,
-  selectedDate,
-  episodeDates,
-  width,
-  onSelectDate,
-}: MonthPageProps) {
-  // Each week is its own non-wrapping row of exactly seven flex cells, so
-  // cell width or rounding can never push a day into the wrong weekday
-  // column, or wrap a row to six cells instead of seven (regression: a
-  // single 42-cell flexWrap list did exactly that).
-  const weeks = useMemo(
-    () => monthGridWeeks(yearMonth, weekStart),
-    [yearMonth, weekStart],
-  );
-
-  return (
-    <View
-      testID={`calendar-month-page-${yearMonth.year}-${yearMonth.month}`}
-      style={[styles.monthPage, { width }]}
-    >
-      {weeks.map((week, weekIndex) => (
-        <View key={weekIndex} testID="calendar-week-row" style={styles.weekRow}>
-          {week.map((date, dayIndex) => {
-            if (!date) {
-              return (
-                <View
-                  key={dayIndex}
-                  testID="calendar-cell"
-                  style={styles.dayCellSlot}
-                />
-              );
-            }
-            const cell = calendarDayCell(
-              date,
-              todayDate,
-              selectedDate,
-              episodeDates,
-            );
-            return <DayCell key={date} cell={cell} onPress={onSelectDate} />;
-          })}
-        </View>
-      ))}
-    </View>
-  );
 }
 
 function DayCell({
-  cell,
+  date,
+  state,
   onPress,
-}: {
-  cell: CalendarDayCell;
-  onPress: (date: LocalDate) => void;
-}) {
-  const day = Number(cell.date.split("-")[2]);
+  todayDate,
+  selectedDate,
+  episodeDates,
+}: DayCellProps) {
+  // Days from the previous or next month: react-native-calendars marks
+  // these 'disabled' (we set no minDate/maxDate/disabledByWeekDays, so this
+  // is the only way that state occurs). Left blank rather than shown faded,
+  // to avoid ambiguous tap-to-navigate-months semantics (REVIEW decision,
+  // unchanged from CRI-67).
+  if (!date || state === "disabled") {
+    return <View style={styles.dayCellSlot} />;
+  }
+
+  const cell = calendarDayCell(
+    date.dateString,
+    todayDate,
+    selectedDate,
+    episodeDates,
+  );
   const label = [
     fullDateLabel(cell.date),
     cell.isToday ? "today" : null,
@@ -275,11 +228,10 @@ function DayCell({
 
   return (
     <Pressable
-      testID="calendar-cell"
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityState={{ selected: cell.isSelected }}
-      onPress={() => onPress(cell.date)}
+      onPress={() => onPress?.(date)}
       style={styles.dayCellSlot}
     >
       <View
@@ -295,7 +247,7 @@ function DayCell({
             cell.isSelected && styles.dayNumberSelected,
           ]}
         >
-          {day}
+          {date.day}
         </Text>
         {cell.hasEpisodes && (
           <View
@@ -361,11 +313,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#888888",
   },
-  monthPage: {
-    flexDirection: "column",
-  },
-  weekRow: {
-    flexDirection: "row",
+  calendarGrid: {
     paddingHorizontal: GRID_HORIZONTAL_PADDING,
   },
   dayCellSlot: {

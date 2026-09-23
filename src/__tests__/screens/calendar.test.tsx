@@ -1,9 +1,4 @@
-import {
-  fireEvent,
-  render,
-  screen,
-  within,
-} from "@testing-library/react-native";
+import { fireEvent, render, screen } from "@testing-library/react-native";
 
 import CalendarScreen from "@/app/(tabs)/calendar";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
@@ -185,18 +180,19 @@ describe("CalendarScreen", () => {
     expect(screen.queryByText("Nothing on this day.")).toBeNull();
   });
 
-  it("swipes to the next month and shows Today (FR-036)", async () => {
+  it("moves to the next month and shows Today (FR-036)", async () => {
     await render(<CalendarScreen />);
 
     expect(screen.getByText("September 2026")).toBeTruthy();
     expect(screen.queryByLabelText("Today")).toBeNull();
 
-    await fireEvent(screen.getByTestId("calendar-pager"), "momentumScrollEnd", {
-      nativeEvent: {
-        contentOffset: { x: 800 },
-        layoutMeasurement: { width: 400 },
-      },
-    });
+    // The library's header (title and arrows) is one accessibility-hidden
+    // "adjustable" control by design, so the arrow is queried with
+    // hidden: true: it's a real, pressable button, just not individually
+    // exposed to screen readers.
+    await fireEvent.press(
+      screen.getByTestId("calendar-grid.header.rightArrow", { hidden: true }),
+    );
 
     expect(screen.getByText("October 2026")).toBeTruthy();
     expect(screen.getByLabelText("Today")).toBeTruthy();
@@ -218,27 +214,5 @@ describe("CalendarScreen", () => {
 
     const labels = screen.getAllByText(/^(Sun|Mon|Tue|Wed|Thu|Fri|Sat)$/);
     expect(labels[0].props.children).toBe("Sun");
-  });
-
-  // Regression: the grid used to be a single 42-cell flexWrap list, where
-  // cell width and rounding could make row 1 hold six cells instead of
-  // seven, shifting every date one column left from row 2 onward. RNTL does
-  // not compute layout, so this asserts row structure directly: each week
-  // is its own row of exactly seven cells, and September 1, 2026 (a
-  // Tuesday) sits in that row's Tuesday column, not wrapped into the next
-  // row (PRD 5.2, 5.7).
-  it("lays out each week as exactly seven cells, so days align under the right weekday", async () => {
-    await render(<CalendarScreen />);
-
-    const septemberPage = screen.getByTestId("calendar-month-page-2026-9");
-    const weekRows = within(septemberPage).getAllByTestId("calendar-week-row");
-    expect(weekRows).toHaveLength(6);
-    for (const row of weekRows) {
-      expect(within(row).getAllByTestId("calendar-cell")).toHaveLength(7);
-    }
-
-    const firstWeekCells = within(weekRows[0]).getAllByTestId("calendar-cell");
-    expect(within(firstWeekCells[1]).getByText("1")).toBeTruthy();
-    expect(within(firstWeekCells[6]).getByText("6")).toBeTruthy();
   });
 });

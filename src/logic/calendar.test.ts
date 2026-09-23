@@ -4,8 +4,6 @@ import {
   calendarRowLine,
   datesWithEpisodes,
   fullDateLabel,
-  monthGridDates,
-  monthGridWeeks,
   monthOf,
   monthTitle,
 } from "./calendar";
@@ -68,71 +66,6 @@ describe("monthOf", () => {
 describe("fullDateLabel", () => {
   it('formats "September 21, 2026"', () => {
     expect(fullDateLabel("2026-09-21")).toBe("September 21, 2026");
-  });
-});
-
-describe("monthGridDates (PRD 5.2, 5.7: week start follows the locale)", () => {
-  it("pads leading blanks so Monday-start weeks align September 2026 correctly", () => {
-    // 2026-09-01 is a Tuesday. Monday start: 1 leading blank, then 1..30.
-    const dates = monthGridDates({ year: 2026, month: 9 }, 1);
-    expect(dates[0]).toBeNull();
-    expect(dates[1]).toBe("2026-09-01");
-    expect(dates[30]).toBe("2026-09-30");
-  });
-
-  it("pads leading blanks so Sunday-start weeks align September 2026 correctly", () => {
-    // 2026-09-01 is a Tuesday. Sunday start: 2 leading blanks, then 1..30.
-    const dates = monthGridDates({ year: 2026, month: 9 }, 0);
-    expect(dates[0]).toBeNull();
-    expect(dates[1]).toBeNull();
-    expect(dates[2]).toBe("2026-09-01");
-    expect(dates[31]).toBe("2026-09-30");
-  });
-
-  it("always returns 6 full weeks (42 cells), so every month is the same height", () => {
-    expect(monthGridDates({ year: 2026, month: 9 }, 1)).toHaveLength(42);
-    expect(monthGridDates({ year: 2026, month: 2 }, 1)).toHaveLength(42);
-  });
-});
-
-// Regression: the grid must be laid out as explicit rows of exactly seven
-// cells, never a single wrapping list, so cell width and margin rounding can
-// never shift a day into the wrong weekday column. This tests row
-// structure, not pixel positions: RNTL does not compute layout, so a
-// wrapping-list bug like this one is invisible to a component test that
-// only checks text and labels are present, not which row they're in.
-describe("monthGridWeeks (PRD 5.2, 5.7: week start follows the locale)", () => {
-  it("returns six week rows of exactly seven cells for Monday-start September 2026", () => {
-    const weeks = monthGridWeeks({ year: 2026, month: 9 }, 1);
-
-    expect(weeks).toHaveLength(6);
-    for (const week of weeks) {
-      expect(week).toHaveLength(7);
-    }
-  });
-
-  it("puts September 1 under Tuesday and September 6 under Sunday, in the same row, for Monday-start weeks", () => {
-    const weeks = monthGridWeeks({ year: 2026, month: 9 }, 1);
-
-    // Monday-start columns: Mon, Tue, Wed, Thu, Fri, Sat, Sun.
-    expect(weeks[0][1]).toBe("2026-09-01");
-    expect(weeks[0][6]).toBe("2026-09-06");
-  });
-
-  it("returns six week rows of exactly seven cells for Sunday-start September 2026", () => {
-    const weeks = monthGridWeeks({ year: 2026, month: 9 }, 0);
-
-    expect(weeks).toHaveLength(6);
-    for (const week of weeks) {
-      expect(week).toHaveLength(7);
-    }
-  });
-
-  it("puts September 1 under Tuesday for Sunday-start weeks", () => {
-    const weeks = monthGridWeeks({ year: 2026, month: 9 }, 0);
-
-    // Sunday-start columns: Sun, Mon, Tue, Wed, Thu, Fri, Sat.
-    expect(weeks[0][2]).toBe("2026-09-01");
   });
 });
 

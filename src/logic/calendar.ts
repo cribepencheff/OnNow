@@ -51,50 +51,6 @@ export function fullDateLabel(date: LocalDate): string {
   return `${MONTH_NAMES[month - 1]} ${day}, ${year}`;
 }
 
-// Every month page is padded to the same 6 weeks (42 cells), so swiping
-// between months of different lengths never changes the grid's height.
-const GRID_CELLS = 42;
-
-// PRD 5.2, 5.7: weeks start on the day the phone's locale says. weekStart is
-// 0 (Sunday) to 6 (Saturday), matching Date#getDay(). Leading and trailing
-// cells outside the month are null.
-export function monthGridDates(
-  { year, month }: YearMonth,
-  weekStart: number,
-): (LocalDate | null)[] {
-  const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
-  const firstWeekday = new Date(Date.UTC(year, month - 1, 1)).getUTCDay();
-  const leadingBlanks = (firstWeekday - weekStart + 7) % 7;
-
-  const dates: (LocalDate | null)[] = new Array(leadingBlanks).fill(null);
-  for (let day = 1; day <= daysInMonth; day++) {
-    dates.push(formatLocalDate(year, month, day));
-  }
-  while (dates.length < GRID_CELLS) {
-    dates.push(null);
-  }
-  return dates;
-}
-
-function formatLocalDate(year: number, month: number, day: number): LocalDate {
-  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-}
-
-// The grid as explicit week rows of exactly seven cells, so the view can
-// render each row as its own non-wrapping flex row. GRID_CELLS is always a
-// multiple of 7, so every week is complete.
-export function monthGridWeeks(
-  yearMonth: YearMonth,
-  weekStart: number,
-): (LocalDate | null)[][] {
-  const dates = monthGridDates(yearMonth, weekStart);
-  const weeks: (LocalDate | null)[][] = [];
-  for (let start = 0; start < dates.length; start += 7) {
-    weeks.push(dates.slice(start, start + 7));
-  }
-  return weeks;
-}
-
 // FR-008: which local dates, across all followed shows, have at least one
 // episode. Used to mark days in the grid. Specials are already excluded
 // upstream, by relying on the default TVmaze episode list (FR-037, see
