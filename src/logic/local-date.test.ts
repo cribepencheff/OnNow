@@ -1,4 +1,10 @@
-import { isNextDay, localDateFromAirstamp, today } from "./local-date";
+import {
+  addDays,
+  daysBetween,
+  isNextDay,
+  localDateFromAirstamp,
+  today,
+} from "./local-date";
 import type { TvMazeEpisode } from "@/api/tvmaze-types";
 import showAKnightFixture from "@/api/fixtures/show-a-knight-of-the-seven-kingdoms.json";
 import showTheBearFixture from "@/api/fixtures/show-the-bear.json";
@@ -105,5 +111,23 @@ describe("isNextDay", () => {
 
   it("is false for a date before today", () => {
     expect(isNextDay("2026-09-21", "2026-09-20")).toBe(false);
+  });
+});
+
+describe("daysBetween and addDays (CRI-79)", () => {
+  it("counts whole calendar days, across month and year boundaries", () => {
+    expect(daysBetween("2026-09-23", "2026-09-30")).toBe(7);
+    expect(daysBetween("2026-09-23", "2026-09-21")).toBe(-2);
+    expect(daysBetween("2026-12-29", "2027-01-02")).toBe(4);
+  });
+
+  it("counts a daylight saving change as one day (Europe/Stockholm, 25 Oct 2026)", () => {
+    expect(daysBetween("2026-10-24", "2026-10-26")).toBe(2);
+    expect(addDays("2026-10-24", 2)).toBe("2026-10-26");
+  });
+
+  it("adds days across a year boundary", () => {
+    expect(addDays("2026-12-31", 1)).toBe("2027-01-01");
+    expect(addDays("2027-01-01", -1)).toBe("2026-12-31");
   });
 });

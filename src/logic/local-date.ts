@@ -26,6 +26,18 @@ export function isNextDay(todayDate: LocalDate, localDate: LocalDate): boolean {
   return toUtcMillis(localDate) - toUtcMillis(todayDate) === 86_400_000;
 }
 
+// Whole calendar days from `from` to `to`, negative when `to` is earlier.
+export function daysBetween(from: LocalDate, to: LocalDate): number {
+  return Math.round((toUtcMillis(to) - toUtcMillis(from)) / 86_400_000);
+}
+
+// The calendar day `days` after `date` (or before, when negative).
+export function addDays(date: LocalDate, days: number): LocalDate {
+  return new Date(toUtcMillis(date) + days * 86_400_000)
+    .toISOString()
+    .slice(0, 10);
+}
+
 function toUtcMillis(isoDate: LocalDate): number {
   const [year, month, day] = isoDate.split("-").map(Number);
   return Date.UTC(year, month - 1, day);

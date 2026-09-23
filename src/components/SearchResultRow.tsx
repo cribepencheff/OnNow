@@ -1,9 +1,12 @@
 // A single Search result row (PRD 5.4, FR-024, FR-025): poster, title, meta
 // line, two line summary, network, and a follow circle. Once followed, the
-// row shows the next episode or status instead of the summary.
+// row shows the next episode or status instead of the summary. Tapping the
+// row opens Show detail; the circle still follows without opening it (PRD
+// 5.4, 5.5, CRI-79). Screen reader users get the row as one button, with
+// follow or unfollow as an accessibility action (NFR-008).
 
 import { Image } from "expo-image";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { FollowCircle } from "./FollowCircle";
 import { useShow } from "@/hooks/useShow";
@@ -21,6 +24,7 @@ interface SearchResultRowProps {
   show: TvMazeShow;
   followed: boolean;
   onToggleFollow: () => void;
+  onPress?: () => void;
 }
 
 function deviceTimeZone(): string {
@@ -31,12 +35,27 @@ export function SearchResultRow({
   show,
   followed,
   onToggleFollow,
+  onPress,
 }: SearchResultRowProps) {
   const summary = plainTextSummary(show.summary);
   const network = searchResultNetworkName(show);
 
   return (
-    <View style={styles.row} testID="search-result-row">
+    <Pressable
+      style={styles.row}
+      testID="search-result-row"
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={show.name}
+      accessibilityActions={[
+        { name: "toggleFollow", label: followed ? "Unfollow" : "Follow" },
+      ]}
+      onAccessibilityAction={(event) => {
+        if (event.nativeEvent.actionName === "toggleFollow") {
+          onToggleFollow();
+        }
+      }}
+    >
       <Image
         source={show.image?.medium ?? undefined}
         style={styles.poster}
@@ -70,7 +89,7 @@ export function SearchResultRow({
         onPress={onToggleFollow}
         testID={`follow-${show.id}`}
       />
-    </View>
+    </Pressable>
   );
 }
 
