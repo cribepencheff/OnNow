@@ -93,11 +93,12 @@ env:
 - assertNotVisible:
     id: "home-empty-state"
 
-# 6. FR-010: Shows lists the show with "New today" or "Next: ...".
+# 6. FR-010: Shows lists the show with "New today", "Next: ..." or
+# "Season N premiere · ..." (CRI-78).
 - tapOn:
     id: "tab-shows"
 - extendedWaitUntil:
     visible:
       id: "shows-row"
-      text: "${output.show.name}, .*(New today|Next: .+)"
+      text: "${output.show.name}, .*(New today|Next: .+|Season \\d+ premiere · .+)"
     timeout: 20000
