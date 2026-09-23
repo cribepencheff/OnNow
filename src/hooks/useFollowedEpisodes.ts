@@ -13,6 +13,7 @@ import {
 } from "@/logic/episodes-today";
 import { findNextDayWithEpisodes, type NextDayEpisodes } from "@/logic/home";
 import { nextForShow, type NextForShow } from "@/logic/next-episode";
+import type { TvMazeEpisode, TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 import { showQueryKey } from "./useShow";
 import { useToday } from "./useToday";
 
@@ -21,12 +22,18 @@ export interface FollowedShowNext {
   next: NextForShow;
 }
 
+export interface FollowedShowEpisodes {
+  show: TvMazeShowWithEmbeds;
+  episodes: TvMazeEpisode[];
+}
+
 export interface FollowedEpisodesResult {
   followedCount: number;
   isLoading: boolean;
   isRefetching: boolean;
   isError: boolean;
   dataUpdatedAt: number | null;
+  followedShows: FollowedShowEpisodes[];
   showsWithEpisodeToday: ShowEpisodesToday[];
   nextDayEpisodes: NextDayEpisodes | null;
   nextByShow: FollowedShowNext[];
@@ -81,6 +88,15 @@ export function useFollowedEpisodes(): FollowedEpisodesResult {
     [showQueries],
   );
 
+  const followedShows = useMemo(
+    () =>
+      loadedShows.map((show) => ({
+        show,
+        episodes: show._embedded.episodes,
+      })),
+    [loadedShows],
+  );
+
   // Nothing loaded at all, with at least one followed show that failed to
   // fetch: a genuine error, not just "nothing upcoming" (data first). A
   // failed background refetch with prior data is not an error state; the
@@ -91,29 +107,13 @@ export function useFollowedEpisodes(): FollowedEpisodesResult {
     showQueries.some((query) => query.isError);
 
   const showsWithEpisodeToday = useMemo(
-    () =>
-      findShowsWithEpisodeToday(
-        loadedShows.map((show) => ({
-          show,
-          episodes: show._embedded.episodes,
-        })),
-        timeZone,
-        todayDate,
-      ),
-    [loadedShows, timeZone, todayDate],
+    () => findShowsWithEpisodeToday(followedShows, timeZone, todayDate),
+    [followedShows, timeZone, todayDate],
   );
 
   const nextDayEpisodes = useMemo(
-    () =>
-      findNextDayWithEpisodes(
-        loadedShows.map((show) => ({
-          show,
-          episodes: show._embedded.episodes,
-        })),
-        timeZone,
-        todayDate,
-      ),
-    [loadedShows, timeZone, todayDate],
+    () => findNextDayWithEpisodes(followedShows, timeZone, todayDate),
+    [followedShows, timeZone, todayDate],
   );
 
   const showsWithEpisodeTodayIds = useMemo(
@@ -149,6 +149,7 @@ export function useFollowedEpisodes(): FollowedEpisodesResult {
     isRefetching,
     isError,
     dataUpdatedAt,
+    followedShows,
     showsWithEpisodeToday,
     nextDayEpisodes,
     nextByShow,
