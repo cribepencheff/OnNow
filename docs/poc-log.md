@@ -8,6 +8,8 @@ episode today, and it is correct. See the success criteria in `02-poc.md`.
 
 - Fill in once a day, ideally in the morning right after opening the app.
 - Keep it short: about two minutes. A few words per line is enough.
+- Check what was actually available in the Next Episode app with "Use
+  local timezone" switched on, or in the streaming service itself.
 - Copy the daily entry template below into "Days", one entry per day.
 - Leave a line empty when there is nothing to note.
 - Fill in "Setup" on day 1 and "Week summary" at the end.
