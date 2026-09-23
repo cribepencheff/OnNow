@@ -26,7 +26,7 @@ import {
   calendarRowLine,
   datesWithEpisodes,
   fullDateLabel,
-  monthGridDates,
+  monthGridWeeks,
   monthOf,
   monthTitle,
   type CalendarDayCell,
@@ -216,46 +216,51 @@ function MonthPage({
   width,
   onSelectDate,
 }: MonthPageProps) {
-  const dates = useMemo(
-    () => monthGridDates(yearMonth, weekStart),
+  // Each week is its own non-wrapping row of exactly seven flex cells, so
+  // cell width or rounding can never push a day into the wrong weekday
+  // column, or wrap a row to six cells instead of seven (regression: a
+  // single 42-cell flexWrap list did exactly that).
+  const weeks = useMemo(
+    () => monthGridWeeks(yearMonth, weekStart),
     [yearMonth, weekStart],
   );
-  const cellSize = (width - GRID_HORIZONTAL_PADDING * 2) / 7;
 
   return (
-    <View style={[styles.monthPage, { width }]}>
-      {dates.map((date, index) => {
-        if (!date) {
-          return (
-            <View key={index} style={{ width: cellSize, height: cellSize }} />
-          );
-        }
-        const cell = calendarDayCell(
-          date,
-          todayDate,
-          selectedDate,
-          episodeDates,
-        );
-        return (
-          <DayCell
-            key={date}
-            cell={cell}
-            size={cellSize}
-            onPress={onSelectDate}
-          />
-        );
-      })}
+    <View
+      testID={`calendar-month-page-${yearMonth.year}-${yearMonth.month}`}
+      style={[styles.monthPage, { width }]}
+    >
+      {weeks.map((week, weekIndex) => (
+        <View key={weekIndex} testID="calendar-week-row" style={styles.weekRow}>
+          {week.map((date, dayIndex) => {
+            if (!date) {
+              return (
+                <View
+                  key={dayIndex}
+                  testID="calendar-cell"
+                  style={styles.dayCellSlot}
+                />
+              );
+            }
+            const cell = calendarDayCell(
+              date,
+              todayDate,
+              selectedDate,
+              episodeDates,
+            );
+            return <DayCell key={date} cell={cell} onPress={onSelectDate} />;
+          })}
+        </View>
+      ))}
     </View>
   );
 }
 
 function DayCell({
   cell,
-  size,
   onPress,
 }: {
   cell: CalendarDayCell;
-  size: number;
   onPress: (date: LocalDate) => void;
 }) {
   const day = Number(cell.date.split("-")[2]);
@@ -270,11 +275,12 @@ function DayCell({
 
   return (
     <Pressable
+      testID="calendar-cell"
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityState={{ selected: cell.isSelected }}
       onPress={() => onPress(cell.date)}
-      style={{ width: size, height: size }}
+      style={styles.dayCellSlot}
     >
       <View
         style={[
@@ -356,9 +362,15 @@ const styles = StyleSheet.create({
     color: "#888888",
   },
   monthPage: {
+    flexDirection: "column",
+  },
+  weekRow: {
     flexDirection: "row",
-    flexWrap: "wrap",
     paddingHorizontal: GRID_HORIZONTAL_PADDING,
+  },
+  dayCellSlot: {
+    flex: 1,
+    aspectRatio: 1,
   },
   dayCircle: {
     flex: 1,

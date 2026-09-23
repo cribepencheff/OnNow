@@ -80,6 +80,21 @@ function formatLocalDate(year: number, month: number, day: number): LocalDate {
   return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
+// The grid as explicit week rows of exactly seven cells, so the view can
+// render each row as its own non-wrapping flex row. GRID_CELLS is always a
+// multiple of 7, so every week is complete.
+export function monthGridWeeks(
+  yearMonth: YearMonth,
+  weekStart: number,
+): (LocalDate | null)[][] {
+  const dates = monthGridDates(yearMonth, weekStart);
+  const weeks: (LocalDate | null)[][] = [];
+  for (let start = 0; start < dates.length; start += 7) {
+    weeks.push(dates.slice(start, start + 7));
+  }
+  return weeks;
+}
+
 // FR-008: which local dates, across all followed shows, have at least one
 // episode. Used to mark days in the grid. Specials are already excluded
 // upstream, by relying on the default TVmaze episode list (FR-037, see

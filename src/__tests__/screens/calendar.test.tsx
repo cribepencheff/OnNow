@@ -1,4 +1,9 @@
-import { fireEvent, render, screen } from "@testing-library/react-native";
+import {
+  fireEvent,
+  render,
+  screen,
+  within,
+} from "@testing-library/react-native";
 
 import CalendarScreen from "@/app/(tabs)/calendar";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
@@ -213,5 +218,27 @@ describe("CalendarScreen", () => {
 
     const labels = screen.getAllByText(/^(Sun|Mon|Tue|Wed|Thu|Fri|Sat)$/);
     expect(labels[0].props.children).toBe("Sun");
+  });
+
+  // Regression: the grid used to be a single 42-cell flexWrap list, where
+  // cell width and rounding could make row 1 hold six cells instead of
+  // seven, shifting every date one column left from row 2 onward. RNTL does
+  // not compute layout, so this asserts row structure directly: each week
+  // is its own row of exactly seven cells, and September 1, 2026 (a
+  // Tuesday) sits in that row's Tuesday column, not wrapped into the next
+  // row (PRD 5.2, 5.7).
+  it("lays out each week as exactly seven cells, so days align under the right weekday", async () => {
+    await render(<CalendarScreen />);
+
+    const septemberPage = screen.getByTestId("calendar-month-page-2026-9");
+    const weekRows = within(septemberPage).getAllByTestId("calendar-week-row");
+    expect(weekRows).toHaveLength(6);
+    for (const row of weekRows) {
+      expect(within(row).getAllByTestId("calendar-cell")).toHaveLength(7);
+    }
+
+    const firstWeekCells = within(weekRows[0]).getAllByTestId("calendar-cell");
+    expect(within(firstWeekCells[1]).getByText("1")).toBeTruthy();
+    expect(within(firstWeekCells[6]).getByText("6")).toBeTruthy();
   });
 });
