@@ -168,6 +168,7 @@ Next Episode. A setting is added only if real use shows it is needed.
 | First day of the week | From the phone's locale (Monday in Sweden) | 5.2 |
 | Channel or service on episode rows | Shown | 5.2, 5.4 |
 | Time of day | Not shown | ADR 0001 |
+| Theme | Dark only, no light mode and no system setting | ADR 0011 |
 
 ### 5.8 Settings (MVP)
 Reached from an icon. Territory and notifications.
@@ -191,7 +192,7 @@ Reached from an icon. Territory and notifications.
 | FR-011 | Data refreshes on app start when stale, and on pull to refresh | PoC |
 | FR-012 | Several episodes of one show on the same day appear as one item | PoC |
 | FR-013 | An empty follow list shows an empty Home with "Add your first show", which opens Search | PoC |
-| FR-014 | "Open in [service]" opens the show in the service's app when the ID is known, otherwise the service's app | MVP |
+| FR-014 | "Open in [service]" opens the show in the service's app when the ID is known, otherwise the service's app, and the service's website when the app is not installed (ADR 0004) | MVP |
 | FR-015 | When a show is on several services, a menu lets the user choose; the choice is remembered per show | MVP |
 | FR-016 | Territory setting, defaulting to the phone's region | MVP |
 | FR-017 | Service availability per territory decides which services are offered | MVP |
@@ -239,7 +240,6 @@ later. See `decisions/0005-data-sources.md`.
   Needs season level availability from the data source, to verify in the
   data source spike. The PoC week test measures how common this is.
 - Name (working name: On Now)
-- Theme: dark by default, or follow the system setting
 - Notifications: morning summary, per episode, or both
 - Menu for several services: anchored to the button or centred overlay
 - What, if anything, sits below the Home card
