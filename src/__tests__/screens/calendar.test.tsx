@@ -1,4 +1,9 @@
-import { fireEvent, render, screen } from "@testing-library/react-native";
+import {
+  fireEvent,
+  render,
+  screen,
+  within,
+} from "@testing-library/react-native";
 
 import CalendarScreen from "@/app/(tabs)/calendar";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
@@ -14,6 +19,53 @@ jest.mock("@/hooks/useToday", () => ({
 jest.mock("@/hooks/useWeekStart", () => ({
   useWeekStart: jest.fn(),
 }));
+
+// react-native-calendars' CalendarList moves months by a real swipe gesture,
+// tracked through FlatList's viewability config. RNTL has no real layout
+// engine, so a synthetic scroll event never triggers it (the same class of
+// limitation as RefreshControl's pull-to-refresh elsewhere in this app).
+// The real component still renders (marking, day press, week start and the
+// day list are all tested against it directly), but this wrapper adds one
+// extra, test-only Pressable that calls the same onMonthChange prop the
+// library would call on a real swipe, so the "Today" button's reaction to a
+// month change can still be verified.
+jest.mock("react-native-calendars", () => {
+  const actual = jest.requireActual("react-native-calendars");
+  const { Fragment, createElement } = jest.requireActual("react");
+  const { Pressable } = jest.requireActual("react-native");
+  return {
+    ...actual,
+    CalendarList: (props: {
+      current?: string;
+      onMonthChange?: (date: unknown) => void;
+    }) => {
+      const nextMonth = () => {
+        const [year, month] = (props.current ?? "2026-09-01")
+          .split("-")
+          .map(Number);
+        const next =
+          month === 12
+            ? { year: year + 1, month: 1 }
+            : { year, month: month + 1 };
+        props.onMonthChange?.({
+          ...next,
+          day: 1,
+          dateString: `${next.year}-${String(next.month).padStart(2, "0")}-01`,
+          timestamp: 0,
+        });
+      };
+      return createElement(
+        Fragment,
+        null,
+        createElement(actual.CalendarList, props),
+        createElement(Pressable, {
+          testID: "test-only-next-month",
+          onPress: nextMonth,
+        }),
+      );
+    },
+  };
+});
 
 const mockedUseFollowedEpisodes = useFollowedEpisodes as jest.MockedFunction<
   typeof useFollowedEpisodes
@@ -183,18 +235,22 @@ describe("CalendarScreen", () => {
   it("moves to the next month and shows Today (FR-036)", async () => {
     await render(<CalendarScreen />);
 
-    expect(screen.getByText("September 2026")).toBeTruthy();
+    // Scoped to the static header: react-native-calendars also renders a
+    // (hidden, covered) header per buffered month item, which would
+    // otherwise make "September 2026" ambiguous.
+    const header = () =>
+      within(
+        screen.getByTestId("calendar-grid.staticHeader", { hidden: true }),
+      );
+
+    expect(header().getByText("September 2026", { hidden: true })).toBeTruthy();
     expect(screen.queryByLabelText("Today")).toBeNull();
 
-    // The library's header (title and arrows) is one accessibility-hidden
-    // "adjustable" control by design, so the arrow is queried with
-    // hidden: true: it's a real, pressable button, just not individually
-    // exposed to screen readers.
-    await fireEvent.press(
-      screen.getByTestId("calendar-grid.header.rightArrow", { hidden: true }),
-    );
+    // See the react-native-calendars mock above: this calls the same
+    // onMonthChange prop a real swipe would.
+    await fireEvent.press(screen.getByTestId("test-only-next-month"));
 
-    expect(screen.getByText("October 2026")).toBeTruthy();
+    expect(header().getByText("October 2026", { hidden: true })).toBeTruthy();
     expect(screen.getByLabelText("Today")).toBeTruthy();
   });
 
@@ -203,7 +259,13 @@ describe("CalendarScreen", () => {
 
     await render(<CalendarScreen />);
 
-    const labels = screen.getAllByText(/^(Sun|Mon|Tue|Wed|Thu|Fri|Sat)$/);
+    // The weekday row lives in react-native-calendars' static header, which
+    // is one accessibility-hidden "adjustable" control by design (see the
+    // note above): the labels are real, visible text, just not queryable
+    // without hidden: true.
+    const labels = screen.getAllByText(/^(Sun|Mon|Tue|Wed|Thu|Fri|Sat)$/, {
+      hidden: true,
+    });
     expect(labels[0].props.children).toBe("Mon");
   });
 
@@ -212,7 +274,37 @@ describe("CalendarScreen", () => {
 
     await render(<CalendarScreen />);
 
-    const labels = screen.getAllByText(/^(Sun|Mon|Tue|Wed|Thu|Fri|Sat)$/);
+    const labels = screen.getAllByText(/^(Sun|Mon|Tue|Wed|Thu|Fri|Sat)$/, {
+      hidden: true,
+    });
     expect(labels[0].props.children).toBe("Sun");
+  });
+
+  it("renders exactly one weekday header row, via the library's static header (CRI-76 review)", async () => {
+    await render(<CalendarScreen />);
+
+    expect(
+      screen.getAllByTestId("calendar-grid.staticHeader", { hidden: true }),
+    ).toHaveLength(1);
+    expect(
+      screen.getAllByTestId("calendar-grid.staticHeader.dayNames", {
+        hidden: true,
+      }),
+    ).toHaveLength(1);
+  });
+
+  it("does not render month navigation arrows (CRI-76 review)", async () => {
+    await render(<CalendarScreen />);
+
+    expect(
+      screen.queryByTestId("calendar-grid.header.leftArrow", {
+        hidden: true,
+      }),
+    ).toBeNull();
+    expect(
+      screen.queryByTestId("calendar-grid.header.rightArrow", {
+        hidden: true,
+      }),
+    ).toBeNull();
   });
 });

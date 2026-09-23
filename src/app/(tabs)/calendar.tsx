@@ -1,12 +1,17 @@
 // Calendar (PRD 5.2, FR-008, FR-009, FR-012, FR-036, FR-037): a month grid
 // for followed series, and the selected day's episodes below. Visual design
-// comes later, so styling here stays minimal and functional.
+// comes later, so styling here stays minimal and functional, matching the
+// look and behaviour of the grid this replaces.
 //
 // The month grid itself is react-native-calendars (ADR 0010): a proven
 // library, not our own flex layout, after a hand-rolled grid wrapped to six
-// columns instead of seven on some screen widths (CRI-67). We keep our own
-// day rendering (dayComponent) so "today" and "selected" stay driven by our
-// own useToday()/selectedDate, never the library's own device-clock check
+// columns instead of seven on some screen widths (CRI-67). CalendarList in
+// horizontal + pagingEnabled mode gives a real sliding transition between
+// months (Calendar's enableSwipeMonths only swaps the month with no
+// transition), with staticHeader rendering one title/weekday row that stays
+// put while months scroll behind it. We keep our own day rendering
+// (dayComponent) so "today" and "selected" stay driven by our own
+// useToday()/selectedDate, never the library's own device-clock check
 // (ADR 0001), and the day list, marking data and "Today" button are ours.
 
 import { useCallback, useMemo, useState } from "react";
@@ -19,7 +24,7 @@ import {
   View,
 } from "react-native";
 import { Image } from "expo-image";
-import { Calendar, type DateData } from "react-native-calendars";
+import { CalendarList, type DateData } from "react-native-calendars";
 
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useToday } from "@/hooks/useToday";
@@ -40,12 +45,6 @@ import {
 import type { LocalDate } from "@/logic/local-date";
 import { accent } from "@/theme/color";
 
-const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-// Shared between the weekday header row and the grid itself, so the two
-// stay aligned.
-const GRID_HORIZONTAL_PADDING = 16;
-
 function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
 }
@@ -57,6 +56,12 @@ function sameMonth(a: YearMonth, b: YearMonth): boolean {
 function monthKey({ year, month }: YearMonth): string {
   return `${year}-${String(month).padStart(2, "0")}-01`;
 }
+
+// The grid's background must match the screen, never a library default
+// (CRI-76 review: a white block was showing on the app's grey background).
+const calendarTheme = {
+  calendarBackground: "transparent",
+};
 
 export default function CalendarScreen() {
   const todayDate = useToday();
@@ -112,6 +117,15 @@ export default function CalendarScreen() {
     [todayDate, selectedDate, episodeDates],
   );
 
+  const renderHeader = useCallback(
+    () => (
+      <Text style={styles.monthTitle}>
+        {monthTitle(visibleMonth.year, visibleMonth.month)}
+      </Text>
+    ),
+    [visibleMonth],
+  );
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -125,37 +139,21 @@ export default function CalendarScreen() {
           />
         }
       >
-        <Text style={styles.monthTitle}>
-          {monthTitle(visibleMonth.year, visibleMonth.month)}
-        </Text>
-
-        <View style={styles.weekdayRow}>
-          {Array.from({ length: 7 }, (_, index) => (
-            <Text key={index} style={styles.weekdayLabel}>
-              {WEEKDAY_LABELS[(weekStart + index) % 7]}
-            </Text>
-          ))}
-        </View>
-
-        <Calendar
+        <CalendarList
           testID="calendar-grid"
-          initialDate={monthKey(visibleMonth)}
+          current={monthKey(visibleMonth)}
           firstDay={weekStart}
-          enableSwipeMonths
+          horizontal
+          pagingEnabled
+          staticHeader
+          hideArrows
           hideExtraDays={false}
           showSixWeeks
-          hideDayNames
-          // The library's own header title is accessibility-hidden by
-          // design (importantForAccessibility="no-hide-descendants" on its
-          // wrapper, so a screen reader treats the whole header as one
-          // "adjustable" control). We render our own title above instead,
-          // as a plain, always-queryable Text, and only keep the library's
-          // arrows for paging.
-          renderHeader={() => null}
+          renderHeader={renderHeader}
           dayComponent={renderDay}
           onDayPress={(date) => selectDate(date.dateString)}
           onMonthChange={handleMonthChange}
-          style={styles.calendarGrid}
+          theme={calendarTheme}
         />
 
         <View style={styles.dayList}>
@@ -249,11 +247,12 @@ function DayCell({
         >
           {date.day}
         </Text>
-        {cell.hasEpisodes && (
-          <View
-            style={[styles.dayMark, cell.isSelected && styles.dayMarkSelected]}
-          />
-        )}
+      </View>
+      {/* Reserved whether or not this day has episodes, so every row's
+          height matches regardless of marking (no layout jitter). Sits
+          below the circle, never overlapping the date number. */}
+      <View style={styles.dayMarkSlot}>
+        {cell.hasEpisodes && <View style={styles.dayMark} />}
       </View>
     </Pressable>
   );
@@ -300,30 +299,17 @@ const styles = StyleSheet.create({
   monthTitle: {
     fontSize: 20,
     fontWeight: "700",
-    paddingHorizontal: 16,
     marginBottom: 8,
-  },
-  weekdayRow: {
-    flexDirection: "row",
-    paddingHorizontal: GRID_HORIZONTAL_PADDING,
-  },
-  weekdayLabel: {
-    flex: 1,
-    textAlign: "center",
-    fontSize: 12,
-    color: "#888888",
-  },
-  calendarGrid: {
-    paddingHorizontal: GRID_HORIZONTAL_PADDING,
   },
   dayCellSlot: {
     flex: 1,
-    aspectRatio: 1,
+    alignItems: "center",
+    paddingVertical: 4,
   },
   dayCircle: {
-    flex: 1,
-    margin: 2,
-    borderRadius: 999,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
@@ -342,16 +328,16 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontWeight: "700",
   },
-  dayMark: {
-    position: "absolute",
-    bottom: 6,
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: accent,
+  dayMarkSlot: {
+    height: 8,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  dayMarkSelected: {
-    backgroundColor: "#FFFFFF",
+  dayMark: {
+    width: 12,
+    height: 2,
+    borderRadius: 1,
+    backgroundColor: accent,
   },
   dayList: {
     paddingTop: 16,
