@@ -86,7 +86,7 @@ export function findNextDayWithEpisodes(
 
 // FR-006, ADR 0001: "TOMORROW" or a plain date, never a time of day. Upper
 // case throughout, to match the "NEW TODAY" badge style, for example
-// "THU 24 SEP".
+// "THU 24 SEP", or "FRI 9 JUL 2027" in another year (CRI-78).
 export function upcomingDayLabel(
   localDate: LocalDate,
   todayDate: LocalDate,
@@ -94,7 +94,7 @@ export function upcomingDayLabel(
   if (isNextDay(todayDate, localDate)) {
     return "TOMORROW";
   }
-  return formatLabelDate(localDate).toUpperCase();
+  return formatLabelDate(localDate, todayDate).toUpperCase();
 }
 
 // FR-005-style badge for the next-day pager: "TOMORROW · 1/2" or

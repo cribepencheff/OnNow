@@ -1,13 +1,18 @@
 import { showsRowLine, sortShowsByTitle } from "./shows-list";
 import type { TvMazeEpisode, TvMazeSeason } from "@/api/tvmaze-types";
 
-function episode(airdate: string): TvMazeEpisode {
+// A regular episode by default (S1E5); pass `number: 1` for a season
+// premiere (CRI-78).
+function episode(
+  airdate: string,
+  { season = 1, number = 5 }: { season?: number; number?: number } = {},
+): TvMazeEpisode {
   return {
     id: 1,
     url: "",
     name: "Episode",
-    season: 1,
-    number: 1,
+    season,
+    number,
     type: "regular",
     airdate,
     airtime: "20:00",
@@ -71,7 +76,7 @@ describe("showsRowLine (PRD 5.3, FR-010, FR-035)", () => {
     ).toBe("Next: Thu 24 Sep");
   });
 
-  it("formats an announced season's premiere date for a show between seasons", () => {
+  it("labels an announced season's premiere date for a show between seasons as a season premiere (CRI-78)", () => {
     expect(
       showsRowLine(
         { kind: "announced-season", season: season("2026-12-01") },
@@ -79,7 +84,32 @@ describe("showsRowLine (PRD 5.3, FR-010, FR-035)", () => {
         "UTC",
         "2026-09-21",
       ),
-    ).toBe("Next: Tue 1 Dec");
+    ).toBe("Season 2 premiere · Tue 1 Dec");
+  });
+
+  it("labels episode 1 of a season next year as a season premiere with the year (CRI-78)", () => {
+    expect(
+      showsRowLine(
+        {
+          kind: "episode",
+          episode: episode("2027-07-09", { season: 4, number: 1 }),
+        },
+        "Running",
+        "UTC",
+        "2026-09-24",
+      ),
+    ).toBe("Season 4 premiere · Fri 9 Jul 2027");
+  });
+
+  it("shows a regular episode next year with the year (CRI-78)", () => {
+    expect(
+      showsRowLine(
+        { kind: "episode", episode: episode("2027-07-09") },
+        "Running",
+        "UTC",
+        "2026-09-24",
+      ),
+    ).toBe("Next: Fri 9 Jul 2027");
   });
 
   it("falls back to the show's status when between seasons with no announced date", () => {

@@ -72,8 +72,9 @@ describe("SearchResultRow", () => {
 
     expect(screen.queryByText(/Slow Horses follows the story/)).toBeNull();
     // Season 6 episode 1 ("Circle of Life") airs 2026-09-16, the earliest
-    // upcoming episode as of the fixed 2026-09-01 clock above.
-    expect(screen.getByText("Next: Wed 16 Sep")).toBeTruthy();
+    // upcoming episode as of the fixed 2026-09-01 clock above. Episode 1
+    // is a season premiere (CRI-78).
+    expect(screen.getByText("Season 6 premiere · Wed 16 Sep")).toBeTruthy();
   });
 
   it("calls onToggleFollow when the follow circle is pressed", async () => {
