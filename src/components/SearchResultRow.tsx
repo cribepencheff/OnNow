@@ -73,17 +73,24 @@ export function SearchResultRow({
 function FollowedNextLine({ showId }: { showId: number }) {
   const { data } = useShow(showId);
 
+  const timeZone = deviceTimeZone();
+  const todayDate = today(timeZone);
+
   const next = data
     ? nextForShow(
         data,
         data._embedded.episodes,
         data._embedded.seasons,
-        deviceTimeZone(),
-        today(deviceTimeZone()),
+        timeZone,
+        todayDate,
       )
     : undefined;
 
-  return <Text style={styles.nextLine}>{nextEpisodeLabel(next)}</Text>;
+  return (
+    <Text style={styles.nextLine}>
+      {nextEpisodeLabel(next, timeZone, todayDate)}
+    </Text>
+  );
 }
 
 const POSTER_WIDTH = 60;
