@@ -72,10 +72,16 @@ first user is the author, who currently uses Next Episode.
   first show" on an empty Home. All open the same Search.
 - **Presentation:** a sheet over the current view. Large search field on top
   with the keyboard already open. Results appear while typing.
-- **Leaving:** a "Done" button in the accent colour, floating at the bottom
-  centre within thumb reach, or swipe the sheet down. Both return to where you
-  came from, so from Home you are back on Home with the new shows in place.
-  There is no "Cancel": following is saved immediately, "Done" only closes.
+- **Leaving:** a round close button (X) at the top right, next to the search
+  field, or swipe the sheet down. The close button is always visible, also
+  while the keyboard is open (references: Next Episode's search, current iOS
+  sheets). Both return to where you came from, so from Home you are back on
+  Home with the new shows in place. There is no "Cancel": following is saved
+  immediately, the close button only closes.
+- **Keyboard:** open on entry. Following a show keeps it open, so several
+  shows can be followed in a row. Dragging the results or pressing the
+  return key ("Search") closes it. Autocorrect and spell check are off, so
+  original titles are not rewritten.
 - **Result row (references: PlayPilot, Spotify "Add to playlist"):** large
   portrait poster on the left. Next to it: title in bold, a meta line with
   year and status ("2026 · Returning", "Ended"), a two line summary, and the
@@ -83,8 +89,7 @@ first user is the author, who currently uses Next Episode.
 - **Follow control:** a circle at the right edge of each row, aligned in one
   column. Not followed: hollow circle with a "+" at lower opacity. Followed:
   filled with the accent colour and a check, with light haptic feedback. The
-  filled state is a status, not a competing action, so "Done" stays the one
-  primary action in the view.
+  filled state is a status, not a competing action.
 - **After following:** the row shows the next episode ("New today",
   "Next: Tomorrow", "Next: Tue 24 Sep", or "No date yet"), confirming the
   app knows the show.
@@ -135,11 +140,11 @@ first user is the author, who currently uses Next Episode.
 ### 5.6 Navigation rules
 - **Going deeper gives a back arrow.** Views pushed on top of another (Show
   detail) have a back arrow top left and support the edge swipe back.
-- **Opening something on top gives "Done".** Sheets (Search) close with
-  "Done" or a swipe down.
+- **Opening something on top gives a close button.** Sheets (Search) close
+  with a round close button (X) at the top right or a swipe down.
 - **Inside a sheet the rules combine.** Show detail opened from Search has a
-  back arrow to the results. "Done" is hidden there, since the view has its
-  own primary action. Swiping the sheet down still closes all of Search.
+  back arrow to the results. The close button stays and closes all of
+  Search, as does swiping the sheet down.
 
 ### 5.7 Fixed defaults
 These are decisions, not settings. They match how the first user has set up
@@ -167,7 +172,7 @@ Reached from an icon. Territory and notifications.
 | FR-004 | Home shows followed series with an episode released today | PoC |
 | FR-005 | Home shows the count of today's shows (for example "NEW TODAY · 1/3") | PoC |
 | FR-006 | On a day without episodes, Home shows the episodes of the next day with episodes | PoC |
-| FR-007 | "+" on Home opens Search as a sheet; "Done" or swipe down returns to Home | PoC |
+| FR-007 | "+" on Home opens Search as a sheet; the close button (X) or swipe down returns to Home | PoC |
 | FR-008 | Calendar shows a month grid with days that have episodes marked, today preselected | PoC |
 | FR-009 | Selecting a day in Calendar lists that day's episodes | PoC |
 | FR-036 | Calendar swipes between months and shows a "Today" button when away from today | PoC |
