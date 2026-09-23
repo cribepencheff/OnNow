@@ -72,6 +72,17 @@ Expo with React Native and TypeScript (ADR 0007).
 - A Husky pre-push hook (`.husky/pre-push`) runs `tsc --noEmit`, `expo lint`
   and `test:ci`, and blocks the push if any of them fail.
 
+### When to run what
+Avoid running the same checks twice.
+- **While working:** run only the tests related to the files you change,
+  for example `npx jest <test paths>` or
+  `npx jest --findRelatedTests <changed files>`.
+- **Before pushing:** do not run the full `tsc`, lint and test suite by
+  hand. The pre-push hook runs it on `git push`; rely on that and report
+  its result.
+- **Maestro:** run the end to end flow (`npm run e2e`) only when a change
+  touches Search, Home, Shows or navigation, or when asked.
+
 ## Spikes
 - Spike code is throwaway. Put it in `spikes-scratch/` (git ignored), never
   in the app source.
@@ -112,7 +123,8 @@ Expo with React Native and TypeScript (ADR 0007).
   history or touches shared branches.
 - For issues with no visible UI change (pure logic, data, storage, hooks),
   once verification passes: commit, push, open the PR and merge it without
-  waiting for review.
+  waiting for review. Verification means the related tests while working
+  and the pre-push hook on push, see "When to run what" under Testing.
 - For issues with a visible UI change (screens and views the owner would
   look at in Expo Go): open the PR as usual, but do not merge it. Wait for
   the owner to test it in Expo Go and approve it explicitly in chat, for
@@ -183,7 +195,8 @@ first. Keep reports in this shape:
   and why
 - **Decisions made**: anything decided along the way and the reasoning,
   even small things, so it can be reviewed after the fact
-- **Verification**: typecheck, lint, test counts, and any tooling checks
+- **Verification**: the pre-push hook's result (typecheck, lint, test
+  counts), the Maestro result when it was run, and any other tooling checks
   (for example `expo-doctor`)
 - **Suggested commit message**: matching the format in "Git and planning"
   above (issue ID first, no attribution trailers)
