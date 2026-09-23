@@ -65,7 +65,11 @@ export function SearchResultRow({
           </Text>
         )}
       </View>
-      <FollowCircle followed={followed} onPress={onToggleFollow} />
+      <FollowCircle
+        followed={followed}
+        onPress={onToggleFollow}
+        testID={`follow-${show.id}`}
+      />
     </View>
   );
 }

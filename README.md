@@ -49,6 +49,34 @@ See `docs/decisions/` for the reasoning behind these choices.
    npm test           # unit and component tests
    ```
 
+## End to end test
+
+One [Maestro](https://maestro.dev) flow, `.maestro/core-loop.yaml`, checks
+the core loop on live TVmaze data: from an empty follow list, follow a
+running show in Search and see it on Home and in Shows. It runs locally in
+Expo Go in the iOS simulator, not in CI.
+
+It needs Xcode with an iOS simulator, Expo Go installed in that simulator
+and the [Maestro CLI](https://docs.maestro.dev/getting-started/installing-maestro).
+
+1. Boot the simulator and start Metro:
+
+   ```bash
+   npx expo start
+   ```
+
+2. In another terminal, run the flow:
+
+   ```bash
+   npm run e2e
+   ```
+
+The flow clears Expo Go's data in the simulator to start from an empty
+follow list, so anything else stored in that Expo Go is lost. It follows
+the first show in `.maestro/scripts/pick-show.js` that has an upcoming
+episode on TVmaze. If none does, the flow stops and says so: update that
+list.
+
 ## Documentation
 
 - [`docs/00-vision.md`](docs/00-vision.md): core promise and principles

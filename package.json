@@ -57,6 +57,7 @@
     "test": "jest",
     "test:watch": "jest --watchAll",
     "test:ci": "jest --ci",
+    "e2e": "maestro test .maestro",
     "fixtures:update": "node scripts/fetch-fixtures.mts",
     "prepare": "husky"
   },
