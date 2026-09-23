@@ -1,0 +1,105 @@
+# Core loop on real data (CRI-69, ADR 0008, FR-001, FR-002, FR-004, FR-006,
+# FR-007, FR-010): from an empty follow list, follow a running show in
+# Search and see it on Home and in Shows.
+#
+# Runs in Expo Go in the iOS simulator against a running Metro server
+# (`npx expo start`). See "End to end test" in the README.
+#
+# Live TVmaze data changes daily, so the flow only asserts what is stable:
+# the empty state is gone and the show's title is on Home and in Shows,
+# with a next episode line. It never asserts a specific date.
+appId: host.exp.Exponent
+env:
+  METRO_URL: exp://127.0.0.1:8081
+---
+- runScript: scripts/pick-show.js
+
+# 1. Clean state: clearing Expo Go's data also clears the app's follow
+# list, which lives in Expo Go's storage while running there.
+- launchApp:
+    clearState: true
+- openLink: ${METRO_URL}
+# iOS asks before opening a link in another app.
+- tapOn:
+    text: "Open"
+    optional: true
+# Expo Go's one-time developer menu introduction.
+- tapOn:
+    text: "Continue"
+    optional: true
+
+# 2. FR-007: Home's empty state.
+- extendedWaitUntil:
+    visible:
+      id: "home-empty-state"
+    timeout: 60000
+
+# Expo Go's floating "Tools button" sits on top of Home's "+". Turn it off
+# in Expo Go's developer menu (this only changes Expo Go, not the app).
+# On a first launch Expo Go sometimes opens that menu by itself, so give it
+# a moment, and open it from the floating button only if it is not open.
+- extendedWaitUntil:
+    visible: "Tools button|Toggle element inspector"
+    timeout: 5000
+    optional: true
+- runFlow:
+    when:
+      notVisible: "Toggle element inspector"
+    commands:
+      - tapOn:
+          id: "gearshape.fill"
+- scrollUntilVisible:
+    element:
+      text: "Tools button"
+# The switch has no label of its own, so find it next to its label. Two
+# elements match there: the switch's wide row container (index 0), where a
+# tap does nothing, and the switch itself (index 1).
+- tapOn:
+    checked: true
+    rightOf: "Tools button"
+    index: 1
+- tapOn: "Close"
+- assertNotVisible:
+    id: "gearshape.fill"
+
+# 3. FR-007: "+" in Home's header opens Search.
+- tapOn:
+    id: "home-add-show"
+- assertVisible:
+    id: "search-input"
+
+# 4. FR-001, FR-002: search the show and follow it.
+- inputText: ${output.show.name}
+- extendedWaitUntil:
+    visible:
+      id: "follow-${output.show.id}"
+    timeout: 20000
+- tapOn:
+    id: "follow-${output.show.id}"
+- assertVisible:
+    id: "follow-${output.show.id}"
+    text: "Followed"
+
+# 5. FR-004, FR-006: "Done" returns to Home, where the show is today's card
+# or the next day's card.
+# The keyboard stays open after following and covers "Done", so close it
+# first, as a user would.
+- hideKeyboard
+- tapOn:
+    id: "search-done"
+- extendedWaitUntil:
+    visible:
+      id: "home-card"
+      text: "${output.show.name}.*"
+    timeout: 30000
+- assertNotVisible:
+    id: "home-empty-state"
+
+# 6. FR-010: Shows lists the show with "New today" or "Next: ...".
+- tapOn:
+    id: "tab-shows"
+- extendedWaitUntil:
+    visible:
+      id: "shows-row"
+      text: "${output.show.name}, .*(New today|Next: .+)"
+    timeout: 20000

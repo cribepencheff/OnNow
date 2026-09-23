@@ -47,6 +47,7 @@ export function HomeHeaderAddButton() {
       onPress={() => router.push("/search")}
       hitSlop={16}
       style={styles.headerAddButton}
+      testID="home-add-show"
     >
       <SymbolView
         name={{ ios: "plus", android: "add", web: "add" }}
@@ -217,6 +218,7 @@ function EmptyFollowList({ onPress }: { onPress: () => void }) {
       accessibilityLabel="Add your first show"
       onPress={onPress}
       style={styles.emptyState}
+      testID="home-empty-state"
     >
       <Text style={styles.emptyStateText}>Add your first show</Text>
     </Pressable>

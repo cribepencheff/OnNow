@@ -14,11 +14,12 @@ import { accent } from "@/theme/color";
 interface FollowCircleProps {
   followed: boolean;
   onPress: () => void;
+  testID?: string;
 }
 
 const CIRCLE_SIZE = 32;
 
-export function FollowCircle({ followed, onPress }: FollowCircleProps) {
+export function FollowCircle({ followed, onPress, testID }: FollowCircleProps) {
   const handlePress = useCallback(() => {
     if (!followed) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -33,6 +34,7 @@ export function FollowCircle({ followed, onPress }: FollowCircleProps) {
       accessibilityState={{ selected: followed }}
       onPress={handlePress}
       hitSlop={16}
+      testID={testID}
     >
       <View
         style={[
