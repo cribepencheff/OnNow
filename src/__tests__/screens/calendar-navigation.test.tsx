@@ -1,9 +1,4 @@
-import {
-  renderRouter,
-  screen,
-  waitFor,
-  within,
-} from "expo-router/testing-library";
+import { renderRouter, screen, waitFor } from "expo-router/testing-library";
 
 // CRI-67: renders the real navigation tree (root Stack wrapping the Tabs
 // navigator) landing on the Calendar tab, so a missing or hidden element in
@@ -14,17 +9,7 @@ describe("Calendar tab (real navigation)", () => {
     const rendered = renderRouter("src/app", { initialUrl: "/calendar" });
     await rendered;
 
-    // The month title lives in react-native-calendars' static header, one
-    // accessibility-hidden "adjustable" control by design: real, visible
-    // text, just not queryable without hidden: true. Scoped to the static
-    // header specifically, since the library also renders one (hidden,
-    // covered) header per buffered month item with the same title.
-    const staticHeader = within(
-      screen.getByTestId("calendar-grid.staticHeader", { hidden: true }),
-    );
-    expect(
-      staticHeader.getByText(/^[A-Z][a-z]+ \d{4}$/, { hidden: true }),
-    ).toBeTruthy();
+    expect(screen.getByText(/^[A-Z][a-z]+ \d{4}$/)).toBeTruthy();
     await waitFor(() =>
       expect(screen.getByText("Nothing on this day.")).toBeTruthy(),
     );

@@ -7,14 +7,19 @@
 // library, not our own flex layout, after a hand-rolled grid wrapped to six
 // columns instead of seven on some screen widths (CRI-67). CalendarList in
 // horizontal + pagingEnabled mode gives a real sliding transition between
-// months (Calendar's enableSwipeMonths only swaps the month with no
-// transition), with staticHeader rendering one title/weekday row that stays
-// put while months scroll behind it. We keep our own day rendering
-// (dayComponent) so "today" and "selected" stay driven by our own
-// useToday()/selectedDate, never the library's own device-clock check
-// (ADR 0001), and the day list, marking data and "Today" button are ours.
+// months. Its own header/weekday row is fully suppressed on every page
+// (renderHeader null, hideDayNames, hideArrows): the title and weekday row
+// below are ours, rendered once, fixed above the pager, never sliding with
+// it. react-native-calendars' own staticHeader option renders a header that
+// still updates the instant a swipe crosses a visibility threshold, mid
+// gesture; ours instead only updates once the page has actually settled
+// (onMomentumScrollEnd/onScrollEndDrag), which is what CRI-76 review asked
+// for. We keep our own day rendering (dayComponent) so "today" and
+// "selected" stay driven by our own useToday()/selectedDate, never the
+// library's own device-clock check (ADR 0001), and the day list, marking
+// data and "Today" button are ours.
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import {
   Pressable,
   RefreshControl,
@@ -22,6 +27,7 @@ import {
   StyleSheet,
   Text,
   View,
+  useWindowDimensions,
 } from "react-native";
 import { Image } from "expo-image";
 import { CalendarList, type DateData } from "react-native-calendars";
@@ -45,6 +51,20 @@ import {
 import type { LocalDate } from "@/logic/local-date";
 import { accent } from "@/theme/color";
 
+const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+// Shared between our fixed weekday row and the grid itself (via
+// calendarStyle below), so the two stay aligned regardless of the library's
+// own default padding.
+const GRID_HORIZONTAL_PADDING = 16;
+const calendarStyle = { paddingHorizontal: GRID_HORIZONTAL_PADDING };
+
+// The grid's background must match the screen, never a library default
+// (CRI-76 review: a white block was showing on the app's grey background).
+const calendarTheme = {
+  calendarBackground: "transparent",
+};
+
 function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
 }
@@ -57,13 +77,8 @@ function monthKey({ year, month }: YearMonth): string {
   return `${year}-${String(month).padStart(2, "0")}-01`;
 }
 
-// The grid's background must match the screen, never a library default
-// (CRI-76 review: a white block was showing on the app's grey background).
-const calendarTheme = {
-  calendarBackground: "transparent",
-};
-
 export default function CalendarScreen() {
+  const { width } = useWindowDimensions();
   const todayDate = useToday();
   const weekStart = useWeekStart();
   const timeZone = deviceTimeZone();
@@ -74,6 +89,12 @@ export default function CalendarScreen() {
   const todayMonth = useMemo(() => monthOf(todayDate), [todayDate]);
   const [visibleMonth, setVisibleMonth] = useState<YearMonth>(todayMonth);
   const [selectedDate, setSelectedDate] = useState<LocalDate>(todayDate);
+
+  // The library reports the visible month as soon as a swipe crosses a
+  // viewability threshold, mid gesture. We only want the fixed header to
+  // update once the page has actually settled, so the latest value is
+  // held here and only committed to visibleMonth on scroll end.
+  const settlingMonth = useRef(todayMonth);
 
   const episodeDates = useMemo(
     () => datesWithEpisodes(followedShows, timeZone),
@@ -89,6 +110,7 @@ export default function CalendarScreen() {
     !sameMonth(visibleMonth, todayMonth) || selectedDate !== todayDate;
 
   const goToToday = useCallback(() => {
+    settlingMonth.current = todayMonth;
     setVisibleMonth(todayMonth);
     setSelectedDate(todayDate);
   }, [todayMonth, todayDate]);
@@ -98,7 +120,11 @@ export default function CalendarScreen() {
   }, []);
 
   const handleMonthChange = useCallback((date: DateData) => {
-    setVisibleMonth({ year: date.year, month: date.month });
+    settlingMonth.current = { year: date.year, month: date.month };
+  }, []);
+
+  const commitSettledMonth = useCallback(() => {
+    setVisibleMonth(settlingMonth.current);
   }, []);
 
   const renderDay = useCallback(
@@ -117,15 +143,6 @@ export default function CalendarScreen() {
     [todayDate, selectedDate, episodeDates],
   );
 
-  const renderHeader = useCallback(
-    () => (
-      <Text style={styles.monthTitle}>
-        {monthTitle(visibleMonth.year, visibleMonth.month)}
-      </Text>
-    ),
-    [visibleMonth],
-  );
-
   return (
     <View style={styles.container}>
       <ScrollView
@@ -139,20 +156,36 @@ export default function CalendarScreen() {
           />
         }
       >
+        <Text style={styles.monthTitle}>
+          {monthTitle(visibleMonth.year, visibleMonth.month)}
+        </Text>
+
+        <View style={styles.weekdayRow}>
+          {Array.from({ length: 7 }, (_, index) => (
+            <Text key={index} style={styles.weekdayLabel}>
+              {WEEKDAY_LABELS[(weekStart + index) % 7]}
+            </Text>
+          ))}
+        </View>
+
         <CalendarList
           testID="calendar-grid"
           current={monthKey(visibleMonth)}
           firstDay={weekStart}
           horizontal
           pagingEnabled
-          staticHeader
+          calendarWidth={width}
+          calendarStyle={calendarStyle}
           hideArrows
+          hideDayNames
           hideExtraDays={false}
           showSixWeeks
-          renderHeader={renderHeader}
+          renderHeader={() => null}
           dayComponent={renderDay}
           onDayPress={(date) => selectDate(date.dateString)}
           onMonthChange={handleMonthChange}
+          onMomentumScrollEnd={commitSettledMonth}
+          onScrollEndDrag={commitSettledMonth}
           theme={calendarTheme}
         />
 
@@ -299,7 +332,18 @@ const styles = StyleSheet.create({
   monthTitle: {
     fontSize: 20,
     fontWeight: "700",
+    paddingHorizontal: GRID_HORIZONTAL_PADDING,
     marginBottom: 8,
+  },
+  weekdayRow: {
+    flexDirection: "row",
+    paddingHorizontal: GRID_HORIZONTAL_PADDING,
+  },
+  weekdayLabel: {
+    flex: 1,
+    textAlign: "center",
+    fontSize: 12,
+    color: "#888888",
   },
   dayCellSlot: {
     flex: 1,
