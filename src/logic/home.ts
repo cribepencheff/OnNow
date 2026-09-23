@@ -1,7 +1,7 @@
 // Derived values for Home (PRD 5.1, FR-004, FR-005, FR-006, FR-012). Views
 // and hooks only render this; they do not decide it (ADR 0009).
 
-import { localDateFromAirstamp, type LocalDate } from "./local-date";
+import { isNextDay, localDateFromAirstamp, type LocalDate } from "./local-date";
 import {
   findShowsWithEpisodeToday,
   type ShowEpisodesToday,
@@ -95,15 +95,6 @@ export function upcomingDayLabel(
     return "TOMORROW";
   }
   return formatLabelDate(localDate).toUpperCase();
-}
-
-function isNextDay(todayDate: LocalDate, localDate: LocalDate): boolean {
-  return toUtcMillis(localDate) - toUtcMillis(todayDate) === 86_400_000;
-}
-
-function toUtcMillis(isoDate: LocalDate): number {
-  const [year, month, day] = isoDate.split("-").map(Number);
-  return Date.UTC(year, month - 1, day);
 }
 
 // FR-005-style badge for the next-day pager: "TOMORROW · 1/2" or

@@ -18,3 +18,15 @@ export function today(
 ): LocalDate {
   return now().toLocaleDateString("en-CA", { timeZone });
 }
+
+// Whether `localDate` is the calendar day immediately after `todayDate`.
+// Used to decide when a relative label like "Tomorrow" applies (FR-006,
+// PRD 5.4).
+export function isNextDay(todayDate: LocalDate, localDate: LocalDate): boolean {
+  return toUtcMillis(localDate) - toUtcMillis(todayDate) === 86_400_000;
+}
+
+function toUtcMillis(isoDate: LocalDate): number {
+  const [year, month, day] = isoDate.split("-").map(Number);
+  return Date.UTC(year, month - 1, day);
+}

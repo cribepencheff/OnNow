@@ -1,4 +1,4 @@
-import { localDateFromAirstamp, today } from "./local-date";
+import { isNextDay, localDateFromAirstamp, today } from "./local-date";
 import type { TvMazeEpisode } from "@/api/tvmaze-types";
 import showAKnightFixture from "@/api/fixtures/show-a-knight-of-the-seven-kingdoms.json";
 import showTheBearFixture from "@/api/fixtures/show-the-bear.json";
@@ -83,5 +83,27 @@ describe("today", () => {
     const now = () => new Date("2026-06-25T23:30:00+00:00");
     expect(today("Europe/Stockholm", now)).toBe("2026-06-26");
     expect(today("America/New_York", now)).toBe("2026-06-25");
+  });
+});
+
+describe("isNextDay", () => {
+  it("is true for the calendar day immediately after today", () => {
+    expect(isNextDay("2026-09-21", "2026-09-22")).toBe(true);
+  });
+
+  it("is true across a month boundary", () => {
+    expect(isNextDay("2026-09-30", "2026-10-01")).toBe(true);
+  });
+
+  it("is false for today itself", () => {
+    expect(isNextDay("2026-09-21", "2026-09-21")).toBe(false);
+  });
+
+  it("is false for two days ahead or more", () => {
+    expect(isNextDay("2026-09-21", "2026-09-23")).toBe(false);
+  });
+
+  it("is false for a date before today", () => {
+    expect(isNextDay("2026-09-21", "2026-09-20")).toBe(false);
   });
 });
