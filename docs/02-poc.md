@@ -20,7 +20,7 @@ notifications, settings, widget, polished visuals.
 
 ## Success criteria
 - [ ] I can search for and follow a series
-- [ ] Home shows the correct shows for today, with the next episode on empty days
+- [ ] Home shows the correct shows for today, with the next day's episodes on empty days
 - [ ] Calendar shows the correct episodes for past and upcoming days
 - [ ] The follow list survives a restart
 - [ ] The app runs on a real iPhone at no cost
