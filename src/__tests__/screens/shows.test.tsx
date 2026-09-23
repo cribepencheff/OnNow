@@ -135,7 +135,8 @@ describe("ShowsScreen", () => {
       name: "Silo",
       status: "Running",
       _embedded: {
-        episodes: [makeEpisode({ airdate: "2026-09-24" })],
+        // A regular episode, not a season premiere (CRI-78).
+        episodes: [makeEpisode({ airdate: "2026-09-24", number: 2 })],
         seasons: [],
       },
     });
@@ -166,7 +167,7 @@ describe("ShowsScreen", () => {
 
     await render(<ShowsScreen />);
 
-    expect(screen.getByText("Next: Tue 1 Dec")).toBeTruthy();
+    expect(screen.getByText("Season 2 premiere · Tue 1 Dec")).toBeTruthy();
   });
 
   it("shows the status for a show between seasons with no announced date (FR-035)", async () => {

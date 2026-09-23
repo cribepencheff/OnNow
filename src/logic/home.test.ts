@@ -199,6 +199,11 @@ describe("upcomingDayLabel (FR-006, ADR 0001)", () => {
   it("labels any other day with its weekday, day and month in upper case, never a time", () => {
     expect(upcomingDayLabel("2026-09-26", "2026-09-21")).toBe("SAT 26 SEP");
   });
+
+  it("includes the year for a next release day in another year (CRI-78)", () => {
+    expect(upcomingDayLabel("2027-07-09", "2026-09-24")).toBe("FRI 9 JUL 2027");
+    expect(upcomingDayLabel("2027-01-02", "2026-12-29")).toBe("SAT 2 JAN 2027");
+  });
 });
 
 describe("nextDayCountLabel (FR-005 style badge, FR-006)", () => {
