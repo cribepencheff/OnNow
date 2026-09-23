@@ -8,7 +8,7 @@ that shows which followed TV series have a new episode today, with a
 calendar for past and upcoming episodes. Free to run: no backend, no
 accounts, free data sources only.
 
-Current phase: **Discovery**, moving into the **Proof of Concept**.
+Current phase: **Proof of Concept**.
 
 ## Read first
 - `docs/00-vision.md`: core promise and principles
@@ -124,7 +124,8 @@ Expo with React Native and TypeScript (ADR 0007).
   For intermediate steps within a batched PR (finishing one of several
   issues it covers, a retry after a fix), a short status line is enough;
   save the full report for when there's something to actually review or
-  act on.
+  act on. Even a short status line starts with ROUTINE or REVIEW: the rule
+  applies to every report, not just the full shape.
 
 ## Owner review gates
 This is separate from "When to check in with the owner" below. That section
@@ -169,6 +170,13 @@ transition rather than assuming they carry over unchanged:
 
 Otherwise, complete the issue and report without waiting for a check-in
 first. Keep reports in this shape:
+- **ROUTINE or REVIEW**, one word, first line of the report: ROUTINE means
+  you did exactly what was asked, nothing unexpected, nothing for the owner
+  to weigh in on before it's forwarded anywhere. REVIEW means the report
+  contains a decision you made, a deviation from what was asked or from an
+  existing ADR/PRD, or something you're uncertain about. This tells the
+  owner whether the report is worth reading closely, not just whether the
+  work is done.
 - **Done**: what was built, file by file, with the relevant `FR-xxx` and
   ADR references
 - **Bundled fixes**: anything unrelated included per an earlier decision,
