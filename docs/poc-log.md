@@ -18,21 +18,39 @@ episode today, and it is correct. See the success criteria in `02-poc.md`.
 
 Filled in on day 1.
 
-- **Start date:**
-- **End date:**
+- **Start date:** Thursday 2026-09-24
+- **End date:** Wednesday 2026-09-30
 - **App version (commit on `main`):**
 
 Shows I follow: at least 5 that I actually watch (success criterion).
+The list is the test set from `spikes/README.md`. Follow all of them in
+the app before day 1.
 
-| # | Show | Network or service | Where I watch it in Sweden |
-| - | ---- | ------------------ | -------------------------- |
-| 1 |      |                    |                            |
-| 2 |      |                    |                            |
-| 3 |      |                    |                            |
-| 4 |      |                    |                            |
-| 5 |      |                    |                            |
-| 6 |      |                    |                            |
-| 7 |      |                    |                            |
+"Episodes this week" comes from the TVmaze fixtures in the repo, as local
+dates in Europe/Stockholm. The app uses live data, so check the Shows tab
+if something looks different.
+
+| #  | Show | Network or service | Episodes this week | Where I watch it in Sweden |
+| -- | ---- | ------------------ | ------------------ | -------------------------- |
+| 1  | A Knight of the Seven Kingdoms | HBO | none | |
+| 2  | Dark Matter | Apple TV | Fri 25 Sep, S2E5 | |
+| 3  | Foundation | Apple TV | none | |
+| 4  | Killing Eve | AMC+ (ended) | none | |
+| 5  | Lanterns | HBO | Mon 28 Sep, S1E7 | |
+| 6  | Legends | Netflix | none | |
+| 7  | Ludwig | BBC iPlayer | none | |
+| 8  | MobLand | Paramount+ | Fri 25 Sep, S2E2 | |
+| 9  | Neagley | Prime Video | none | |
+| 10 | Only Murders in the Building | Hulu | none (next Tue 8 Dec) | |
+| 11 | Paradise | Hulu | none | |
+| 12 | Pluribus | Apple TV | none | |
+| 13 | Silo | Apple TV | none (next 2027) | |
+| 14 | Slow Horses | Apple TV | Wed 30 Sep, S6E3 | |
+| 15 | The Agency | Paramount+ | none | |
+| 16 | The Bear | Hulu (ended) | none | |
+| 17 | The Diplomat | Netflix | none (next Thu 15 Oct) | |
+| 18 | The Pitt | HBO Max | none | |
+| 19 | Widow's Bay | Apple TV | none | |
 
 ## Daily entry template
 
