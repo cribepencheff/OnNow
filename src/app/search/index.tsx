@@ -5,17 +5,10 @@
 // Following is saved immediately; there is no "Cancel".
 
 import { useState } from "react";
-import {
-  FlatList,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
 import { useRouter } from "expo-router";
-import { SymbolView } from "expo-symbols";
 
+import { CloseButton } from "@/components/CloseButton";
 import { SearchResultRow } from "@/components/SearchResultRow";
 import { useFollowList } from "@/hooks/useFollowList";
 import { useSearchShows } from "@/hooks/useSearchShows";
@@ -48,21 +41,7 @@ export default function SearchScreen() {
           clearButtonMode="while-editing"
           testID="search-input"
         />
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Close"
-          onPress={() => router.back()}
-          hitSlop={8}
-          style={styles.closeButton}
-          testID="search-close"
-        >
-          <SymbolView
-            name={{ ios: "xmark", android: "close", web: "close" }}
-            tintColor={CLOSE_ICON_COLOR}
-            size={14}
-            weight="semibold"
-          />
-        </Pressable>
+        <CloseButton onPress={() => router.back()} testID="search-close" />
       </View>
 
       {query.trim().length > 0 && (
@@ -78,6 +57,14 @@ export default function SearchScreen() {
                 isFollowed(item.show.id)
                   ? unfollow(item.show.id)
                   : follow(item.show.id)
+              }
+              // Show detail opens inside the sheet, with a back arrow to
+              // these results (PRD 5.6, CRI-79).
+              onPress={() =>
+                router.push({
+                  pathname: "/search/show/[id]",
+                  params: { id: String(item.show.id) },
+                })
               }
             />
           )}
@@ -99,9 +86,6 @@ export default function SearchScreen() {
   );
 }
 
-const CLOSE_BUTTON_SIZE = 32;
-const CLOSE_ICON_COLOR = "#666666";
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -122,14 +106,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: "#F0F0F0",
     fontSize: 20,
-  },
-  closeButton: {
-    width: CLOSE_BUTTON_SIZE,
-    height: CLOSE_BUTTON_SIZE,
-    borderRadius: CLOSE_BUTTON_SIZE / 2,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#F0F0F0",
   },
   resultsContent: {
     paddingBottom: 32,
