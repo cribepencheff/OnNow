@@ -93,7 +93,8 @@ Labels: `poc`, `ui`
 - Results while typing: poster, title, year, status, two line summary
 - Follow circle at the right edge: hollow "+" to filled check
 - After following, the row shows the next episode or status
-- "Done" at the bottom, swipe down to close
+- A close button (X) at the top right, swipe down to close (changed from
+  "Done" at the bottom in CRI-77)
 - Matching on name, premiere year and network (spike 0001)
 **Done when:** component tests cover empty, results, no results and
 followed states.

@@ -80,13 +80,11 @@ env:
     id: "follow-${output.show.id}"
     text: "Followed"
 
-# 5. FR-004, FR-006: "Done" returns to Home, where the show is today's card
-# or the next day's card.
-# The keyboard stays open after following and covers "Done", so close it
-# first, as a user would.
-- hideKeyboard
+# 5. FR-004, FR-006, FR-007: the close button returns to Home, where the
+# show is today's card or the next day's card. The keyboard is still open
+# here, which proves the close button stays reachable (CRI-77).
 - tapOn:
-    id: "search-done"
+    id: "search-close"
 - extendedWaitUntil:
     visible:
       id: "home-card"
