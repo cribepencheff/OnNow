@@ -57,7 +57,7 @@ Details are settled in the Design phase. These ideas guide it:
   surfaces, a hint of colour in the background, rounded cards, pill shaped
   buttons and one clear accent colour (reference: a dark fintech app concept
   shared during Discovery). Combined with the cinematic imagery of Apple TV
-  and Netflix.
+  and Netflix, and Hulu's iOS app: dark, image led and cinematic (ADR 0011).
 
 ## Definition of "today"
 An episode belongs to today if it is released on today's date in the user's
