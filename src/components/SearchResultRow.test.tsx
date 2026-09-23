@@ -89,7 +89,48 @@ describe("SearchResultRow", () => {
       />,
     );
 
-    fireEvent.press(screen.getByRole("button"));
+    // The row itself is a button too (CRI-79), so the circle is found by
+    // its own name.
+    fireEvent.press(screen.getByRole("button", { name: "Follow" }));
+
+    expect(onToggleFollow).toHaveBeenCalledTimes(1);
+  });
+
+  it("CRI-79: pressing the row opens Show detail and does not follow", async () => {
+    const onToggleFollow = jest.fn();
+    const onPress = jest.fn();
+    const show = showSlowHorsesFixture as unknown as TvMazeShow;
+
+    await render(
+      <SearchResultRow
+        show={show}
+        followed={false}
+        onToggleFollow={onToggleFollow}
+        onPress={onPress}
+      />,
+    );
+
+    fireEvent.press(screen.getByTestId("search-result-row"));
+
+    expect(onPress).toHaveBeenCalledTimes(1);
+    expect(onToggleFollow).not.toHaveBeenCalled();
+  });
+
+  it("NFR-008: screen reader users can follow from the row's accessibility action", async () => {
+    const onToggleFollow = jest.fn();
+    const show = showSlowHorsesFixture as unknown as TvMazeShow;
+
+    await render(
+      <SearchResultRow
+        show={show}
+        followed={false}
+        onToggleFollow={onToggleFollow}
+      />,
+    );
+
+    fireEvent(screen.getByTestId("search-result-row"), "accessibilityAction", {
+      nativeEvent: { actionName: "toggleFollow" },
+    });
 
     expect(onToggleFollow).toHaveBeenCalledTimes(1);
   });

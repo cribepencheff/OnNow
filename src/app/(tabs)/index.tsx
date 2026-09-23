@@ -174,6 +174,8 @@ function EpisodePager({
   pageIndex,
   onMomentumScrollEnd,
 }: EpisodePagerProps) {
+  const router = useRouter();
+
   return (
     <View style={styles.pagerContainer}>
       <Text style={styles.badge}>{badgeLabel}</Text>
@@ -190,6 +192,12 @@ function EpisodePager({
             <HomeCard
               show={item.show}
               metaLine={homeCardMetaLine(item.show, item.episodes)}
+              onPress={() =>
+                router.push({
+                  pathname: "/show/[id]",
+                  params: { id: String(item.show.id) },
+                })
+              }
             />
           </View>
         )}

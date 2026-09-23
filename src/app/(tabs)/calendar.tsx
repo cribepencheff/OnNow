@@ -16,6 +16,7 @@ import {
   type NativeSyntheticEvent,
 } from "react-native";
 import { Image } from "expo-image";
+import { useRouter } from "expo-router";
 
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useToday } from "@/hooks/useToday";
@@ -307,14 +308,22 @@ function DayCell({
   );
 }
 
+// Tapping a row opens Show detail (FR-030, CRI-79).
 function CalendarRow({ show, episodes }: ShowEpisodesToday) {
+  const router = useRouter();
   const line = calendarRowLine(episodes);
 
   return (
-    <View
+    <Pressable
       style={styles.row}
-      accessible
+      accessibilityRole="button"
       accessibilityLabel={line ? `${show.name}, ${line}` : show.name}
+      onPress={() =>
+        router.push({
+          pathname: "/show/[id]",
+          params: { id: String(show.id) },
+        })
+      }
       testID="calendar-row"
     >
       <Image
@@ -333,7 +342,7 @@ function CalendarRow({ show, episodes }: ShowEpisodesToday) {
           </Text>
         ) : null}
       </View>
-    </View>
+    </Pressable>
   );
 }
 

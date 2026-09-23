@@ -150,3 +150,25 @@ Labels: `poc`, `docs`
 per day, what Home showed, what was actually available, and any wrong day
 or territory gap.
 **Done when:** the template exists and the week has started.
+
+## 12. Show detail (PoC slice)
+Labels: `poc`, `ui`
+**Requirements:** FR-028, FR-029 (in part), FR-030, FR-032 (in part),
+FR-033, FR-034, FR-037, PRD 5.5, 5.6
+**Goal:** answer "is this the right show, and what is it?" with TVmaze
+data only. Added to the PoC by owner decision (CRI-79).
+**Includes:**
+- Large image, title, year, status, network and summary
+- Next and latest episode cards with still, title, summary, "Episode 2 of
+  10" and relative time, never a time of day
+- Between seasons: a next season card with the premiere date, otherwise the
+  status from TVmaze
+- Season tabs with the current season preselected, episode states and a
+  "Finale" badge; announced seasons as muted tabs
+- "Follow", or a quiet "Following" that unfollows
+- Opens from Home, Calendar, Shows and Search, pushed with a back arrow;
+  from Search inside the sheet, where the close button closes all of Search
+- Not included: services, "Open in [service]", "Not in Sweden yet"
+**Done when:** component tests cover running, between seasons and ended
+shows, season tabs, episode states and follow; navigation tests cover each
+entry point; the Maestro flow opens Show detail from Shows.

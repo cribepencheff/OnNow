@@ -1,23 +1,26 @@
 // A single Home card (PRD 5.1, FR-004, FR-006): a large portrait poster,
-// nearly edge to edge, one show per card. Visual design comes later, so
+// nearly edge to edge, one show per card. Tapping it opens Show detail
+// (FR-030, CRI-79). Visual design comes later, so
 // styling here stays minimal and functional.
 
 import { Image } from "expo-image";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import type { TvMazeShow } from "@/api/tvmaze-types";
 
 interface HomeCardProps {
   show: TvMazeShow;
   metaLine: string;
+  onPress?: () => void;
 }
 
-export function HomeCard({ show, metaLine }: HomeCardProps) {
+export function HomeCard({ show, metaLine, onPress }: HomeCardProps) {
   return (
-    <View
+    <Pressable
       style={styles.card}
-      accessible
+      accessibilityRole="button"
       accessibilityLabel={metaLine ? `${show.name}, ${metaLine}` : show.name}
+      onPress={onPress}
       testID="home-card"
     >
       <Image
@@ -36,7 +39,7 @@ export function HomeCard({ show, metaLine }: HomeCardProps) {
           </Text>
         ) : null}
       </View>
-    </View>
+    </Pressable>
   );
 }
 

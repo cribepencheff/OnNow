@@ -1,6 +1,7 @@
 // A followed show row in the Shows list (PRD 5.3, FR-002, FR-010, FR-035),
 // in the same visual language as Search's result row: poster, title,
-// network, and a line with the next episode or status. Swipe left reveals
+// network, and a line with the next episode or status. Tapping the row
+// opens Show detail (FR-030, CRI-79). Swipe left reveals
 // "Unfollow" (react-native-gesture-handler's Swipeable, Expo Go
 // compatible, no dev build needed); a full swipe alone does not unfollow,
 // only pressing the revealed button does. Screen reader users cannot
@@ -22,6 +23,7 @@ interface ShowsRowProps {
   timeZone: string;
   todayDate: LocalDate;
   onUnfollow: () => void;
+  onPress?: () => void;
 }
 
 const ACCESSIBILITY_ACTIONS = [{ name: "unfollow", label: "Unfollow" }];
@@ -31,6 +33,7 @@ export function ShowsRow({
   timeZone,
   todayDate,
   onUnfollow,
+  onPress,
 }: ShowsRowProps) {
   const next = nextForShow(
     show,
@@ -49,10 +52,11 @@ export function ShowsRow({
         <UnfollowAction onPress={onUnfollow} showName={show.name} />
       )}
     >
-      <View
+      <Pressable
         style={styles.row}
-        accessible
+        accessibilityRole="button"
         accessibilityLabel={label}
+        onPress={onPress}
         accessibilityActions={ACCESSIBILITY_ACTIONS}
         onAccessibilityAction={(event) => {
           if (event.nativeEvent.actionName === "unfollow") {
@@ -80,7 +84,7 @@ export function ShowsRow({
             </Text>
           )}
         </View>
-      </View>
+      </Pressable>
     </Swipeable>
   );
 }
