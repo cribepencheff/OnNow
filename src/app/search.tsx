@@ -37,6 +37,7 @@ export default function SearchScreen() {
         returnKeyType="search"
         accessibilityLabel="Search shows"
         clearButtonMode="while-editing"
+        testID="search-input"
       />
 
       {query.trim().length > 0 && (
@@ -70,6 +71,7 @@ export default function SearchScreen() {
         accessibilityRole="button"
         style={styles.doneButton}
         onPress={() => router.back()}
+        testID="search-done"
       >
         <Text style={styles.doneLabel}>Done</Text>
       </Pressable>

@@ -10,6 +10,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Home",
+          tabBarButtonTestID: "tab-home",
           tabBarIcon: ({ color, size }) => (
             <SymbolView
               name={{ ios: "house", android: "home", web: "home" }}
@@ -26,6 +27,7 @@ export default function TabLayout() {
         name="calendar"
         options={{
           title: "Calendar",
+          tabBarButtonTestID: "tab-calendar",
           tabBarIcon: ({ color, size }) => (
             <SymbolView
               name={{ ios: "calendar", android: "event", web: "event" }}
@@ -39,6 +41,7 @@ export default function TabLayout() {
         name="shows"
         options={{
           title: "Shows",
+          tabBarButtonTestID: "tab-shows",
           tabBarIcon: ({ color, size }) => (
             <SymbolView
               name={{ ios: "tv", android: "tv", web: "tv" }}
