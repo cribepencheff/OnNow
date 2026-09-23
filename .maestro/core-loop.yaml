@@ -1,6 +1,6 @@
 # Core loop on real data (CRI-69, ADR 0008, FR-001, FR-002, FR-004, FR-006,
-# FR-007, FR-010): from an empty follow list, follow a running show in
-# Search and see it on Home and in Shows.
+# FR-007, FR-010, FR-030): from an empty follow list, follow a running show
+# in Search, see it on Home and in Shows, and open its Show detail.
 #
 # Runs in Expo Go in the iOS simulator against a running Metro server
 # (`npx expo start`). See "End to end test" in the README.
@@ -102,3 +102,20 @@ env:
       id: "shows-row"
       text: "${output.show.name}, .*(New today|Next: .+|Season \\d+ premiere · .+)"
     timeout: 20000
+
+# 7. FR-030, PRD 5.6 (CRI-79): a Shows row opens Show detail with the show's
+# title, and the back arrow returns to Shows.
+- tapOn:
+    id: "shows-row"
+    text: "${output.show.name}.*"
+# The title and the quiet "Following" status (the show is followed) are
+# at the top, under the show's image.
+- extendedWaitUntil:
+    visible: "Following"
+    timeout: 20000
+- assertVisible: "${output.show.name}"
+- tapOn:
+    id: "BackButton"
+- assertVisible:
+    id: "shows-row"
+    text: "${output.show.name}.*"

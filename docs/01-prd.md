@@ -105,7 +105,12 @@ first user is the author, who currently uses Next Episode.
   Shows without an image get a neutral placeholder with the title. Running
   shows rank above ended ones.
 
-### 5.5 Show detail (MVP)
+### 5.5 Show detail (PoC slice, complete in MVP)
+The PoC has a slice of this view with TVmaze data only: the network instead
+of services, "Follow" and "Following" as the actions, and no "Not in Sweden
+yet" state. Services, "Open in [service]" and the territory state come in
+the MVP (CRI-79).
+
 - **Job:** answer "is this the right show, and what is it?" and lead to the
   one thing to do next.
 - **Entry points:** tapping a row in Search, the card on Home, an episode in
@@ -200,13 +205,13 @@ Reached from an icon. Territory and notifications.
 | FR-025 | After following, the result row shows the next episode or "No date yet" | PoC |
 | FR-026 | Before the user types, Search shows "New this week": series premieres and new seasons starting this week | MVP |
 | FR-027 | Search results show the services that carry the show in the user's territory | MVP |
-| FR-028 | Show detail view with image, title, year, status, service, summary, next and latest episode | MVP |
-| FR-029 | Show detail has one primary action: "Follow" when not followed, "Open in [service]" when followed | MVP |
-| FR-030 | Show detail opens from Search, Home, Calendar and Shows | MVP |
+| FR-028 | Show detail view with image, title, year, status, service, summary, next and latest episode. PoC shows the network instead of the service | PoC |
+| FR-029 | Show detail has one primary action: "Follow" when not followed, "Open in [service]" when followed. PoC: "Follow", and a quiet "Following" that unfollows; "Open in [service]" is MVP | PoC, MVP |
+| FR-030 | Show detail opens from Search, Home, Calendar and Shows | PoC |
 | FR-031 | Episodes whose season is not available in the user's territory are labelled "Not in [country] yet" and do not count as new today | MVP |
-| FR-032 | Show detail has season tabs with the current season preselected and episodes marked aired, today, upcoming (muted), not in territory yet (muted) and finale | MVP |
-| FR-033 | Announced future seasons appear as muted tabs with premiere date or "Announced" | MVP |
-| FR-034 | Between seasons, the next episode card shows the next announced episode or season with its date, otherwise the show status from the data source | MVP |
+| FR-032 | Show detail has season tabs with the current season preselected and episodes marked aired, today, upcoming (muted), not in territory yet (muted) and finale. PoC: all but "not in territory yet", which is MVP | PoC, MVP |
+| FR-033 | Announced future seasons appear as muted tabs with premiere date or "Announced" | PoC |
+| FR-034 | Between seasons, the next episode card shows the next announced episode or season with its date, otherwise the show status from the data source | PoC |
 | FR-035 | In Shows, a show between seasons shows its next announced date or its status from the data source instead of a next episode | PoC |
 
 ## 7. Non-functional requirements

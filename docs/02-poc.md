@@ -10,7 +10,10 @@ design comes in the Design phase.
 
 ## In scope
 - Home, Calendar, Shows and Search as described in `01-prd.md`, in simple form
-- Requirements FR-001 to FR-013, FR-024, FR-025, FR-035, FR-036 and FR-037
+- Show detail, PoC slice (no services, no Open in, no territory)
+- Requirements FR-001 to FR-013, FR-024, FR-025, FR-028 to FR-030,
+  FR-032 to FR-037 (FR-028, FR-029 and FR-032 in part, see `01-prd.md`
+  section 6)
 - Local storage of the follow list
 - One data source, no key if possible
 

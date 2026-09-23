@@ -71,6 +71,12 @@ export default function ShowsScreen() {
               timeZone={timeZone}
               todayDate={todayDate}
               onUnfollow={() => unfollow(item.show.id)}
+              onPress={() =>
+                router.push({
+                  pathname: "/show/[id]",
+                  params: { id: String(item.show.id) },
+                })
+              }
             />
           )}
           ListFooterComponent={TvMazeCredit}
