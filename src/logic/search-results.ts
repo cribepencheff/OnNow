@@ -3,6 +3,7 @@
 // module only re-orders running shows above ended ones and derives display
 // text, it does not re-rank by relevance.
 
+import { statusLabel } from "./show-status";
 import type { TvMazeSearchResult, TvMazeShow } from "@/api/tvmaze-types";
 
 export function rankSearchResults(
@@ -23,12 +24,12 @@ export function rankSearchResults(
   });
 }
 
+// "2022 · Running": premiere year and status, the status in plain words
+// (CRI-81).
 export function searchResultMetaLine(show: TvMazeShow): string {
   const year = show.premiered ? show.premiered.slice(0, 4) : null;
-  if (year) {
-    return `${year} · ${show.status}`;
-  }
-  return show.status;
+  const status = statusLabel(show.status);
+  return year ? `${year} · ${status}` : status;
 }
 
 export function searchResultNetworkName(show: TvMazeShow): string | null {

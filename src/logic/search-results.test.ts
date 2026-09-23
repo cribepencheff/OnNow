@@ -62,9 +62,17 @@ describe("searchResultMetaLine (FR-024)", () => {
     expect(searchResultMetaLine(show)).toBe("2022 · Running");
   });
 
-  it("falls back to status alone when there is no premiere date", () => {
+  it("falls back to status alone when there is no premiere date, in plain words (CRI-81)", () => {
     const show = { ...showWithStatus("In Development"), premiered: null };
-    expect(searchResultMetaLine(show)).toBe("In Development");
+    expect(searchResultMetaLine(show)).toBe("In development");
+  });
+
+  it('shows "To Be Determined" as "Renewal not announced" (CRI-81)', () => {
+    const show = {
+      ...showWithStatus("To Be Determined"),
+      premiered: "2026-09-16",
+    };
+    expect(searchResultMetaLine(show)).toBe("2026 · Renewal not announced");
   });
 });
 

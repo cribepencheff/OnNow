@@ -1,9 +1,11 @@
 import {
+  allEpisodesAvailable,
   currentSeasonNumber,
   episodeDateLabel,
   episodeOfLabel,
   episodeState,
   isFinale,
+  latestCard,
   latestEpisode,
   nextCard,
   regularEpisodes,
@@ -20,6 +22,8 @@ import showSlowHorsesFixture from "@/api/fixtures/show-slow-horses.json";
 import showSiloFixture from "@/api/fixtures/show-silo.json";
 import showFoundationFixture from "@/api/fixtures/show-foundation.json";
 import showKillingEveFixture from "@/api/fixtures/show-killing-eve.json";
+import showNeagleyFixture from "@/api/fixtures/show-neagley.json";
+import showTheDiplomatFixture from "@/api/fixtures/show-the-diplomat.json";
 
 const slowHorses = showSlowHorsesFixture as unknown as TvMazeShowWithEmbeds;
 const silo = showSiloFixture as unknown as TvMazeShowWithEmbeds;
@@ -264,5 +268,123 @@ describe("currentSeasonNumber (FR-032: current season, not season 1)", () => {
     expect(currentSeasonNumber(silo._embedded.episodes, TZ, "2020-01-01")).toBe(
       1,
     );
+  });
+});
+
+// CRI-81: whole-season releases ("drops") and plain status wording.
+describe("season drops (FR-012, FR-028, FR-034, CRI-81)", () => {
+  const neagley = showNeagleyFixture as unknown as TvMazeShowWithEmbeds;
+  const diplomat = showTheDiplomatFixture as unknown as TvMazeShowWithEmbeds;
+
+  function latestCardFor(show: TvMazeShowWithEmbeds, todayDate = TODAY) {
+    return latestCard(
+      show._embedded.episodes,
+      show._embedded.seasons,
+      TZ,
+      todayDate,
+    );
+  }
+
+  it("shows Neagley's 8 same-day episodes as one latest item, with all when the count matches the episode order", () => {
+    expect(latestCardFor(neagley)).toEqual({
+      kind: "drop",
+      label: "Season 1 · all 8 episodes · 7 days ago",
+    });
+    expect(latestCardFor(neagley, "2026-09-16")).toEqual({
+      kind: "drop",
+      label: "Season 1 · all 8 episodes · Today",
+    });
+  });
+
+  it('says "N episodes" without "all" when the count does not match the episode order', () => {
+    const firstThree = neagley._embedded.episodes.filter(
+      (episode) => (episode.number ?? 0) <= 3,
+    );
+    expect(
+      latestCard(firstThree, neagley._embedded.seasons, TZ, TODAY),
+    ).toEqual({ kind: "drop", label: "Season 1 · 3 episodes · 7 days ago" });
+  });
+
+  it("shows The Diplomat's season 3 drop as the latest item, with the year", () => {
+    expect(latestCardFor(diplomat)).toEqual({
+      kind: "drop",
+      label: "Season 3 · all 8 episodes · Thu 16 Oct 2025",
+    });
+  });
+
+  it("keeps a weekly show's latest episode as an episode card", () => {
+    expect(latestCardFor(slowHorses)).toEqual({
+      kind: "episode",
+      episode: find(slowHorses, 6, 2),
+    });
+  });
+
+  it("shows The Diplomat's next season premiere, a single listed episode, as before", () => {
+    expect(nextCardFor(diplomat)).toEqual({
+      kind: "season-premiere",
+      label: "Season 4 premiere · Thu 15 Oct",
+    });
+  });
+
+  it("shows an upcoming drop as one next item, as a premiere when it starts the season", () => {
+    expect(nextCardFor(diplomat, "2025-10-10")).toEqual({
+      kind: "drop",
+      label: "Season 3 premiere · all 8 episodes · In 6 days",
+    });
+  });
+
+  it("shows the status in plain words on the next card (TVmaze: To Be Determined)", () => {
+    expect(nextCardFor(neagley)).toEqual({
+      kind: "status",
+      status: "Renewal not announced",
+    });
+  });
+
+  it("uses plain status words in the meta line", () => {
+    expect(showDetailMetaLine(neagley)).toBe(
+      "2026 · Renewal not announced · Prime Video",
+    );
+  });
+});
+
+describe("allEpisodesAvailable (CRI-81)", () => {
+  const neagley = showNeagleyFixture as unknown as TvMazeShowWithEmbeds;
+  const diplomat = showTheDiplomatFixture as unknown as TvMazeShowWithEmbeds;
+
+  function available(show: TvMazeShowWithEmbeds, todayDate = TODAY) {
+    return allEpisodesAvailable(
+      show._embedded.episodes,
+      show._embedded.seasons,
+      TZ,
+      todayDate,
+    );
+  }
+
+  it("is true when every episode of the latest season is out and matches the episode order", () => {
+    expect(available(neagley)).toBe(true);
+    expect(available(killingEve)).toBe(true);
+  });
+
+  it("is false before the drop", () => {
+    expect(available(neagley, "2026-09-15")).toBe(false);
+  });
+
+  it("is false when a later season is listed and not out yet", () => {
+    expect(available(diplomat)).toBe(false);
+    expect(available(foundation)).toBe(false);
+  });
+
+  it("is false for a weekly season still airing", () => {
+    expect(available(slowHorses)).toBe(false);
+  });
+
+  it("is false when TVmaze has no episode order for the season", () => {
+    const seasons = neagley._embedded.seasons.map((season) => ({
+      ...season,
+      episodeOrder: null,
+    }));
+    expect(
+      allEpisodesAvailable(neagley._embedded.episodes, seasons, TZ, TODAY),
+    ).toBe(false);
   });
 });
