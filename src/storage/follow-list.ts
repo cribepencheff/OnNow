@@ -21,6 +21,21 @@ async function writeIds(ids: ShowId[]): Promise<void> {
   await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
 }
 
+// follow/unfollow are each a read, then a write of the filtered result. Two
+// calls fired without awaiting between them (rapidly unfollowing several
+// shows in Search) can otherwise interleave: the second reads the list
+// before the first's write lands, then overwrites it with a stale snapshot
+// that still has the first show in it, resurrecting it. Queuing every
+// mutation onto the same chain makes each one wait for the previous read
+// and write to finish before starting its own.
+let writeQueue: Promise<void> = Promise.resolve();
+
+function enqueueWrite(operation: () => Promise<void>): Promise<void> {
+  const result = writeQueue.then(operation, operation);
+  writeQueue = result.catch(() => undefined);
+  return result;
+}
+
 export async function getFollowedIds(): Promise<ShowId[]> {
   return readIds();
 }
@@ -30,15 +45,19 @@ export async function isFollowed(showId: ShowId): Promise<boolean> {
   return ids.includes(showId);
 }
 
-export async function follow(showId: ShowId): Promise<void> {
-  const ids = await readIds();
-  if (ids.includes(showId)) {
-    return;
-  }
-  await writeIds([...ids, showId]);
+export function follow(showId: ShowId): Promise<void> {
+  return enqueueWrite(async () => {
+    const ids = await readIds();
+    if (ids.includes(showId)) {
+      return;
+    }
+    await writeIds([...ids, showId]);
+  });
 }
 
-export async function unfollow(showId: ShowId): Promise<void> {
-  const ids = await readIds();
-  await writeIds(ids.filter((id) => id !== showId));
+export function unfollow(showId: ShowId): Promise<void> {
+  return enqueueWrite(async () => {
+    const ids = await readIds();
+    await writeIds(ids.filter((id) => id !== showId));
+  });
 }

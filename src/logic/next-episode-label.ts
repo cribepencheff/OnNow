@@ -37,7 +37,7 @@ const MONTHS = [
 ];
 
 // "Tue 24 Sep" (PRD 5.4): weekday, day, month, no comma, no year.
-function formatLabelDate(isoDate: string): string {
+export function formatLabelDate(isoDate: string): string {
   const [year, month, day] = isoDate.split("-").map(Number);
   const date = new Date(Date.UTC(year, month - 1, day));
   return `${WEEKDAYS[date.getUTCDay()]} ${date.getUTCDate()} ${MONTHS[date.getUTCMonth()]}`;
