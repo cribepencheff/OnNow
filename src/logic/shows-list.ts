@@ -3,6 +3,7 @@
 
 import type { LocalDate } from "./local-date";
 import { nextReleaseLabel } from "./next-episode-label";
+import { statusLabel } from "./show-status";
 import type { NextForShow } from "./next-episode";
 
 // Alphabetical by title (PRD 5.3 review decision: order the followed list
@@ -19,7 +20,7 @@ export function sortShowsByTitle<T extends { show: { name: string } }>(
 // same relative-day language as Search's row after following. Between
 // seasons with nothing announced yet, the show's own status stands in
 // instead (FR-035): never invented, and never a generic "no date"
-// placeholder when TVmaze does provide a status. Never a time of day
+// placeholder when TVmaze does provide a status, in plain words (CRI-81). Never a time of day
 // (ADR 0001); an episode's local day comes from its airstamp, not its
 // airdate (ADR 0006).
 export function showsRowLine(
@@ -28,5 +29,5 @@ export function showsRowLine(
   timeZone: string,
   todayDate: LocalDate,
 ): string {
-  return nextReleaseLabel(next, timeZone, todayDate) ?? status;
+  return nextReleaseLabel(next, timeZone, todayDate) ?? statusLabel(status);
 }
