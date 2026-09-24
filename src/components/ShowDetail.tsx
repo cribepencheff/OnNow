@@ -11,12 +11,15 @@ import { Image } from "expo-image";
 import * as Haptics from "expo-haptics";
 import * as Linking from "expo-linking";
 
+import { TmdbCredit } from "./TmdbCredit";
 import { TvMazeCredit } from "./TvMazeCredit";
 import { useFollowList } from "@/hooks/useFollowList";
 import { useShow } from "@/hooks/useShow";
+import { useSwedishService } from "@/hooks/useSwedishService";
 import { useToday } from "@/hooks/useToday";
 import { plainTextSummary } from "@/logic/search-results";
 import { serviceLink } from "@/logic/service-link";
+import { openInLink } from "@/logic/swedish-service";
 import {
   allEpisodesAvailable,
   currentSeasonNumber,
@@ -36,6 +39,7 @@ import type { LocalDate } from "@/logic/local-date";
 import type {
   TvMazeEpisode,
   TvMazeSeason,
+  TvMazeShow,
   TvMazeShowWithEmbeds,
 } from "@/api/tvmaze-types";
 import { accent, withLightness } from "@/theme/color";
@@ -92,7 +96,7 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
         {allEpisodesAvailable(episodes, seasons, timeZone, todayDate) && (
           <Text style={styles.meta}>All episodes available</Text>
         )}
-        <FollowAction showId={show.id} officialSite={show.officialSite} />
+        <FollowAction show={show} />
         {summary && <Text style={styles.summary}>{summary}</Text>}
       </View>
 
@@ -143,26 +147,31 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
       </View>
 
       <TvMazeCredit />
+      <TmdbCredit />
     </ScrollView>
   );
 }
 
 // FR-029, PoC: a bold "Follow" in the accent colour when not followed.
-// When followed, "Open in [service]" is the primary action if TVmaze's
-// official site is a known service's show page (FR-014, keyless PoC
-// version, CRI-80), with a quiet "Following" status next to it that
-// unfollows when tapped. The service name is text, no logos (ADR 0004).
-function FollowAction({
-  showId,
-  officialSite,
-}: {
-  showId: number;
-  officialSite: string | null;
-}) {
+// When followed, "Open in [service]" is the primary action for the show's
+// Swedish service from TMDB (FR-014, CRI-82): the show itself when TVmaze's
+// official site is on that service, otherwise the service's start page;
+// no Swedish service gives no button. Without a TMDB key, or when the
+// lookup fails, TVmaze's direct link stands in (CRI-80). A quiet
+// "Following" sits next to it and unfollows when tapped. The service name
+// is text, no logos (ADR 0004).
+function FollowAction({ show }: { show: TvMazeShow }) {
   const { isFollowed, follow, unfollow } = useFollowList();
+  const showId = show.id;
+  const followed = isFollowed(showId);
+  const { data: providers, isError } = useSwedishService(show, followed);
 
-  if (isFollowed(showId)) {
-    const link = serviceLink(officialSite);
+  if (followed) {
+    const link = providers
+      ? openInLink(providers, show.officialSite)
+      : providers === null || isError
+        ? serviceLink(show.officialSite)
+        : null;
     return (
       <View style={styles.actionRow}>
         {link && (

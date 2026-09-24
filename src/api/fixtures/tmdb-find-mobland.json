@@ -1,0 +1,26 @@
+{
+  "movie_results": [],
+  "person_results": [],
+  "tv_results": [
+    {
+      "adult": false,
+      "backdrop_path": "/h0OC7ouop8YLwbAVfS3UUE2Lw4T.jpg",
+      "id": 247718,
+      "name": "MobLand",
+      "original_name": "MobLand",
+      "overview": "Two mob families clash in a war that threatens to topple empires and lives.",
+      "poster_path": "/5Xc7WpWsgflfgEMoBlf9TmWhfbH.jpg",
+      "media_type": "tv",
+      "original_language": "en",
+      "genre_ids": [80, 18],
+      "popularity": 255.9333,
+      "first_air_date": "2025-03-30",
+      "softcore": false,
+      "vote_average": 8.4,
+      "vote_count": 886,
+      "origin_country": ["GB", "US"]
+    }
+  ],
+  "tv_episode_results": [],
+  "tv_season_results": []
+}

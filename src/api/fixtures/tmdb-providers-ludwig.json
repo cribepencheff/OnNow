@@ -1,0 +1,412 @@
+{
+  "id": 243360,
+  "results": {
+    "AU": {
+      "link": "https://www.themoviedb.org/tv/243360-ludwig/watch?locale=AU",
+      "buy": [
+        {
+          "logo_path": "/qdEGArH3lKfFnAtYXMkSYk5wxuG.png",
+          "provider_id": 2,
+          "provider_name": "Apple TV Store",
+          "display_priority": 13
+        }
+      ],
+      "flatrate": [
+        {
+          "logo_path": "/1Hzele1xJnA7xfQyWKNQnTnWAio.png",
+          "provider_id": 385,
+          "provider_name": "BINGE",
+          "display_priority": 6
+        },
+        {
+          "logo_path": "/eZeWGG6DDIi4Kmu1z9RfTeZtqZX.png",
+          "provider_id": 151,
+          "provider_name": "BritBox",
+          "display_priority": 11
+        },
+        {
+          "logo_path": "/r5LXOt96llVEmgwAQeheJuxUaMR.png",
+          "provider_id": 1852,
+          "provider_name": "Britbox Apple TV channel",
+          "display_priority": 56
+        },
+        {
+          "logo_path": "/dneArfNvYnCY0LQwDs6n0wVLpPh.png",
+          "provider_id": 197,
+          "provider_name": "BritBox Amazon Channel",
+          "display_priority": 73
+        }
+      ]
+    },
+    "CA": {
+      "link": "https://www.themoviedb.org/tv/243360-ludwig/watch?locale=CA",
+      "free": [
+        {
+          "logo_path": "/gMZdpavHmxFNnLpMHwVxfqeux2g.png",
+          "provider_id": 119,
+          "provider_name": "Amazon Prime Video",
+          "display_priority": 1
+        },
+        {
+          "logo_path": "/nQkH0mEXSTma3yuiRKIdjHOEN7y.png",
+          "provider_id": 2691,
+          "provider_name": "Tele Quebec",
+          "display_priority": 143
+        }
+      ],
+      "flatrate": [
+        {
+          "logo_path": "/dneArfNvYnCY0LQwDs6n0wVLpPh.png",
+          "provider_id": 197,
+          "provider_name": "BritBox Amazon Channel",
+          "display_priority": 25
+        },
+        {
+          "logo_path": "/eZeWGG6DDIi4Kmu1z9RfTeZtqZX.png",
+          "provider_id": 151,
+          "provider_name": "BritBox",
+          "display_priority": 41
+        },
+        {
+          "logo_path": "/r5LXOt96llVEmgwAQeheJuxUaMR.png",
+          "provider_id": 1852,
+          "provider_name": "Britbox Apple TV channel",
+          "display_priority": 93
+        }
+      ]
+    },
+    "CY": {
+      "link": "https://www.themoviedb.org/tv/243360-ludwig/watch?locale=CY",
+      "flatrate": [
+        {
+          "logo_path": "/uLRNGzfMYnWAsEPbfi6plFW8ehc.png",
+          "provider_id": 2557,
+          "provider_name": "Cinobo",
+          "display_priority": 8
+        }
+      ]
+    },
+    "CZ": {
+      "link": "https://www.themoviedb.org/tv/243360-ludwig/watch?locale=CZ",
+      "ads": [
+        {
+          "logo_path": "/gPo7UTwHFEWCT7RlRL1czQs6KPI.png",
+          "provider_id": 1928,
+          "provider_name": "Prima Plus",
+          "display_priority": 26
+        }
+      ],
+      "flatrate": [
+        {
+          "logo_path": "/gliWKhLJVdm7QwL1braBCRko5dx.png",
+          "provider_id": 381,
+          "provider_name": "Canal+",
+          "display_priority": 25
+        },
+        {
+          "logo_path": "/gPo7UTwHFEWCT7RlRL1czQs6KPI.png",
+          "provider_id": 1928,
+          "provider_name": "Prima Plus",
+          "display_priority": 26
+        }
+      ]
+    },
+    "DK": {
+      "link": "https://www.themoviedb.org/tv/243360-ludwig/watch?locale=DK",
+      "flatrate": [
+        {
+          "logo_path": "/9qaPqL05vA0LHMIj7I2lz8X26Eh.png",
+          "provider_id": 383,
+          "provider_name": "TV 2",
+          "display_priority": 9
+        },
+        {
+          "logo_path": "/eZeWGG6DDIi4Kmu1z9RfTeZtqZX.png",
+          "provider_id": 151,
+          "provider_name": "BritBox",
+          "display_priority": 32
+        },
+        {
+          "logo_path": "/dneArfNvYnCY0LQwDs6n0wVLpPh.png",
+          "provider_id": 197,
+          "provider_name": "BritBox Amazon Channel",
+          "display_priority": 66
+        }
+      ],
+      "free": [
+        {
+          "logo_path": "/d9Kk5xDt4qotYFJyXhEg1m1NuWs.png",
+          "provider_id": 620,
+          "provider_name": "DRTV",
+          "display_priority": 28
+        }
+      ]
+    },
+    "ES": {
+      "link": "https://www.themoviedb.org/tv/243360-ludwig/watch?locale=ES",
+      "flatrate": [
+        {
+          "logo_path": "/53JKjrhdG4z8DQ4pfdbHoAgPWeO.png",
+          "provider_id": 2241,
+          "provider_name": "Movistar Plus+",
+          "display_priority": 5
+        },
+        {
+          "logo_path": "/7OEtlOKTmjTXh40eHUES11Oc1i7.png",
+          "provider_id": 149,
+          "provider_name": "Movistar Plus+ Ficción Total ",
+          "display_priority": 7
+        }
+      ]
+    },
+    "FI": {
+      "link": "https://www.themoviedb.org/tv/243360-ludwig/watch?locale=FI",
+      "flatrate": [
+        {
+          "logo_path": "/eZeWGG6DDIi4Kmu1z9RfTeZtqZX.png",
+          "provider_id": 151,
+          "provider_name": "BritBox",
+          "display_priority": 32
+        },
+        {
+          "logo_path": "/dneArfNvYnCY0LQwDs6n0wVLpPh.png",
+          "provider_id": 197,
+          "provider_name": "BritBox Amazon Channel",
+          "display_priority": 68
+        }
+      ]
+    },
+    "GB": {
+      "link": "https://www.themoviedb.org/tv/243360-ludwig/watch?locale=GB",
+      "buy": [
+        {
+          "logo_path": "/qdEGArH3lKfFnAtYXMkSYk5wxuG.png",
+          "provider_id": 2,
+          "provider_name": "Apple TV Store",
+          "display_priority": 5
+        }
+      ],
+      "free": [
+        {
+          "logo_path": "/vi6XJCpJ9GpAPD3rDSRzMC812Z.png",
+          "provider_id": 38,
+          "provider_name": "BBC iPlayer",
+          "display_priority": 15
+        }
+      ]
+    },
+    "GR": {
+      "link": "https://www.themoviedb.org/tv/243360-ludwig/watch?locale=GR",
+      "flatrate": [
+        {
+          "logo_path": "/uLRNGzfMYnWAsEPbfi6plFW8ehc.png",
+          "provider_id": 2557,
+          "provider_name": "Cinobo",
+          "display_priority": 16
+        }
+      ]
+    },
+    "HR": {
+      "link": "https://www.themoviedb.org/tv/243360-ludwig/watch?locale=HR",
+      "flatrate": [
+        {
+          "logo_path": "/2LxgrcPG3guScKDSYtJqQpsMoHT.png",
+          "provider_id": 637,
+          "provider_name": "Pickbox NOW",
+          "display_priority": 25
+        }
+      ]
+    },
+    "IN": {
+      "link": "https://www.themoviedb.org/tv/243360-ludwig/watch?locale=IN",
+      "flatrate": [
+        {
+          "logo_path": "/ozvOiPMMjhOMXpcUYMDK5ut6puz.png",
+          "provider_id": 285,
+          "provider_name": "BBC Player Amazon Channel",
+          "display_priority": 58
+        }
+      ]
+    },
+    "KR": {
+      "link": "https://www.themoviedb.org/tv/243360-ludwig/watch?locale=KR",
+      "flatrate": [
+        {
+          "logo_path": "/mh1vBeclG7Eq15TjRnmyustqp3v.png",
+          "provider_id": 356,
+          "provider_name": "wavve",
+          "display_priority": 5
+        },
+        {
+          "logo_path": "/ppQIS7UMtBwJSspSoGqDR8wO1Gr.png",
+          "provider_id": 97,
+          "provider_name": "Watcha",
+          "display_priority": 6
+        },
+        {
+          "logo_path": "/w4ov8Zx73eu2TjHsDs5EmiuYKA4.png",
+          "provider_id": 1883,
+          "provider_name": "TVING",
+          "display_priority": 29
+        }
+      ]
+    },
+    "NL": {
+      "link": "https://www.themoviedb.org/tv/243360-ludwig/watch?locale=NL",
+      "ads": [
+        {
+          "logo_path": "/iVAJklPcCjj15989GVJufXqsVtS.png",
+          "provider_id": 360,
+          "provider_name": "NPO Start",
+          "display_priority": 19
+        }
+      ],
+      "flatrate": [
+        {
+          "logo_path": "/jY3kxKfekzgpEDtghtK9elh4G6T.png",
+          "provider_id": 472,
+          "provider_name": "NLZIET",
+          "display_priority": 22
+        },
+        {
+          "logo_path": "/eIplw9Hv4Q5RyHtofKZwjeRufz6.png",
+          "provider_id": 1986,
+          "provider_name": "NPO Plus",
+          "display_priority": 45
+        }
+      ]
+    },
+    "NO": {
+      "link": "https://www.themoviedb.org/tv/243360-ludwig/watch?locale=NO",
+      "flatrate": [
+        {
+          "logo_path": "/mlNPljPGzSDqNK2Fjr4SS0gTITj.png",
+          "provider_id": 578,
+          "provider_name": "Strim",
+          "display_priority": 28
+        },
+        {
+          "logo_path": "/eZeWGG6DDIi4Kmu1z9RfTeZtqZX.png",
+          "provider_id": 151,
+          "provider_name": "BritBox",
+          "display_priority": 33
+        },
+        {
+          "logo_path": "/r5LXOt96llVEmgwAQeheJuxUaMR.png",
+          "provider_id": 1852,
+          "provider_name": "Britbox Apple TV channel",
+          "display_priority": 37
+        },
+        {
+          "logo_path": "/dneArfNvYnCY0LQwDs6n0wVLpPh.png",
+          "provider_id": 197,
+          "provider_name": "BritBox Amazon Channel",
+          "display_priority": 58
+        }
+      ],
+      "free": [
+        {
+          "logo_path": "/w4TNvMQnRk2iPwJw3SqrI7ht6G0.png",
+          "provider_id": 442,
+          "provider_name": "NRK TV",
+          "display_priority": 14
+        }
+      ]
+    },
+    "PL": {
+      "link": "https://www.themoviedb.org/tv/243360-ludwig/watch?locale=PL",
+      "flatrate": [
+        {
+          "logo_path": "/19i0ihHvFzvK0GF5qQ6Wc4UnkOf.png",
+          "provider_id": 2214,
+          "provider_name": "CDA Premium",
+          "display_priority": 42
+        }
+      ]
+    },
+    "PT": {
+      "link": "https://www.themoviedb.org/tv/243360-ludwig/watch?locale=PT",
+      "ads": [
+        {
+          "logo_path": "/cXs0FUYcosrwsq7sHWdtaTOkFLd.png",
+          "provider_id": 452,
+          "provider_name": "RTPplay",
+          "display_priority": 12
+        }
+      ]
+    },
+    "SE": {
+      "link": "https://www.themoviedb.org/tv/243360-ludwig/watch?locale=SE",
+      "free": [
+        {
+          "logo_path": "/vMU9xqjyIsOplkdSCRveond8fxV.png",
+          "provider_id": 493,
+          "provider_name": "SVT",
+          "display_priority": 18
+        }
+      ],
+      "flatrate": [
+        {
+          "logo_path": "/eZeWGG6DDIi4Kmu1z9RfTeZtqZX.png",
+          "provider_id": 151,
+          "provider_name": "BritBox",
+          "display_priority": 34
+        },
+        {
+          "logo_path": "/8sxwkXfXhlIHkAlkZ64kTU9BNyT.png",
+          "provider_id": 1944,
+          "provider_name": "TV4 Play",
+          "display_priority": 40
+        },
+        {
+          "logo_path": "/dneArfNvYnCY0LQwDs6n0wVLpPh.png",
+          "provider_id": 197,
+          "provider_name": "BritBox Amazon Channel",
+          "display_priority": 56
+        }
+      ]
+    },
+    "SK": {
+      "link": "https://www.themoviedb.org/tv/243360-ludwig/watch?locale=SK",
+      "flatrate": [
+        {
+          "logo_path": "/gliWKhLJVdm7QwL1braBCRko5dx.png",
+          "provider_id": 381,
+          "provider_name": "Canal+",
+          "display_priority": 35
+        }
+      ]
+    },
+    "US": {
+      "link": "https://www.themoviedb.org/tv/243360-ludwig/watch?locale=US",
+      "flatrate": [
+        {
+          "logo_path": "/r5LXOt96llVEmgwAQeheJuxUaMR.png",
+          "provider_id": 1852,
+          "provider_name": "Britbox Apple TV channel",
+          "display_priority": 25
+        },
+        {
+          "logo_path": "/eZeWGG6DDIi4Kmu1z9RfTeZtqZX.png",
+          "provider_id": 151,
+          "provider_name": "BritBox",
+          "display_priority": 58
+        },
+        {
+          "logo_path": "/dneArfNvYnCY0LQwDs6n0wVLpPh.png",
+          "provider_id": 197,
+          "provider_name": "BritBox Amazon Channel",
+          "display_priority": 87
+        }
+      ],
+      "ads": [
+        {
+          "logo_path": "/b7uhrYJtAe7b1ieJGg705vTbwrX.png",
+          "provider_id": 207,
+          "provider_name": "The Roku Channel",
+          "display_priority": 29
+        }
+      ]
+    }
+  }
+}

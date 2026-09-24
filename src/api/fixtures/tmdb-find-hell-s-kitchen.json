@@ -1,0 +1,26 @@
+{
+  "movie_results": [],
+  "person_results": [],
+  "tv_results": [
+    {
+      "adult": false,
+      "backdrop_path": "/kitfuCa2TqX6oY5HvdFRjMMaLwc.jpg",
+      "id": 2370,
+      "name": "Hell's Kitchen",
+      "original_name": "Hell's Kitchen",
+      "overview": "Aspiring restaurateurs brave Ramsay and his fiery command of the kitchen as he puts the competitors through an intense culinary academy to prove they possess the right combination of ingredients to win a life-changing grand prize.",
+      "poster_path": "/shOVFku8daIGRpgjTdMZBxUAvsV.jpg",
+      "media_type": "tv",
+      "original_language": "en",
+      "genre_ids": [10764],
+      "popularity": 64.7416,
+      "first_air_date": "2005-05-30",
+      "softcore": false,
+      "vote_average": 6.85,
+      "vote_count": 339,
+      "origin_country": ["US"]
+    }
+  ],
+  "tv_episode_results": [],
+  "tv_season_results": []
+}
