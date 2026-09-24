@@ -209,6 +209,12 @@ export function HeroPager({
           currentPage={pageIndex}
           top={indicatorAnchorY}
           width={width}
+          // VoiceOver: auto-advance is off (canAutoAdvance already
+          // excludes it), so swiping the indicator up or down is how a
+          // VoiceOver user moves between slides instead.
+          onAdjust={(delta) =>
+            goToPage((pageIndex + delta + pageCount) % pageCount)
+          }
         />
       )}
     </View>
@@ -229,6 +235,7 @@ function PageIndicator({
   currentPage,
   top,
   width,
+  onAdjust,
 }: {
   count: number;
   pageIndexAnim: Animated.Value;
@@ -238,6 +245,7 @@ function PageIndicator({
   currentPage: number;
   top: number;
   width: number;
+  onAdjust: (delta: 1 | -1) => void;
 }) {
   // Reduce Motion and VoiceOver both turn off the animated sweep: plain,
   // evenly sized dots that only mark which page is current, no progress.
@@ -246,25 +254,34 @@ function PageIndicator({
   return (
     <View
       style={[styles.indicator, { top, width }]}
+      // Not tappable by touch (owner decision: swipe and auto-advance are
+      // enough), but VoiceOver targets it through the accessibility tree
+      // regardless of pointerEvents, so "adjustable" below still works.
       pointerEvents="none"
       accessible
+      accessibilityRole="adjustable"
       accessibilityLabel={`Show ${currentPage + 1} of ${count}`}
+      onAccessibilityAction={(event) => {
+        if (event.nativeEvent.actionName === "increment") {
+          onAdjust(1);
+        } else if (event.nativeEvent.actionName === "decrement") {
+          onAdjust(-1);
+        }
+      }}
     >
       {Array.from({ length: count }, (_, index) =>
         plain ? (
           <View
             key={index}
-            style={[
-              styles.dot,
-              { backgroundColor: index === currentPage ? t.ink : t.hairline },
-            ]}
+            style={[styles.dot, index === currentPage && styles.dotActivePlain]}
           />
         ) : (
           <AnimatedDot
             key={index}
-            index={index}
+            active={index === currentPage}
             pageIndexAnim={pageIndexAnim}
             progressAnim={progressAnim}
+            index={index}
           />
         ),
       )}
@@ -274,10 +291,12 @@ function PageIndicator({
 
 function AnimatedDot({
   index,
+  active,
   pageIndexAnim,
   progressAnim,
 }: {
   index: number;
+  active: boolean;
   pageIndexAnim: Animated.Value;
   progressAnim: Animated.Value;
 }) {
@@ -289,12 +308,18 @@ function AnimatedDot({
 
   return (
     <Animated.View style={[styles.dot, { width: widthAnim }]}>
-      <Animated.View
-        style={[
-          styles.dotFill,
-          { width: Animated.multiply(progressAnim, widthAnim) },
-        ]}
-      />
+      {/* Only the active dot carries the sweep, so shrinking back to a
+          plain dot leaves no fill behind, and the incoming pill starts
+          from empty (progressAnim itself resets to 0 on every page
+          change, see HeroPager). */}
+      {active && (
+        <Animated.View
+          style={[
+            styles.dotFill,
+            { width: Animated.multiply(progressAnim, widthAnim) },
+          ]}
+        />
+      )}
     </Animated.View>
   );
 }
@@ -455,16 +480,24 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   dot: {
+    width: DOT_SIZE,
     height: DOT_SIZE,
     borderRadius: DOT_SIZE / 2,
-    backgroundColor: t.hairline,
+    // Apple TV style: inactive dots and the active pill's own track are
+    // both this same translucent white; only the sweep is solid white.
+    backgroundColor: "rgba(255,255,255,0.4)",
     overflow: "hidden",
+  },
+  dotActivePlain: {
+    // Reduce Motion / VoiceOver: no pill, no sweep, just solid white to
+    // mark the current page.
+    backgroundColor: "#FFFFFF",
   },
   dotFill: {
     position: "absolute",
     left: 0,
     top: 0,
     bottom: 0,
-    backgroundColor: t.ink,
+    backgroundColor: "#FFFFFF",
   },
 });
