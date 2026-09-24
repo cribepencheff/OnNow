@@ -20,6 +20,9 @@ import { useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
 
 import { HomeCard } from "@/components/HomeCard";
+import { HeroPager } from "@/proto/HomeHeroB";
+import { t as protoTokens } from "@/proto/tokens";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useToday } from "@/hooks/useToday";
 import {
@@ -97,9 +100,10 @@ export default function HomeScreen() {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: protoTokens.bg }]}>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
+        contentInsetAdjustmentBehavior="never"
         alwaysBounceVertical
         refreshControl={
           <RefreshControl
@@ -109,28 +113,27 @@ export default function HomeScreen() {
           />
         }
       >
+        {/* PROTOTYPE (proto/home-backdrop): Home, direction B. */}
         {state.kind === "today" && (
-          <EpisodePager
+          <HeroPager
             shows={state.shows}
-            badgeLabel={todayCountLabel(pageIndex, state.shows.length)}
-            width={width}
-            pageIndex={pageIndex}
-            onMomentumScrollEnd={handleMomentumScrollEnd}
+            badgeFor={(index) => todayCountLabel(index, state.shows.length)}
+            todayDate={todayDate}
           />
         )}
 
         {state.kind === "next-day" && (
-          <EpisodePager
+          <HeroPager
             shows={state.shows}
-            badgeLabel={nextDayCountLabel(
-              state.localDate,
-              todayDate,
-              pageIndex,
-              state.shows.length,
-            )}
-            width={width}
-            pageIndex={pageIndex}
-            onMomentumScrollEnd={handleMomentumScrollEnd}
+            badgeFor={(index) =>
+              nextDayCountLabel(
+                state.localDate,
+                todayDate,
+                index,
+                state.shows.length,
+              )
+            }
+            todayDate={todayDate}
           />
         )}
 
@@ -152,7 +155,42 @@ export default function HomeScreen() {
           <Text style={styles.quietLine}>Loading your shows…</Text>
         )}
       </ScrollView>
+      <ProtoAddButton />
     </View>
+  );
+}
+
+// PROTOTYPE (proto/home-backdrop): the quiet round "+" of direction B,
+// 44 round, bg at 55%, white plus. A long press opens the image review
+// screen, in development builds only.
+function ProtoAddButton() {
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel="Add show"
+      onPress={() => router.push("/search")}
+      onLongPress={__DEV__ ? () => router.push("/dev/images") : undefined}
+      testID="home-add-show"
+      style={{
+        position: "absolute",
+        top: insets.top + 8,
+        right: 16,
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        backgroundColor: "rgba(11,12,15,0.55)",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <SymbolView
+        name={{ ios: "plus", android: "add", web: "add" }}
+        tintColor="#FFFFFF"
+        size={20}
+      />
+    </Pressable>
   );
 }
 
