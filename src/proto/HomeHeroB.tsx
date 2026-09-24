@@ -2,14 +2,18 @@
 // docs/design/design-system.md. Measurements are for a 390 × 844 screen and
 // scale with the screen height here.
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  Animated,
   FlatList,
   Pressable,
   StyleSheet,
   Text,
   View,
   useWindowDimensions,
+  type LayoutChangeEvent,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
 } from "react-native";
 import { Image } from "expo-image";
 import * as Linking from "expo-linking";
@@ -20,11 +24,22 @@ import { serviceLink } from "@/logic/service-link";
 import { openInLink } from "@/logic/swedish-service";
 import type { ShowEpisodesToday } from "@/logic/episodes-today";
 import type { TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
+import { useAccessibilityFlags } from "./accessibility";
 import { IMAGE_BASE } from "./images";
 import { t, type } from "./tokens";
 import { useShowImages } from "./useShowImages";
 
 const REF_HEIGHT = 844;
+
+// One constant, easy to change: how long each slide dwells before the
+// carousel auto-advances to the next one.
+const AUTO_ADVANCE_MS = 4000;
+// How long the indicator's active dot takes to widen into a pill, or
+// shrink back, when the current slide changes.
+const DOT_TRANSITION_MS = 220;
+
+const DOT_SIZE = 8;
+const PILL_WIDTH = 24;
 
 function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -40,33 +55,247 @@ export function HeroPager({
   todayDate: string;
 }) {
   const { width } = useWindowDimensions();
+  const { reduceMotionEnabled, screenReaderEnabled } = useAccessibilityFlags();
+  const pageCount = shows.length;
+
   const [pageIndex, setPageIndex] = useState(0);
+  const [loadedPages, setLoadedPages] = useState<Set<number>>(new Set());
+  const [indicatorAnchorY, setIndicatorAnchorY] = useState<number | null>(null);
+  const [touching, setTouching] = useState(false);
+
+  const listRef = useRef<FlatList<ShowEpisodesToday>>(null);
+  // useState, not useRef(new Animated.Value()).current (see AddShowButton).
+  const [pageIndexAnim] = useState(() => new Animated.Value(0));
+  const [progressAnim] = useState(() => new Animated.Value(0));
+  const pausedProgressRef = useRef<number | null>(null);
+
+  const canAutoAdvance =
+    pageCount > 1 && !reduceMotionEnabled && !screenReaderEnabled;
+
+  const markLoaded = useCallback((index: number) => {
+    setLoadedPages((current) => {
+      if (current.has(index)) return current;
+      const next = new Set(current);
+      next.add(index);
+      return next;
+    });
+  }, []);
+
+  const goToPage = useCallback(
+    (index: number) => {
+      setPageIndex(index);
+      listRef.current?.scrollToIndex({
+        index,
+        animated: !reduceMotionEnabled,
+      });
+    },
+    [reduceMotionEnabled],
+  );
+
+  // The sliding pill follows pageIndex with a short width/position
+  // transition; skipped (jumps instantly) under Reduce Motion.
+  useEffect(() => {
+    Animated.timing(pageIndexAnim, {
+      toValue: pageIndex,
+      duration: reduceMotionEnabled ? 0 : DOT_TRANSITION_MS,
+      useNativeDriver: false,
+    }).start();
+  }, [pageIndex, pageIndexAnim, reduceMotionEnabled]);
+
+  // The dwell countdown for the current slide: starts once its backdrop
+  // has loaded, pauses while the user touches the carousel, and advancing
+  // to the next slide (looping) when it completes.
+  useEffect(() => {
+    progressAnim.setValue(0);
+    pausedProgressRef.current = null;
+
+    if (!canAutoAdvance || touching || !loadedPages.has(pageIndex)) {
+      return;
+    }
+
+    const animation = Animated.timing(progressAnim, {
+      toValue: 1,
+      duration: AUTO_ADVANCE_MS,
+      useNativeDriver: false,
+    });
+    animation.start(({ finished }) => {
+      if (finished) {
+        goToPage((pageIndex + 1) % pageCount);
+      }
+    });
+
+    return () => animation.stop();
+    // touching is intentionally excluded: resuming after a pause is its
+    // own effect below, so it does not restart the countdown from zero.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pageIndex, canAutoAdvance, loadedPages, pageCount]);
+
+  // Pausing stops the animation in place; releasing resumes it for
+  // whatever time is left, instead of restarting the full 4 seconds.
+  useEffect(() => {
+    if (!canAutoAdvance) {
+      return;
+    }
+    if (touching) {
+      progressAnim.stopAnimation((value) => {
+        pausedProgressRef.current = value;
+      });
+      return;
+    }
+    if (pausedProgressRef.current === null || !loadedPages.has(pageIndex)) {
+      return;
+    }
+    const remaining = AUTO_ADVANCE_MS * (1 - pausedProgressRef.current);
+    pausedProgressRef.current = null;
+    const animation = Animated.timing(progressAnim, {
+      toValue: 1,
+      duration: Math.max(remaining, 0),
+      useNativeDriver: false,
+    });
+    animation.start(({ finished }) => {
+      if (finished) {
+        goToPage((pageIndex + 1) % pageCount);
+      }
+    });
+    return () => animation.stop();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [touching]);
+
+  const handleScrollEnd = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const { contentOffset, layoutMeasurement } = event.nativeEvent;
+      if (layoutMeasurement.width === 0) {
+        return;
+      }
+      setPageIndex(Math.round(contentOffset.x / layoutMeasurement.width));
+    },
+    [],
+  );
 
   return (
-    <FlatList
-      testID="home-pager"
-      data={shows}
-      horizontal
-      pagingEnabled
-      showsHorizontalScrollIndicator={false}
-      keyExtractor={(item) => String(item.show.id)}
-      onMomentumScrollEnd={(event) => {
-        const { contentOffset, layoutMeasurement } = event.nativeEvent;
-        if (layoutMeasurement.width > 0) {
-          setPageIndex(Math.round(contentOffset.x / layoutMeasurement.width));
-        }
-      }}
-      renderItem={({ item, index }) => (
-        <HeroPage
-          item={item}
+    <View style={{ flex: 1 }}>
+      <FlatList
+        ref={listRef}
+        testID="home-pager"
+        data={shows}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        keyExtractor={(item) => String(item.show.id)}
+        onScrollBeginDrag={() => setTouching(true)}
+        onScrollEndDrag={() => setTouching(false)}
+        onMomentumScrollEnd={handleScrollEnd}
+        renderItem={({ item, index }) => (
+          <HeroPage
+            item={item}
+            width={width}
+            badge={badgeFor(index)}
+            todayDate={todayDate}
+            active={index === pageIndex}
+            onBackdropLoad={() => markLoaded(index)}
+            onIndicatorAnchor={
+              index === pageIndex ? setIndicatorAnchorY : undefined
+            }
+          />
+        )}
+      />
+      {pageCount > 1 && indicatorAnchorY !== null && (
+        <PageIndicator
+          count={pageCount}
+          pageIndexAnim={pageIndexAnim}
+          progressAnim={progressAnim}
+          reduceMotionEnabled={reduceMotionEnabled}
+          screenReaderEnabled={screenReaderEnabled}
+          currentPage={pageIndex}
+          top={indicatorAnchorY}
           width={width}
-          badge={badgeFor(index)}
-          pageIndex={pageIndex}
-          pageCount={shows.length}
-          todayDate={todayDate}
         />
       )}
-    />
+    </View>
+  );
+}
+
+// Apple TV style: a fixed overlay, a sibling of the paging FlatList rather
+// than part of each slide, so it stays in place horizontally while slides
+// move. Its vertical anchor follows the current slide's button, measured
+// by that slide (heroes have no fixed height, the button's own content
+// decides it).
+function PageIndicator({
+  count,
+  pageIndexAnim,
+  progressAnim,
+  reduceMotionEnabled,
+  screenReaderEnabled,
+  currentPage,
+  top,
+  width,
+}: {
+  count: number;
+  pageIndexAnim: Animated.Value;
+  progressAnim: Animated.Value;
+  reduceMotionEnabled: boolean;
+  screenReaderEnabled: boolean;
+  currentPage: number;
+  top: number;
+  width: number;
+}) {
+  // Reduce Motion and VoiceOver both turn off the animated sweep: plain,
+  // evenly sized dots that only mark which page is current, no progress.
+  const plain = reduceMotionEnabled || screenReaderEnabled;
+
+  return (
+    <View
+      style={[styles.indicator, { top, width }]}
+      pointerEvents="none"
+      accessible
+      accessibilityLabel={`Show ${currentPage + 1} of ${count}`}
+    >
+      {Array.from({ length: count }, (_, index) =>
+        plain ? (
+          <View
+            key={index}
+            style={[
+              styles.dot,
+              { backgroundColor: index === currentPage ? t.ink : t.hairline },
+            ]}
+          />
+        ) : (
+          <AnimatedDot
+            key={index}
+            index={index}
+            pageIndexAnim={pageIndexAnim}
+            progressAnim={progressAnim}
+          />
+        ),
+      )}
+    </View>
+  );
+}
+
+function AnimatedDot({
+  index,
+  pageIndexAnim,
+  progressAnim,
+}: {
+  index: number;
+  pageIndexAnim: Animated.Value;
+  progressAnim: Animated.Value;
+}) {
+  const widthAnim = pageIndexAnim.interpolate({
+    inputRange: [index - 1, index, index + 1],
+    outputRange: [DOT_SIZE, PILL_WIDTH, DOT_SIZE],
+    extrapolate: "clamp",
+  });
+
+  return (
+    <Animated.View style={[styles.dot, { width: widthAnim }]}>
+      <Animated.View
+        style={[
+          styles.dotFill,
+          { width: Animated.multiply(progressAnim, widthAnim) },
+        ]}
+      />
+    </Animated.View>
   );
 }
 
@@ -74,19 +303,22 @@ function HeroPage({
   item,
   width,
   badge,
-  pageIndex,
-  pageCount,
   todayDate,
+  active,
+  onBackdropLoad,
+  onIndicatorAnchor,
 }: {
   item: ShowEpisodesToday;
   width: number;
   badge: string;
-  pageIndex: number;
-  pageCount: number;
   todayDate: string;
+  active: boolean;
+  onBackdropLoad: () => void;
+  onIndicatorAnchor?: (y: number) => void;
 }) {
   const { height } = useWindowDimensions();
   const scale = height / REF_HEIGHT;
+  const contentTop = 452 * scale;
   const show = item.show as TvMazeShowWithEmbeds;
   const { data: images } = useShowImages(show, deviceTimeZone(), todayDate);
   const { data: providers, isError } = useSwedishService(show, true);
@@ -98,6 +330,18 @@ function HeroPage({
 
   const backdropPath = images?.backdrop?.filePath;
   const logo = images?.logo;
+
+  const handleButtonLayout = useCallback(
+    (event: LayoutChangeEvent) => {
+      if (!onIndicatorAnchor) return;
+      const { y, height: buttonHeight } = event.nativeEvent.layout;
+      // Page dots sit 16 below the button (design system, "Home, direction
+      // B"); the button's own y is relative to `content`, which is itself
+      // offset from the slide's top by contentTop.
+      onIndicatorAnchor(contentTop + y + buttonHeight + 16);
+    },
+    [contentTop, onIndicatorAnchor],
+  );
 
   return (
     <View style={{ width, height, backgroundColor: t.bg }}>
@@ -114,6 +358,7 @@ function HeroPage({
           contentFit="cover"
           contentPosition="center"
           accessibilityIgnoresInvertColors
+          onLoad={onBackdropLoad}
         />
       )}
       {/* Fade from 280 to 580: transparent bg, 75% bg at the middle, solid bg. */}
@@ -129,7 +374,7 @@ function HeroPage({
         }}
       />
 
-      <View style={[styles.content, { top: 452 * scale }]}>
+      <View style={[styles.content, { top: contentTop }]}>
         <Text style={styles.badge}>{badge}</Text>
         {logo ? (
           <Image
@@ -141,7 +386,7 @@ function HeroPage({
             accessibilityLabel={show.name}
           />
         ) : (
-          <Text style={styles.displayTitle} numberOfLines={2}>
+          <Text style={styles.displayTitle} numberOfLines={1}>
             {show.name}
           </Text>
         )}
@@ -153,23 +398,11 @@ function HeroPage({
             accessibilityRole="button"
             accessibilityLabel={`Open in ${link.service}`}
             onPress={() => Linking.openURL(link.url)}
+            onLayout={active ? handleButtonLayout : undefined}
             style={styles.button}
           >
             <Text style={styles.buttonLabel}>Open in {link.service}</Text>
           </Pressable>
-        )}
-        {pageCount > 1 && (
-          <View style={styles.dots}>
-            {Array.from({ length: pageCount }, (_, i) => (
-              <View
-                key={i}
-                style={[
-                  styles.dot,
-                  { backgroundColor: i === pageIndex ? t.ink : t.hairline },
-                ]}
-              />
-            ))}
-          </View>
         )}
       </View>
     </View>
@@ -213,15 +446,25 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
-  dots: {
-    marginTop: 8, // 8 gap + 8 = 16 below the button
+  indicator: {
+    position: "absolute",
+    left: 0,
     flexDirection: "row",
     justifyContent: "center",
+    alignItems: "center",
     gap: 8,
   },
   dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    height: DOT_SIZE,
+    borderRadius: DOT_SIZE / 2,
+    backgroundColor: t.hairline,
+    overflow: "hidden",
+  },
+  dotFill: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    bottom: 0,
+    backgroundColor: t.ink,
   },
 });

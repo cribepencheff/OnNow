@@ -4,9 +4,8 @@
 
 import { useQuery } from "@tanstack/react-query";
 
-import { addDays } from "@/logic/local-date";
+import { addDays, localDateFromAirstamp } from "@/logic/local-date";
 import { latestEpisode } from "@/logic/show-detail";
-import { localDateFromAirstamp } from "@/logic/local-date";
 import { nextForShow } from "@/logic/next-episode";
 import type { TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 import {
