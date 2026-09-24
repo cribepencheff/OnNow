@@ -58,6 +58,7 @@
     "test:watch": "jest --watchAll",
     "test:ci": "jest --ci",
     "e2e": "maestro test .maestro",
+    "e2e:work": "maestro test -e METRO_URL=exp://127.0.0.1:8082 .maestro",
     "fixtures:update": "node scripts/fetch-fixtures.mts",
     "prepare": "husky"
   },

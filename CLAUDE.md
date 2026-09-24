@@ -80,7 +80,8 @@ Avoid running the same checks twice.
 - **Before pushing:** do not run the full `tsc`, lint and test suite by
   hand. The pre-push hook runs it on `git push`; rely on that and report
   its result.
-- **Maestro:** run the end to end flow (`npm run e2e`) only when a change
+- **Maestro:** run the end to end flow (`npm run e2e:work` from the
+  worktree, see "Working copies" below) only when a change
   touches Search, Home, Shows or navigation, or when asked.
 
 ## Spikes
@@ -95,7 +96,8 @@ Avoid running the same checks twice.
   Decisions and content live in `docs/`. Do not copy docs into Linear.
 - Do not commit or push unless asked, or unless the work falls under an
   "Owner review gates" rule below that already authorizes it.
-- Always pull `main` before creating a new branch.
+- Always start a new branch from the latest `main`. In the worktree:
+  `git fetch origin && git switch -c <branch> origin/main`.
 - One Linear issue, one branch, one pull request is the default, not a hard
   rule. There is no other reviewer on this project, so the point of a PR
   boundary is a clean revision history and a clear record of what changed
@@ -130,7 +132,8 @@ Avoid running the same checks twice.
   the owner to test it in Expo Go and approve it explicitly in chat, for
   example "approved #11". Passing tests and Claude Code's own review are
   not approval. Never merge a gated PR without that explicit approval.
-- After merging any PR: move its Linear issue to Done, pull `main`, and
+- After merging any PR: move its Linear issue to Done, pull `main` in the
+  main folder (so a reload on the owner's phone picks up the change), and
   merge `main` into any other open branch that was created before it.
 - Keep the full report shape below for PR-opening and PR-merging moments.
   For intermediate steps within a batched PR (finishing one of several
@@ -138,6 +141,22 @@ Avoid running the same checks twice.
   save the full report for when there's something to actually review or
   act on. Even a short status line starts with ROUTINE or REVIEW: the rule
   applies to every report, not just the full shape.
+
+### Working copies (PoC week)
+Two folders, so the owner's phone always runs `main`:
+- **Main folder** (`OnNow/`): stays on `main` and runs Metro on port 8081
+  for the owner's phone. Claude Code only runs `git pull` here, after each
+  merge. No branch work, no edits.
+- **Worktree** (`../OnNow-work`, a `git worktree` of the same repository):
+  all branch work happens here. It has its own `node_modules` (`npm ci`).
+  It has no `.env` unless the owner copies it in; without it, TMDB lookups
+  fall back (CRI-82) and tests do not need it. Never copy or read `.env`.
+- **Maestro** runs from the worktree against its own Metro on port 8082
+  (`npx expo start --port 8082`) and the iOS simulator, with
+  `npm run e2e:work`. It never uses port 8081, so it never touches the
+  owner's phone session.
+- **`docs/poc-log.md`** is edited only by the owner, in the main folder.
+  Leave it untouched in both folders and out of every commit.
 
 ## Owner review gates
 This is separate from "When to check in with the owner" below. That section
