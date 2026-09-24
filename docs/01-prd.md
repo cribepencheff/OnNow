@@ -109,9 +109,13 @@ first user is the author, who currently uses Next Episode.
 The PoC has a slice of this view with TVmaze data only: the network instead
 of services, "Follow" and "Following" as the actions, and no "Not in Sweden
 yet" state (CRI-79). "Open in [service]" is part of the PoC too, for the
-show's Swedish service from TMDB (CRI-80, CRI-82, FR-014). The list of
-services in the user's territory, the menu for several services (FR-015)
-and the territory state come in the MVP.
+show's Swedish service from TMDB (CRI-80, CRI-82, FR-014). Without a
+button, a quiet text says what TMDB's Swedish data shows: "Not streaming in
+Sweden" when there is no service, or "On [service]" for a service the app
+cannot link to (CRI-84). This is availability per show, since TMDB cannot
+give it per season (spike 0002). The list of services in the user's
+territory, the menu for several services (FR-015) and the territory state
+per season come in the MVP.
 
 - **Job:** answer "is this the right show, and what is it?" and lead to the
   one thing to do next.
@@ -224,7 +228,7 @@ Reached from an icon. Territory and notifications.
 | FR-028 | Show detail view with image, title, year, status, service, summary, next and latest episode. PoC shows the network instead of the service | PoC |
 | FR-029 | Show detail has one primary action: "Follow" when not followed, "Open in [service]" when followed. PoC: "Follow", and a quiet "Following" that unfollows; "Open in [service]" for the show's Swedish service (FR-014); the service list in the user's territory is MVP | PoC, MVP |
 | FR-030 | Show detail opens from Search, Home, Calendar and Shows | PoC |
-| FR-031 | Episodes whose season is not available in the user's territory are labelled "Not in [country] yet" and do not count as new today | MVP |
+| FR-031 | Episodes whose season is not available in the user's territory are labelled "Not in [country] yet" and do not count as new today. PoC: availability per show only ("Not streaming in Sweden", "On [service]" in Show detail, CRI-84), since TMDB cannot give it per season (spike 0002) | MVP |
 | FR-032 | Show detail has season tabs with the current season preselected and episodes marked aired, today, upcoming (muted), not in territory yet (muted) and finale. PoC: all but "not in territory yet", which is MVP | PoC, MVP |
 | FR-033 | Announced future seasons appear as muted tabs with premiere date or "Announced" | PoC |
 | FR-034 | Between seasons, the next episode card shows the next announced episode or season with its date, otherwise the show status from the data source | PoC |

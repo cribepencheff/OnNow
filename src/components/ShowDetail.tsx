@@ -19,7 +19,7 @@ import { useSwedishService } from "@/hooks/useSwedishService";
 import { useToday } from "@/hooks/useToday";
 import { plainTextSummary } from "@/logic/search-results";
 import { serviceLink } from "@/logic/service-link";
-import { openInLink } from "@/logic/swedish-service";
+import { availabilityText, openInLink } from "@/logic/swedish-service";
 import {
   allEpisodesAvailable,
   currentSeasonNumber,
@@ -172,6 +172,10 @@ function FollowAction({ show }: { show: TvMazeShow }) {
       : providers === null || isError
         ? serviceLink(show.officialSite)
         : null;
+    // Only once TMDB has answered: while loading, without a key or when the
+    // lookup fails, nothing is claimed (CRI-84).
+    const availability =
+      providers && !link ? availabilityText(providers) : null;
     return (
       <View style={styles.actionRow}>
         {link && (
@@ -185,6 +189,9 @@ function FollowAction({ show }: { show: TvMazeShow }) {
           >
             <Text style={styles.followLabel}>Open in {link.service}</Text>
           </Pressable>
+        )}
+        {availability && (
+          <Text style={styles.availability}>{availability}</Text>
         )}
         <Pressable
           accessibilityRole="button"
@@ -443,6 +450,10 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontWeight: "700",
     fontSize: 16,
+  },
+  availability: {
+    color: "#666666",
+    fontSize: 15,
   },
   followingStatus: {
     alignSelf: "flex-start",

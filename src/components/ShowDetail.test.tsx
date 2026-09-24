@@ -62,6 +62,7 @@ const APPLE_TV = { providerId: 350, providerName: "Apple TV" };
 const PRIME_VIDEO = { providerId: 119, providerName: "Amazon Prime Video" };
 const SKYSHOWTIME = { providerId: 1773, providerName: "SkyShowtime" };
 const NETFLIX = { providerId: 8, providerName: "Netflix" };
+const PLUTO_TV = { providerId: 300, providerName: "Pluto TV" };
 
 const follow = jest.fn();
 const unfollow = jest.fn();
@@ -362,6 +363,64 @@ describe("ShowDetail", () => {
 
     expect(screen.getByRole("button", { name: "Following" })).toBeTruthy();
     expect(screen.queryByRole("button", { name: /^Open in/ })).toBeNull();
+  });
+
+  // CRI-84: no button, but a quiet text saying what TMDB's data shows.
+  it('CRI-84: says "Not streaming in Sweden" when TMDB has no Swedish service (Special Forces)', async () => {
+    mockShow(showSlowHorsesFixture);
+    mockFollowed(true);
+    mockSwedishServices([]);
+    await render(<ShowDetail showId={45039} />);
+
+    expect(screen.getByText("Not streaming in Sweden")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /^Open in/ })).toBeNull();
+  });
+
+  it('CRI-84: says "On Pluto TV" as text, without a button, for a service not in the link table (Hell\'s Kitchen)', async () => {
+    mockShow(showSlowHorsesFixture);
+    mockFollowed(true);
+    mockSwedishServices([PLUTO_TV]);
+    await render(<ShowDetail showId={45039} />);
+
+    expect(screen.getByText("On Pluto TV")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /^Open in/ })).toBeNull();
+    expect(screen.queryByRole("button", { name: /Pluto/ })).toBeNull();
+  });
+
+  it("CRI-84: keeps the Open in button and no text for a linked service (Neagley)", async () => {
+    mockShow(showNeagleyFixture);
+    mockFollowed(true);
+    mockSwedishServices([PRIME_VIDEO]);
+    await render(<ShowDetail showId={82707} />);
+
+    expect(
+      screen.getByRole("button", { name: "Open in Prime Video" }),
+    ).toBeTruthy();
+    expect(screen.queryByText(/^On /)).toBeNull();
+    expect(screen.queryByText("Not streaming in Sweden")).toBeNull();
+  });
+
+  it("CRI-84: shows no availability text while loading, when the lookup fails, or when not followed", async () => {
+    mockShow(showSlowHorsesFixture);
+    mockFollowed(true);
+    mockSwedishServices(undefined, true);
+    const loading = await render(<ShowDetail showId={45039} />);
+    expect(screen.queryByText("Not streaming in Sweden")).toBeNull();
+    await loading.unmount();
+
+    mockedUseSwedishService.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      isError: true,
+    } as never);
+    const failed = await render(<ShowDetail showId={45039} />);
+    expect(screen.queryByText("Not streaming in Sweden")).toBeNull();
+    await failed.unmount();
+
+    mockFollowed(false);
+    mockSwedishServices([]);
+    await render(<ShowDetail showId={45039} />);
+    expect(screen.queryByText("Not streaming in Sweden")).toBeNull();
   });
 
   it("FR-014: shows no Open in button while the Swedish service is looked up", async () => {
