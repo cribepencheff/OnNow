@@ -172,3 +172,22 @@ data only. Added to the PoC by owner decision (CRI-79).
 **Done when:** component tests cover running, between seasons and ended
 shows, season tabs, episode states and follow; navigation tests cover each
 entry point; the Maestro flow opens Show detail from Shows.
+
+## 13. "Open in [service]", keyless version
+Labels: `poc`, `ui`
+**Requirements:** FR-014 (in part), FR-029, PRD 5.5, ADR 0004 (PoC version
+amendment), ADR 0002
+**Goal:** from Show detail, open a followed show at its service, with no
+API key. Added to the PoC by owner decision (CRI-80).
+**Includes:**
+- Link from TVmaze's official site, for Apple TV, Netflix and HBO Max only;
+  every other domain gives no button
+- Service name from the domain; Apple TV without the country segment; HBO
+  Max in its own `/show/<id>` form
+- In Show detail when followed: "Open in [service]" as the primary action,
+  "Following" as the quiet status next to it; service name as text
+- Opened as an https link: the service's app at the show when installed,
+  otherwise the website
+**Done when:** unit tests cover each service and the excluded domains,
+component tests cover when the button shows and that it opens the link,
+and a check of the test set links shows where each one lands.
