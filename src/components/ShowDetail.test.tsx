@@ -5,6 +5,8 @@ import {
   within,
 } from "@testing-library/react-native";
 
+import * as Linking from "expo-linking";
+
 import { ShowDetail } from "./ShowDetail";
 import { useShow } from "@/hooks/useShow";
 import { useFollowList } from "@/hooks/useFollowList";
@@ -15,6 +17,9 @@ import showKillingEveFixture from "@/api/fixtures/show-killing-eve.json";
 import showNeagleyFixture from "@/api/fixtures/show-neagley.json";
 import showTheDiplomatFixture from "@/api/fixtures/show-the-diplomat.json";
 
+jest.mock("expo-linking", () => ({
+  openURL: jest.fn(),
+}));
 jest.mock("@/hooks/useShow", () => ({
   useShow: jest.fn(),
 }));
@@ -268,6 +273,42 @@ describe("ShowDetail", () => {
       ),
     ).toBeTruthy();
     expect(screen.queryByText("All episodes available")).toBeNull();
+  });
+
+  // CRI-80, FR-014 (keyless PoC version), PRD 5.5: when followed and
+  // TVmaze's official site is a known service's show page, "Open in
+  // [service]" is the primary action and "Following" the quiet status.
+  it("FR-014: shows Open in Apple TV next to Following when followed, and opens the link", async () => {
+    mockShow(showSlowHorsesFixture);
+    mockFollowed(true);
+    await render(<ShowDetail showId={45039} />);
+
+    expect(screen.getByRole("button", { name: "Following" })).toBeTruthy();
+    await fireEvent.press(
+      screen.getByRole("button", { name: "Open in Apple TV" }),
+    );
+
+    expect(Linking.openURL).toHaveBeenCalledWith(
+      "https://tv.apple.com/show/slow-horses/umc.cmc.2szz3fdt71tl1ulnbp8utgq5o",
+    );
+  });
+
+  it("FR-014: shows no Open in button when followed but the service has no link", async () => {
+    mockShow(showKillingEveFixture);
+    mockFollowed(true);
+    await render(<ShowDetail showId={22904} />);
+
+    expect(screen.getByRole("button", { name: "Following" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /^Open in/ })).toBeNull();
+  });
+
+  it("FR-029: keeps Follow as the only action when not followed, even with a link", async () => {
+    mockShow(showSlowHorsesFixture);
+    mockFollowed(false);
+    await render(<ShowDetail showId={45039} />);
+
+    expect(screen.getByRole("button", { name: "Follow" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /^Open in/ })).toBeNull();
   });
 
   it("shows a quiet line while the show loads", async () => {

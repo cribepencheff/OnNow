@@ -108,8 +108,10 @@ first user is the author, who currently uses Next Episode.
 ### 5.5 Show detail (PoC slice, complete in MVP)
 The PoC has a slice of this view with TVmaze data only: the network instead
 of services, "Follow" and "Following" as the actions, and no "Not in Sweden
-yet" state. Services, "Open in [service]" and the territory state come in
-the MVP (CRI-79).
+yet" state (CRI-79). A keyless "Open in [service]" for Apple TV, Netflix
+and HBO Max is part of the PoC too (CRI-80, FR-014). Services in the
+user's territory, "Open in" for every service and the territory state come
+in the MVP.
 
 - **Job:** answer "is this the right show, and what is it?" and lead to the
   one thing to do next.
@@ -205,7 +207,7 @@ Reached from an icon. Territory and notifications.
 | FR-011 | Data refreshes on app start when stale, and on pull to refresh | PoC |
 | FR-012 | Several episodes of one show on the same day appear as one item | PoC |
 | FR-013 | An empty follow list shows an empty Home with "Add your first show", which opens Search | PoC |
-| FR-014 | "Open in [service]" opens the show in the service's app when the ID is known, otherwise the service's app, and the service's website when the app is not installed (ADR 0004) | MVP |
+| FR-014 | "Open in [service]" opens the show in the service's app when the ID is known, otherwise the service's app, and the service's website when the app is not installed (ADR 0004). PoC: a keyless version from TVmaze's official site, for Apple TV, Netflix and HBO Max only, in Show detail when followed; every service is MVP | PoC, MVP |
 | FR-015 | When a show is on several services, a menu lets the user choose; the choice is remembered per show | MVP |
 | FR-016 | Territory setting, defaulting to the phone's region | MVP |
 | FR-017 | Service availability per territory decides which services are offered | MVP |
@@ -220,7 +222,7 @@ Reached from an icon. Territory and notifications.
 | FR-026 | Before the user types, Search shows "New this week": series premieres and new seasons starting this week | MVP |
 | FR-027 | Search results show the services that carry the show in the user's territory | MVP |
 | FR-028 | Show detail view with image, title, year, status, service, summary, next and latest episode. PoC shows the network instead of the service | PoC |
-| FR-029 | Show detail has one primary action: "Follow" when not followed, "Open in [service]" when followed. PoC: "Follow", and a quiet "Following" that unfollows; "Open in [service]" is MVP | PoC, MVP |
+| FR-029 | Show detail has one primary action: "Follow" when not followed, "Open in [service]" when followed. PoC: "Follow", and a quiet "Following" that unfollows; "Open in [service]" in its keyless version (FR-014) for Apple TV, Netflix and HBO Max, every service in MVP | PoC, MVP |
 | FR-030 | Show detail opens from Search, Home, Calendar and Shows | PoC |
 | FR-031 | Episodes whose season is not available in the user's territory are labelled "Not in [country] yet" and do not count as new today | MVP |
 | FR-032 | Show detail has season tabs with the current season preselected and episodes marked aired, today, upcoming (muted), not in territory yet (muted) and finale. PoC: all but "not in territory yet", which is MVP | PoC, MVP |
