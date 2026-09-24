@@ -1,4 +1,9 @@
-import { openInLink, swedishProviders, tmdbTvId } from "./swedish-service";
+import {
+  availabilityText,
+  openInLink,
+  swedishProviders,
+  tmdbTvId,
+} from "./swedish-service";
 import findNeagley from "@/api/fixtures/tmdb-find-neagley.json";
 import providersNeagley from "@/api/fixtures/tmdb-providers-neagley.json";
 import providersMobLand from "@/api/fixtures/tmdb-providers-mobland.json";
@@ -126,5 +131,30 @@ describe("openInLink (FR-014, ADR 0004, CRI-82)", () => {
     expect(
       openInLink(swedishProviders(providersSpecialForces), null),
     ).toBeNull();
+  });
+});
+
+// CRI-84: when there is no button, a quiet text says what TMDB's Swedish
+// data (from JustWatch) shows, and nothing more (data first).
+describe("availabilityText (FR-014, CRI-84)", () => {
+  it('is "Not streaming in Sweden" without a Swedish service (Special Forces)', () => {
+    expect(availabilityText(swedishProviders(providersSpecialForces))).toBe(
+      "Not streaming in Sweden",
+    );
+  });
+
+  it('names a Swedish service that has no link as "On [service]" (Hell\'s Kitchen: Pluto TV)', () => {
+    expect(availabilityText(swedishProviders(providersHellsKitchen))).toBe(
+      "On Pluto TV",
+    );
+  });
+
+  it("names the first service in TMDB's order when there are several", () => {
+    expect(
+      availabilityText([
+        { providerId: 151, providerName: "BritBox" },
+        { providerId: 9999, providerName: "Other" },
+      ]),
+    ).toBe("On BritBox");
   });
 });
