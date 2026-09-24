@@ -14,6 +14,8 @@ import showSlowHorsesFixture from "@/api/fixtures/show-slow-horses.json";
 import showSiloFixture from "@/api/fixtures/show-silo.json";
 import showFoundationFixture from "@/api/fixtures/show-foundation.json";
 import showKillingEveFixture from "@/api/fixtures/show-killing-eve.json";
+import showNeagleyFixture from "@/api/fixtures/show-neagley.json";
+import showTheDiplomatFixture from "@/api/fixtures/show-the-diplomat.json";
 
 jest.mock("expo-linking", () => ({
   openURL: jest.fn(),
@@ -221,6 +223,56 @@ describe("ShowDetail", () => {
     await fireEvent.press(screen.getByRole("button", { name: "Following" }));
 
     expect(unfollow).toHaveBeenCalledWith(45039);
+  });
+
+  // CRI-81: whole-season releases and plain status wording.
+  it("CRI-81: shows Neagley's drop as one latest item, the status in plain words, and All episodes available", async () => {
+    mockShow(showNeagleyFixture);
+    await render(<ShowDetail showId={82707} />);
+
+    expect(
+      screen.getByText("2026 · Renewal not announced · Prime Video"),
+    ).toBeTruthy();
+    expect(screen.getByText("All episodes available")).toBeTruthy();
+    expect(
+      within(screen.getByTestId("show-detail-latest")).getByText(
+        "Season 1 · all 8 episodes · 7 days ago",
+      ),
+    ).toBeTruthy();
+    expect(
+      within(screen.getByTestId("show-detail-next")).getByText(
+        "Renewal not announced",
+      ),
+    ).toBeTruthy();
+  });
+
+  it("CRI-81: shows The Diplomat's season 3 drop as the latest item and its season 4 premiere as next", async () => {
+    mockShow(showTheDiplomatFixture);
+    await render(<ShowDetail showId={60213} />);
+
+    expect(
+      within(screen.getByTestId("show-detail-latest")).getByText(
+        "Season 3 · all 8 episodes · Thu 16 Oct 2025",
+      ),
+    ).toBeTruthy();
+    expect(
+      within(screen.getByTestId("show-detail-next")).getByText(
+        "Season 4 premiere · Thu 15 Oct",
+      ),
+    ).toBeTruthy();
+    expect(screen.queryByText("All episodes available")).toBeNull();
+  });
+
+  it("CRI-81: keeps a weekly show's episode cards and no All episodes available", async () => {
+    mockShow(showSlowHorsesFixture);
+    await render(<ShowDetail showId={45039} />);
+
+    expect(
+      within(screen.getByTestId("show-detail-latest")).getByText(
+        "Daddy Issues",
+      ),
+    ).toBeTruthy();
+    expect(screen.queryByText("All episodes available")).toBeNull();
   });
 
   // CRI-80, FR-014 (keyless PoC version), PRD 5.5: when followed and

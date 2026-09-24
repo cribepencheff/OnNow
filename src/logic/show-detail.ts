@@ -14,6 +14,7 @@ import {
   searchResultMetaLine,
   searchResultNetworkName,
 } from "./search-results";
+import { statusLabel } from "./show-status";
 import type {
   TvMazeEpisode,
   TvMazeSeason,
@@ -89,12 +90,77 @@ export function latestEpisode(
   return latest?.episode ?? null;
 }
 
+// The episodes of `episode`'s season released on the same local day,
+// ordered by number: a season drop when there is more than one (FR-012).
+function sameDayEpisodes(
+  episode: TvMazeEpisode,
+  episodes: TvMazeEpisode[],
+  timeZone: string,
+): TvMazeEpisode[] {
+  const localDate = episodeLocalDate(episode, timeZone);
+  return regularEpisodes(episodes)
+    .filter(
+      (candidate) =>
+        candidate.season === episode.season &&
+        episodeLocalDate(candidate, timeZone) === localDate,
+    )
+    .sort((a, b) => (a.number ?? 0) - (b.number ?? 0));
+}
+
+// "Season 1 · all 8 episodes · 7 days ago", or, for an upcoming drop that
+// starts the season, "Season 3 premiere · all 8 episodes · In 6 days"
+// ("premiere" announces what is coming, so the latest card leaves it out;
+// CRI-81). "all" only when TVmaze's episode order for the season equals
+// the number released that day; otherwise "3 episodes".
+function seasonDropLabel(
+  drop: TvMazeEpisode[],
+  seasons: TvMazeSeason[],
+  timeZone: string,
+  todayDate: LocalDate,
+  upcoming: boolean,
+): string {
+  const first = drop[0];
+  const order = seasonOf(first, seasons)?.episodeOrder ?? null;
+  const count = order === drop.length ? `all ${drop.length}` : drop.length;
+  const season =
+    upcoming && first.number === 1
+      ? `Season ${first.season} premiere`
+      : `Season ${first.season}`;
+  return `${season} · ${count} episodes · ${episodeDateLabel(first, timeZone, todayDate)}`;
+}
+
+export type LatestCard =
+  { kind: "episode"; episode: TvMazeEpisode } | { kind: "drop"; label: string };
+
+// FR-028: the latest episode out by today, or its season drop as one item
+// when several episodes of the season came out that day (CRI-81).
+export function latestCard(
+  episodes: TvMazeEpisode[],
+  seasons: TvMazeSeason[],
+  timeZone: string,
+  todayDate: LocalDate,
+): LatestCard | null {
+  const latest = latestEpisode(episodes, timeZone, todayDate);
+  if (!latest) {
+    return null;
+  }
+  const drop = sameDayEpisodes(latest, episodes, timeZone);
+  return drop.length > 1
+    ? {
+        kind: "drop",
+        label: seasonDropLabel(drop, seasons, timeZone, todayDate, false),
+      }
+    : { kind: "episode", episode: latest };
+}
+
 export type NextCard =
   | { kind: "episode"; episode: TvMazeEpisode }
   | { kind: "season-premiere"; label: string }
+  | { kind: "drop"; label: string }
   | { kind: "status"; status: string };
 
-// FR-034: what comes after today. A regular episode gets an episode card.
+// FR-034: what comes after today. A regular episode gets an episode card,
+// and several episodes of a season on one day are one drop item (CRI-81).
 // Between seasons it is a season card: episode 1 of a season, or an
 // announced season's premiere date, labelled as a premiere (CRI-78);
 // otherwise the show's status as TVmaze states it. Today's episode is the
@@ -115,6 +181,13 @@ export function nextCard(
   );
 
   if (next.kind === "episode") {
+    const drop = sameDayEpisodes(next.episode, episodes, timeZone);
+    if (drop.length > 1) {
+      return {
+        kind: "drop",
+        label: seasonDropLabel(drop, seasons, timeZone, todayDate, true),
+      };
+    }
     if (next.episode.number === 1) {
       return {
         kind: "season-premiere",
@@ -139,7 +212,7 @@ export function nextCard(
     };
   }
 
-  return { kind: "status", status: show.status };
+  return { kind: "status", status: statusLabel(show.status) };
 }
 
 function seasonOf(
@@ -255,4 +328,32 @@ export function currentSeasonNumber(
   return seasonsWithEpisodes.length > 0
     ? Math.min(...seasonsWithEpisodes)
     : null;
+}
+
+// "All episodes available" (CRI-81): every episode of the latest season
+// TVmaze lists is out by today, and their number matches the season's
+// episode order. A later season that is listed but not out yet, or a
+// missing episode order, means false (data first).
+export function allEpisodesAvailable(
+  episodes: TvMazeEpisode[],
+  seasons: TvMazeSeason[],
+  timeZone: string,
+  todayDate: LocalDate,
+): boolean {
+  if (seasons.length === 0) {
+    return false;
+  }
+  const latestSeason = seasons.reduce((a, b) => (b.number > a.number ? b : a));
+  if (latestSeason.episodeOrder === null) {
+    return false;
+  }
+  const seasonEpisodes = regularEpisodes(episodes).filter(
+    (episode) => episode.season === latestSeason.number,
+  );
+  return (
+    seasonEpisodes.length === latestSeason.episodeOrder &&
+    seasonEpisodes.every(
+      (episode) => episodeState(episode, timeZone, todayDate) !== "upcoming",
+    )
+  );
 }

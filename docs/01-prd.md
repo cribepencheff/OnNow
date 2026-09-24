@@ -133,6 +133,19 @@ in the MVP.
   the next announced episode or season with its date if there is one,
   otherwise the show's status as the source states it. The exact states and
   wording are decided from the results of spike 0001 (principle: data first).
+- **Status wording:** TVmaze's fixed status values are shown in plain words,
+  here and in Shows and Search: "To Be Determined" reads "Renewal not
+  announced", "In Development" reads "In development"; "Running" and
+  "Ended" stay as they are. A translation of the source's own vocabulary,
+  not a guess (CRI-81).
+- **Season drops:** when several episodes of a season come out on the same
+  day, the latest or next card shows them as one item, for example "Season
+  1 · all 8 episodes · Wed 16 Sep" (same grouping as FR-012). "all" only
+  when the season's episode order equals the number released that day,
+  otherwise "3 episodes". An upcoming drop that starts a season reads
+  "Season 3 premiere · all 8 episodes · Thu 16 Oct". When every episode of
+  the latest season is out and the count matches the episode order, a quiet
+  "All episodes available" sits under the status line (CRI-81).
 - **Seasons and episodes:** below the episode cards, season tabs with the
   current season preselected (not season 1). Each episode shows number,
   title and relative date. States:
