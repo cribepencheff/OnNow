@@ -157,6 +157,12 @@ Two folders, so the owner's phone always runs `main`:
   owner's phone session.
 - **`docs/poc-log.md`** is edited only by the owner, in the main folder.
   Leave it untouched in both folders and out of every commit.
+- **Merging:** use `gh pr merge <number> --merge` without
+  `--delete-branch`. When the branch is checked out in the worktree,
+  `--delete-branch` removes the whole worktree (it happened on
+  2026-09-24). Delete a merged branch separately instead: in the worktree
+  `git switch --detach origin/main` and `git branch -D <branch>`, then
+  `git push origin --delete <branch>`.
 
 ## Owner review gates
 This is separate from "When to check in with the owner" below. That section
