@@ -4,6 +4,8 @@ Status: Accepted (for MVP)
 Amended 2026-09-23: website fallback added when the app is not installed
 (owner decision).
 Amended 2026-09-23, "PoC version" (CRI-80): see the section below.
+Amended 2026-09-24, TMDB as the source of the Swedish service (CRI-82): see
+the last section.
 
 ## Context
 The user always ends up in a streaming app. A clear action to get there fits
@@ -55,3 +57,22 @@ show.
   app is not installed. No hunting for per-service show IDs.
 - **Rejected:** Watchmode. Its free tier (2,500 requests a month, shared by
   all users of one key) is too small, and the next tier is paid (ADR 0002).
+
+## Swedish service from TMDB (amendment 2026-09-24, CRI-82)
+- **Source:** TMDB's watch providers for Sweden (data from JustWatch), with
+  a free API key (ADR 0002 amendment). A followed show is matched to TMDB
+  through its IMDb ID from TVmaze (TheTVDB as fallback), looked up once and
+  kept with the show for 30 days (spike 0002).
+- **Link:** when TVmaze's official site is on that Swedish service (Apple
+  TV, Netflix, HBO Max, with the rules above), the button opens the show
+  itself. Otherwise it opens the service's start page from a fixed table
+  (Netflix, Prime Video, Disney+, Apple TV, HBO Max, SkyShowtime, Viaplay,
+  SVT Play, TV4 Play), as https links so iOS opens the app when installed
+  and the website otherwise. A service not in the table gives no button.
+- **Several services:** one is picked: a service with a direct show link
+  first, otherwise the first in TMDB's order (subscription before free
+  and free with ads). The menu (FR-015) stays MVP.
+- **No Swedish service:** no button (data first), even when TVmaze has an
+  official site.
+- **Without a TMDB key, or if the lookup fails:** the keyless PoC version
+  above stands in.

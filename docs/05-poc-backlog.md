@@ -191,3 +191,19 @@ API key. Added to the PoC by owner decision (CRI-80).
 **Done when:** unit tests cover each service and the excluded domains,
 component tests cover when the button shows and that it opens the link,
 and a check of the test set links shows where each one lands.
+
+## 14. "Open in [service]" for every show in Sweden (TMDB)
+Labels: `poc`, `ui`
+**Requirements:** FR-014 (in part), FR-015 (noted, MVP), NFR-005, NFR-007,
+ADR 0002, ADR 0004, ADR 0005, spike 0002
+**Goal:** "Open in [service]" for every followed show that can be streamed
+in Sweden, with a free TMDB key. Added to the PoC by owner decision
+(CRI-82).
+**Includes:**
+- Spike 0002: TMDB matching, watch providers for Sweden, terms
+- Swedish services looked up once per followed show and kept for 30 days
+- The show itself when TVmaze links to it on that service, otherwise the
+  service's start page from a fixed table; no Swedish service, no button
+- TMDB and JustWatch credits next to the TVmaze credit
+**Done when:** tests with recorded TMDB responses cover matching, parsing,
+the link choice and caching, and the Maestro flow passes.

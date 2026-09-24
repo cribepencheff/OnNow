@@ -1,0 +1,26 @@
+{
+  "movie_results": [],
+  "person_results": [],
+  "tv_results": [
+    {
+      "adult": false,
+      "backdrop_path": "/xpSxYoqTyz0Fb8Wn2S3bp0NIqVc.jpg",
+      "id": 95480,
+      "name": "Slow Horses",
+      "original_name": "Slow Horses",
+      "overview": "Follow a dysfunctional team of MI5 agents—and their obnoxious boss, the notorious Jackson Lamb—as they navigate the espionage world's smoke and mirrors to defend England from sinister forces.",
+      "poster_path": "/AdYr4DjOgXvDUMwu6vEhZy1Rnxk.jpg",
+      "media_type": "tv",
+      "original_language": "en",
+      "genre_ids": [80, 18, 9648],
+      "popularity": 155.2859,
+      "first_air_date": "2022-04-01",
+      "softcore": false,
+      "vote_average": 8,
+      "vote_count": 995,
+      "origin_country": ["GB"]
+    }
+  ],
+  "tv_episode_results": [],
+  "tv_season_results": []
+}

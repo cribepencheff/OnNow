@@ -18,6 +18,12 @@ export interface TvMazeNetwork {
   officialSite: string | null;
 }
 
+export interface TvMazeExternals {
+  tvrage: number | null;
+  thetvdb: number | null;
+  imdb: string | null;
+}
+
 export interface TvMazeShow {
   id: number;
   url: string;
@@ -35,6 +41,8 @@ export interface TvMazeShow {
   webChannel: TvMazeNetwork | null;
   image: TvMazeImage | null;
   summary: string | null;
+  // IDs of the same show elsewhere, used to find it on TMDB (spike 0002).
+  externals?: TvMazeExternals;
   _links: {
     self: { href: string };
     previousepisode?: { href: string; name: string };

@@ -1,0 +1,26 @@
+{
+  "movie_results": [],
+  "person_results": [],
+  "tv_results": [
+    {
+      "adult": false,
+      "backdrop_path": "/yviKDevRL5hmKA4MhKFGFyr0cW9.jpg",
+      "id": 216562,
+      "name": "Special Forces: World's Toughest Test",
+      "original_name": "Special Forces: World's Toughest Test",
+      "overview": "Celebrities endure some of the harshest, most grueling challenges from the playbook of the actual special forces selection process; their goal is not to win votes and face eliminations — for them it is just about survival.",
+      "poster_path": "/utHIefqz4rxTh6JntqSOST8rroS.jpg",
+      "media_type": "tv",
+      "original_language": "en",
+      "genre_ids": [10764],
+      "popularity": 17.6477,
+      "first_air_date": "2023-01-04",
+      "softcore": false,
+      "vote_average": 6.1,
+      "vote_count": 15,
+      "origin_country": ["US"]
+    }
+  ],
+  "tv_episode_results": [],
+  "tv_season_results": []
+}
