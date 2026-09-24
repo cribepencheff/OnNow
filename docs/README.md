@@ -16,4 +16,4 @@ Working name: **On Now**
 Conventions:
 - All documentation and code is written in English.
 - Requirements use stable IDs (`FR-001`, `NFR-001`) so they can be referenced from issues, PRs and commits.
-- Decisions are never edited after acceptance. A new ADR supersedes an old one.
+- A changed decision gets a new ADR that supersedes the old one. Small clarifications may be added to an accepted ADR as a dated "Amended" line under its status.

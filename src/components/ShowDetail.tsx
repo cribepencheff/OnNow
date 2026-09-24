@@ -9,12 +9,14 @@ import { useRef, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Image } from "expo-image";
 import * as Haptics from "expo-haptics";
+import * as Linking from "expo-linking";
 
 import { TvMazeCredit } from "./TvMazeCredit";
 import { useFollowList } from "@/hooks/useFollowList";
 import { useShow } from "@/hooks/useShow";
 import { useToday } from "@/hooks/useToday";
 import { plainTextSummary } from "@/logic/search-results";
+import { serviceLink } from "@/logic/service-link";
 import {
   currentSeasonNumber,
   episodeDateLabel,
@@ -86,7 +88,7 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
       <View style={styles.section}>
         <Text style={styles.title}>{show.name}</Text>
         <Text style={styles.meta}>{showDetailMetaLine(show)}</Text>
-        <FollowAction showId={show.id} />
+        <FollowAction showId={show.id} officialSite={show.officialSite} />
         {summary && <Text style={styles.summary}>{summary}</Text>}
       </View>
 
@@ -136,24 +138,47 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
   );
 }
 
-// FR-029, PoC: a bold "Follow" in the accent colour when not followed; a
-// quiet "Following" status when followed, which unfollows when tapped.
-// "Open in [service]" is MVP.
-function FollowAction({ showId }: { showId: number }) {
+// FR-029, PoC: a bold "Follow" in the accent colour when not followed.
+// When followed, "Open in [service]" is the primary action if TVmaze's
+// official site is a known service's show page (FR-014, keyless PoC
+// version, CRI-80), with a quiet "Following" status next to it that
+// unfollows when tapped. The service name is text, no logos (ADR 0004).
+function FollowAction({
+  showId,
+  officialSite,
+}: {
+  showId: number;
+  officialSite: string | null;
+}) {
   const { isFollowed, follow, unfollow } = useFollowList();
 
   if (isFollowed(showId)) {
+    const link = serviceLink(officialSite);
     return (
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Following"
-        accessibilityHint="Unfollows the show"
-        onPress={() => unfollow(showId)}
-        hitSlop={8}
-        style={styles.followingStatus}
-      >
-        <Text style={styles.followingLabel}>✓ Following</Text>
-      </Pressable>
+      <View style={styles.actionRow}>
+        {link && (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`Open in ${link.service}`}
+            // An https link: iOS opens the service's app at the show when
+            // it is installed, and the website otherwise.
+            onPress={() => Linking.openURL(link.url)}
+            style={styles.followButton}
+          >
+            <Text style={styles.followLabel}>Open in {link.service}</Text>
+          </Pressable>
+        )}
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Following"
+          accessibilityHint="Unfollows the show"
+          onPress={() => unfollow(showId)}
+          hitSlop={8}
+          style={styles.followingStatus}
+        >
+          <Text style={styles.followingLabel}>✓ Following</Text>
+        </Pressable>
+      </View>
     );
   }
 
@@ -382,6 +407,11 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#333333",
     lineHeight: 21,
+  },
+  actionRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 16,
   },
   followButton: {
     alignSelf: "flex-start",
