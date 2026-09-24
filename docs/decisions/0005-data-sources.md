@@ -1,6 +1,9 @@
 # 0005. Data sources
 
 Status: Accepted for the PoC (TVmaze). MVP and later parts still proposed.
+Amended 2026-09-24: TMDB is the source of the Swedish streaming service in
+the PoC, and the terms for commercial use per source are recorded (spike
+0002, CRI-82). See the last section.
 
 ## Context
 We need release dates per episode, search, images, service availability per
@@ -49,3 +52,22 @@ territory and service IDs. Everything must be free.
 - Current TMDB terms for a free app without revenue (spike 0002)
 - Season level availability in Sweden (spike 0002)
 - Wikidata coverage for the test set
+
+## TMDB for the Swedish service, and commercial use (amendment 2026-09-24)
+Spike 0002 matched all test set shows to TMDB through IMDb IDs, and TMDB's
+watch providers gave a Swedish service for 19 of 21 shows. TMDB is now the
+source of the Swedish service for "Open in [service]" (ADR 0004, FR-014),
+with a free API key. Season level availability (FR-031) cannot be read
+from TMDB and still needs another source.
+
+Commercial use, per source (from the spike, to be checked again before any
+change, ADR 0002):
+- **TVmaze:** CC BY-SA 4.0. Commercial use is allowed with credit and
+  share-alike.
+- **TMDB:** the free license allows no commercial use (charging for the
+  app, ads or other revenue). That needs a separate written agreement with
+  TMDB, possibly with fees. Attribution notice and logo required; data may
+  not be cached for longer than 6 months.
+- **JustWatch** (TMDB's watch provider data): must be credited. Commercial
+  use needs a data partnership with JustWatch, currently offered to bigger
+  partners only.

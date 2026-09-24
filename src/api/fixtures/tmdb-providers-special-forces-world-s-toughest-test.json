@@ -1,0 +1,102 @@
+{
+  "id": 216562,
+  "results": {
+    "CA": {
+      "link": "https://www.themoviedb.org/tv/216562-special-forces-world-s-toughest-test/watch?locale=CA",
+      "flatrate": [
+        {
+          "logo_path": "/pkx3klJlwW5JdtaulvDx6hDNtch.png",
+          "provider_id": 531,
+          "provider_name": "Paramount Plus",
+          "display_priority": 9
+        },
+        {
+          "logo_path": "/a2o4bE63LR71m8jHrkx9BnBucN0.png",
+          "provider_id": 230,
+          "provider_name": "Crave",
+          "display_priority": 14
+        },
+        {
+          "logo_path": "/xu4LyKTwasTbta1Z0qWtZG48yZ3.png",
+          "provider_id": 1853,
+          "provider_name": "Paramount Plus Apple TV channel",
+          "display_priority": 92
+        },
+        {
+          "logo_path": "/4N4BMd0Mm0kHAmF7RZgL5lW3cwc.png",
+          "provider_id": 2303,
+          "provider_name": "Paramount Plus Premium",
+          "display_priority": 118
+        },
+        {
+          "logo_path": "/ylBHMFuVsJqQ8JUzmfmPsEn97Ez.png",
+          "provider_id": 2304,
+          "provider_name": "Paramount Plus Basic with Ads",
+          "display_priority": 119
+        }
+      ]
+    },
+    "FI": {
+      "link": "https://www.themoviedb.org/tv/216562-special-forces-world-s-toughest-test/watch?locale=FI",
+      "flatrate": [
+        {
+          "logo_path": "/MY2vJySdvDiDQrIYUQgxJK1Sen.png",
+          "provider_id": 338,
+          "provider_name": "Ruutu",
+          "display_priority": 7
+        }
+      ],
+      "ads": [
+        {
+          "logo_path": "/MY2vJySdvDiDQrIYUQgxJK1Sen.png",
+          "provider_id": 338,
+          "provider_name": "Ruutu",
+          "display_priority": 7
+        }
+      ]
+    },
+    "US": {
+      "link": "https://www.themoviedb.org/tv/216562-special-forces-world-s-toughest-test/watch?locale=US",
+      "flatrate": [
+        {
+          "logo_path": "/44uAnmSqvA4yBOdbPWN8YgQHjWm.png",
+          "provider_id": 15,
+          "provider_name": "Hulu",
+          "display_priority": 1
+        },
+        {
+          "logo_path": "/3wF8xISfVlcrc8X3jaa3uMUFGAr.png",
+          "provider_id": 257,
+          "provider_name": "fuboTV",
+          "display_priority": 10
+        }
+      ],
+      "buy": [
+        {
+          "logo_path": "/jn6TLbtaTZntTRX9UYucHJvpQx1.png",
+          "provider_id": 10,
+          "provider_name": "Amazon Video",
+          "display_priority": 8
+        },
+        {
+          "logo_path": "/qdEGArH3lKfFnAtYXMkSYk5wxuG.png",
+          "provider_id": 2,
+          "provider_name": "Apple TV Store",
+          "display_priority": 9
+        },
+        {
+          "logo_path": "/aZRENwYILujqs0RVOZutTh0BVGV.png",
+          "provider_id": 3,
+          "provider_name": "Google Play Movies",
+          "display_priority": 20
+        },
+        {
+          "logo_path": "/wpOt6x0dRxTrIzuBosto4LGd7E9.png",
+          "provider_id": 7,
+          "provider_name": "Fandango At Home",
+          "display_priority": 37
+        }
+      ]
+    }
+  }
+}

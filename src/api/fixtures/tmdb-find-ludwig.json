@@ -1,0 +1,26 @@
+{
+  "movie_results": [],
+  "person_results": [],
+  "tv_results": [
+    {
+      "adult": false,
+      "backdrop_path": "/9HQnJdzu92M81huqyT9jQQyaU6P.jpg",
+      "id": 243360,
+      "name": "Ludwig",
+      "original_name": "Ludwig",
+      "overview": "John Taylor lives in quiet solitude, designing puzzles for a living, under the nom-de-plume of 'Ludwig'. When his identical twin, James, disappears off the face of the earth, John takes over his brother's identity in a quest to discover his whereabouts.",
+      "poster_path": "/6xpAG4tJKhRT6y2Uxw2nAJareoQ.jpg",
+      "media_type": "tv",
+      "original_language": "en",
+      "genre_ids": [9648, 80, 18, 35],
+      "popularity": 22.7791,
+      "first_air_date": "2024-09-25",
+      "softcore": false,
+      "vote_average": 7.8,
+      "vote_count": 143,
+      "origin_country": ["GB"]
+    }
+  ],
+  "tv_episode_results": [],
+  "tv_season_results": []
+}

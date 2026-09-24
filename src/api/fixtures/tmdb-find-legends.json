@@ -1,0 +1,26 @@
+{
+  "movie_results": [],
+  "person_results": [],
+  "tv_results": [
+    {
+      "adult": false,
+      "backdrop_path": "/4CtOMphAmfHJ6cztlAYjkdStkHP.jpg",
+      "id": 262280,
+      "name": "Legends",
+      "original_name": "Legends",
+      "overview": "As drugs flood the streets of '90s Britain, a team of civil servants is thrust undercover to topple the gangs behind it.",
+      "poster_path": "/eYYTgBtsvvA3fC1feyvoqv0G9Gl.jpg",
+      "media_type": "tv",
+      "original_language": "en",
+      "genre_ids": [10759, 80, 18],
+      "popularity": 10.9199,
+      "first_air_date": "2026-05-07",
+      "softcore": false,
+      "vote_average": 7.609,
+      "vote_count": 115,
+      "origin_country": ["GB"]
+    }
+  ],
+  "tv_episode_results": [],
+  "tv_season_results": []
+}
