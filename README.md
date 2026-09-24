@@ -71,6 +71,9 @@ and the [Maestro CLI](https://docs.maestro.dev/getting-started/installing-maestr
    npm run e2e
    ```
 
+To run it against a second working copy with its own Metro on port 8082
+(`npx expo start --port 8082`), use `npm run e2e:work`.
+
 The flow clears Expo Go's data in the simulator to start from an empty
 follow list, so anything else stored in that Expo Go is lost. It follows
 the first show in `.maestro/scripts/pick-show.js` that has an upcoming

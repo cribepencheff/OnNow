@@ -9,8 +9,6 @@
 # the empty state is gone and the show's title is on Home and in Shows,
 # with a next episode line. It never asserts a specific date.
 appId: host.exp.Exponent
-env:
-  METRO_URL: exp://127.0.0.1:8081
 ---
 - runScript: scripts/pick-show.js
 
@@ -18,7 +16,10 @@ env:
 # list, which lives in Expo Go's storage while running there.
 - launchApp:
     clearState: true
-- openLink: ${METRO_URL}
+# Metro's address. 8081 by default (the main folder); the worktree passes
+# its own with -e METRO_URL=exp://127.0.0.1:8082 ("npm run e2e:work"). A
+# default in the flow's env block would win over -e, so it lives here.
+- openLink: '${typeof METRO_URL !== "undefined" ? METRO_URL : "exp://127.0.0.1:8081"}'
 # iOS asks before opening a link in another app.
 - tapOn:
     text: "Open"
