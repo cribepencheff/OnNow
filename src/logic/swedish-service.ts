@@ -100,3 +100,12 @@ export function openInLink(
   const first = known[0];
   return first ? { service: first.service, url: first.startPage } : null;
 }
+
+// When there is no "Open in" button, a quiet text says what TMDB's Swedish
+// data (from JustWatch) shows, and nothing more (data first, CRI-84): no
+// service at all, or the first service TMDB lists, in TMDB's own name, when
+// it is not in the link table (Pluto TV for Hell's Kitchen).
+export function availabilityText(providers: SwedishProvider[]): string {
+  const first = providers[0];
+  return first ? `On ${first.providerName}` : "Not streaming in Sweden";
+}
