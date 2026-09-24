@@ -123,6 +123,16 @@ function ShowImagesRow({
               ? ` · uploaded ${data.backdrop.newestTime}`
               : ""}
           </Text>
+          {/* Stored (owner decision): the backdrop changes only on the
+              local release day of a new episode or drop, not on every
+              read. When and why it was last picked: */}
+          <Text style={styles.meta}>
+            {data.pickReason === "new-episode"
+              ? `Picked for ${data.pickEpisodeCode}`
+              : data.pickReason === "followed"
+                ? "Picked when followed"
+                : "Not picked yet"}
+          </Text>
 
           <View style={styles.logoBox}>
             {data.logo ? (

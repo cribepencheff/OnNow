@@ -170,3 +170,36 @@ export function isAiringNow(
     86_400_000;
   return days <= 14;
 }
+
+export type BackdropPickTrigger =
+  | { should: false }
+  | {
+      should: true;
+      // "followed": no backdrop stored yet, so this is the first pick.
+      // "new-episode": a release date newer than the stored one has
+      // arrived (a new episode, or a whole-season drop, one date either
+      // way); always uses the "newest" rule, regardless of the general
+      // "airing now" window.
+      reason: "followed" | "new-episode";
+      releaseDate: string | null;
+    };
+
+// The stored backdrop changes only when a new episode comes out (owner
+// decision): once picked when followed, it stays until the show's latest
+// release date advances past whatever date it was picked for.
+export function backdropPickTrigger(
+  stored: { pickedForReleaseDate: string | null } | null,
+  latestReleaseDate: string | null,
+): BackdropPickTrigger {
+  if (!stored) {
+    return { should: true, reason: "followed", releaseDate: latestReleaseDate };
+  }
+  if (latestReleaseDate && latestReleaseDate !== stored.pickedForReleaseDate) {
+    return {
+      should: true,
+      reason: "new-episode",
+      releaseDate: latestReleaseDate,
+    };
+  }
+  return { should: false };
+}
