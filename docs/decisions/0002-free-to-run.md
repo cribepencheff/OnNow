@@ -3,6 +3,8 @@
 Status: Accepted
 Amended 2026-09-23: API keys are acceptable when the service is free for
 this use. Paid tiers are not (owner decision).
+Amended 2026-09-24: if the app starts charging or showing ads, the terms of
+every data source must be reviewed first (see ADR 0005).
 
 ## Context
 The project should cost nothing until it has users.

@@ -1,0 +1,1818 @@
+{
+  "id": 247718,
+  "results": {
+    "AD": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=AD",
+      "flatrate": [
+        {
+          "logo_path": "/ube1pVpP3FklRkeyQjlDkkC3tL2.png",
+          "provider_id": 1773,
+          "provider_name": "SkyShowtime",
+          "display_priority": 23
+        }
+      ]
+    },
+    "AE": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=AE",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        },
+        {
+          "logo_path": "/a97LDSIw6uH6e9f3q27pzjvqAJS.png",
+          "provider_id": 1750,
+          "provider_name": "TOD",
+          "display_priority": 15
+        }
+      ]
+    },
+    "AL": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=AL",
+      "flatrate": [
+        {
+          "logo_path": "/ube1pVpP3FklRkeyQjlDkkC3tL2.png",
+          "provider_id": 1773,
+          "provider_name": "SkyShowtime",
+          "display_priority": 25
+        }
+      ]
+    },
+    "AR": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=AR",
+      "flatrate": [
+        {
+          "logo_path": "/gMZdpavHmxFNnLpMHwVxfqeux2g.png",
+          "provider_id": 119,
+          "provider_name": "Amazon Prime Video",
+          "display_priority": 1
+        },
+        {
+          "logo_path": "/pkx3klJlwW5JdtaulvDx6hDNtch.png",
+          "provider_id": 531,
+          "provider_name": "Paramount Plus",
+          "display_priority": 7
+        },
+        {
+          "logo_path": "/xu4LyKTwasTbta1Z0qWtZG48yZ3.png",
+          "provider_id": 1853,
+          "provider_name": "Paramount Plus Apple TV channel",
+          "display_priority": 33
+        },
+        {
+          "logo_path": "/bxX0YVOCY7bI85BKRlJAAQ2EjUR.png",
+          "provider_id": 582,
+          "provider_name": "Paramount+ Amazon Channel",
+          "display_priority": 46
+        }
+      ]
+    },
+    "AT": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=AT",
+      "flatrate": [
+        {
+          "logo_path": "/gMZdpavHmxFNnLpMHwVxfqeux2g.png",
+          "provider_id": 9,
+          "provider_name": "Amazon Prime Video",
+          "display_priority": 1
+        },
+        {
+          "logo_path": "/pkx3klJlwW5JdtaulvDx6hDNtch.png",
+          "provider_id": 531,
+          "provider_name": "Paramount Plus",
+          "display_priority": 48
+        },
+        {
+          "logo_path": "/bxX0YVOCY7bI85BKRlJAAQ2EjUR.png",
+          "provider_id": 582,
+          "provider_name": "Paramount+ Amazon Channel",
+          "display_priority": 49
+        },
+        {
+          "logo_path": "/xu4LyKTwasTbta1Z0qWtZG48yZ3.png",
+          "provider_id": 1853,
+          "provider_name": "Paramount Plus Apple TV channel",
+          "display_priority": 53
+        },
+        {
+          "logo_path": "/tpwTT1FpWqLLhxUfAuDavIXDDfI.png",
+          "provider_id": 2100,
+          "provider_name": "Amazon Prime Video with Ads",
+          "display_priority": 62
+        }
+      ],
+      "buy": [
+        {
+          "logo_path": "/jn6TLbtaTZntTRX9UYucHJvpQx1.png",
+          "provider_id": 10,
+          "provider_name": "Amazon Video",
+          "display_priority": 5
+        }
+      ]
+    },
+    "AU": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=AU",
+      "flatrate": [
+        {
+          "logo_path": "/gMZdpavHmxFNnLpMHwVxfqeux2g.png",
+          "provider_id": 119,
+          "provider_name": "Amazon Prime Video",
+          "display_priority": 2
+        },
+        {
+          "logo_path": "/pkx3klJlwW5JdtaulvDx6hDNtch.png",
+          "provider_id": 531,
+          "provider_name": "Paramount Plus",
+          "display_priority": 8
+        },
+        {
+          "logo_path": "/bxX0YVOCY7bI85BKRlJAAQ2EjUR.png",
+          "provider_id": 582,
+          "provider_name": "Paramount+ Amazon Channel",
+          "display_priority": 9
+        },
+        {
+          "logo_path": "/xu4LyKTwasTbta1Z0qWtZG48yZ3.png",
+          "provider_id": 1853,
+          "provider_name": "Paramount Plus Apple TV channel",
+          "display_priority": 53
+        },
+        {
+          "logo_path": "/4N4BMd0Mm0kHAmF7RZgL5lW3cwc.png",
+          "provider_id": 2303,
+          "provider_name": "Paramount Plus Premium",
+          "display_priority": 81
+        },
+        {
+          "logo_path": "/ylBHMFuVsJqQ8JUzmfmPsEn97Ez.png",
+          "provider_id": 2304,
+          "provider_name": "Paramount Plus Basic with Ads",
+          "display_priority": 82
+        },
+        {
+          "logo_path": "/tpwTT1FpWqLLhxUfAuDavIXDDfI.png",
+          "provider_id": 2100,
+          "provider_name": "Amazon Prime Video with Ads",
+          "display_priority": 92
+        }
+      ],
+      "buy": [
+        {
+          "logo_path": "/qdEGArH3lKfFnAtYXMkSYk5wxuG.png",
+          "provider_id": 2,
+          "provider_name": "Apple TV Store",
+          "display_priority": 13
+        },
+        {
+          "logo_path": "/jn6TLbtaTZntTRX9UYucHJvpQx1.png",
+          "provider_id": 10,
+          "provider_name": "Amazon Video",
+          "display_priority": 14
+        },
+        {
+          "logo_path": "/hFTUerTxMwrM9RIo9z48qxCsi7z.png",
+          "provider_id": 436,
+          "provider_name": "Fetch TV",
+          "display_priority": 31
+        }
+      ]
+    },
+    "BA": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=BA",
+      "flatrate": [
+        {
+          "logo_path": "/ube1pVpP3FklRkeyQjlDkkC3tL2.png",
+          "provider_id": 1773,
+          "provider_name": "SkyShowtime",
+          "display_priority": 25
+        }
+      ]
+    },
+    "BG": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=BG",
+      "buy": [
+        {
+          "logo_path": "/jn6TLbtaTZntTRX9UYucHJvpQx1.png",
+          "provider_id": 10,
+          "provider_name": "Amazon Video",
+          "display_priority": 30
+        }
+      ],
+      "flatrate": [
+        {
+          "logo_path": "/ube1pVpP3FklRkeyQjlDkkC3tL2.png",
+          "provider_id": 1773,
+          "provider_name": "SkyShowtime",
+          "display_priority": 19
+        }
+      ]
+    },
+    "BH": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=BH",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        },
+        {
+          "logo_path": "/a97LDSIw6uH6e9f3q27pzjvqAJS.png",
+          "provider_id": 1750,
+          "provider_name": "TOD",
+          "display_priority": 24
+        }
+      ]
+    },
+    "BO": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=BO",
+      "flatrate": [
+        {
+          "logo_path": "/pkx3klJlwW5JdtaulvDx6hDNtch.png",
+          "provider_id": 531,
+          "provider_name": "Paramount Plus",
+          "display_priority": 6
+        },
+        {
+          "logo_path": "/xu4LyKTwasTbta1Z0qWtZG48yZ3.png",
+          "provider_id": 1853,
+          "provider_name": "Paramount Plus Apple TV channel",
+          "display_priority": 30
+        }
+      ]
+    },
+    "BR": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=BR",
+      "flatrate": [
+        {
+          "logo_path": "/gMZdpavHmxFNnLpMHwVxfqeux2g.png",
+          "provider_id": 119,
+          "provider_name": "Amazon Prime Video",
+          "display_priority": 1
+        },
+        {
+          "logo_path": "/pkx3klJlwW5JdtaulvDx6hDNtch.png",
+          "provider_id": 531,
+          "provider_name": "Paramount Plus",
+          "display_priority": 7
+        },
+        {
+          "logo_path": "/bxX0YVOCY7bI85BKRlJAAQ2EjUR.png",
+          "provider_id": 582,
+          "provider_name": "Paramount+ Amazon Channel",
+          "display_priority": 36
+        },
+        {
+          "logo_path": "/xu4LyKTwasTbta1Z0qWtZG48yZ3.png",
+          "provider_id": 1853,
+          "provider_name": "Paramount Plus Apple TV channel",
+          "display_priority": 43
+        },
+        {
+          "logo_path": "/4N4BMd0Mm0kHAmF7RZgL5lW3cwc.png",
+          "provider_id": 2303,
+          "provider_name": "Paramount Plus Premium",
+          "display_priority": 71
+        },
+        {
+          "logo_path": "/tpwTT1FpWqLLhxUfAuDavIXDDfI.png",
+          "provider_id": 2100,
+          "provider_name": "Amazon Prime Video with Ads",
+          "display_priority": 80
+        }
+      ]
+    },
+    "CA": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=CA",
+      "flatrate": [
+        {
+          "logo_path": "/gMZdpavHmxFNnLpMHwVxfqeux2g.png",
+          "provider_id": 119,
+          "provider_name": "Amazon Prime Video",
+          "display_priority": 1
+        },
+        {
+          "logo_path": "/pkx3klJlwW5JdtaulvDx6hDNtch.png",
+          "provider_id": 531,
+          "provider_name": "Paramount Plus",
+          "display_priority": 9
+        },
+        {
+          "logo_path": "/bxX0YVOCY7bI85BKRlJAAQ2EjUR.png",
+          "provider_id": 582,
+          "provider_name": "Paramount+ Amazon Channel",
+          "display_priority": 11
+        },
+        {
+          "logo_path": "/xu4LyKTwasTbta1Z0qWtZG48yZ3.png",
+          "provider_id": 1853,
+          "provider_name": "Paramount Plus Apple TV channel",
+          "display_priority": 92
+        },
+        {
+          "logo_path": "/tpwTT1FpWqLLhxUfAuDavIXDDfI.png",
+          "provider_id": 2100,
+          "provider_name": "Amazon Prime Video with Ads",
+          "display_priority": 109
+        },
+        {
+          "logo_path": "/4N4BMd0Mm0kHAmF7RZgL5lW3cwc.png",
+          "provider_id": 2303,
+          "provider_name": "Paramount Plus Premium",
+          "display_priority": 118
+        },
+        {
+          "logo_path": "/ylBHMFuVsJqQ8JUzmfmPsEn97Ez.png",
+          "provider_id": 2304,
+          "provider_name": "Paramount Plus Basic with Ads",
+          "display_priority": 119
+        }
+      ],
+      "buy": [
+        {
+          "logo_path": "/qdEGArH3lKfFnAtYXMkSYk5wxuG.png",
+          "provider_id": 2,
+          "provider_name": "Apple TV Store",
+          "display_priority": 6
+        },
+        {
+          "logo_path": "/jn6TLbtaTZntTRX9UYucHJvpQx1.png",
+          "provider_id": 10,
+          "provider_name": "Amazon Video",
+          "display_priority": 55
+        }
+      ]
+    },
+    "CH": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=CH",
+      "flatrate": [
+        {
+          "logo_path": "/pkx3klJlwW5JdtaulvDx6hDNtch.png",
+          "provider_id": 531,
+          "provider_name": "Paramount Plus",
+          "display_priority": 42
+        },
+        {
+          "logo_path": "/xu4LyKTwasTbta1Z0qWtZG48yZ3.png",
+          "provider_id": 1853,
+          "provider_name": "Paramount Plus Apple TV channel",
+          "display_priority": 44
+        }
+      ]
+    },
+    "CL": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=CL",
+      "flatrate": [
+        {
+          "logo_path": "/gMZdpavHmxFNnLpMHwVxfqeux2g.png",
+          "provider_id": 119,
+          "provider_name": "Amazon Prime Video",
+          "display_priority": 1
+        },
+        {
+          "logo_path": "/pkx3klJlwW5JdtaulvDx6hDNtch.png",
+          "provider_id": 531,
+          "provider_name": "Paramount Plus",
+          "display_priority": 7
+        },
+        {
+          "logo_path": "/xu4LyKTwasTbta1Z0qWtZG48yZ3.png",
+          "provider_id": 1853,
+          "provider_name": "Paramount Plus Apple TV channel",
+          "display_priority": 30
+        },
+        {
+          "logo_path": "/bxX0YVOCY7bI85BKRlJAAQ2EjUR.png",
+          "provider_id": 582,
+          "provider_name": "Paramount+ Amazon Channel",
+          "display_priority": 41
+        }
+      ]
+    },
+    "CO": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=CO",
+      "flatrate": [
+        {
+          "logo_path": "/gMZdpavHmxFNnLpMHwVxfqeux2g.png",
+          "provider_id": 119,
+          "provider_name": "Amazon Prime Video",
+          "display_priority": 1
+        },
+        {
+          "logo_path": "/pkx3klJlwW5JdtaulvDx6hDNtch.png",
+          "provider_id": 531,
+          "provider_name": "Paramount Plus",
+          "display_priority": 8
+        },
+        {
+          "logo_path": "/xu4LyKTwasTbta1Z0qWtZG48yZ3.png",
+          "provider_id": 1853,
+          "provider_name": "Paramount Plus Apple TV channel",
+          "display_priority": 31
+        },
+        {
+          "logo_path": "/bxX0YVOCY7bI85BKRlJAAQ2EjUR.png",
+          "provider_id": 582,
+          "provider_name": "Paramount+ Amazon Channel",
+          "display_priority": 42
+        }
+      ]
+    },
+    "CR": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=CR",
+      "flatrate": [
+        {
+          "logo_path": "/pkx3klJlwW5JdtaulvDx6hDNtch.png",
+          "provider_id": 531,
+          "provider_name": "Paramount Plus",
+          "display_priority": 7
+        },
+        {
+          "logo_path": "/xu4LyKTwasTbta1Z0qWtZG48yZ3.png",
+          "provider_id": 1853,
+          "provider_name": "Paramount Plus Apple TV channel",
+          "display_priority": 31
+        }
+      ]
+    },
+    "CY": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=CY",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        }
+      ]
+    },
+    "CZ": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=CZ",
+      "flatrate": [
+        {
+          "logo_path": "/ube1pVpP3FklRkeyQjlDkkC3tL2.png",
+          "provider_id": 1773,
+          "provider_name": "SkyShowtime",
+          "display_priority": 23
+        }
+      ]
+    },
+    "DE": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=DE",
+      "flatrate": [
+        {
+          "logo_path": "/gMZdpavHmxFNnLpMHwVxfqeux2g.png",
+          "provider_id": 9,
+          "provider_name": "Amazon Prime Video",
+          "display_priority": 1
+        },
+        {
+          "logo_path": "/pkx3klJlwW5JdtaulvDx6hDNtch.png",
+          "provider_id": 531,
+          "provider_name": "Paramount Plus",
+          "display_priority": 8
+        },
+        {
+          "logo_path": "/bxX0YVOCY7bI85BKRlJAAQ2EjUR.png",
+          "provider_id": 582,
+          "provider_name": "Paramount+ Amazon Channel",
+          "display_priority": 14
+        },
+        {
+          "logo_path": "/tpwTT1FpWqLLhxUfAuDavIXDDfI.png",
+          "provider_id": 2100,
+          "provider_name": "Amazon Prime Video with Ads",
+          "display_priority": 17
+        },
+        {
+          "logo_path": "/xu4LyKTwasTbta1Z0qWtZG48yZ3.png",
+          "provider_id": 1853,
+          "provider_name": "Paramount Plus Apple TV channel",
+          "display_priority": 90
+        }
+      ],
+      "buy": [
+        {
+          "logo_path": "/qdEGArH3lKfFnAtYXMkSYk5wxuG.png",
+          "provider_id": 2,
+          "provider_name": "Apple TV Store",
+          "display_priority": 5
+        },
+        {
+          "logo_path": "/jn6TLbtaTZntTRX9UYucHJvpQx1.png",
+          "provider_id": 10,
+          "provider_name": "Amazon Video",
+          "display_priority": 7
+        }
+      ]
+    },
+    "DK": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=DK",
+      "flatrate": [
+        {
+          "logo_path": "/ube1pVpP3FklRkeyQjlDkkC3tL2.png",
+          "provider_id": 1773,
+          "provider_name": "SkyShowtime",
+          "display_priority": 34
+        },
+        {
+          "logo_path": "/hPIVVR7yvR0PrTe7eHR2I5nAFis.png",
+          "provider_id": 1961,
+          "provider_name": "Allente",
+          "display_priority": 38
+        },
+        {
+          "logo_path": "/n1DGZz9QsSJfIcRGyXAIR0TzQWQ.png",
+          "provider_id": 2624,
+          "provider_name": "TV2 Skyshowtime",
+          "display_priority": 51
+        }
+      ]
+    },
+    "DO": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=DO",
+      "flatrate": [
+        {
+          "logo_path": "/pkx3klJlwW5JdtaulvDx6hDNtch.png",
+          "provider_id": 531,
+          "provider_name": "Paramount Plus",
+          "display_priority": 25
+        },
+        {
+          "logo_path": "/xu4LyKTwasTbta1Z0qWtZG48yZ3.png",
+          "provider_id": 1853,
+          "provider_name": "Paramount Plus Apple TV channel",
+          "display_priority": 29
+        }
+      ]
+    },
+    "DZ": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=DZ",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        },
+        {
+          "logo_path": "/a97LDSIw6uH6e9f3q27pzjvqAJS.png",
+          "provider_id": 1750,
+          "provider_name": "TOD",
+          "display_priority": 24
+        }
+      ]
+    },
+    "EC": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=EC",
+      "flatrate": [
+        {
+          "logo_path": "/pkx3klJlwW5JdtaulvDx6hDNtch.png",
+          "provider_id": 531,
+          "provider_name": "Paramount Plus",
+          "display_priority": 5
+        },
+        {
+          "logo_path": "/xu4LyKTwasTbta1Z0qWtZG48yZ3.png",
+          "provider_id": 1853,
+          "provider_name": "Paramount Plus Apple TV channel",
+          "display_priority": 30
+        }
+      ]
+    },
+    "EE": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=EE",
+      "buy": [
+        {
+          "logo_path": "/jn6TLbtaTZntTRX9UYucHJvpQx1.png",
+          "provider_id": 10,
+          "provider_name": "Amazon Video",
+          "display_priority": 34
+        }
+      ]
+    },
+    "EG": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=EG",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        }
+      ]
+    },
+    "ES": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=ES",
+      "buy": [
+        {
+          "logo_path": "/jn6TLbtaTZntTRX9UYucHJvpQx1.png",
+          "provider_id": 10,
+          "provider_name": "Amazon Video",
+          "display_priority": 33
+        }
+      ],
+      "flatrate": [
+        {
+          "logo_path": "/7OEtlOKTmjTXh40eHUES11Oc1i7.png",
+          "provider_id": 149,
+          "provider_name": "Movistar Plus+ Ficción Total ",
+          "display_priority": 7
+        },
+        {
+          "logo_path": "/ube1pVpP3FklRkeyQjlDkkC3tL2.png",
+          "provider_id": 1773,
+          "provider_name": "SkyShowtime",
+          "display_priority": 11
+        }
+      ]
+    },
+    "FI": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=FI",
+      "flatrate": [
+        {
+          "logo_path": "/MY2vJySdvDiDQrIYUQgxJK1Sen.png",
+          "provider_id": 338,
+          "provider_name": "Ruutu",
+          "display_priority": 7
+        },
+        {
+          "logo_path": "/ube1pVpP3FklRkeyQjlDkkC3tL2.png",
+          "provider_id": 1773,
+          "provider_name": "SkyShowtime",
+          "display_priority": 33
+        }
+      ]
+    },
+    "FJ": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=FJ",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 21
+        }
+      ]
+    },
+    "FR": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=FR",
+      "buy": [
+        {
+          "logo_path": "/qdEGArH3lKfFnAtYXMkSYk5wxuG.png",
+          "provider_id": 2,
+          "provider_name": "Apple TV Store",
+          "display_priority": 6
+        },
+        {
+          "logo_path": "/51fX3l4yElitnfui0IkbMUmfmgF.png",
+          "provider_id": 58,
+          "provider_name": "Canal VOD",
+          "display_priority": 17
+        },
+        {
+          "logo_path": "/jn6TLbtaTZntTRX9UYucHJvpQx1.png",
+          "provider_id": 10,
+          "provider_name": "Amazon Video",
+          "display_priority": 36
+        }
+      ],
+      "flatrate": [
+        {
+          "logo_path": "/gMZdpavHmxFNnLpMHwVxfqeux2g.png",
+          "provider_id": 119,
+          "provider_name": "Amazon Prime Video",
+          "display_priority": 2
+        },
+        {
+          "logo_path": "/pkx3klJlwW5JdtaulvDx6hDNtch.png",
+          "provider_id": 531,
+          "provider_name": "Paramount Plus",
+          "display_priority": 53
+        },
+        {
+          "logo_path": "/bxX0YVOCY7bI85BKRlJAAQ2EjUR.png",
+          "provider_id": 582,
+          "provider_name": "Paramount+ Amazon Channel",
+          "display_priority": 56
+        },
+        {
+          "logo_path": "/xu4LyKTwasTbta1Z0qWtZG48yZ3.png",
+          "provider_id": 1853,
+          "provider_name": "Paramount Plus Apple TV channel",
+          "display_priority": 58
+        },
+        {
+          "logo_path": "/4N4BMd0Mm0kHAmF7RZgL5lW3cwc.png",
+          "provider_id": 2303,
+          "provider_name": "Paramount Plus Premium",
+          "display_priority": 78
+        },
+        {
+          "logo_path": "/tpwTT1FpWqLLhxUfAuDavIXDDfI.png",
+          "provider_id": 2100,
+          "provider_name": "Amazon Prime Video with Ads",
+          "display_priority": 85
+        }
+      ]
+    },
+    "GB": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=GB",
+      "flatrate": [
+        {
+          "logo_path": "/gMZdpavHmxFNnLpMHwVxfqeux2g.png",
+          "provider_id": 9,
+          "provider_name": "Amazon Prime Video",
+          "display_priority": 1
+        },
+        {
+          "logo_path": "/pkx3klJlwW5JdtaulvDx6hDNtch.png",
+          "provider_id": 531,
+          "provider_name": "Paramount Plus",
+          "display_priority": 9
+        },
+        {
+          "logo_path": "/bxX0YVOCY7bI85BKRlJAAQ2EjUR.png",
+          "provider_id": 582,
+          "provider_name": "Paramount+ Amazon Channel",
+          "display_priority": 74
+        },
+        {
+          "logo_path": "/xu4LyKTwasTbta1Z0qWtZG48yZ3.png",
+          "provider_id": 1853,
+          "provider_name": "Paramount Plus Apple TV channel",
+          "display_priority": 86
+        },
+        {
+          "logo_path": "/tpwTT1FpWqLLhxUfAuDavIXDDfI.png",
+          "provider_id": 2100,
+          "provider_name": "Amazon Prime Video with Ads",
+          "display_priority": 97
+        },
+        {
+          "logo_path": "/4N4BMd0Mm0kHAmF7RZgL5lW3cwc.png",
+          "provider_id": 2303,
+          "provider_name": "Paramount Plus Premium",
+          "display_priority": 118
+        },
+        {
+          "logo_path": "/ylBHMFuVsJqQ8JUzmfmPsEn97Ez.png",
+          "provider_id": 2304,
+          "provider_name": "Paramount Plus Basic with Ads",
+          "display_priority": 119
+        }
+      ],
+      "buy": [
+        {
+          "logo_path": "/qdEGArH3lKfFnAtYXMkSYk5wxuG.png",
+          "provider_id": 2,
+          "provider_name": "Apple TV Store",
+          "display_priority": 5
+        },
+        {
+          "logo_path": "/jn6TLbtaTZntTRX9UYucHJvpQx1.png",
+          "provider_id": 10,
+          "provider_name": "Amazon Video",
+          "display_priority": 8
+        },
+        {
+          "logo_path": "/nNkZ1JKe6vNhzti14KiKEUWHE6H.png",
+          "provider_id": 130,
+          "provider_name": "Sky Store",
+          "display_priority": 18
+        }
+      ]
+    },
+    "GG": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=GG",
+      "buy": [
+        {
+          "logo_path": "/jn6TLbtaTZntTRX9UYucHJvpQx1.png",
+          "provider_id": 10,
+          "provider_name": "Amazon Video",
+          "display_priority": 82
+        }
+      ],
+      "flatrate": [
+        {
+          "logo_path": "/gMZdpavHmxFNnLpMHwVxfqeux2g.png",
+          "provider_id": 119,
+          "provider_name": "Amazon Prime Video",
+          "display_priority": 1
+        },
+        {
+          "logo_path": "/bxX0YVOCY7bI85BKRlJAAQ2EjUR.png",
+          "provider_id": 582,
+          "provider_name": "Paramount+ Amazon Channel",
+          "display_priority": 64
+        }
+      ]
+    },
+    "GH": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=GH",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        }
+      ]
+    },
+    "GR": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=GR",
+      "buy": [
+        {
+          "logo_path": "/jn6TLbtaTZntTRX9UYucHJvpQx1.png",
+          "provider_id": 10,
+          "provider_name": "Amazon Video",
+          "display_priority": 34
+        }
+      ],
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        }
+      ]
+    },
+    "GT": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=GT",
+      "flatrate": [
+        {
+          "logo_path": "/pkx3klJlwW5JdtaulvDx6hDNtch.png",
+          "provider_id": 531,
+          "provider_name": "Paramount Plus",
+          "display_priority": 6
+        },
+        {
+          "logo_path": "/xu4LyKTwasTbta1Z0qWtZG48yZ3.png",
+          "provider_id": 1853,
+          "provider_name": "Paramount Plus Apple TV channel",
+          "display_priority": 31
+        }
+      ]
+    },
+    "HK": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=HK",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 37
+        }
+      ]
+    },
+    "HN": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=HN",
+      "flatrate": [
+        {
+          "logo_path": "/pkx3klJlwW5JdtaulvDx6hDNtch.png",
+          "provider_id": 531,
+          "provider_name": "Paramount Plus",
+          "display_priority": 7
+        }
+      ]
+    },
+    "HR": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=HR",
+      "flatrate": [
+        {
+          "logo_path": "/ube1pVpP3FklRkeyQjlDkkC3tL2.png",
+          "provider_id": 1773,
+          "provider_name": "SkyShowtime",
+          "display_priority": 31
+        }
+      ],
+      "buy": [
+        {
+          "logo_path": "/jn6TLbtaTZntTRX9UYucHJvpQx1.png",
+          "provider_id": 10,
+          "provider_name": "Amazon Video",
+          "display_priority": 43
+        }
+      ]
+    },
+    "HU": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=HU",
+      "flatrate": [
+        {
+          "logo_path": "/ube1pVpP3FklRkeyQjlDkkC3tL2.png",
+          "provider_id": 1773,
+          "provider_name": "SkyShowtime",
+          "display_priority": 23
+        }
+      ]
+    },
+    "ID": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=ID",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 38
+        }
+      ]
+    },
+    "IE": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=IE",
+      "flatrate": [
+        {
+          "logo_path": "/pkx3klJlwW5JdtaulvDx6hDNtch.png",
+          "provider_id": 531,
+          "provider_name": "Paramount Plus",
+          "display_priority": 7
+        },
+        {
+          "logo_path": "/xu4LyKTwasTbta1Z0qWtZG48yZ3.png",
+          "provider_id": 1853,
+          "provider_name": "Paramount Plus Apple TV channel",
+          "display_priority": 40
+        },
+        {
+          "logo_path": "/4N4BMd0Mm0kHAmF7RZgL5lW3cwc.png",
+          "provider_id": 2303,
+          "provider_name": "Paramount Plus Premium",
+          "display_priority": 45
+        },
+        {
+          "logo_path": "/ylBHMFuVsJqQ8JUzmfmPsEn97Ez.png",
+          "provider_id": 2304,
+          "provider_name": "Paramount Plus Basic with Ads",
+          "display_priority": 46
+        },
+        {
+          "logo_path": "/bxX0YVOCY7bI85BKRlJAAQ2EjUR.png",
+          "provider_id": 582,
+          "provider_name": "Paramount+ Amazon Channel",
+          "display_priority": 57
+        }
+      ],
+      "buy": [
+        {
+          "logo_path": "/nNkZ1JKe6vNhzti14KiKEUWHE6H.png",
+          "provider_id": 130,
+          "provider_name": "Sky Store",
+          "display_priority": 10
+        }
+      ]
+    },
+    "IN": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=IN",
+      "flatrate": [
+        {
+          "logo_path": "/ledoS6EgdjTNq8F1e6wubUQer18.png",
+          "provider_id": 2336,
+          "provider_name": "JioHotstar",
+          "display_priority": 3
+        }
+      ]
+    },
+    "IQ": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=IQ",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        },
+        {
+          "logo_path": "/a97LDSIw6uH6e9f3q27pzjvqAJS.png",
+          "provider_id": 1750,
+          "provider_name": "TOD",
+          "display_priority": 24
+        }
+      ]
+    },
+    "IS": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=IS",
+      "buy": [
+        {
+          "logo_path": "/jn6TLbtaTZntTRX9UYucHJvpQx1.png",
+          "provider_id": 10,
+          "provider_name": "Amazon Video",
+          "display_priority": 39
+        }
+      ]
+    },
+    "IT": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=IT",
+      "buy": [
+        {
+          "logo_path": "/jn6TLbtaTZntTRX9UYucHJvpQx1.png",
+          "provider_id": 10,
+          "provider_name": "Amazon Video",
+          "display_priority": 34
+        }
+      ],
+      "flatrate": [
+        {
+          "logo_path": "/pkx3klJlwW5JdtaulvDx6hDNtch.png",
+          "provider_id": 531,
+          "provider_name": "Paramount Plus",
+          "display_priority": 8
+        },
+        {
+          "logo_path": "/bxX0YVOCY7bI85BKRlJAAQ2EjUR.png",
+          "provider_id": 582,
+          "provider_name": "Paramount+ Amazon Channel",
+          "display_priority": 51
+        },
+        {
+          "logo_path": "/xu4LyKTwasTbta1Z0qWtZG48yZ3.png",
+          "provider_id": 1853,
+          "provider_name": "Paramount Plus Apple TV channel",
+          "display_priority": 54
+        }
+      ]
+    },
+    "JO": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=JO",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        },
+        {
+          "logo_path": "/a97LDSIw6uH6e9f3q27pzjvqAJS.png",
+          "provider_id": 1750,
+          "provider_name": "TOD",
+          "display_priority": 24
+        }
+      ]
+    },
+    "JP": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=JP",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        },
+        {
+          "logo_path": "/eGUwOOIxcazwEBxqJpSN5sWEu6V.png",
+          "provider_id": 1796,
+          "provider_name": "Netflix Standard with Ads",
+          "display_priority": 25
+        }
+      ]
+    },
+    "KE": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=KE",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        }
+      ]
+    },
+    "KW": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=KW",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        },
+        {
+          "logo_path": "/a97LDSIw6uH6e9f3q27pzjvqAJS.png",
+          "provider_id": 1750,
+          "provider_name": "TOD",
+          "display_priority": 24
+        }
+      ]
+    },
+    "LB": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=LB",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        },
+        {
+          "logo_path": "/a97LDSIw6uH6e9f3q27pzjvqAJS.png",
+          "provider_id": 1750,
+          "provider_name": "TOD",
+          "display_priority": 25
+        }
+      ]
+    },
+    "LT": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=LT",
+      "buy": [
+        {
+          "logo_path": "/jn6TLbtaTZntTRX9UYucHJvpQx1.png",
+          "provider_id": 10,
+          "provider_name": "Amazon Video",
+          "display_priority": 35
+        }
+      ]
+    },
+    "LV": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=LV",
+      "buy": [
+        {
+          "logo_path": "/jn6TLbtaTZntTRX9UYucHJvpQx1.png",
+          "provider_id": 10,
+          "provider_name": "Amazon Video",
+          "display_priority": 34
+        }
+      ]
+    },
+    "LY": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=LY",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        },
+        {
+          "logo_path": "/a97LDSIw6uH6e9f3q27pzjvqAJS.png",
+          "provider_id": 1750,
+          "provider_name": "TOD",
+          "display_priority": 24
+        }
+      ]
+    },
+    "MA": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=MA",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        },
+        {
+          "logo_path": "/a97LDSIw6uH6e9f3q27pzjvqAJS.png",
+          "provider_id": 1750,
+          "provider_name": "TOD",
+          "display_priority": 24
+        }
+      ]
+    },
+    "MK": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=MK",
+      "flatrate": [
+        {
+          "logo_path": "/ube1pVpP3FklRkeyQjlDkkC3tL2.png",
+          "provider_id": 1773,
+          "provider_name": "SkyShowtime",
+          "display_priority": 24
+        }
+      ]
+    },
+    "MX": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=MX",
+      "flatrate": [
+        {
+          "logo_path": "/gMZdpavHmxFNnLpMHwVxfqeux2g.png",
+          "provider_id": 119,
+          "provider_name": "Amazon Prime Video",
+          "display_priority": 1
+        },
+        {
+          "logo_path": "/pkx3klJlwW5JdtaulvDx6hDNtch.png",
+          "provider_id": 531,
+          "provider_name": "Paramount Plus",
+          "display_priority": 9
+        },
+        {
+          "logo_path": "/bxX0YVOCY7bI85BKRlJAAQ2EjUR.png",
+          "provider_id": 582,
+          "provider_name": "Paramount+ Amazon Channel",
+          "display_priority": 18
+        },
+        {
+          "logo_path": "/xu4LyKTwasTbta1Z0qWtZG48yZ3.png",
+          "provider_id": 1853,
+          "provider_name": "Paramount Plus Apple TV channel",
+          "display_priority": 20
+        },
+        {
+          "logo_path": "/4N4BMd0Mm0kHAmF7RZgL5lW3cwc.png",
+          "provider_id": 2303,
+          "provider_name": "Paramount Plus Premium",
+          "display_priority": 62
+        },
+        {
+          "logo_path": "/tpwTT1FpWqLLhxUfAuDavIXDDfI.png",
+          "provider_id": 2100,
+          "provider_name": "Amazon Prime Video with Ads",
+          "display_priority": 70
+        }
+      ]
+    },
+    "MY": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=MY",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 31
+        }
+      ]
+    },
+    "NG": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=NG",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        }
+      ]
+    },
+    "NI": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=NI",
+      "flatrate": [
+        {
+          "logo_path": "/xu4LyKTwasTbta1Z0qWtZG48yZ3.png",
+          "provider_id": 1853,
+          "provider_name": "Paramount Plus Apple TV channel",
+          "display_priority": 11
+        },
+        {
+          "logo_path": "/pkx3klJlwW5JdtaulvDx6hDNtch.png",
+          "provider_id": 531,
+          "provider_name": "Paramount Plus",
+          "display_priority": 13
+        }
+      ]
+    },
+    "NL": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=NL",
+      "flatrate": [
+        {
+          "logo_path": "/ube1pVpP3FklRkeyQjlDkkC3tL2.png",
+          "provider_id": 1773,
+          "provider_name": "SkyShowtime",
+          "display_priority": 11
+        }
+      ]
+    },
+    "NO": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=NO",
+      "flatrate": [
+        {
+          "logo_path": "/ube1pVpP3FklRkeyQjlDkkC3tL2.png",
+          "provider_id": 1773,
+          "provider_name": "SkyShowtime",
+          "display_priority": 8
+        },
+        {
+          "logo_path": "/mlNPljPGzSDqNK2Fjr4SS0gTITj.png",
+          "provider_id": 578,
+          "provider_name": "Strim",
+          "display_priority": 28
+        }
+      ]
+    },
+    "NZ": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=NZ",
+      "flatrate": [
+        {
+          "logo_path": "/gMZdpavHmxFNnLpMHwVxfqeux2g.png",
+          "provider_id": 119,
+          "provider_name": "Amazon Prime Video",
+          "display_priority": 1
+        }
+      ]
+    },
+    "OM": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=OM",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        }
+      ]
+    },
+    "PA": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=PA",
+      "flatrate": [
+        {
+          "logo_path": "/xu4LyKTwasTbta1Z0qWtZG48yZ3.png",
+          "provider_id": 1853,
+          "provider_name": "Paramount Plus Apple TV channel",
+          "display_priority": 29
+        },
+        {
+          "logo_path": "/pkx3klJlwW5JdtaulvDx6hDNtch.png",
+          "provider_id": 531,
+          "provider_name": "Paramount Plus",
+          "display_priority": 30
+        }
+      ]
+    },
+    "PE": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=PE",
+      "flatrate": [
+        {
+          "logo_path": "/pkx3klJlwW5JdtaulvDx6hDNtch.png",
+          "provider_id": 531,
+          "provider_name": "Paramount Plus",
+          "display_priority": 7
+        },
+        {
+          "logo_path": "/xu4LyKTwasTbta1Z0qWtZG48yZ3.png",
+          "provider_id": 1853,
+          "provider_name": "Paramount Plus Apple TV channel",
+          "display_priority": 31
+        }
+      ]
+    },
+    "PG": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=PG",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 14
+        }
+      ]
+    },
+    "PH": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=PH",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 32
+        }
+      ]
+    },
+    "PL": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=PL",
+      "flatrate": [
+        {
+          "logo_path": "/ube1pVpP3FklRkeyQjlDkkC3tL2.png",
+          "provider_id": 1773,
+          "provider_name": "SkyShowtime",
+          "display_priority": 7
+        }
+      ]
+    },
+    "PS": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=PS",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        },
+        {
+          "logo_path": "/a97LDSIw6uH6e9f3q27pzjvqAJS.png",
+          "provider_id": 1750,
+          "provider_name": "TOD",
+          "display_priority": 23
+        }
+      ]
+    },
+    "PT": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=PT",
+      "flatrate": [
+        {
+          "logo_path": "/ube1pVpP3FklRkeyQjlDkkC3tL2.png",
+          "provider_id": 1773,
+          "provider_name": "SkyShowtime",
+          "display_priority": 28
+        }
+      ]
+    },
+    "PY": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=PY",
+      "flatrate": [
+        {
+          "logo_path": "/pkx3klJlwW5JdtaulvDx6hDNtch.png",
+          "provider_id": 531,
+          "provider_name": "Paramount Plus",
+          "display_priority": 5
+        },
+        {
+          "logo_path": "/xu4LyKTwasTbta1Z0qWtZG48yZ3.png",
+          "provider_id": 1853,
+          "provider_name": "Paramount Plus Apple TV channel",
+          "display_priority": 29
+        }
+      ]
+    },
+    "QA": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=QA",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        },
+        {
+          "logo_path": "/a97LDSIw6uH6e9f3q27pzjvqAJS.png",
+          "provider_id": 1750,
+          "provider_name": "TOD",
+          "display_priority": 24
+        }
+      ]
+    },
+    "RO": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=RO",
+      "flatrate": [
+        {
+          "logo_path": "/ube1pVpP3FklRkeyQjlDkkC3tL2.png",
+          "provider_id": 1773,
+          "provider_name": "SkyShowtime",
+          "display_priority": 19
+        }
+      ]
+    },
+    "RS": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=RS",
+      "flatrate": [
+        {
+          "logo_path": "/ube1pVpP3FklRkeyQjlDkkC3tL2.png",
+          "provider_id": 1773,
+          "provider_name": "SkyShowtime",
+          "display_priority": 26
+        }
+      ]
+    },
+    "SA": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=SA",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        }
+      ]
+    },
+    "SE": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=SE",
+      "flatrate": [
+        {
+          "logo_path": "/ube1pVpP3FklRkeyQjlDkkC3tL2.png",
+          "provider_id": 1773,
+          "provider_name": "SkyShowtime",
+          "display_priority": 8
+        }
+      ]
+    },
+    "SG": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=SG",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 31
+        }
+      ]
+    },
+    "SI": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=SI",
+      "flatrate": [
+        {
+          "logo_path": "/ube1pVpP3FklRkeyQjlDkkC3tL2.png",
+          "provider_id": 1773,
+          "provider_name": "SkyShowtime",
+          "display_priority": 26
+        }
+      ]
+    },
+    "SK": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=SK",
+      "flatrate": [
+        {
+          "logo_path": "/ube1pVpP3FklRkeyQjlDkkC3tL2.png",
+          "provider_id": 1773,
+          "provider_name": "SkyShowtime",
+          "display_priority": 33
+        }
+      ],
+      "buy": [
+        {
+          "logo_path": "/jn6TLbtaTZntTRX9UYucHJvpQx1.png",
+          "provider_id": 10,
+          "provider_name": "Amazon Video",
+          "display_priority": 47
+        }
+      ]
+    },
+    "SV": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=SV",
+      "flatrate": [
+        {
+          "logo_path": "/pkx3klJlwW5JdtaulvDx6hDNtch.png",
+          "provider_id": 531,
+          "provider_name": "Paramount Plus",
+          "display_priority": 27
+        },
+        {
+          "logo_path": "/xu4LyKTwasTbta1Z0qWtZG48yZ3.png",
+          "provider_id": 1853,
+          "provider_name": "Paramount Plus Apple TV channel",
+          "display_priority": 30
+        }
+      ]
+    },
+    "TD": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=TD",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        }
+      ]
+    },
+    "TH": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=TH",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 30
+        }
+      ]
+    },
+    "TN": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=TN",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        },
+        {
+          "logo_path": "/a97LDSIw6uH6e9f3q27pzjvqAJS.png",
+          "provider_id": 1750,
+          "provider_name": "TOD",
+          "display_priority": 25
+        }
+      ]
+    },
+    "TR": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=TR",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        },
+        {
+          "logo_path": "/d67wyFHwK84A0vC7PslzaMqYGif.png",
+          "provider_id": 1826,
+          "provider_name": "TOD TV",
+          "display_priority": 24
+        }
+      ]
+    },
+    "TW": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=TW",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 37
+        }
+      ]
+    },
+    "TZ": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=TZ",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        }
+      ]
+    },
+    "UG": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=UG",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        }
+      ]
+    },
+    "US": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=US",
+      "buy": [
+        {
+          "logo_path": "/jn6TLbtaTZntTRX9UYucHJvpQx1.png",
+          "provider_id": 10,
+          "provider_name": "Amazon Video",
+          "display_priority": 8
+        },
+        {
+          "logo_path": "/qdEGArH3lKfFnAtYXMkSYk5wxuG.png",
+          "provider_id": 2,
+          "provider_name": "Apple TV Store",
+          "display_priority": 9
+        },
+        {
+          "logo_path": "/aZRENwYILujqs0RVOZutTh0BVGV.png",
+          "provider_id": 3,
+          "provider_name": "Google Play Movies",
+          "display_priority": 20
+        },
+        {
+          "logo_path": "/wpOt6x0dRxTrIzuBosto4LGd7E9.png",
+          "provider_id": 7,
+          "provider_name": "Fandango At Home",
+          "display_priority": 37
+        }
+      ],
+      "flatrate": [
+        {
+          "logo_path": "/3wF8xISfVlcrc8X3jaa3uMUFGAr.png",
+          "provider_id": 257,
+          "provider_name": "fuboTV",
+          "display_priority": 10
+        },
+        {
+          "logo_path": "/4N4BMd0Mm0kHAmF7RZgL5lW3cwc.png",
+          "provider_id": 2303,
+          "provider_name": "Paramount Plus Premium",
+          "display_priority": 14
+        },
+        {
+          "logo_path": "/uPWQPyF4nqwtfPNmGcFcenU57HG.png",
+          "provider_id": 2616,
+          "provider_name": "Paramount Plus Essential",
+          "display_priority": 15
+        },
+        {
+          "logo_path": "/xu4LyKTwasTbta1Z0qWtZG48yZ3.png",
+          "provider_id": 1853,
+          "provider_name": "Paramount Plus Apple TV channel",
+          "display_priority": 23
+        },
+        {
+          "logo_path": "/bxX0YVOCY7bI85BKRlJAAQ2EjUR.png",
+          "provider_id": 582,
+          "provider_name": "Paramount+ Amazon Channel",
+          "display_priority": 26
+        },
+        {
+          "logo_path": "/tnZCMxbcKdxuVmjxefyXCaip7q3.png",
+          "provider_id": 633,
+          "provider_name": "Paramount+ Roku Premium Channel",
+          "display_priority": 62
+        },
+        {
+          "logo_path": "/6qPtM96UZkt3Bu4ZFPsDeHFWUZ2.png",
+          "provider_id": 486,
+          "provider_name": "Spectrum On Demand",
+          "display_priority": 119
+        },
+        {
+          "logo_path": "/tpwTT1FpWqLLhxUfAuDavIXDDfI.png",
+          "provider_id": 2100,
+          "provider_name": "Amazon Prime Video with Ads",
+          "display_priority": 202
+        }
+      ],
+      "free": [
+        {
+          "logo_path": "/4N4BMd0Mm0kHAmF7RZgL5lW3cwc.png",
+          "provider_id": 2303,
+          "provider_name": "Paramount Plus Premium",
+          "display_priority": 14
+        },
+        {
+          "logo_path": "/uPWQPyF4nqwtfPNmGcFcenU57HG.png",
+          "provider_id": 2616,
+          "provider_name": "Paramount Plus Essential",
+          "display_priority": 15
+        },
+        {
+          "logo_path": "/xu4LyKTwasTbta1Z0qWtZG48yZ3.png",
+          "provider_id": 1853,
+          "provider_name": "Paramount Plus Apple TV channel",
+          "display_priority": 23
+        }
+      ],
+      "ads": [
+        {
+          "logo_path": "/b7uhrYJtAe7b1ieJGg705vTbwrX.png",
+          "provider_id": 207,
+          "provider_name": "The Roku Channel",
+          "display_priority": 29
+        }
+      ]
+    },
+    "UY": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=UY",
+      "flatrate": [
+        {
+          "logo_path": "/pkx3klJlwW5JdtaulvDx6hDNtch.png",
+          "provider_id": 531,
+          "provider_name": "Paramount Plus",
+          "display_priority": 3
+        }
+      ]
+    },
+    "VE": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=VE",
+      "flatrate": [
+        {
+          "logo_path": "/pkx3klJlwW5JdtaulvDx6hDNtch.png",
+          "provider_id": 531,
+          "provider_name": "Paramount Plus",
+          "display_priority": 7
+        },
+        {
+          "logo_path": "/xu4LyKTwasTbta1Z0qWtZG48yZ3.png",
+          "provider_id": 1853,
+          "provider_name": "Paramount Plus Apple TV channel",
+          "display_priority": 27
+        }
+      ]
+    },
+    "YE": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=YE",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        },
+        {
+          "logo_path": "/a97LDSIw6uH6e9f3q27pzjvqAJS.png",
+          "provider_id": 1750,
+          "provider_name": "TOD",
+          "display_priority": 24
+        }
+      ]
+    },
+    "ZA": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=ZA",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 1
+        }
+      ]
+    },
+    "ZM": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=ZM",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        }
+      ]
+    },
+    "ZW": {
+      "link": "https://www.themoviedb.org/tv/247718-mobland/watch?locale=ZW",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        }
+      ]
+    }
+  }
+}

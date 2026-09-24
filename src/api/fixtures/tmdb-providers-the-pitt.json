@@ -1,0 +1,1235 @@
+{
+  "id": 250307,
+  "results": {
+    "AD": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=AD",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 25
+        }
+      ]
+    },
+    "AE": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=AE",
+      "flatrate": [
+        {
+          "logo_path": "/3Gfphgh5Uvcvb3IgbwUn79CT8Un.png",
+          "provider_id": 629,
+          "provider_name": "OSN+",
+          "display_priority": 9
+        }
+      ]
+    },
+    "AG": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=AG",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 12
+        }
+      ]
+    },
+    "AL": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=AL",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 36
+        }
+      ]
+    },
+    "AR": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=AR",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 36
+        }
+      ]
+    },
+    "AT": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=AT",
+      "flatrate": [
+        {
+          "logo_path": "/64fLWeSyZ1KQZhIdvTdy4QHeWty.png",
+          "provider_id": 1825,
+          "provider_name": "HBO Max Amazon Channel",
+          "display_priority": 151
+        },
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 152
+        }
+      ]
+    },
+    "AU": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=AU",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 91
+        },
+        {
+          "logo_path": "/64fLWeSyZ1KQZhIdvTdy4QHeWty.png",
+          "provider_id": 1825,
+          "provider_name": "HBO Max Amazon Channel",
+          "display_priority": 103
+        }
+      ]
+    },
+    "BA": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=BA",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 28
+        }
+      ]
+    },
+    "BB": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=BB",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 24
+        }
+      ]
+    },
+    "BE": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=BE",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 39
+        },
+        {
+          "logo_path": "/64fLWeSyZ1KQZhIdvTdy4QHeWty.png",
+          "provider_id": 1825,
+          "provider_name": "HBO Max Amazon Channel",
+          "display_priority": 62
+        }
+      ]
+    },
+    "BG": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=BG",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 22
+        }
+      ]
+    },
+    "BH": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=BH",
+      "flatrate": [
+        {
+          "logo_path": "/3Gfphgh5Uvcvb3IgbwUn79CT8Un.png",
+          "provider_id": 629,
+          "provider_name": "OSN+",
+          "display_priority": 29
+        }
+      ]
+    },
+    "BO": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=BO",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 31
+        }
+      ]
+    },
+    "BR": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=BR",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 8
+        },
+        {
+          "logo_path": "/64fLWeSyZ1KQZhIdvTdy4QHeWty.png",
+          "provider_id": 1825,
+          "provider_name": "HBO Max Amazon Channel",
+          "display_priority": 49
+        }
+      ]
+    },
+    "BS": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=BS",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 25
+        }
+      ]
+    },
+    "BZ": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=BZ",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 10
+        }
+      ]
+    },
+    "CA": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=CA",
+      "flatrate": [
+        {
+          "logo_path": "/a2o4bE63LR71m8jHrkx9BnBucN0.png",
+          "provider_id": 230,
+          "provider_name": "Crave",
+          "display_priority": 14
+        },
+        {
+          "logo_path": "/6EuODonAziRYWv90wAtEmUjk78R.png",
+          "provider_id": 2604,
+          "provider_name": "Crave Amazon Channel",
+          "display_priority": 137
+        }
+      ],
+      "buy": [
+        {
+          "logo_path": "/qdEGArH3lKfFnAtYXMkSYk5wxuG.png",
+          "provider_id": 2,
+          "provider_name": "Apple TV Store",
+          "display_priority": 6
+        },
+        {
+          "logo_path": "/fyUUKmDdzpJjSwsXPN4Rpi7jTu5.png",
+          "provider_id": 140,
+          "provider_name": "CosmoGo",
+          "display_priority": 12
+        },
+        {
+          "logo_path": "/jn6TLbtaTZntTRX9UYucHJvpQx1.png",
+          "provider_id": 10,
+          "provider_name": "Amazon Video",
+          "display_priority": 55
+        }
+      ]
+    },
+    "CH": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=CH",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 76
+        }
+      ]
+    },
+    "CL": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=CL",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 8
+        }
+      ]
+    },
+    "CO": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=CO",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 7
+        },
+        {
+          "logo_path": "/64fLWeSyZ1KQZhIdvTdy4QHeWty.png",
+          "provider_id": 1825,
+          "provider_name": "HBO Max Amazon Channel",
+          "display_priority": 69
+        }
+      ]
+    },
+    "CR": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=CR",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 5
+        }
+      ]
+    },
+    "CY": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=CY",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 19
+        }
+      ]
+    },
+    "CZ": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=CZ",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 31
+        }
+      ]
+    },
+    "DE": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=DE",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 217
+        },
+        {
+          "logo_path": "/64fLWeSyZ1KQZhIdvTdy4QHeWty.png",
+          "provider_id": 1825,
+          "provider_name": "HBO Max Amazon Channel",
+          "display_priority": 218
+        }
+      ]
+    },
+    "DK": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=DK",
+      "flatrate": [
+        {
+          "logo_path": "/hPIVVR7yvR0PrTe7eHR2I5nAFis.png",
+          "provider_id": 1961,
+          "provider_name": "Allente",
+          "display_priority": 38
+        },
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 40
+        }
+      ]
+    },
+    "DO": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=DO",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 31
+        }
+      ]
+    },
+    "EC": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=EC",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 7
+        }
+      ]
+    },
+    "EE": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=EE",
+      "flatrate": [
+        {
+          "logo_path": "/bWrdc66M5z0FJgznkdRdPueU2S.png",
+          "provider_id": 373,
+          "provider_name": "Go3",
+          "display_priority": 9
+        },
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 37
+        }
+      ]
+    },
+    "EG": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=EG",
+      "flatrate": [
+        {
+          "logo_path": "/3Gfphgh5Uvcvb3IgbwUn79CT8Un.png",
+          "provider_id": 629,
+          "provider_name": "OSN+",
+          "display_priority": 21
+        }
+      ]
+    },
+    "ES": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=ES",
+      "flatrate": [
+        {
+          "logo_path": "/7OEtlOKTmjTXh40eHUES11Oc1i7.png",
+          "provider_id": 149,
+          "provider_name": "Movistar Plus+ Ficción Total ",
+          "display_priority": 7
+        },
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 17
+        },
+        {
+          "logo_path": "/64fLWeSyZ1KQZhIdvTdy4QHeWty.png",
+          "provider_id": 1825,
+          "provider_name": "HBO Max Amazon Channel",
+          "display_priority": 87
+        }
+      ]
+    },
+    "FI": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=FI",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 42
+        }
+      ]
+    },
+    "FJ": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=FJ",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 21
+        }
+      ]
+    },
+    "FR": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=FR",
+      "flatrate": [
+        {
+          "logo_path": "/gliWKhLJVdm7QwL1braBCRko5dx.png",
+          "provider_id": 381,
+          "provider_name": "Canal+",
+          "display_priority": 8
+        },
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 73
+        },
+        {
+          "logo_path": "/64fLWeSyZ1KQZhIdvTdy4QHeWty.png",
+          "provider_id": 1825,
+          "provider_name": "HBO Max Amazon Channel",
+          "display_priority": 104
+        }
+      ]
+    },
+    "GB": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=GB",
+      "flatrate": [
+        {
+          "logo_path": "/64fLWeSyZ1KQZhIdvTdy4QHeWty.png",
+          "provider_id": 1825,
+          "provider_name": "HBO Max Amazon Channel",
+          "display_priority": 12
+        },
+        {
+          "logo_path": "/oFAnvlaEW2KT6J7XM0DXjlWqKu9.png",
+          "provider_id": 39,
+          "provider_name": "Now TV",
+          "display_priority": 44
+        },
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 175
+        }
+      ]
+    },
+    "GR": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=GR",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 36
+        }
+      ]
+    },
+    "GT": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=GT",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 5
+        }
+      ]
+    },
+    "GY": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=GY",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 3
+        }
+      ]
+    },
+    "HK": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=HK",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 37
+        }
+      ]
+    },
+    "HN": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=HN",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 31
+        }
+      ]
+    },
+    "HR": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=HR",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 34
+        }
+      ]
+    },
+    "HU": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=HU",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 28
+        }
+      ]
+    },
+    "ID": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=ID",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 38
+        }
+      ]
+    },
+    "IE": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=IE",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 67
+        }
+      ]
+    },
+    "IL": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=IL",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 36
+        }
+      ]
+    },
+    "IN": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=IN",
+      "flatrate": [
+        {
+          "logo_path": "/ledoS6EgdjTNq8F1e6wubUQer18.png",
+          "provider_id": 2336,
+          "provider_name": "JioHotstar",
+          "display_priority": 3
+        },
+        {
+          "logo_path": "/9SVVjJ89csOM0xoeVVK8BryUf9a.png",
+          "provider_id": 614,
+          "provider_name": "VI movies and tv",
+          "display_priority": 36
+        }
+      ]
+    },
+    "IS": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=IS",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 42
+        }
+      ]
+    },
+    "IT": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=IT",
+      "buy": [
+        {
+          "logo_path": "/jn6TLbtaTZntTRX9UYucHJvpQx1.png",
+          "provider_id": 10,
+          "provider_name": "Amazon Video",
+          "display_priority": 34
+        }
+      ],
+      "flatrate": [
+        {
+          "logo_path": "/1Yvl9eP3pmktqChitnFhHJHcBtX.png",
+          "provider_id": 29,
+          "provider_name": "Sky Go",
+          "display_priority": 6
+        },
+        {
+          "logo_path": "/oFAnvlaEW2KT6J7XM0DXjlWqKu9.png",
+          "provider_id": 39,
+          "provider_name": "Now TV",
+          "display_priority": 10
+        },
+        {
+          "logo_path": "/64fLWeSyZ1KQZhIdvTdy4QHeWty.png",
+          "provider_id": 1825,
+          "provider_name": "HBO Max Amazon Channel",
+          "display_priority": 85
+        },
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 86
+        }
+      ]
+    },
+    "JM": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=JM",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 24
+        }
+      ]
+    },
+    "JO": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=JO",
+      "flatrate": [
+        {
+          "logo_path": "/3Gfphgh5Uvcvb3IgbwUn79CT8Un.png",
+          "provider_id": 629,
+          "provider_name": "OSN+",
+          "display_priority": 31
+        }
+      ]
+    },
+    "JP": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=JP",
+      "flatrate": [
+        {
+          "logo_path": "/3DGpCh83CR9lDzyKbNWlmUBexBF.png",
+          "provider_id": 84,
+          "provider_name": "U-NEXT",
+          "display_priority": 6
+        }
+      ]
+    },
+    "LB": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=LB",
+      "flatrate": [
+        {
+          "logo_path": "/3Gfphgh5Uvcvb3IgbwUn79CT8Un.png",
+          "provider_id": 629,
+          "provider_name": "OSN+",
+          "display_priority": 9
+        }
+      ]
+    },
+    "LC": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=LC",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 12
+        }
+      ]
+    },
+    "LI": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=LI",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 42
+        }
+      ]
+    },
+    "LT": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=LT",
+      "flatrate": [
+        {
+          "logo_path": "/bWrdc66M5z0FJgznkdRdPueU2S.png",
+          "provider_id": 373,
+          "provider_name": "Go3",
+          "display_priority": 9
+        },
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 38
+        }
+      ]
+    },
+    "LU": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=LU",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 26
+        }
+      ]
+    },
+    "LV": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=LV",
+      "flatrate": [
+        {
+          "logo_path": "/bWrdc66M5z0FJgznkdRdPueU2S.png",
+          "provider_id": 373,
+          "provider_name": "Go3",
+          "display_priority": 9
+        },
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 38
+        }
+      ]
+    },
+    "MC": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=MC",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 26
+        }
+      ]
+    },
+    "MD": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=MD",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 26
+        }
+      ]
+    },
+    "ME": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=ME",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 7
+        }
+      ]
+    },
+    "MK": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=MK",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 27
+        }
+      ]
+    },
+    "MT": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=MT",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 34
+        }
+      ]
+    },
+    "MX": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=MX",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 7
+        },
+        {
+          "logo_path": "/64fLWeSyZ1KQZhIdvTdy4QHeWty.png",
+          "provider_id": 1825,
+          "provider_name": "HBO Max Amazon Channel",
+          "display_priority": 16
+        }
+      ]
+    },
+    "MY": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=MY",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 31
+        }
+      ]
+    },
+    "NI": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=NI",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 14
+        }
+      ]
+    },
+    "NL": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=NL",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 49
+        },
+        {
+          "logo_path": "/64fLWeSyZ1KQZhIdvTdy4QHeWty.png",
+          "provider_id": 1825,
+          "provider_name": "HBO Max Amazon Channel",
+          "display_priority": 75
+        }
+      ]
+    },
+    "NO": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=NO",
+      "flatrate": [
+        {
+          "logo_path": "/mlNPljPGzSDqNK2Fjr4SS0gTITj.png",
+          "provider_id": 578,
+          "provider_name": "Strim",
+          "display_priority": 28
+        },
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 41
+        }
+      ]
+    },
+    "NZ": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=NZ",
+      "flatrate": [
+        {
+          "logo_path": "/64fLWeSyZ1KQZhIdvTdy4QHeWty.png",
+          "provider_id": 1825,
+          "provider_name": "HBO Max Amazon Channel",
+          "display_priority": 5
+        },
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 67
+        }
+      ]
+    },
+    "OM": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=OM",
+      "flatrate": [
+        {
+          "logo_path": "/3Gfphgh5Uvcvb3IgbwUn79CT8Un.png",
+          "provider_id": 629,
+          "provider_name": "OSN+",
+          "display_priority": 31
+        }
+      ]
+    },
+    "PA": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=PA",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 31
+        }
+      ]
+    },
+    "PE": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=PE",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 8
+        }
+      ]
+    },
+    "PG": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=PG",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 14
+        }
+      ]
+    },
+    "PH": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=PH",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 32
+        }
+      ]
+    },
+    "PK": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=PK",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 18
+        }
+      ]
+    },
+    "PL": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=PL",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 38
+        }
+      ]
+    },
+    "PT": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=PT",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 34
+        }
+      ]
+    },
+    "PY": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=PY",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 30
+        }
+      ]
+    },
+    "QA": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=QA",
+      "flatrate": [
+        {
+          "logo_path": "/3Gfphgh5Uvcvb3IgbwUn79CT8Un.png",
+          "provider_id": 629,
+          "provider_name": "OSN+",
+          "display_priority": 31
+        }
+      ]
+    },
+    "RO": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=RO",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 24
+        }
+      ]
+    },
+    "RS": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=RS",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 29
+        }
+      ]
+    },
+    "SA": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=SA",
+      "flatrate": [
+        {
+          "logo_path": "/3Gfphgh5Uvcvb3IgbwUn79CT8Un.png",
+          "provider_id": 629,
+          "provider_name": "OSN+",
+          "display_priority": 21
+        }
+      ]
+    },
+    "SE": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=SE",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 44
+        },
+        {
+          "logo_path": "/64fLWeSyZ1KQZhIdvTdy4QHeWty.png",
+          "provider_id": 1825,
+          "provider_name": "HBO Max Amazon Channel",
+          "display_priority": 65
+        }
+      ]
+    },
+    "SG": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=SG",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 31
+        }
+      ]
+    },
+    "SI": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=SI",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 29
+        }
+      ]
+    },
+    "SK": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=SK",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 38
+        }
+      ]
+    },
+    "SV": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=SV",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 31
+        }
+      ]
+    },
+    "TC": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=TC",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 11
+        }
+      ]
+    },
+    "TH": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=TH",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 30
+        }
+      ]
+    },
+    "TR": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=TR",
+      "flatrate": [
+        {
+          "logo_path": "/ck9ropbn6okqSdtgxGkkvMMgtSe.png",
+          "provider_id": 1904,
+          "provider_name": "TV+",
+          "display_priority": 10
+        },
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 29
+        }
+      ]
+    },
+    "TT": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=TT",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 13
+        }
+      ]
+    },
+    "TW": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=TW",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 37
+        }
+      ]
+    },
+    "UA": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=UA",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 18
+        }
+      ]
+    },
+    "US": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=US",
+      "flatrate": [
+        {
+          "logo_path": "/64fLWeSyZ1KQZhIdvTdy4QHeWty.png",
+          "provider_id": 1825,
+          "provider_name": "HBO Max Amazon Channel",
+          "display_priority": 11
+        },
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 152
+        }
+      ]
+    },
+    "UY": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=UY",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 5
+        }
+      ]
+    },
+    "VE": {
+      "link": "https://www.themoviedb.org/tv/250307-the-pitt/watch?locale=VE",
+      "flatrate": [
+        {
+          "logo_path": "/skypuy7SXuugIQeYg0IglmzoKaS.png",
+          "provider_id": 1899,
+          "provider_name": "HBO Max",
+          "display_priority": 28
+        }
+      ]
+    }
+  }
+}

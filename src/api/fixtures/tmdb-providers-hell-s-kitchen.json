@@ -1,0 +1,633 @@
+{
+  "id": 2370,
+  "results": {
+    "AE": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=AE",
+      "flatrate": [
+        {
+          "logo_path": "/3Gfphgh5Uvcvb3IgbwUn79CT8Un.png",
+          "provider_id": 629,
+          "provider_name": "OSN+",
+          "display_priority": 9
+        }
+      ]
+    },
+    "AT": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=AT",
+      "flatrate": [
+        {
+          "logo_path": "/gMZdpavHmxFNnLpMHwVxfqeux2g.png",
+          "provider_id": 9,
+          "provider_name": "Amazon Prime Video",
+          "display_priority": 1
+        },
+        {
+          "logo_path": "/tpwTT1FpWqLLhxUfAuDavIXDDfI.png",
+          "provider_id": 2100,
+          "provider_name": "Amazon Prime Video with Ads",
+          "display_priority": 62
+        }
+      ],
+      "ads": [
+        {
+          "logo_path": "/fuVBtr57kxnYzOILZ38xqSmBeyR.png",
+          "provider_id": 613,
+          "provider_name": "Amazon Prime Video Free with Ads",
+          "display_priority": 55
+        },
+        {
+          "logo_path": "/46U3TOB3PhVDjA7qaFOuYSaGMiq.png",
+          "provider_id": 1898,
+          "provider_name": "Amazon MX Player",
+          "display_priority": 176
+        }
+      ]
+    },
+    "AU": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=AU",
+      "flatrate": [
+        {
+          "logo_path": "/1Hzele1xJnA7xfQyWKNQnTnWAio.png",
+          "provider_id": 385,
+          "provider_name": "BINGE",
+          "display_priority": 6
+        },
+        {
+          "logo_path": "/qRZkZY5kgqXaLr4QFp7ON0wG5rB.png",
+          "provider_id": 134,
+          "provider_name": "Foxtel Now",
+          "display_priority": 10
+        }
+      ]
+    },
+    "BH": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=BH",
+      "flatrate": [
+        {
+          "logo_path": "/3Gfphgh5Uvcvb3IgbwUn79CT8Un.png",
+          "provider_id": 629,
+          "provider_name": "OSN+",
+          "display_priority": 29
+        }
+      ]
+    },
+    "CA": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=CA",
+      "flatrate": [
+        {
+          "logo_path": "/gMZdpavHmxFNnLpMHwVxfqeux2g.png",
+          "provider_id": 119,
+          "provider_name": "Amazon Prime Video",
+          "display_priority": 1
+        },
+        {
+          "logo_path": "/a2o4bE63LR71m8jHrkx9BnBucN0.png",
+          "provider_id": 230,
+          "provider_name": "Crave",
+          "display_priority": 14
+        },
+        {
+          "logo_path": "/3wF8xISfVlcrc8X3jaa3uMUFGAr.png",
+          "provider_id": 257,
+          "provider_name": "fuboTV",
+          "display_priority": 88
+        },
+        {
+          "logo_path": "/r5LXOt96llVEmgwAQeheJuxUaMR.png",
+          "provider_id": 1852,
+          "provider_name": "Britbox Apple TV channel",
+          "display_priority": 93
+        },
+        {
+          "logo_path": "/tpwTT1FpWqLLhxUfAuDavIXDDfI.png",
+          "provider_id": 2100,
+          "provider_name": "Amazon Prime Video with Ads",
+          "display_priority": 109
+        },
+        {
+          "logo_path": "/6EuODonAziRYWv90wAtEmUjk78R.png",
+          "provider_id": 2604,
+          "provider_name": "Crave Amazon Channel",
+          "display_priority": 137
+        }
+      ],
+      "ads": [
+        {
+          "logo_path": "/9dEuvA8wg5TSeFBZlPxSVxFdimJ.png",
+          "provider_id": 73,
+          "provider_name": "Tubi TV",
+          "display_priority": 19
+        },
+        {
+          "logo_path": "/blAEhvx3XX8sV0fFVFk88FFjubs.png",
+          "provider_id": 538,
+          "provider_name": "Plex",
+          "display_priority": 79
+        }
+      ]
+    },
+    "CZ": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=CZ",
+      "flatrate": [
+        {
+          "logo_path": "/i2b7mxkUywkzwVVNUTPpIIKXsTt.png",
+          "provider_id": 2536,
+          "provider_name": "Oneplay",
+          "display_priority": 35
+        }
+      ]
+    },
+    "DE": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=DE",
+      "ads": [
+        {
+          "logo_path": "/fuVBtr57kxnYzOILZ38xqSmBeyR.png",
+          "provider_id": 613,
+          "provider_name": "Amazon Prime Video Free with Ads",
+          "display_priority": 16
+        },
+        {
+          "logo_path": "/46U3TOB3PhVDjA7qaFOuYSaGMiq.png",
+          "provider_id": 1898,
+          "provider_name": "Amazon MX Player",
+          "display_priority": 243
+        }
+      ],
+      "flatrate": [
+        {
+          "logo_path": "/gMZdpavHmxFNnLpMHwVxfqeux2g.png",
+          "provider_id": 9,
+          "provider_name": "Amazon Prime Video",
+          "display_priority": 1
+        },
+        {
+          "logo_path": "/tpwTT1FpWqLLhxUfAuDavIXDDfI.png",
+          "provider_id": 2100,
+          "provider_name": "Amazon Prime Video with Ads",
+          "display_priority": 17
+        }
+      ]
+    },
+    "DK": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=DK",
+      "ads": [
+        {
+          "logo_path": "/fN4czqaMQNLeF6sSSIjGbAWzvwK.png",
+          "provider_id": 300,
+          "provider_name": "Pluto TV",
+          "display_priority": 33
+        }
+      ]
+    },
+    "EG": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=EG",
+      "flatrate": [
+        {
+          "logo_path": "/3Gfphgh5Uvcvb3IgbwUn79CT8Un.png",
+          "provider_id": 629,
+          "provider_name": "OSN+",
+          "display_priority": 21
+        }
+      ]
+    },
+    "GB": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=GB",
+      "ads": [
+        {
+          "logo_path": "/872dfVu1biZISJ8rO143CZZutPR.png",
+          "provider_id": 35,
+          "provider_name": "Rakuten TV",
+          "display_priority": 6
+        },
+        {
+          "logo_path": "/fuVBtr57kxnYzOILZ38xqSmBeyR.png",
+          "provider_id": 613,
+          "provider_name": "Amazon Prime Video Free with Ads",
+          "display_priority": 19
+        },
+        {
+          "logo_path": "/nIViE3wOPV5Jyv45T7hetHyG6iS.png",
+          "provider_id": 41,
+          "provider_name": "ITVX",
+          "display_priority": 22
+        },
+        {
+          "logo_path": "/fN4czqaMQNLeF6sSSIjGbAWzvwK.png",
+          "provider_id": 300,
+          "provider_name": "Pluto TV",
+          "display_priority": 69
+        },
+        {
+          "logo_path": "/46U3TOB3PhVDjA7qaFOuYSaGMiq.png",
+          "provider_id": 1898,
+          "provider_name": "Amazon MX Player",
+          "display_priority": 180
+        }
+      ],
+      "flatrate": [
+        {
+          "logo_path": "/gMZdpavHmxFNnLpMHwVxfqeux2g.png",
+          "provider_id": 9,
+          "provider_name": "Amazon Prime Video",
+          "display_priority": 1
+        },
+        {
+          "logo_path": "/5eZ872CghnHFLB1j8grszbrx0dx.png",
+          "provider_id": 337,
+          "provider_name": "Disney Plus",
+          "display_priority": 3
+        },
+        {
+          "logo_path": "/1Yvl9eP3pmktqChitnFhHJHcBtX.png",
+          "provider_id": 29,
+          "provider_name": "Sky Go",
+          "display_priority": 13
+        },
+        {
+          "logo_path": "/tpwTT1FpWqLLhxUfAuDavIXDDfI.png",
+          "provider_id": 2100,
+          "provider_name": "Amazon Prime Video with Ads",
+          "display_priority": 97
+        },
+        {
+          "logo_path": "/nIViE3wOPV5Jyv45T7hetHyG6iS.png",
+          "provider_id": 2300,
+          "provider_name": "ITVX Premium",
+          "display_priority": 112
+        }
+      ]
+    },
+    "GG": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=GG",
+      "ads": [
+        {
+          "logo_path": "/fuVBtr57kxnYzOILZ38xqSmBeyR.png",
+          "provider_id": 613,
+          "provider_name": "Amazon Prime Video Free with Ads",
+          "display_priority": 31
+        },
+        {
+          "logo_path": "/46U3TOB3PhVDjA7qaFOuYSaGMiq.png",
+          "provider_id": 1898,
+          "provider_name": "Amazon MX Player",
+          "display_priority": 99
+        }
+      ],
+      "flatrate": [
+        {
+          "logo_path": "/gMZdpavHmxFNnLpMHwVxfqeux2g.png",
+          "provider_id": 119,
+          "provider_name": "Amazon Prime Video",
+          "display_priority": 1
+        }
+      ]
+    },
+    "ID": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=ID",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        }
+      ]
+    },
+    "IE": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=IE",
+      "flatrate": [
+        {
+          "logo_path": "/5eZ872CghnHFLB1j8grszbrx0dx.png",
+          "provider_id": 337,
+          "provider_name": "Disney Plus",
+          "display_priority": 3
+        },
+        {
+          "logo_path": "/1Yvl9eP3pmktqChitnFhHJHcBtX.png",
+          "provider_id": 29,
+          "provider_name": "Sky Go",
+          "display_priority": 9
+        }
+      ]
+    },
+    "IN": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=IN",
+      "flatrate": [
+        {
+          "logo_path": "/tHseJEgZaUdVlLtBpOGmKPfzbQ8.png",
+          "provider_id": 510,
+          "provider_name": "Discovery+",
+          "display_priority": 22
+        },
+        {
+          "logo_path": "/52htht83nlt2aAobIug88TeiWvO.png",
+          "provider_id": 584,
+          "provider_name": "Discovery+ Amazon Channel",
+          "display_priority": 60
+        }
+      ]
+    },
+    "IT": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=IT",
+      "flatrate": [
+        {
+          "logo_path": "/1Yvl9eP3pmktqChitnFhHJHcBtX.png",
+          "provider_id": 29,
+          "provider_name": "Sky Go",
+          "display_priority": 6
+        },
+        {
+          "logo_path": "/oFAnvlaEW2KT6J7XM0DXjlWqKu9.png",
+          "provider_id": 39,
+          "provider_name": "Now TV",
+          "display_priority": 10
+        }
+      ]
+    },
+    "JO": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=JO",
+      "flatrate": [
+        {
+          "logo_path": "/3Gfphgh5Uvcvb3IgbwUn79CT8Un.png",
+          "provider_id": 629,
+          "provider_name": "OSN+",
+          "display_priority": 31
+        }
+      ]
+    },
+    "KR": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=KR",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        },
+        {
+          "logo_path": "/eGUwOOIxcazwEBxqJpSN5sWEu6V.png",
+          "provider_id": 1796,
+          "provider_name": "Netflix Standard with Ads",
+          "display_priority": 27
+        }
+      ]
+    },
+    "LB": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=LB",
+      "flatrate": [
+        {
+          "logo_path": "/3Gfphgh5Uvcvb3IgbwUn79CT8Un.png",
+          "provider_id": 629,
+          "provider_name": "OSN+",
+          "display_priority": 9
+        }
+      ]
+    },
+    "MX": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=MX",
+      "ads": [
+        {
+          "logo_path": "/9dEuvA8wg5TSeFBZlPxSVxFdimJ.png",
+          "provider_id": 73,
+          "provider_name": "Tubi TV",
+          "display_priority": 14
+        }
+      ]
+    },
+    "MY": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=MY",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        }
+      ]
+    },
+    "NO": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=NO",
+      "ads": [
+        {
+          "logo_path": "/fN4czqaMQNLeF6sSSIjGbAWzvwK.png",
+          "provider_id": 300,
+          "provider_name": "Pluto TV",
+          "display_priority": 34
+        }
+      ]
+    },
+    "OM": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=OM",
+      "flatrate": [
+        {
+          "logo_path": "/3Gfphgh5Uvcvb3IgbwUn79CT8Un.png",
+          "provider_id": 629,
+          "provider_name": "OSN+",
+          "display_priority": 31
+        }
+      ]
+    },
+    "PH": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=PH",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        }
+      ]
+    },
+    "QA": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=QA",
+      "flatrate": [
+        {
+          "logo_path": "/3Gfphgh5Uvcvb3IgbwUn79CT8Un.png",
+          "provider_id": 629,
+          "provider_name": "OSN+",
+          "display_priority": 31
+        }
+      ]
+    },
+    "SA": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=SA",
+      "flatrate": [
+        {
+          "logo_path": "/3Gfphgh5Uvcvb3IgbwUn79CT8Un.png",
+          "provider_id": 629,
+          "provider_name": "OSN+",
+          "display_priority": 21
+        }
+      ]
+    },
+    "SE": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=SE",
+      "ads": [
+        {
+          "logo_path": "/fN4czqaMQNLeF6sSSIjGbAWzvwK.png",
+          "provider_id": 300,
+          "provider_name": "Pluto TV",
+          "display_priority": 35
+        }
+      ]
+    },
+    "SG": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=SG",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        }
+      ]
+    },
+    "TH": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=TH",
+      "flatrate": [
+        {
+          "logo_path": "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+          "provider_id": 8,
+          "provider_name": "Netflix",
+          "display_priority": 0
+        }
+      ]
+    },
+    "TR": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=TR",
+      "flatrate": [
+        {
+          "logo_path": "/d67wyFHwK84A0vC7PslzaMqYGif.png",
+          "provider_id": 1826,
+          "provider_name": "TOD TV",
+          "display_priority": 24
+        }
+      ]
+    },
+    "US": {
+      "link": "https://www.themoviedb.org/tv/2370-hell-s-kitchen/watch?locale=US",
+      "flatrate": [
+        {
+          "logo_path": "/44uAnmSqvA4yBOdbPWN8YgQHjWm.png",
+          "provider_id": 15,
+          "provider_name": "Hulu",
+          "display_priority": 1
+        },
+        {
+          "logo_path": "/gMZdpavHmxFNnLpMHwVxfqeux2g.png",
+          "provider_id": 9,
+          "provider_name": "Amazon Prime Video",
+          "display_priority": 4
+        },
+        {
+          "logo_path": "/3wF8xISfVlcrc8X3jaa3uMUFGAr.png",
+          "provider_id": 257,
+          "provider_name": "fuboTV",
+          "display_priority": 10
+        },
+        {
+          "logo_path": "/a1UIdq5BrkcAxnxcUhFsNbXnxeu.png",
+          "provider_id": 386,
+          "provider_name": "Peacock Premium",
+          "display_priority": 16
+        },
+        {
+          "logo_path": "/48bVXEIyCLSL9pZUQ7gB9ToyWto.png",
+          "provider_id": 2528,
+          "provider_name": "YouTube TV",
+          "display_priority": 38
+        },
+        {
+          "logo_path": "/tpwTT1FpWqLLhxUfAuDavIXDDfI.png",
+          "provider_id": 2100,
+          "provider_name": "Amazon Prime Video with Ads",
+          "display_priority": 202
+        },
+        {
+          "logo_path": "/yrEwyMzEKdqAoGhaWUARtIxByol.png",
+          "provider_id": 387,
+          "provider_name": "Peacock Premium Plus",
+          "display_priority": 214
+        },
+        {
+          "logo_path": "/b3KR9gzy7QkvLNyNzUROavLpsrq.png",
+          "provider_id": 2554,
+          "provider_name": "FOX One Amazon Channel",
+          "display_priority": 339
+        }
+      ],
+      "buy": [
+        {
+          "logo_path": "/jn6TLbtaTZntTRX9UYucHJvpQx1.png",
+          "provider_id": 10,
+          "provider_name": "Amazon Video",
+          "display_priority": 8
+        },
+        {
+          "logo_path": "/qdEGArH3lKfFnAtYXMkSYk5wxuG.png",
+          "provider_id": 2,
+          "provider_name": "Apple TV Store",
+          "display_priority": 9
+        },
+        {
+          "logo_path": "/aZRENwYILujqs0RVOZutTh0BVGV.png",
+          "provider_id": 3,
+          "provider_name": "Google Play Movies",
+          "display_priority": 20
+        }
+      ],
+      "ads": [
+        {
+          "logo_path": "/b7uhrYJtAe7b1ieJGg705vTbwrX.png",
+          "provider_id": 207,
+          "provider_name": "The Roku Channel",
+          "display_priority": 29
+        },
+        {
+          "logo_path": "/blAEhvx3XX8sV0fFVFk88FFjubs.png",
+          "provider_id": 538,
+          "provider_name": "Plex",
+          "display_priority": 124
+        },
+        {
+          "logo_path": "/1gC0K43JMyMtVpqczxvwBp0pkxn.png",
+          "provider_id": 2077,
+          "provider_name": "Plex Channel",
+          "display_priority": 127
+        },
+        {
+          "logo_path": "/fuVBtr57kxnYzOILZ38xqSmBeyR.png",
+          "provider_id": 613,
+          "provider_name": "Amazon Prime Video Free with Ads",
+          "display_priority": 140
+        },
+        {
+          "logo_path": "/n6E9OeoQicCDd43PnLsMpVIVYFK.png",
+          "provider_id": 1963,
+          "provider_name": "Xumo Play",
+          "display_priority": 167
+        },
+        {
+          "logo_path": "/9dEuvA8wg5TSeFBZlPxSVxFdimJ.png",
+          "provider_id": 73,
+          "provider_name": "Tubi TV",
+          "display_priority": 347
+        },
+        {
+          "logo_path": "/46U3TOB3PhVDjA7qaFOuYSaGMiq.png",
+          "provider_id": 1898,
+          "provider_name": "Amazon MX Player",
+          "display_priority": 382
+        }
+      ],
+      "free": [
+        {
+          "logo_path": "/dNF4vWhF3TduWvOyfVxEyTqSNRl.png",
+          "provider_id": 2409,
+          "provider_name": "Fawesome",
+          "display_priority": 143
+        }
+      ]
+    }
+  }
+}

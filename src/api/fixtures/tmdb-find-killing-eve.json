@@ -1,0 +1,26 @@
+{
+  "movie_results": [],
+  "person_results": [],
+  "tv_results": [
+    {
+      "adult": false,
+      "backdrop_path": "/2eR0H27Us1tvbjd95oW7WhiKioC.jpg",
+      "id": 72750,
+      "name": "Killing Eve",
+      "original_name": "Killing Eve",
+      "overview": "A security consultant hunts for a ruthless assassin. Equally obsessed with each other, they go head to head in an epic game of cat-and-mouse.",
+      "poster_path": "/4wKhTVw8aGq5AZMa0Q1spERdi7n.jpg",
+      "media_type": "tv",
+      "original_language": "en",
+      "genre_ids": [80, 18],
+      "popularity": 31.079,
+      "first_air_date": "2018-04-08",
+      "softcore": false,
+      "vote_average": 7.893,
+      "vote_count": 1559,
+      "origin_country": ["US"]
+    }
+  ],
+  "tv_episode_results": [],
+  "tv_season_results": []
+}

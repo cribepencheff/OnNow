@@ -1,0 +1,26 @@
+{
+  "movie_results": [],
+  "person_results": [],
+  "tv_results": [
+    {
+      "adult": false,
+      "backdrop_path": "/uYOYLFQ4q7asuhdiKXCqGaeAQUH.jpg",
+      "id": 273207,
+      "name": "Neagley",
+      "original_name": "Neagley",
+      "overview": "Frances Neagley is a private investigator in Chicago and former military colleague of Jack Reacher in the Army's 110th Special Investigations Unit. When she learns that a beloved friend from her past has been killed in a suspicious accident, she becomes hell-bent on justice.",
+      "poster_path": "/tEPDFIa21VK0Q2YLuzhTt2xrw5W.jpg",
+      "media_type": "tv",
+      "original_language": "en",
+      "genre_ids": [18, 9648, 80],
+      "popularity": 150.8613,
+      "first_air_date": "2026-09-16",
+      "softcore": false,
+      "vote_average": 8.068,
+      "vote_count": 118,
+      "origin_country": ["US"]
+    }
+  ],
+  "tv_episode_results": [],
+  "tv_season_results": []
+}
