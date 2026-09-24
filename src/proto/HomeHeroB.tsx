@@ -64,7 +64,8 @@ export function HeroPager({
   const [touching, setTouching] = useState(false);
 
   const listRef = useRef<FlatList<ShowEpisodesToday>>(null);
-  // useState, not useRef(new Animated.Value()).current (see AddShowButton).
+  // useState, not useRef(new Animated.Value()).current: reading a ref's
+  // .current during render is unsafe under the React Compiler.
   const [pageIndexAnim] = useState(() => new Animated.Value(0));
   const [progressAnim] = useState(() => new Animated.Value(0));
   const pausedProgressRef = useRef<number | null>(null);

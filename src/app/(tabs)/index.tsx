@@ -20,7 +20,6 @@ import { useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
 
 import { HomeCard } from "@/components/HomeCard";
-import { AddShowButton } from "@/proto/AddShowButton";
 import { HeroPager } from "@/proto/HomeHeroB";
 import { t as protoTokens } from "@/proto/tokens";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
@@ -155,7 +154,6 @@ export default function HomeScreen() {
           <Text style={styles.quietLine}>Loading your shows…</Text>
         )}
       </ScrollView>
-      <AddShowButton />
     </View>
   );
 }

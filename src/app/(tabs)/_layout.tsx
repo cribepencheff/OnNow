@@ -1,5 +1,25 @@
+import { Pressable, type GestureResponderEvent } from "react-native";
 import { SymbolView } from "expo-symbols";
-import { Tabs } from "expo-router";
+import { Tabs, useRouter } from "expo-router";
+
+// PROTOTYPE (proto/home-backdrop): the "+" and its image review screen
+// moved off Home (see below); the image review screen is now reached by a
+// long press on the Shows tab instead, development builds only. Typed
+// loosely rather than importing expo-router's internal
+// BottomTabBarButtonProps, which is not part of its public exports.
+function ShowsTabButton(props: {
+  children?: React.ReactNode;
+  onPress?: (event: GestureResponderEvent) => void;
+  [key: string]: unknown;
+}) {
+  const router = useRouter();
+  return (
+    <Pressable
+      {...props}
+      onLongPress={__DEV__ ? () => router.push("/dev/images") : undefined}
+    />
+  );
+}
 
 export default function TabLayout() {
   return (
@@ -60,6 +80,8 @@ export default function TabLayout() {
               size={size}
             />
           ),
+          // PROTOTYPE: long press opens the hidden image review screen.
+          tabBarButton: ShowsTabButton,
         }}
       />
     </Tabs>
