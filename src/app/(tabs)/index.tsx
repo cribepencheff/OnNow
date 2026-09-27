@@ -3,7 +3,7 @@
 // comes later, so styling here stays minimal and functional; nothing below
 // the card is a Design phase decision (backlog CRI-66).
 
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   FlatList,
   Pressable,
@@ -20,7 +20,7 @@ import { useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
 
 import { HomeCard } from "@/components/HomeCard";
-import { HeroPager } from "@/proto/HomeHeroB";
+import { findHeroSlides, HeroPager, type HeroSlide } from "@/proto/HomeHeroB";
 import { t as protoTokens } from "@/proto/tokens";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useToday } from "@/hooks/useToday";
@@ -28,10 +28,13 @@ import {
   deriveHomeViewState,
   homeCardMetaLine,
   nextDayCountLabel,
-  todayCountLabel,
 } from "@/logic/home";
 import type { ShowEpisodesToday } from "@/logic/episodes-today";
 import { accent } from "@/theme/color";
+
+function deviceTimeZone(): string {
+  return Intl.DateTimeFormat().resolvedOptions().timeZone;
+}
 
 // FR-007: the "+" in Home's header, opening Search. Rendered through the
 // tab navigator's own `headerRight` (configured in `(tabs)/_layout.tsx`)
@@ -70,6 +73,7 @@ export default function HomeScreen() {
     isLoading,
     isRefetching,
     isError,
+    followedShows,
     showsWithEpisodeToday,
     nextDayEpisodes,
     refetch,
@@ -84,6 +88,15 @@ export default function HomeScreen() {
     showsWithEpisodeToday,
     nextDayEpisodes,
   });
+
+  // PROTOTYPE (proto/home-backdrop): the hero's 7-day horizon (see
+  // HOME_HERO_HORIZON_DAYS in HomeHeroB.tsx). Falls back to the existing
+  // single nearest-day pager (state.kind === "next-day") only when nothing
+  // followed has an episode within the horizon at all.
+  const heroSlides = useMemo(
+    () => findHeroSlides(followedShows, deviceTimeZone(), todayDate),
+    [followedShows, todayDate],
+  );
 
   const openSearch = useCallback(() => router.push("/search"), [router]);
 
@@ -113,17 +126,23 @@ export default function HomeScreen() {
         }
       >
         {/* PROTOTYPE (proto/home-backdrop): Home, direction B. */}
-        {state.kind === "today" && (
+        {heroSlides.length > 0 && (
           <HeroPager
-            shows={state.shows}
-            badgeFor={(index) => todayCountLabel(index, state.shows.length)}
+            slides={heroSlides}
+            badgeFor={(index) => `UPCOMING · ${index + 1}/${heroSlides.length}`}
             todayDate={todayDate}
           />
         )}
 
-        {state.kind === "next-day" && (
+        {/* Nothing followed has an episode within the horizon: fall back
+            to the single nearest upcoming day, same as before the 7-day
+            horizon. */}
+        {heroSlides.length === 0 && state.kind === "next-day" && (
           <HeroPager
-            shows={state.shows}
+            slides={state.shows.map((show): HeroSlide => ({
+              ...show,
+              localDate: state.localDate,
+            }))}
             badgeFor={(index) =>
               nextDayCountLabel(
                 state.localDate,
