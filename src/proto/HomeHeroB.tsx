@@ -2,7 +2,7 @@
 // docs/design/design-system.md. Measurements are for a 390 × 844 screen and
 // scale with the screen height here.
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Animated,
   FlatList,
@@ -618,6 +618,52 @@ export function HeroPager({
     });
   }, []);
 
+  // One stable callback for every HeroPage instance's onBackdropLoad,
+  // rather than a fresh arrow function per cell inside renderItem below:
+  // HeroPage is memo-wrapped specifically so that HeroPager's frequent,
+  // largely unrelated re-renders (touching, loadedPages, pageIndex) don't
+  // cascade into re-rendering every mounted pager cell (and, inside each,
+  // re-running useShowImages/useSwedishService) each time, but that only
+  // works if every prop it receives is actually stable across those
+  // re-renders; a fresh closure here on every render would defeat it by
+  // itself, regardless of what HeroPage does internally. Takes the
+  // PHYSICAL index (HeroPage's own), converting to logical here rather
+  // than in the closure that used to create this per cell.
+  const handleBackdropLoad = useCallback(
+    (physicalIndex: number) => {
+      markLoaded(physicalToLogical(physicalIndex, pageCount));
+    },
+    [markLoaded, pageCount],
+  );
+
+  // Also memoized for the same reason as handleBackdropLoad above: a
+  // fresh renderItem function on every HeroPager render is a well-known
+  // FlatList/VirtualizedList performance pitfall (RN's own "large list
+  // slow to update" warning specifically calls this out), independent of
+  // whatever HeroPage itself does.
+  const renderItem = useCallback(
+    ({ item, index }: { item: HeroSlide; index: number }) => (
+      <HeroPage
+        item={item}
+        index={index}
+        width={width}
+        todayDate={todayDate}
+        scrollX={scrollX}
+        reduceMotionEnabled={reduceMotionEnabled}
+        pullDistance={pullDistance}
+        onBackdropLoad={handleBackdropLoad}
+      />
+    ),
+    [
+      width,
+      todayDate,
+      scrollX,
+      reduceMotionEnabled,
+      pullDistance,
+      handleBackdropLoad,
+    ],
+  );
+
   // direction is which way `index` was reached (+1 forward, -1 back),
   // always known at both call sites (auto-advance is always forward;
   // VoiceOver's onAdjust already has it as its own delta): it decides the
@@ -851,20 +897,7 @@ export function HeroPager({
           onScroll={handleScroll}
           scrollEventThrottle={16}
           onMomentumScrollEnd={handleScrollEnd}
-          renderItem={({ item, index }) => (
-            <HeroPage
-              item={item}
-              index={index}
-              width={width}
-              todayDate={todayDate}
-              scrollX={scrollX}
-              reduceMotionEnabled={reduceMotionEnabled}
-              pullDistance={pullDistance}
-              onBackdropLoad={() =>
-                markLoaded(physicalToLogical(index, pageCount))
-              }
-            />
-          )}
+          renderItem={renderItem}
         />
       </Animated.View>
 
@@ -1106,7 +1139,19 @@ function Dot({
 // overlays now (ScrimLayer, ContentLayer, both siblings of the FlatList in
 // HeroPager), not part of each slide, so only the backdrop's parallax,
 // crossfade and pull-to-refresh stretch need to ride the pager.
-function HeroPage({
+//
+// memo-wrapped: one of physicalPageCount mounted instances at a time, and
+// HeroPager itself re-renders often (touching, loadedPages, pageIndex)
+// for reasons that usually have nothing to do with any given one of them;
+// without this, every mounted HeroPage (each running its own
+// useShowImages fetch/cache check) would re-render on every one of those,
+// which is exactly the pattern RN's own "VirtualizedList: large list slow
+// to update" warning points at. Only helps because every prop below is
+// actually stable across those re-renders (see HeroPager's
+// handleBackdropLoad/renderItem, memoized for the same reason) — a memo
+// wrapper around a component still receiving a fresh prop identity every
+// render would re-render anyway.
+const HeroPage = memo(function HeroPage({
   item,
   index,
   width,
@@ -1123,7 +1168,11 @@ function HeroPage({
   scrollX: Animated.Value;
   reduceMotionEnabled: boolean;
   pullDistance: Animated.AnimatedInterpolation<number>;
-  onBackdropLoad: () => void;
+  // Takes this instance's own (physical) index, rather than being called
+  // with no arguments: lets HeroPager pass the exact same function to
+  // every instance (see handleBackdropLoad), instead of a fresh closure
+  // per cell that would defeat this memo regardless of anything else.
+  onBackdropLoad: (index: number) => void;
 }) {
   const { height } = useWindowDimensions();
   const scale = height / REF_HEIGHT;
@@ -1131,6 +1180,10 @@ function HeroPage({
   const { data: images } = useShowImages(show, deviceTimeZone(), todayDate);
   const backdropPath = images?.backdrop?.filePath;
   const backdropHeight = 580 * scale;
+  const handleLoad = useCallback(
+    () => onBackdropLoad(index),
+    [onBackdropLoad, index],
+  );
 
   // Overscanned wider than the screen and centered, so the parallax shift
   // below never reveals the page background at either edge. Only needed
@@ -1263,7 +1316,7 @@ function HeroPage({
                 contentFit="cover"
                 contentPosition="center"
                 accessibilityIgnoresInvertColors
-                onLoad={onBackdropLoad}
+                onLoad={handleLoad}
               />
             </Animated.View>
           </Animated.View>
@@ -1271,7 +1324,7 @@ function HeroPage({
       </Animated.View>
     </View>
   );
-}
+});
 
 // Fixed overlay, a sibling of the paging FlatList in HeroPager (like the
 // scrim and PageIndicator): shows one slide's text/logo/meta/Open-in
@@ -1292,7 +1345,16 @@ function HeroPage({
 // of loopSlideData's duplicate slots, so there's never a moment where
 // this needs to be recentered or remounted, unlike a plain
 // physical-position-centered version would.
-function ContentLayer({
+//
+// memo-wrapped for the same reason as HeroPage above: HeroPager re-renders
+// often for reasons unrelated to any one mounted ContentLayer (each of
+// which runs its own useShowImages/useSwedishService), and every prop
+// here is already stable or stable-by-value across those re-renders
+// (logicalCrossfadePosition and pageCount from HeroPager's own memo;
+// badge is a freshly computed but value-equal string; onIndicatorAnchor
+// is a state setter), so this actually takes effect without needing any
+// further stabilizing, unlike HeroPage's onBackdropLoad did.
+const ContentLayer = memo(function ContentLayer({
   index,
   slide,
   badge,
@@ -1414,7 +1476,7 @@ function ContentLayer({
       </View>
     </Animated.View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   content: {
