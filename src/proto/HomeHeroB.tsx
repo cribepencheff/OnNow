@@ -68,6 +68,72 @@ export const HERO_CROSSFADE_FLOOR = 0.45;
 
 const DOT_SIZE = 8;
 const PILL_WIDTH = 24;
+// Total gap between adjacent dots, split as marginHorizontal on each dot
+// (DOT_SPACING / 2 per side) rather than the container's flex `gap`: see
+// styles.dot.
+const DOT_SPACING = 8;
+
+// PROTOTYPE: the first or last rendered dot shrinks to this size (width and
+// height, so it stays a smaller circle, not a squashed oval) when there are
+// more slides beyond that edge (see dotWindowRange below): an honest "more
+// this way" hint, purely by render position, not by which slide it is.
+const EDGE_DOT_SIZE = 4;
+
+// At most this many dots show at once; beyond that, the indicator shows a
+// window around the active page instead of one dot per slide.
+const DOT_WINDOW_SIZE = 8;
+const DOT_WINDOW_HALF = Math.floor(DOT_WINDOW_SIZE / 2);
+
+// The window of dot indices to render around the settled page, and whether
+// slides exist beyond each end of it. Pure and settled-index only: the
+// dots are a function of pageIndex alone, recomputed once per settle
+// (see PageIndicator), never per scroll frame.
+export function dotWindowRange(
+  count: number,
+  pageIndex: number,
+): { start: number; end: number; hasMoreLeft: boolean; hasMoreRight: boolean } {
+  if (count <= DOT_WINDOW_SIZE) {
+    return { start: 0, end: count, hasMoreLeft: false, hasMoreRight: false };
+  }
+  const start = Math.max(
+    0,
+    Math.min(pageIndex - DOT_WINDOW_HALF, count - DOT_WINDOW_SIZE),
+  );
+  const end = start + DOT_WINDOW_SIZE;
+  return { start, end, hasMoreLeft: start > 0, hasMoreRight: end < count };
+}
+
+export type DotKind = "normal" | "edge" | "active";
+
+// What each rendered dot position looks like, for a given settled
+// pageIndex: a pure function of dotWindowRange plus which slide is active,
+// with no rendering or animation concerns of its own. The "active" check
+// comes first, though it can never actually collide with "edge" in
+// practice: dotWindowRange only ever flags a position as having more
+// slides beyond it (hasMoreLeft/hasMoreRight) on the side where the
+// window isn't pinned, which is exactly the side with enough margin from
+// pageIndex for that position to never BE pageIndex.
+export function dotKinds(
+  count: number,
+  pageIndex: number,
+): { index: number; kind: DotKind }[] {
+  const { start, end, hasMoreLeft, hasMoreRight } = dotWindowRange(
+    count,
+    pageIndex,
+  );
+  const kinds: { index: number; kind: DotKind }[] = [];
+  for (let index = start; index < end; index++) {
+    const kind: DotKind =
+      index === pageIndex
+        ? "active"
+        : (index === start && hasMoreLeft) ||
+            (index === end - 1 && hasMoreRight)
+          ? "edge"
+          : "normal";
+    kinds.push({ index, kind });
+  }
+  return kinds;
+}
 
 function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -234,11 +300,6 @@ export function HeroPager({
   const pageCount = slides.length;
 
   const [pageIndex, setPageIndex] = useState(0);
-  // Which slide's content the fixed ContentLayer shows, below. Tracks the
-  // page nearest the live scroll position (not pageIndex, which only
-  // updates once momentum settles) so the crossfade and the data swap it
-  // gates both line up with the swipe itself.
-  const [contentIndex, setContentIndex] = useState(0);
   const [loadedPages, setLoadedPages] = useState<Set<number>>(new Set());
   const [indicatorAnchorY, setIndicatorAnchorY] = useState<number | null>(null);
   const [touching, setTouching] = useState(false);
@@ -246,20 +307,16 @@ export function HeroPager({
   const listRef = useRef<FlatList<HeroSlide>>(null);
   // useState, not useRef(new Animated.Value()).current: reading a ref's
   // .current during render is unsafe under the React Compiler.
-  // Continuous page position (2.3 mid-swipe between pages 2 and 3, not just
-  // the settled integer pageIndex), so AnimatedDot's width interpolation,
-  // below, glides with the swipe instead of jumping only once momentum
-  // settles. A plain, JS-driven Value kept in sync via the scrollX listener
-  // below, not scrollX.interpolate() directly: scrollX is native-driven
-  // (handleScroll, below), and AnimatedDot combines this with progressAnim
-  // (JS-driven, useNativeDriver: false) via Animated.multiply — chaining
-  // that multiply straight off a native-driven node crashes ("Attempting
-  // to run JS driven animation on animated node that has been moved to
-  // native"). Unused under Reduce Motion/VoiceOver: PageIndicator renders
-  // plain, non-animated dots there instead of AnimatedDot.
-  const [pageIndexAnim] = useState(() => new Animated.Value(0));
   const [progressAnim] = useState(() => new Animated.Value(0));
-  const pausedProgressRef = useRef<number | null>(null);
+  // Read by the auto-advance effect's completion callback instead of
+  // closing over pageIndex directly, so a callback that somehow fires
+  // after pageIndex has moved on (rather than being cancelled by the
+  // effect's own cleanup) still advances from the real current page, not
+  // a stale one.
+  const pageIndexRef = useRef(pageIndex);
+  useEffect(() => {
+    pageIndexRef.current = pageIndex;
+  }, [pageIndex]);
 
   // Raw horizontal scroll offset, native driver: drives the backdrop
   // parallax and slide crossfade per page, and (via the listener below)
@@ -273,57 +330,28 @@ export function HeroPager({
     [scrollX],
   );
 
-  useEffect(() => {
-    const id = scrollX.addListener(({ value }) => {
-      pageIndexAnim.setValue(value / width);
-    });
-    return () => scrollX.removeListener(id);
-  }, [scrollX, width, pageIndexAnim]);
-
-  // contentIndex follows the live scroll position: it flips to the next
-  // page exactly at the halfway point between the two, which is also where
-  // the opacity curve below reaches 0 for both the outgoing and incoming
-  // slide, so the data swap lands while nothing is visible. Not used under
-  // Reduce Motion (effectiveContentIndex below uses pageIndex instead), so
-  // the listener is skipped there.
-  useEffect(() => {
-    if (reduceMotionEnabled) {
-      return;
-    }
-    const id = scrollX.addListener(({ value }) => {
-      const nearest = Math.min(
-        Math.max(Math.round(value / width), 0),
-        pageCount - 1,
+  // Which slides mount a ContentLayer (logo/title/meta/Open-in), below:
+  // the settled page plus one neighbour on each side, so whichever page a
+  // single swipe lands on already has its layer mounted (with its own
+  // native crossfade already live, see ContentLayer) before it's ever
+  // reached, rather than needing a JS round trip to swap data in once it
+  // is. Under Reduce Motion there's no crossfade to pre-mount for: content
+  // swaps the instant pageIndex does, so only the current page is
+  // rendered. (This replaces an earlier design with a single shared
+  // ContentLayer whose slide data and opacity were both driven by a
+  // JS-tracked "nearest page" index: that index update crossed the bridge
+  // a beat behind the backdrop's own native crossfade, which is why the
+  // content used to visibly lag a slide change instead of changing with
+  // it.)
+  const contentMountRange = reduceMotionEnabled
+    ? [pageIndex]
+    : Array.from(
+        new Set(
+          [pageIndex - 1, pageIndex, pageIndex + 1].filter(
+            (index) => index >= 0 && index < pageCount,
+          ),
+        ),
       );
-      setContentIndex((current) => (current === nearest ? current : nearest));
-    });
-    return () => scrollX.removeListener(id);
-  }, [reduceMotionEnabled, scrollX, width, pageCount]);
-
-  // Under Reduce Motion the ContentLayer never fades (fixed opacity 1
-  // below), so its content should just swap the instant pageIndex does,
-  // instead of trailing the scroll-driven contentIndex above.
-  const effectiveContentIndex = reduceMotionEnabled ? pageIndex : contentIndex;
-
-  // Fade-through for the fixed ContentLayer: full opacity centered on
-  // effectiveContentIndex, down to 0 by half a page away in either
-  // direction, so the content is fully invisible right when
-  // effectiveContentIndex (above) swaps it.
-  const contentFadeOpacity = useMemo(
-    () =>
-      reduceMotionEnabled
-        ? 1
-        : scrollX.interpolate({
-            inputRange: [
-              (effectiveContentIndex - 0.5) * width,
-              effectiveContentIndex * width,
-              (effectiveContentIndex + 0.5) * width,
-            ],
-            outputRange: [0, 1, 0],
-            extrapolate: "clamp",
-          }),
-    [reduceMotionEnabled, scrollX, effectiveContentIndex, width],
-  );
 
   const canAutoAdvance =
     pageCount > 1 && !reduceMotionEnabled && !screenReaderEnabled;
@@ -348,51 +376,55 @@ export function HeroPager({
     [reduceMotionEnabled],
   );
 
-  // The dwell countdown for the current slide: starts once its backdrop
-  // has loaded, pauses while the user touches the carousel, and advancing
-  // to the next slide (looping) when it completes.
+  // Which page progressAnim's current run belongs to, so this effect can
+  // tell "a new page settled" (reset to 0) apart from "touching changed on
+  // the same page" (pause/resume in place) despite both re-running this
+  // same effect. The active dot's own pill body is a fixed PILL_WIDTH the
+  // whole time it's active (Dot, below); only progressAnim's value (how
+  // much of the pill's fill is showing) should ever move, and only for
+  // these two reasons.
+  const progressPageRef = useRef<number | null>(null);
+  // The fill amount progressAnim held when touching last paused it, so
+  // releasing resumes from there instead of restarting from 0 or jumping.
+  const pausedProgressRef = useRef<number | null>(null);
+
+  // The dwell countdown for the current slide: a single timer, so at most
+  // one is ever live. Effect cleanup (returned below) stops any in-flight
+  // timer BEFORE the next run starts a new one or decides not to: a
+  // manual swipe (touching -> true) freezes the countdown in place rather
+  // than cancelling or resetting it, and letting go (touching -> false)
+  // resumes it for whatever time is left, never a queued or overlapping
+  // timer. `finished` is only true when the timer ran to completion on
+  // its own; `.stop()` (from cleanup, or from React unmounting/re-running
+  // this effect) reports finished: false, so a stopped/paused timer can
+  // never itself call goToPage.
   useEffect(() => {
-    progressAnim.setValue(0);
-    pausedProgressRef.current = null;
+    let startValue = 0;
+    if (progressPageRef.current !== pageIndex) {
+      // A genuinely new page: start its fill from empty, regardless of
+      // whatever the previous page's fill last held.
+      progressPageRef.current = pageIndex;
+      pausedProgressRef.current = null;
+      progressAnim.setValue(0);
+    } else if (pausedProgressRef.current !== null) {
+      // Resuming the same page's countdown after a pause: pick up the
+      // fill amount right where it was frozen, not from 0.
+      startValue = pausedProgressRef.current;
+      pausedProgressRef.current = null;
+    }
 
     if (!canAutoAdvance || touching || !loadedPages.has(pageIndex)) {
-      return;
-    }
-
-    const animation = Animated.timing(progressAnim, {
-      toValue: 1,
-      duration: AUTO_ADVANCE_MS,
-      useNativeDriver: false,
-    });
-    animation.start(({ finished }) => {
-      if (finished) {
-        goToPage((pageIndex + 1) % pageCount);
-      }
-    });
-
-    return () => animation.stop();
-    // touching is intentionally excluded: resuming after a pause is its
-    // own effect below, so it does not restart the countdown from zero.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageIndex, canAutoAdvance, loadedPages, pageCount]);
-
-  // Pausing stops the animation in place; releasing resumes it for
-  // whatever time is left, instead of restarting the full 4 seconds.
-  useEffect(() => {
-    if (!canAutoAdvance) {
-      return;
-    }
-    if (touching) {
+      // Reads the current value (already frozen by the cleanup below, if
+      // there was a running animation to freeze) rather than assuming
+      // `startValue`, so repeated pauses without an intervening resume
+      // still capture the true current fill each time.
       progressAnim.stopAnimation((value) => {
         pausedProgressRef.current = value;
       });
       return;
     }
-    if (pausedProgressRef.current === null || !loadedPages.has(pageIndex)) {
-      return;
-    }
-    const remaining = AUTO_ADVANCE_MS * (1 - pausedProgressRef.current);
-    pausedProgressRef.current = null;
+
+    const remaining = AUTO_ADVANCE_MS * (1 - startValue);
     const animation = Animated.timing(progressAnim, {
       toValue: 1,
       duration: Math.max(remaining, 0),
@@ -400,12 +432,20 @@ export function HeroPager({
     });
     animation.start(({ finished }) => {
       if (finished) {
-        goToPage((pageIndex + 1) % pageCount);
+        goToPage((pageIndexRef.current + 1) % pageCount);
       }
     });
+
     return () => animation.stop();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [touching]);
+  }, [
+    pageIndex,
+    touching,
+    canAutoAdvance,
+    loadedPages,
+    pageCount,
+    goToPage,
+    progressAnim,
+  ]);
 
   const handleScrollEnd = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -413,9 +453,13 @@ export function HeroPager({
       if (layoutMeasurement.width === 0) {
         return;
       }
-      setPageIndex(Math.round(contentOffset.x / layoutMeasurement.width));
+      const settled = Math.min(
+        Math.max(Math.round(contentOffset.x / layoutMeasurement.width), 0),
+        pageCount - 1,
+      );
+      setPageIndex(settled);
     },
-    [],
+    [pageCount],
   );
 
   return (
@@ -464,18 +508,24 @@ export function HeroPager({
         }}
       />
 
-      <ContentLayer
-        slide={slides[effectiveContentIndex]}
-        badge={badgeFor(effectiveContentIndex)}
-        todayDate={todayDate}
-        opacity={contentFadeOpacity}
-        onIndicatorAnchor={setIndicatorAnchorY}
-      />
+      {contentMountRange.map((index) => (
+        <ContentLayer
+          key={index}
+          index={index}
+          slide={slides[index]}
+          badge={badgeFor(index)}
+          todayDate={todayDate}
+          scrollX={scrollX}
+          width={width}
+          reduceMotionEnabled={reduceMotionEnabled}
+          interactive={index === pageIndex}
+          onIndicatorAnchor={setIndicatorAnchorY}
+        />
+      ))}
 
       {pageCount > 1 && indicatorAnchorY !== null && (
         <PageIndicator
           count={pageCount}
-          pageIndexAnim={pageIndexAnim}
           progressAnim={progressAnim}
           reduceMotionEnabled={reduceMotionEnabled}
           screenReaderEnabled={screenReaderEnabled}
@@ -499,9 +549,15 @@ export function HeroPager({
 // move. Its vertical anchor follows the current slide's button, measured
 // by that slide (heroes have no fixed height, the button's own content
 // decides it).
+//
+// The dots are a pure function of the settled pageIndex only: no scrollX,
+// no listeners, no continuous motion. Nothing in the row moves during a
+// swipe; every change (which dot is active, whether the window's edges
+// are pinned, whether the window itself has slid) happens together, once,
+// exactly when pageIndex updates at settle (HeroPager's onMomentumScrollEnd),
+// via the same short DOT_TRANSITION_MS animation on every affected dot.
 function PageIndicator({
   count,
-  pageIndexAnim,
   progressAnim,
   reduceMotionEnabled,
   screenReaderEnabled,
@@ -511,7 +567,6 @@ function PageIndicator({
   onAdjust,
 }: {
   count: number;
-  pageIndexAnim: Animated.Value;
   progressAnim: Animated.Value;
   reduceMotionEnabled: boolean;
   screenReaderEnabled: boolean;
@@ -520,8 +575,8 @@ function PageIndicator({
   width: number;
   onAdjust: (delta: 1 | -1) => void;
 }) {
-  // Reduce Motion and VoiceOver both turn off the animated sweep: plain,
-  // evenly sized dots that only mark which page is current, no progress.
+  // Reduce Motion and VoiceOver both turn off the pill: plain, evenly
+  // sized dots that only mark which page is current, no progress.
   const plain = reduceMotionEnabled || screenReaderEnabled;
 
   return (
@@ -542,54 +597,112 @@ function PageIndicator({
         }
       }}
     >
-      {Array.from({ length: count }, (_, index) =>
-        plain ? (
-          <View
-            key={index}
-            style={[styles.dot, index === currentPage && styles.dotActivePlain]}
-          />
-        ) : (
-          <AnimatedDot
-            key={index}
-            active={index === currentPage}
-            pageIndexAnim={pageIndexAnim}
-            progressAnim={progressAnim}
-            index={index}
-          />
-        ),
-      )}
+      {plain
+        ? Array.from({ length: count }, (_, index) => (
+            <View
+              key={index}
+              style={[
+                styles.dot,
+                index === currentPage && styles.dotActivePlain,
+              ]}
+            />
+          ))
+        : dotKinds(count, currentPage).map(({ index, kind }) => (
+            <Dot
+              key={index}
+              small={kind === "edge"}
+              active={kind === "active"}
+              progressAnim={progressAnim}
+            />
+          ))}
     </View>
   );
 }
 
-function AnimatedDot({
-  index,
+// How long a dot's own reserved width/height take to transition between
+// their possible sizes (DOT_SIZE, EDGE_DOT_SIZE, PILL_WIDTH) at settle:
+// the row is plain flex (see styles.indicator/dot), so animating a dot's
+// own size directly reflows its neighbours, which is exactly the "all in
+// the same quick transition" effect this is for. Unrelated to
+// AUTO_ADVANCE_MS, which the active pill's own inner fill (below) sweeps
+// against instead.
+const DOT_TRANSITION_MS = 150;
+
+// One dot in the row, and its own reserved width/height, in the row's
+// plain flex layout: DOT_SIZE normally; EDGE_DOT_SIZE (both width and
+// height together, so it stays circular) at the window's edge when
+// `small` — the first rendered dot when hasMoreLeft, the last when
+// hasMoreRight, purely by render position (see dotKinds), never by which
+// slide it represents; PILL_WIDTH wide (height unchanged, still DOT_SIZE)
+// when `active`. Width and height animate separately, not as one shared
+// value: the active pill only ever widens (height stays DOT_SIZE, so its
+// borderRadius, DOT_SIZE / 2, is always correct for a proper pill, not an
+// oversized circle mid-transition), while an edge dot's width and height
+// move together to stay circular.
+//
+// A single component handling all three states, not separate components
+// switched between: `active`/`small` toggling on the SAME mounted
+// instance (same key: the slide index) is what lets its size transition
+// smoothly, rather than a remount snapping straight to the new size when
+// this slot stops or starts being the active one.
+//
+// The pill body itself (this view's own background, styles.dot's same
+// translucent grey as any other dot) is at full PILL_WIDTH immediately
+// once active — reserved via the same DOT_TRANSITION_MS transition as any
+// other size change here, so it reflows together with the rest of the row
+// at settle, and never itself grows or shrinks with progress. Only the
+// inner white fill (below, active only) does that: left-aligned, clipped
+// to the pill's own rounded shape (styles.dot's overflow: hidden), width
+// = progressAnim * PILL_WIDTH, sweeping the same way Apple's own page
+// indicator does, not growing outward from a center point.
+function Dot({
+  small,
   active,
-  pageIndexAnim,
   progressAnim,
 }: {
-  index: number;
+  small: boolean;
   active: boolean;
-  pageIndexAnim: Animated.Value;
   progressAnim: Animated.Value;
 }) {
-  const widthAnim = pageIndexAnim.interpolate({
-    inputRange: [index - 1, index, index + 1],
-    outputRange: [DOT_SIZE, PILL_WIDTH, DOT_SIZE],
-    extrapolate: "clamp",
-  });
+  const targetWidth = active ? PILL_WIDTH : small ? EDGE_DOT_SIZE : DOT_SIZE;
+  const targetHeight = small ? EDGE_DOT_SIZE : DOT_SIZE;
+  const [widthAnim] = useState(() => new Animated.Value(targetWidth));
+  const [heightAnim] = useState(() => new Animated.Value(targetHeight));
+  useEffect(() => {
+    const widthChange = Animated.timing(widthAnim, {
+      toValue: targetWidth,
+      duration: DOT_TRANSITION_MS,
+      useNativeDriver: false,
+    });
+    const heightChange = Animated.timing(heightAnim, {
+      toValue: targetHeight,
+      duration: DOT_TRANSITION_MS,
+      useNativeDriver: false,
+    });
+    widthChange.start();
+    heightChange.start();
+    return () => {
+      widthChange.stop();
+      heightChange.stop();
+    };
+  }, [targetWidth, targetHeight, widthAnim, heightAnim]);
 
   return (
-    <Animated.View style={[styles.dot, { width: widthAnim }]}>
-      {/* Only the active dot carries the sweep, so shrinking back to a
-          plain dot leaves no fill behind, and the incoming pill starts
-          from empty (progressAnim itself resets to 0 on every page
-          change, see HeroPager). */}
+    <Animated.View
+      style={[
+        styles.dot,
+        {
+          width: widthAnim,
+          height: heightAnim,
+          borderRadius: Animated.divide(heightAnim, 2),
+        },
+      ]}
+    >
       {active && (
         <Animated.View
           style={[
-            styles.dotFill,
-            { width: Animated.multiply(progressAnim, widthAnim) },
+            styles.pillFill,
+            { width: Animated.multiply(progressAnim, PILL_WIDTH) },
           ]}
         />
       )}
@@ -697,21 +810,41 @@ function HeroPage({
 }
 
 // Fixed overlay, a sibling of the paging FlatList in HeroPager (like the
-// scrim and PageIndicator): shows only the current slide's text/logo/meta/
-// Open-in block, does not move with the swipe. `opacity` is HeroPager's
-// scroll-driven crossfade (or fixed 1 under Reduce Motion); `slide` swaps
-// under it once that crossfade reaches 0, see contentIndex in HeroPager.
+// scrim and PageIndicator): shows one slide's text/logo/meta/Open-in
+// block, does not move with the swipe. One instance is mounted per slide
+// in HeroPager's contentMountRange (the settled page plus one neighbour on
+// each side), each keyed by its own fixed `index`, each computing its own
+// native crossfade from `scrollX` centered on that index — the same
+// pattern HeroPage's backdrop already uses, and deliberately not a single
+// shared layer whose data and opacity followed a JS-tracked "current"
+// index: recreating that index-centered interpolation every time the
+// current page changed was what left content visibly lagging a slide
+// change (see HeroPager's contentMountRange comment). Because `index`
+// never changes for a mounted instance, its opacity node is built once
+// and never needs recreating.
 function ContentLayer({
+  index,
   slide,
   badge,
   todayDate,
-  opacity,
+  scrollX,
+  width,
+  reduceMotionEnabled,
+  interactive,
   onIndicatorAnchor,
 }: {
+  index: number;
   slide: HeroSlide;
   badge: string;
   todayDate: string;
-  opacity: number | Animated.AnimatedInterpolation<number>;
+  scrollX: Animated.Value;
+  width: number;
+  reduceMotionEnabled: boolean;
+  // Only the settled page's layer should take touches for its Open-in
+  // button; the pre-mounted neighbours sit at the same screen position
+  // (all layers are absoluteFill) and would otherwise be able to
+  // intercept taps meant for the layer stacked beneath them.
+  interactive: boolean;
   onIndicatorAnchor: (y: number) => void;
 }) {
   const { height } = useWindowDimensions();
@@ -746,10 +879,30 @@ function ContentLayer({
     [contentTop, onIndicatorAnchor],
   );
 
+  // Full opacity centered on this layer's own fixed index, down to 0 by
+  // half a page away in either direction: identical shape to HeroPage's
+  // backdropOpacity. Under Reduce Motion there's exactly one mounted
+  // layer (HeroPager's contentMountRange), so it's simply always shown.
+  const opacity = useMemo(
+    () =>
+      reduceMotionEnabled
+        ? 1
+        : scrollX.interpolate({
+            inputRange: [
+              (index - 0.5) * width,
+              index * width,
+              (index + 0.5) * width,
+            ],
+            outputRange: [0, 1, 0],
+            extrapolate: "clamp",
+          }),
+    [reduceMotionEnabled, scrollX, index, width],
+  );
+
   return (
     <Animated.View
       style={[StyleSheet.absoluteFill, { opacity }]}
-      pointerEvents="box-none"
+      pointerEvents={interactive ? "box-none" : "none"}
     >
       <View style={[styles.content, { top: contentTop }]}>
         <Text style={styles.badge}>{badge}</Text>
@@ -863,23 +1016,33 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    gap: 8,
   },
   dot: {
     width: DOT_SIZE,
     height: DOT_SIZE,
     borderRadius: DOT_SIZE / 2,
-    // Apple TV style: inactive dots and the active pill's own track are
-    // both this same translucent white; only the sweep is solid white.
+    marginHorizontal: DOT_SPACING / 2,
+    // Apple TV style: every dot (inactive, edge, or the active pill's own
+    // body) is this same translucent white track; only the active pill's
+    // inner fill (pillFill below) is solid white. Clips that fill to this
+    // shape's own rounded corners.
     backgroundColor: "rgba(255,255,255,0.4)",
     overflow: "hidden",
   },
   dotActivePlain: {
-    // Reduce Motion / VoiceOver: no pill, no sweep, just solid white to
+    // Reduce Motion / VoiceOver: no pill, no fill, just solid white to
     // mark the current page.
     backgroundColor: "#FFFFFF",
   },
-  dotFill: {
+  // The active pill's progress fill: left-aligned and full height inside
+  // the pill (Dot, when active, on top of styles.dot's own translucent
+  // background), width = progressAnim * PILL_WIDTH. The pill's own body
+  // (styles.dot) is already at full PILL_WIDTH immediately once active
+  // (Dot's widthAnim) and never itself grows or shrinks with progress;
+  // only this fill sweeps left to right inside it, exactly like the
+  // outgoing/incoming state it's swept clear of when a new page starts
+  // this back at 0 width.
+  pillFill: {
     position: "absolute",
     left: 0,
     top: 0,
