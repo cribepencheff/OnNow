@@ -1,8 +1,10 @@
 // PROTOTYPE (proto/home-backdrop, not for merge): the compact carousel
 // indicator's settled-pageIndex-only math (PageIndicator/Dot in
-// HomeHeroB.tsx): dotWindowRange and dotKinds.
+// HomeHeroB.tsx): dotWindowRange and dotKinds. Also pagingReleaseTarget, the
+// page a manual swipe commits to at release (onScrollEndDrag), ahead of the
+// full momentum tail.
 
-import { dotKinds, dotWindowRange } from "./HomeHeroB";
+import { dotKinds, dotWindowRange, pagingReleaseTarget } from "./HomeHeroB";
 
 describe("dotWindowRange", () => {
   it("renders every dot, with no edge hint, when count fits within one window", () => {
@@ -112,5 +114,86 @@ describe("dotKinds", () => {
       index: 10,
       kind: "active",
     });
+  });
+});
+
+describe("pagingReleaseTarget", () => {
+  const PAGE_WIDTH = 390;
+
+  it("trusts a native target offset directly, over offset or velocity", () => {
+    expect(
+      pagingReleaseTarget(
+        100, // offset: nowhere near the target, must be ignored
+        PAGE_WIDTH,
+        5,
+        2,
+        -5, // velocity: pointing the wrong way, must also be ignored
+        3 * PAGE_WIDTH,
+      ),
+    ).toBe(3);
+  });
+
+  it("still clamps a native target to at most one page from the start page", () => {
+    expect(pagingReleaseTarget(100, PAGE_WIDTH, 5, 2, 0, 4 * PAGE_WIDTH)).toBe(
+      3,
+    );
+  });
+
+  it("clamps a native target at the last page, not past it", () => {
+    expect(pagingReleaseTarget(100, PAGE_WIDTH, 5, 4, 0, 5 * PAGE_WIDTH)).toBe(
+      4,
+    );
+  });
+
+  it("without a native target, pages forward on a fast flick that never reaches the halfway offset", () => {
+    expect(
+      pagingReleaseTarget(
+        2 * PAGE_WIDTH + 0.15 * PAGE_WIDTH,
+        PAGE_WIDTH,
+        5,
+        2,
+        0.6,
+        null,
+      ),
+    ).toBe(3);
+  });
+
+  it("without a native target, pages forward on a slow drag released past the halfway offset", () => {
+    expect(
+      pagingReleaseTarget(
+        2 * PAGE_WIDTH + 0.65 * PAGE_WIDTH,
+        PAGE_WIDTH,
+        5,
+        2,
+        0.01, // negligible velocity: a slow drag, not a flick
+        null,
+      ),
+    ).toBe(3);
+  });
+
+  it("without a native target, stays on the start page for an aborted drag (past the middle and back)", () => {
+    expect(
+      pagingReleaseTarget(
+        2 * PAGE_WIDTH + 0.05 * PAGE_WIDTH,
+        PAGE_WIDTH,
+        5,
+        2,
+        -0.5, // still moving back toward the start page at release
+        null,
+      ),
+    ).toBe(2);
+  });
+
+  it("without a native target, still never skips more than one page even with a huge velocity", () => {
+    expect(
+      pagingReleaseTarget(
+        2 * PAGE_WIDTH + 0.05 * PAGE_WIDTH,
+        PAGE_WIDTH,
+        5,
+        2,
+        50,
+        null,
+      ),
+    ).toBe(3);
   });
 });

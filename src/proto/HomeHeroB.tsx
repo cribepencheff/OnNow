@@ -135,6 +135,60 @@ export function dotKinds(
   return kinds;
 }
 
+// PROTOTYPE: how far ahead of release (onScrollEndDrag) a fast flick's
+// offset is projected, when there's no native paging target to trust
+// directly (see targetOffsetX below). Tuned for iOS's own velocity unit
+// (points/ms, confirmed from RCTScrollViewComponentView.mm: onScrollEndDrag
+// forwards UIKit's scrollViewWillEndDragging:withVelocity: value
+// unmodified); a fast flick is commonly a few tenths of a point per ms, so
+// 250ms projects that into a meaningful fraction of a page without
+// overshooting a slow drag's small residual velocity.
+const RELEASE_PROJECTION_MS = 250;
+
+// The page a paging horizontal scroll will settle on, computed at release
+// (HeroPager's onScrollEndDrag) rather than waiting for the full
+// deceleration tail (onMomentumScrollEnd): pageIndex, and everything that
+// follows it (dots, pill, countdown, contentMountRange), can then commit
+// while the swipe is still visually mid-flight, in sync with ContentLayer's
+// own native scrollX-driven crossfade, which is already most of the way
+// faded in by release. Pure and exported for its own unit tests. Never
+// returns more than one page away from startPage: paging can't skip pages,
+// so neither can the page committed for it.
+//
+// targetOffsetX is UIKit's own already-computed landing offset
+// (NativeScrollEvent.targetContentOffset.x; iOS only, RN's own types say
+// so) and is trusted directly when present, since it already reflects
+// UIKit's paging snap for a pagingEnabled scroll view, not an estimate.
+// Without it (Android has no equivalent), this falls back to projecting
+// the release offset forward by velocityX: what makes a fast flick that
+// never crosses the halfway mark still page forward, the way the real
+// paging scroll would once it decelerates, without waiting for that.
+export function pagingReleaseTarget(
+  offsetX: number,
+  pageWidth: number,
+  pageCount: number,
+  startPage: number,
+  velocityX: number,
+  targetOffsetX: number | null,
+): number {
+  if (pageWidth <= 0 || pageCount <= 0) {
+    return Math.min(Math.max(startPage, 0), Math.max(pageCount - 1, 0));
+  }
+
+  const clampToNeighbor = (page: number) =>
+    Math.min(
+      Math.max(page, Math.max(0, startPage - 1)),
+      Math.min(pageCount - 1, startPage + 1),
+    );
+
+  if (targetOffsetX !== null) {
+    return clampToNeighbor(Math.round(targetOffsetX / pageWidth));
+  }
+
+  const projected = offsetX + velocityX * RELEASE_PROJECTION_MS;
+  return clampToNeighbor(Math.round(projected / pageWidth));
+}
+
 function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
 }
@@ -318,6 +372,15 @@ export function HeroPager({
     pageIndexRef.current = pageIndex;
   }, [pageIndex]);
 
+  // The page pageIndexRef held when the current drag began, read at
+  // onScrollBeginDrag: handleScrollEndDrag clamps that drag's own release
+  // target to at most one page away from this, not from whatever page was
+  // current before some earlier drag. A second swipe started mid-momentum
+  // (interrupting the first one's deceleration) gets its own start page
+  // this way, since pageIndexRef is already updated to the first swipe's
+  // committed target by the time the interrupting drag begins.
+  const dragStartPageRef = useRef(pageIndex);
+
   // Raw horizontal scroll offset, native driver: drives the backdrop
   // parallax and slide crossfade per page, and (via the listener below)
   // the dot indicator's position, all in real time with the swipe.
@@ -447,6 +510,46 @@ export function HeroPager({
     progressAnim,
   ]);
 
+  // Commits pageIndex (and touching) at the moment the finger releases,
+  // rather than at onMomentumScrollEnd: see pagingReleaseTarget above for
+  // why. Both setState calls happen in this one handler so React batches
+  // them into a single render; splitting them (as the previous
+  // onScrollBeginDrag/onScrollEndDrag pair did, each only touching
+  // `touching`) let the auto-advance effect briefly see touching=false on
+  // the OLD page and resume its countdown there before pageIndex caught up.
+  const handleScrollEndDrag = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const {
+        contentOffset,
+        layoutMeasurement,
+        velocity,
+        targetContentOffset,
+      } = event.nativeEvent;
+      if (layoutMeasurement.width === 0) {
+        setTouching(false);
+        return;
+      }
+      const target = pagingReleaseTarget(
+        contentOffset.x,
+        layoutMeasurement.width,
+        pageCount,
+        dragStartPageRef.current,
+        velocity?.x ?? 0,
+        targetContentOffset?.x ?? null,
+      );
+      setPageIndex(target);
+      setTouching(false);
+    },
+    [pageCount],
+  );
+
+  // Safety net: corrects pageIndex if the scroll actually settles somewhere
+  // other than what handleScrollEndDrag already committed (the release
+  // estimate was wrong, or Reduce Motion/goToPage's non-animated jump
+  // landed here with no drag at all). Setting the same index it already
+  // holds is a no-op: React bails out of a state update when the value is
+  // unchanged, so the auto-advance effect (keyed on pageIndex) simply
+  // doesn't re-run and progressAnim's fill is untouched.
   const handleScrollEnd = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
       const { contentOffset, layoutMeasurement } = event.nativeEvent;
@@ -472,8 +575,11 @@ export function HeroPager({
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item) => `${item.show.id}-${item.episodes[0].id}`}
-        onScrollBeginDrag={() => setTouching(true)}
-        onScrollEndDrag={() => setTouching(false)}
+        onScrollBeginDrag={() => {
+          dragStartPageRef.current = pageIndexRef.current;
+          setTouching(true);
+        }}
+        onScrollEndDrag={handleScrollEndDrag}
         onScroll={handleScroll}
         scrollEventThrottle={16}
         onMomentumScrollEnd={handleScrollEnd}
@@ -651,10 +757,12 @@ const DOT_TRANSITION_MS = 150;
 // once active — reserved via the same DOT_TRANSITION_MS transition as any
 // other size change here, so it reflows together with the rest of the row
 // at settle, and never itself grows or shrinks with progress. Only the
-// inner white fill (below, active only) does that: left-aligned, clipped
-// to the pill's own rounded shape (styles.dot's overflow: hidden), width
-// = progressAnim * PILL_WIDTH, sweeping the same way Apple's own page
-// indicator does, not growing outward from a center point.
+// inner white fill (below, active only) does that: left-aligned, width =
+// DOT_SIZE + progressAnim * (PILL_WIDTH - DOT_SIZE), so it starts as a
+// full DOT_SIZE circle sitting at the pill's left end (matching the plain
+// dot it just grew from) and stretches to fill the whole pill by progress
+// 1, the same way Apple's own page indicator does, rather than growing
+// from a 0-width sliver clipped by the pill's rounded corner.
 function Dot({
   small,
   active,
@@ -702,7 +810,12 @@ function Dot({
         <Animated.View
           style={[
             styles.pillFill,
-            { width: Animated.multiply(progressAnim, PILL_WIDTH) },
+            {
+              width: Animated.add(
+                DOT_SIZE,
+                Animated.multiply(progressAnim, PILL_WIDTH - DOT_SIZE),
+              ),
+            },
           ]}
         />
       )}
@@ -1036,17 +1149,20 @@ const styles = StyleSheet.create({
   },
   // The active pill's progress fill: left-aligned and full height inside
   // the pill (Dot, when active, on top of styles.dot's own translucent
-  // background), width = progressAnim * PILL_WIDTH. The pill's own body
-  // (styles.dot) is already at full PILL_WIDTH immediately once active
-  // (Dot's widthAnim) and never itself grows or shrinks with progress;
-  // only this fill sweeps left to right inside it, exactly like the
-  // outgoing/incoming state it's swept clear of when a new page starts
-  // this back at 0 width.
+  // background), width = DOT_SIZE + progressAnim * (PILL_WIDTH -
+  // DOT_SIZE), so it starts a full DOT_SIZE circle and stretches to the
+  // whole pill. Its own borderRadius (DOT_SIZE / 2, same as a plain dot)
+  // is what keeps it a rounded capsule at every width in between: the
+  // parent's own rounded corners (styles.dot) only round the pill's own
+  // two ends, so without this the fill's near (right) edge, wherever its
+  // animated width currently cuts off short of PILL_WIDTH, would be a
+  // flat, unrounded edge instead.
   pillFill: {
     position: "absolute",
     left: 0,
     top: 0,
     bottom: 0,
+    borderRadius: DOT_SIZE / 2,
     backgroundColor: "#FFFFFF",
   },
 });
