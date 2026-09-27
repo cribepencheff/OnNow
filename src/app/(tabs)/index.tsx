@@ -5,10 +5,10 @@
 
 import { useCallback, useMemo, useState } from "react";
 import {
+  Animated,
   FlatList,
   Pressable,
   RefreshControl,
-  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -100,6 +100,48 @@ export default function HomeScreen() {
 
   const openSearch = useCallback(() => router.push("/search"), [router]);
 
+  // PROTOTYPE (proto/home-backdrop): the outer ScrollView's raw vertical
+  // offset, native-driven, and how far it's been pulled past its resting
+  // top (see pullDistance below) drive HeroPager's stretchy backdrop on
+  // pull-to-refresh (Apple TV Store tab style: the backdrop's top edge
+  // stays pinned and the image zooms into the pulled gap, while the
+  // foreground moves down with the pull as normal).
+  const [scrollY] = useState(() => new Animated.Value(0));
+  // The ScrollView's real resting offset: 0 whenever contentInset.top is 0
+  // (contentInsetAdjustmentBehavior="never" keeps it that way here), but
+  // measured rather than assumed, in case a safe-area or manual inset ever
+  // changes that.
+  const [pullRestOffsetY, setPullRestOffsetY] = useState(0);
+
+  const handleOuterScroll = useMemo(
+    () =>
+      Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
+        useNativeDriver: true,
+        listener: (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+          const restOffsetY = -event.nativeEvent.contentInset.top;
+          setPullRestOffsetY((current) =>
+            current === restOffsetY ? current : restOffsetY,
+          );
+        },
+      }),
+    [scrollY],
+  );
+
+  // How far the ScrollView has been pulled past its resting top, in
+  // points, clamped to never go below 0 (scrolling up into the page has no
+  // effect on it). Built once per pullRestOffsetY, which only changes if
+  // the measured resting offset itself does, not per scroll frame.
+  const pullDistance = useMemo(
+    () =>
+      scrollY.interpolate({
+        inputRange: [pullRestOffsetY - 1, pullRestOffsetY],
+        outputRange: [1, 0],
+        extrapolateLeft: "extend",
+        extrapolateRight: "clamp",
+      }),
+    [scrollY, pullRestOffsetY],
+  );
+
   const handleMomentumScrollEnd = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
       const { contentOffset, layoutMeasurement } = event.nativeEvent;
@@ -113,15 +155,22 @@ export default function HomeScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: protoTokens.bg }]}>
-      <ScrollView
+      <Animated.ScrollView
         contentContainerStyle={styles.scrollContent}
         contentInsetAdjustmentBehavior="never"
         alwaysBounceVertical
+        showsVerticalScrollIndicator={false}
+        onScroll={handleOuterScroll}
+        scrollEventThrottle={16}
         refreshControl={
           <RefreshControl
             testID="home-refresh-control"
             refreshing={isRefetching}
             onRefresh={refetch}
+            // Legible over the hero backdrop (dark image, white foreground
+            // text): tintColor is iOS's own spinner, colors is Android's.
+            tintColor="#FFFFFF"
+            colors={["#FFFFFF"]}
           />
         }
       >
@@ -131,6 +180,7 @@ export default function HomeScreen() {
             slides={heroSlides}
             badgeFor={(index) => `UPCOMING · ${index + 1}/${heroSlides.length}`}
             todayDate={todayDate}
+            pullDistance={pullDistance}
           />
         )}
 
@@ -152,6 +202,7 @@ export default function HomeScreen() {
               )
             }
             todayDate={todayDate}
+            pullDistance={pullDistance}
           />
         )}
 
@@ -172,7 +223,7 @@ export default function HomeScreen() {
         {state.kind === "loading" && (
           <Text style={styles.quietLine}>Loading your shows…</Text>
         )}
-      </ScrollView>
+      </Animated.ScrollView>
     </View>
   );
 }

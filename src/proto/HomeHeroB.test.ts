@@ -2,9 +2,15 @@
 // indicator's settled-pageIndex-only math (PageIndicator/Dot in
 // HomeHeroB.tsx): dotWindowRange and dotKinds. Also pagingReleaseTarget, the
 // page a manual swipe commits to at release (onScrollEndDrag), ahead of the
-// full momentum tail.
+// full momentum tail; and pullStretchTransform, the pull-to-refresh
+// backdrop stretch's top-pin + zoom math.
 
-import { dotKinds, dotWindowRange, pagingReleaseTarget } from "./HomeHeroB";
+import {
+  dotKinds,
+  dotWindowRange,
+  pagingReleaseTarget,
+  pullStretchTransform,
+} from "./HomeHeroB";
 
 describe("dotWindowRange", () => {
   it("renders every dot, with no edge hint, when count fits within one window", () => {
@@ -195,5 +201,67 @@ describe("pagingReleaseTarget", () => {
         null,
       ),
     ).toBe(3);
+  });
+});
+
+describe("pullStretchTransform", () => {
+  const BACKDROP_HEIGHT = 580;
+
+  // Reconstructs the same absolute-position math the comment above
+  // pullStretchTransform derives from: a transform's scale is anchored at
+  // the element's own center, so a point at local offset `y` from an
+  // untransformed backdropHeight-tall element's top maps to
+  // center + (y - center) * scale + translateY, relative to the wrapper's
+  // own container. containerY is constant (not containerRestY +
+  // pullDistance): this function assumes its container is already pinned
+  // at a fixed screen position by a separate transform (HeroPager's own
+  // pagerPinTranslateY), which is exactly what these tests are checking
+  // this function's formula is consistent with.
+  function absoluteEdge(
+    localY: number,
+    pullDistance: number,
+    backdropHeight: number,
+    containerY: number,
+  ): number {
+    const { translateY, scale } = pullStretchTransform(
+      pullDistance,
+      backdropHeight,
+    );
+    const center = backdropHeight / 2;
+    return containerY + center + (localY - center) * scale + translateY;
+  }
+
+  it("is the identity transform at rest (no pull)", () => {
+    expect(pullStretchTransform(0, BACKDROP_HEIGHT)).toEqual({
+      translateY: 0,
+      scale: 1,
+    });
+  });
+
+  it("never shrinks the backdrop below its resting height", () => {
+    expect(pullStretchTransform(50, BACKDROP_HEIGHT).scale).toBeGreaterThan(1);
+  });
+
+  it("keeps the backdrop's absolute top edge pinned regardless of pull distance, given an already-pinned container", () => {
+    const containerY = 100;
+    for (const pullDistance of [0, 10, 40, 132.5]) {
+      expect(
+        absoluteEdge(0, pullDistance, BACKDROP_HEIGHT, containerY),
+      ).toBeCloseTo(containerY);
+    }
+  });
+
+  it("grows the backdrop's absolute bottom edge by exactly the pull distance, matching the foreground's own (separate, unpinned) shift", () => {
+    const containerY = 100;
+    for (const pullDistance of [0, 10, 40, 132.5]) {
+      expect(
+        absoluteEdge(
+          BACKDROP_HEIGHT,
+          pullDistance,
+          BACKDROP_HEIGHT,
+          containerY,
+        ),
+      ).toBeCloseTo(containerY + BACKDROP_HEIGHT + pullDistance);
+    }
   });
 });

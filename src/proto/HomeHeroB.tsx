@@ -189,6 +189,40 @@ export function pagingReleaseTarget(
   return clampToNeighbor(Math.round(projected / pageWidth));
 }
 
+// The top-anchored-zoom transform for HeroPage's own backdrop on
+// pull-to-refresh overscroll (Apple TV Store tab style: the backdrop's top
+// edge stays screen-pinned while its height grows by exactly pullDistance).
+// Pure and unit tested, since the derivation is easy to get subtly wrong: a
+// transform's scale is anchored at an element's OWN CENTER, not its top, so
+// scaling a backdropHeight-tall element by `scale` moves its top up by
+// (scale - 1) * backdropHeight / 2 and its bottom down by the same amount.
+//
+// This assumes its own container is ALREADY held at a fixed screen
+// position, not moving with the pull: that's HeroPager's job (a separate
+// -pullDistance translateY on the pager itself, not this function's
+// concern), because the pager is a horizontal FlatList, a native
+// UIScrollView on iOS that clips to its own frame regardless of any
+// `overflow` style on a child — so nothing can be drawn "above" it to
+// simulate a pin the way this function's first version tried to. With the
+// container itself fixed, all this function needs to do is cancel the
+// scale's own top-rise: translateY = +pullDistance / 2. What's left, the
+// bottom edge, ends up pullDistance below its resting position, the same
+// shift the (separately positioned, unpinned) scrim/content overlays get
+// for free from the outer ScrollView's own overscroll, so the two stay
+// aligned exactly as they do at rest. HeroPage applies this same pair of
+// values via Animated.multiply/add/divide on pullDistance (an Animated
+// node, so this exact arithmetic can't run on it directly); this function
+// is the worked-out formula those calls mirror.
+export function pullStretchTransform(
+  pullDistance: number,
+  backdropHeight: number,
+): { translateY: number; scale: number } {
+  return {
+    translateY: pullDistance / 2,
+    scale: 1 + pullDistance / backdropHeight,
+  };
+}
+
 function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
 }
@@ -343,10 +377,18 @@ export function HeroPager({
   slides,
   badgeFor,
   todayDate,
+  pullDistance,
 }: {
   slides: HeroSlide[];
   badgeFor: (pageIndex: number) => string;
   todayDate: string;
+  // PROTOTYPE (proto/home-backdrop): how far the enclosing ScrollView has
+  // been pulled past its resting top, in points, clamped to 0 outside
+  // overscroll (see index.tsx). Native-driven; passed straight through to
+  // each HeroPage for the pull-to-refresh backdrop stretch, which is the
+  // only thing it affects here (horizontal paging, parallax, crossfade and
+  // the dot indicator don't reference it at all).
+  pullDistance: Animated.AnimatedInterpolation<number>;
 }) {
   const { width, height } = useWindowDimensions();
   const scale = height / REF_HEIGHT;
@@ -391,6 +433,30 @@ export function HeroPager({
         useNativeDriver: true,
       }),
     [scrollX],
+  );
+
+  // Pull-to-refresh: pins the pager itself (the FlatList below, wrapped in
+  // an Animated.View since AnimatedFlatList's own style prop is cast back
+  // to plain FlatList typing and won't accept an animated transform) at a
+  // fixed screen position during overscroll, countering the outer
+  // ScrollView's own pullDistance downward shift. This has to happen at
+  // the pager level, not by drawing HeroPage's backdrop "above" its own
+  // slide: the pager is a horizontal FlatList, a native UIScrollView on
+  // iOS, which clips to its own frame regardless of any `overflow` style
+  // on a child, so nothing can render outside it. With the pager itself
+  // pinned, each HeroPage's own backdrop only needs the top-anchored zoom
+  // pullStretchTransform computes (see above), not a second cancellation
+  // for this same container shift.
+  //
+  // Off (translateY stays 0) under Reduce Motion: the scrim/content
+  // overlays are siblings of the pager, not pinned, and still move down
+  // with the pull as ever (unaffected either way); pinning ONLY the
+  // pager while leaving those unpinned would separate the backdrop from
+  // them instead of matching the pre-feature look Reduce Motion should
+  // keep (see HeroPage's own reduceMotionEnabled gate on pullTransform).
+  const pagerPinTranslateY = useMemo(
+    () => (reduceMotionEnabled ? 0 : Animated.multiply(pullDistance, -1)),
+    [reduceMotionEnabled, pullDistance],
   );
 
   // Which slides mount a ContentLayer (logo/title/meta/Open-in), below:
@@ -567,34 +633,39 @@ export function HeroPager({
 
   return (
     <View style={{ flex: 1 }}>
-      <AnimatedFlatList
-        ref={listRef}
-        testID="home-pager"
-        data={slides}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(item) => `${item.show.id}-${item.episodes[0].id}`}
-        onScrollBeginDrag={() => {
-          dragStartPageRef.current = pageIndexRef.current;
-          setTouching(true);
-        }}
-        onScrollEndDrag={handleScrollEndDrag}
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-        onMomentumScrollEnd={handleScrollEnd}
-        renderItem={({ item, index }) => (
-          <HeroPage
-            item={item}
-            index={index}
-            width={width}
-            todayDate={todayDate}
-            scrollX={scrollX}
-            reduceMotionEnabled={reduceMotionEnabled}
-            onBackdropLoad={() => markLoaded(index)}
-          />
-        )}
-      />
+      <Animated.View
+        style={{ flex: 1, transform: [{ translateY: pagerPinTranslateY }] }}
+      >
+        <AnimatedFlatList
+          ref={listRef}
+          testID="home-pager"
+          data={slides}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item) => `${item.show.id}-${item.episodes[0].id}`}
+          onScrollBeginDrag={() => {
+            dragStartPageRef.current = pageIndexRef.current;
+            setTouching(true);
+          }}
+          onScrollEndDrag={handleScrollEndDrag}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
+          onMomentumScrollEnd={handleScrollEnd}
+          renderItem={({ item, index }) => (
+            <HeroPage
+              item={item}
+              index={index}
+              width={width}
+              todayDate={todayDate}
+              scrollX={scrollX}
+              reduceMotionEnabled={reduceMotionEnabled}
+              pullDistance={pullDistance}
+              onBackdropLoad={() => markLoaded(index)}
+            />
+          )}
+        />
+      </Animated.View>
 
       {/* Fixed overlay, a sibling of the paging FlatList like PageIndicator
           below: horizontally uniform and always opaque, so it reads as one
@@ -660,8 +731,10 @@ export function HeroPager({
 // no listeners, no continuous motion. Nothing in the row moves during a
 // swipe; every change (which dot is active, whether the window's edges
 // are pinned, whether the window itself has slid) happens together, once,
-// exactly when pageIndex updates at settle (HeroPager's onMomentumScrollEnd),
-// via the same short DOT_TRANSITION_MS animation on every affected dot.
+// exactly when pageIndex commits (HeroPager's handleScrollEndDrag, at
+// release, via pagingReleaseTarget; onMomentumScrollEnd only corrects it
+// after that if the real settle differs), via the same short
+// DOT_TRANSITION_MS animation on every affected dot.
 function PageIndicator({
   count,
   progressAnim,
@@ -825,8 +898,8 @@ function Dot({
 
 // Backdrop only: the scrim and the text/logo/meta/Open-in block are fixed
 // overlays now (ScrimLayer, ContentLayer, both siblings of the FlatList in
-// HeroPager), not part of each slide, so only the backdrop's parallax and
-// crossfade need to ride the pager.
+// HeroPager), not part of each slide, so only the backdrop's parallax,
+// crossfade and pull-to-refresh stretch need to ride the pager.
 function HeroPage({
   item,
   index,
@@ -834,6 +907,7 @@ function HeroPage({
   todayDate,
   scrollX,
   reduceMotionEnabled,
+  pullDistance,
   onBackdropLoad,
 }: {
   item: HeroSlide;
@@ -842,6 +916,7 @@ function HeroPage({
   todayDate: string;
   scrollX: Animated.Value;
   reduceMotionEnabled: boolean;
+  pullDistance: Animated.AnimatedInterpolation<number>;
   onBackdropLoad: () => void;
 }) {
   const { height } = useWindowDimensions();
@@ -849,10 +924,18 @@ function HeroPage({
   const show = item.show as TvMazeShowWithEmbeds;
   const { data: images } = useShowImages(show, deviceTimeZone(), todayDate);
   const backdropPath = images?.backdrop?.filePath;
+  const backdropHeight = 580 * scale;
 
   // Overscanned wider than the screen and centered, so the parallax shift
-  // below never reveals the page background at either edge.
-  const backdropWidth = width * (1 + 2 * HERO_PARALLAX_FACTOR);
+  // below never reveals the page background at either edge. Only needed
+  // for that parallax travel: under Reduce Motion translateX is always 0
+  // (below), so there's nothing for an overscan margin to cover, and
+  // skipping it here is what lets the outer View's overflow stay
+  // "visible" unconditionally (see below) without ever bleeding a
+  // neighbouring page's backdrop into view.
+  const backdropWidth = reduceMotionEnabled
+    ? width
+    : width * (1 + 2 * HERO_PARALLAX_FACTOR);
   const backdropLeft = -((backdropWidth - width) / 2);
 
   const translateX = reduceMotionEnabled
@@ -885,14 +968,62 @@ function HeroPage({
         extrapolate: "clamp",
       });
 
+  // Pull-to-refresh stretch (Apple TV Store tab style): applies
+  // pullStretchTransform's translateY/scale formula (see above for the
+  // derivation) to a wrapper around the whole backdrop, below; the pager
+  // itself is pinned separately (HeroPager's pagerPinTranslateY), so this
+  // only owns the top-anchored zoom, not a container-shift cancellation.
+  // It never has any visible effect unless pullDistance is nonzero
+  // (index.tsx's interpolation clamps it to 0 outside overscroll), so
+  // nothing changes at rest or scrolling into the page either way.
+  //
+  // Off under Reduce Motion: every mounted HeroPage has backdropOpacity
+  // forced to 1 there (see above), not faded by position the way normal
+  // motion self-protects, and backdropWidth is trimmed to exactly `width`
+  // (no horizontal overscan margin, since there's no parallax there to
+  // cover either) — so a `scale` > 1 would grow a neighbouring slide's own
+  // full-opacity backdrop past its own item bounds and spill it into view
+  // at the screen edges during a hard pull. With the pager itself still
+  // pinned regardless (HeroPager's own gate matches this one, so the two
+  // stay in sync: no separate zoom AND no separate pin, together), the
+  // backdrop still just moves down with the pull like the rest of the
+  // (already unpinned) content, the same as before this feature existed.
+  //
+  // Built once via useMemo, not inline: Animated.multiply/add/divide build
+  // a NEW native-graph node every call, and this component re-renders far
+  // more often than pullDistance itself actually changes (any of
+  // HeroPager's other state: pageIndex, loadedPages, touching, ...). A
+  // freshly built node needs a native update to "prime" it to its input's
+  // current live value; rebuilt on every one of those unrelated re-renders,
+  // it keeps getting torn down before that ever happens, so it reads as
+  // permanently stuck near its construction-time default instead of
+  // tracking the live pull, which is exactly the same stale-native-node
+  // class this file already hit once before with a recreated
+  // scrollX-derived interpolation (see contentMountRange's comment).
+  const pullTransform = useMemo(
+    () =>
+      reduceMotionEnabled
+        ? { translateY: 0, scale: 1 }
+        : {
+            translateY: Animated.multiply(pullDistance, 0.5),
+            scale: Animated.add(
+              1,
+              Animated.divide(pullDistance, backdropHeight),
+            ),
+          },
+    [reduceMotionEnabled, pullDistance, backdropHeight],
+  );
+
   return (
-    <View
-      style={{
-        width,
-        height,
-        overflow: reduceMotionEnabled ? "hidden" : "visible",
-      }}
-    >
+    // overflow "visible" always, not conditional on Reduce Motion: needed
+    // for the horizontal parallax overscan to bleed past this View's own
+    // width under normal motion (pre-existing, unrelated to the pull); with
+    // no overscan margin left under Reduce Motion (backdropWidth above),
+    // there's simply nothing left to clip there either way. The pull's own
+    // zoom (below) never renders outside this View's bounds: the pager
+    // itself is what's pinned (HeroPager's pagerPinTranslateY), so this
+    // View's own top never moves relative to it, at rest or mid-pull.
+    <View style={{ width, height, overflow: "visible" }}>
       <Animated.View
         style={[StyleSheet.absoluteFill, { opacity: backdropOpacity }]}
       >
@@ -901,20 +1032,34 @@ function HeroPage({
             style={{
               position: "absolute",
               top: 0,
-              left: backdropLeft,
-              width: backdropWidth,
-              height: 580 * scale,
-              transform: [{ translateX }],
+              left: 0,
+              right: 0,
+              height: backdropHeight,
+              transform: [
+                { translateY: pullTransform.translateY },
+                { scale: pullTransform.scale },
+              ],
             }}
           >
-            <Image
-              source={`${IMAGE_BASE}/w1280${backdropPath}`}
-              style={{ width: backdropWidth, height: 580 * scale }}
-              contentFit="cover"
-              contentPosition="center"
-              accessibilityIgnoresInvertColors
-              onLoad={onBackdropLoad}
-            />
+            <Animated.View
+              style={{
+                position: "absolute",
+                top: 0,
+                left: backdropLeft,
+                width: backdropWidth,
+                height: backdropHeight,
+                transform: [{ translateX }],
+              }}
+            >
+              <Image
+                source={`${IMAGE_BASE}/w1280${backdropPath}`}
+                style={{ width: backdropWidth, height: backdropHeight }}
+                contentFit="cover"
+                contentPosition="center"
+                accessibilityIgnoresInvertColors
+                onLoad={onBackdropLoad}
+              />
+            </Animated.View>
           </Animated.View>
         )}
       </Animated.View>
