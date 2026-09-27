@@ -176,30 +176,69 @@ export type BackdropPickTrigger =
   | {
       should: true;
       // "followed": no backdrop stored yet, so this is the first pick.
-      // "new-episode": a release date newer than the stored one has
-      // arrived (a new episode, or a whole-season drop, one date either
-      // way); always uses the "newest" rule, regardless of the general
-      // "airing now" window.
+      // "new-episode": today falls in the re-pick window around a release
+      // (see backdropPickTrigger); always uses the "newest" rule,
+      // regardless of the general "airing now" window.
       reason: "followed" | "new-episode";
       releaseDate: string | null;
     };
 
-// The stored backdrop changes only when a new episode comes out (owner
-// decision): once picked when followed, it stays until the show's latest
-// release date advances past whatever date it was picked for.
+// How many days before an upcoming release the re-pick window opens, so the
+// backdrop stays fresh going into the day (owner decision, one-shot re-pick
+// on the release day itself was too early: TMDB often hasn't uploaded the
+// new episode's backdrop yet, so it locked in a stale set).
+export const HERO_BACKDROP_LEAD_DAYS = 1;
+
+// How many days after a release the window stays open, so a late TMDB
+// upload is still caught.
+export const HERO_BACKDROP_SETTLE_DAYS = 3;
+
+// Same day-math style as changeWindows/isAiringNow above: no import from
+// logic/local-date, so this file stays free of app imports.
+function shiftDate(isoDate: string, days: number): string {
+  const day = 86_400_000;
+  return new Date(Date.parse(`${isoDate}T00:00:00Z`) + days * day)
+    .toISOString()
+    .slice(0, 10);
+}
+
+// The stored backdrop stays frozen except in a re-pick window around each
+// release: from HERO_BACKDROP_LEAD_DAYS before the next upcoming episode
+// (leading into the day, exclusive of the release date itself, which the
+// settle window below already covers) through HERO_BACKDROP_SETTLE_DAYS
+// after the latest released episode. Inside that window, every run
+// re-picks with the "newest" rule; the query already refetches once a day,
+// so this converges on the newest backdrop as TMDB uploads it, with no
+// thrashing since "newest" is deterministic by upload time. Outside the
+// window, nothing changes: the first "followed" pick (nothing stored yet)
+// is immediate and unaffected by any of this.
 export function backdropPickTrigger(
   stored: { pickedForReleaseDate: string | null } | null,
+  todayDate: string,
   latestReleaseDate: string | null,
+  nextReleaseDate: string | null,
 ): BackdropPickTrigger {
   if (!stored) {
     return { should: true, reason: "followed", releaseDate: latestReleaseDate };
   }
-  if (latestReleaseDate && latestReleaseDate !== stored.pickedForReleaseDate) {
+
+  const leadingIn =
+    nextReleaseDate !== null &&
+    todayDate >= shiftDate(nextReleaseDate, -HERO_BACKDROP_LEAD_DAYS) &&
+    todayDate < nextReleaseDate;
+
+  const settling =
+    latestReleaseDate !== null &&
+    todayDate >= latestReleaseDate &&
+    todayDate <= shiftDate(latestReleaseDate, HERO_BACKDROP_SETTLE_DAYS);
+
+  if (leadingIn || settling) {
     return {
       should: true,
       reason: "new-episode",
       releaseDate: latestReleaseDate,
     };
   }
+
   return { should: false };
 }

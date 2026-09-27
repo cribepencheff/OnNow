@@ -138,9 +138,18 @@ export function useShowImages(
       const latestReleaseDate = latest
         ? localDateFromAirstamp(latest.airstamp, timeZone)
         : null;
+      const nextReleaseDate =
+        next.kind === "episode"
+          ? localDateFromAirstamp(next.episode.airstamp, timeZone)
+          : null;
 
       const stored = await getStoredBackdrop(show.id);
-      const trigger = backdropPickTrigger(stored, latestReleaseDate);
+      const trigger = backdropPickTrigger(
+        stored,
+        todayDate,
+        latestReleaseDate,
+        nextReleaseDate,
+      );
 
       const tmdbId = await tmdbTvIdFor(show);
       if (tmdbId === null) {
