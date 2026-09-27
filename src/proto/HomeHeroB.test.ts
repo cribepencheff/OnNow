@@ -2,13 +2,20 @@
 // indicator's settled-pageIndex-only math (PageIndicator/Dot in
 // HomeHeroB.tsx): dotWindowRange and dotKinds. Also pagingReleaseTarget, the
 // page a manual swipe commits to at release (onScrollEndDrag), ahead of the
-// full momentum tail; and pullStretchTransform, the pull-to-refresh
-// backdrop stretch's top-pin + zoom math.
+// full momentum tail; pullStretchTransform, the pull-to-refresh backdrop
+// stretch's top-pin + zoom math; and the bidirectional loop's physical/
+// logical index mapping (loopSlideData, logicalToPhysical,
+// physicalToLogical, isLoopWrapSlot, contentMountFrames).
 
 import {
+  contentMountFrames,
   dotKinds,
   dotWindowRange,
+  isLoopWrapSlot,
+  logicalToPhysical,
+  loopSlideData,
   pagingReleaseTarget,
+  physicalToLogical,
   pullStretchTransform,
 } from "./HomeHeroB";
 
@@ -263,5 +270,88 @@ describe("pullStretchTransform", () => {
         ),
       ).toBeCloseTo(containerY + BACKDROP_HEIGHT + pullDistance);
     }
+  });
+});
+
+describe("loopSlideData", () => {
+  it("adds no duplicates for 0 or 1 slides", () => {
+    expect(loopSlideData([])).toEqual([]);
+    expect(loopSlideData(["a"])).toEqual(["a"]);
+  });
+
+  it("pads a duplicate of the last slide before the first, and of the first after the last", () => {
+    expect(loopSlideData(["a", "b", "c"])).toEqual(["c", "a", "b", "c", "a"]);
+  });
+
+  it("pads the same way for exactly 2 slides", () => {
+    expect(loopSlideData(["a", "b"])).toEqual(["b", "a", "b", "a"]);
+  });
+});
+
+describe("logicalToPhysical / physicalToLogical", () => {
+  it("are the identity for 0 or 1 slides", () => {
+    expect(logicalToPhysical(0, 1)).toBe(0);
+    expect(physicalToLogical(0, 1)).toBe(0);
+  });
+
+  it("offsets by 1 for count > 1, round-tripping every real slide", () => {
+    const count = 5;
+    for (let logical = 0; logical < count; logical++) {
+      const physical = logicalToPhysical(logical, count);
+      expect(physicalToLogical(physical, count)).toBe(logical);
+    }
+  });
+
+  it("maps the two duplicate wrap slots back to the last and first slide", () => {
+    const count = 5;
+    expect(physicalToLogical(0, count)).toBe(count - 1);
+    expect(physicalToLogical(count + 1, count)).toBe(0);
+  });
+
+  it("clamps an out-of-range physical index rather than throwing", () => {
+    const count = 5;
+    expect(physicalToLogical(-3, count)).toBe(count - 1);
+    expect(physicalToLogical(count + 10, count)).toBe(0);
+  });
+});
+
+describe("isLoopWrapSlot", () => {
+  it("is true only for the two duplicate slots, for count > 1", () => {
+    const count = 5;
+    expect(isLoopWrapSlot(0, count)).toBe(true);
+    expect(isLoopWrapSlot(count + 1, count)).toBe(true);
+    expect(isLoopWrapSlot(1, count)).toBe(false);
+    expect(isLoopWrapSlot(count, count)).toBe(false);
+  });
+
+  it("is always false for 0 or 1 slides (no loop, nothing to wrap)", () => {
+    expect(isLoopWrapSlot(0, 1)).toBe(false);
+    expect(isLoopWrapSlot(0, 0)).toBe(false);
+  });
+});
+
+describe("contentMountFrames", () => {
+  it("mounts only the current slide for 0 or 1 slides", () => {
+    expect(contentMountFrames(0, 0)).toEqual([]);
+    expect(contentMountFrames(1, 0)).toEqual([0]);
+  });
+
+  it("mounts the settled page plus one logical neighbour on each side, away from either edge", () => {
+    expect(contentMountFrames(5, 2)).toEqual([1, 2, 3]);
+  });
+
+  it("wraps the left neighbour to the last slide, at the first page", () => {
+    expect(contentMountFrames(5, 0)).toEqual([4, 0, 1]);
+  });
+
+  it("wraps the right neighbour to the first slide, at the last page", () => {
+    expect(contentMountFrames(5, 4)).toEqual([3, 4, 0]);
+  });
+
+  it("dedupes a 2-slide pager's two wrapped neighbours: both reach the same other slide", () => {
+    // A single mounted instance for slide 1 is enough either way: its own
+    // crossfade (logicalCrossfadePosition, periodic) already reads the
+    // same regardless of which direction scrollX approaches it from.
+    expect(contentMountFrames(2, 0)).toEqual([1, 0]);
   });
 });

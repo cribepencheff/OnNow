@@ -189,6 +189,91 @@ export function pagingReleaseTarget(
   return clampToNeighbor(Math.round(projected / pageWidth));
 }
 
+// PROTOTYPE: bidirectional loop (Apple TV+ style) for the hero pager.
+// pageIndex, and everything derived from it (dots, pill, countdown,
+// contentMountRange, badges), stays LOGICAL throughout, 0..count-1; only
+// the FlatList's own physical data array and scroll position know the
+// loop exists at all. The physical list pads one duplicate of the last
+// slide before the first, and one duplicate of the first slide after the
+// last, so swiping past either edge lands on a real, already-rendered
+// slide (not an empty page) whose content happens to be identical to the
+// real slide it stands in for. Once the native scroll genuinely settles
+// there, HeroPager's handleScrollEnd silently repositions it onto that
+// slide's own real physical slot (scrollToIndex, animated: false):
+// imperceptible, since both slots show the exact same frame at the exact
+// same settled position. No loop, no duplicates, for count <= 1 (nothing
+// to wrap to).
+export function loopSlideData<T>(slides: T[]): T[] {
+  const count = slides.length;
+  if (count <= 1) {
+    return slides;
+  }
+  return [slides[count - 1], ...slides, slides[0]];
+}
+
+// The physical FlatList index a logical slide's own (non-duplicate) slot
+// lives at.
+export function logicalToPhysical(logicalIndex: number, count: number): number {
+  return count <= 1 ? logicalIndex : logicalIndex + 1;
+}
+
+// The logical slide a physical FlatList index shows, whether that's the
+// slide's own slot or one of the two duplicate wrap slots (physical 0 and
+// physical count + 1, which map back to the last and first slide
+// respectively). Clamps rather than requiring an exact match, matching
+// this file's other index math (pagingReleaseTarget's clampToNeighbor):
+// defensive against an out-of-range physical index rather than assuming
+// one can't occur.
+export function physicalToLogical(
+  physicalIndex: number,
+  count: number,
+): number {
+  if (count <= 1) {
+    return physicalIndex;
+  }
+  if (physicalIndex <= 0) {
+    return count - 1;
+  }
+  if (physicalIndex >= count + 1) {
+    return 0;
+  }
+  return physicalIndex - 1;
+}
+
+// Whether a physical index is one of the two duplicate wrap slots, not a
+// slide's own real slot: handleScrollEnd silently repositions off of one
+// of these once the scroll genuinely settles there, never anywhere else.
+export function isLoopWrapSlot(physicalIndex: number, count: number): boolean {
+  return count > 1 && (physicalIndex === 0 || physicalIndex === count + 1);
+}
+
+// Which LOGICAL slides mount a ContentLayer: the settled page plus one
+// neighbour on each side, wrapped, same window a non-looping pager would
+// use. Purely logical, on purpose: ContentLayer's own opacity (below,
+// logicalCrossfadePosition) is a periodic function of scrollX that
+// already gives the same answer whether scrollX is currently expressed
+// via a slide's own physical slot or (mid a wrap transition) one of
+// loopSlideData's duplicate slots, so which physical slot backs a mounted
+// neighbour is never this function's concern, and a slide only ever needs
+// ONE mounted instance regardless. That also means a Set here is enough
+// to dedupe: with exactly 2 slides, both neighbours of the current page
+// are the SAME logical slide (wrapping either direction reaches the other
+// one), and that single shared instance's periodic opacity already
+// crossfades correctly for a swipe in either direction, so it doesn't
+// need two.
+export function contentMountFrames(count: number, pageIndex: number): number[] {
+  if (count <= 1) {
+    return count === 0 ? [] : [pageIndex];
+  }
+  return Array.from(
+    new Set([
+      (pageIndex - 1 + count) % count,
+      pageIndex,
+      (pageIndex + 1) % count,
+    ]),
+  );
+}
+
 // The top-anchored-zoom transform for HeroPage's own backdrop on
 // pull-to-refresh overscroll (Apple TV Store tab style: the backdrop's top
 // edge stays screen-pinned while its height grows by exactly pullDistance).
@@ -395,6 +480,13 @@ export function HeroPager({
   const { reduceMotionEnabled, screenReaderEnabled } = useAccessibilityFlags();
   const pageCount = slides.length;
 
+  // The FlatList's own data, padded for the loop (loopSlideData above);
+  // pageCount stays the LOGICAL slide count throughout this component,
+  // physicalPageCount the padded count (pageCount + 2 for pageCount > 1,
+  // otherwise the same as pageCount).
+  const physicalSlides = useMemo(() => loopSlideData(slides), [slides]);
+  const physicalPageCount = physicalSlides.length;
+
   const [pageIndex, setPageIndex] = useState(0);
   const [loadedPages, setLoadedPages] = useState<Set<number>>(new Set());
   const [indicatorAnchorY, setIndicatorAnchorY] = useState<number | null>(null);
@@ -414,14 +506,26 @@ export function HeroPager({
     pageIndexRef.current = pageIndex;
   }, [pageIndex]);
 
-  // The page pageIndexRef held when the current drag began, read at
-  // onScrollBeginDrag: handleScrollEndDrag clamps that drag's own release
-  // target to at most one page away from this, not from whatever page was
-  // current before some earlier drag. A second swipe started mid-momentum
-  // (interrupting the first one's deceleration) gets its own start page
-  // this way, since pageIndexRef is already updated to the first swipe's
-  // committed target by the time the interrupting drag begins.
-  const dragStartPageRef = useRef(pageIndex);
+  // Where the FlatList's own physical scroll position actually is (or is
+  // headed to), as opposed to pageIndex above, which is always the
+  // LOGICAL page: mirrors physicalToLogical(this, pageCount) === pageIndex
+  // whenever the physical position is a slide's own real slot, but can
+  // briefly point at one of the two duplicate wrap slots (loopSlideData)
+  // between a swipe release and handleScrollEnd's silent snap back off of
+  // it. Kept as an explicit ref rather than derived from pageIndex via
+  // logicalToPhysical, since a duplicate slot has no logical index of its
+  // own to derive it from.
+  const physicalIndexRef = useRef(logicalToPhysical(pageIndex, pageCount));
+
+  // The physical position physicalIndexRef held when the current drag
+  // began, read at onScrollBeginDrag: handleScrollEndDrag clamps that
+  // drag's own release target to at most one physical page away from
+  // this, not from whatever page was current before some earlier drag. A
+  // second swipe started mid-momentum (interrupting the first one's
+  // deceleration) gets its own start page this way, since
+  // physicalIndexRef is already updated to the first swipe's committed
+  // target by the time the interrupting drag begins.
+  const dragStartPageRef = useRef(logicalToPhysical(pageIndex, pageCount));
 
   // Raw horizontal scroll offset, native driver: drives the backdrop
   // parallax and slide crossfade per page, and (via the listener below)
@@ -459,28 +563,48 @@ export function HeroPager({
     [reduceMotionEnabled, pullDistance],
   );
 
-  // Which slides mount a ContentLayer (logo/title/meta/Open-in), below:
-  // the settled page plus one neighbour on each side, so whichever page a
-  // single swipe lands on already has its layer mounted (with its own
-  // native crossfade already live, see ContentLayer) before it's ever
-  // reached, rather than needing a JS round trip to swap data in once it
-  // is. Under Reduce Motion there's no crossfade to pre-mount for: content
-  // swaps the instant pageIndex does, so only the current page is
-  // rendered. (This replaces an earlier design with a single shared
-  // ContentLayer whose slide data and opacity were both driven by a
-  // JS-tracked "nearest page" index: that index update crossed the bridge
-  // a beat behind the backdrop's own native crossfade, which is why the
-  // content used to visibly lag a slide change instead of changing with
-  // it.)
-  const contentMountRange = reduceMotionEnabled
+  // Which LOGICAL slides mount a ContentLayer (logo/title/meta/Open-in),
+  // below (contentMountFrames above): the settled page plus one neighbour
+  // on each side, so whichever page a single swipe lands on already has
+  // its layer mounted (with its own native crossfade already live, see
+  // ContentLayer) before it's ever reached, rather than needing a JS round
+  // trip to swap data in once it is. Under Reduce Motion there's no
+  // crossfade to pre-mount for: content swaps the instant pageIndex does,
+  // so only the current page is rendered. (This replaces an earlier
+  // design with a single shared ContentLayer whose slide data and opacity
+  // were both driven by a JS-tracked "nearest page" index: that index
+  // update crossed the bridge a beat behind the backdrop's own native
+  // crossfade, which is why the content used to visibly lag a slide
+  // change instead of changing with it.)
+  const contentFrames = reduceMotionEnabled
     ? [pageIndex]
-    : Array.from(
-        new Set(
-          [pageIndex - 1, pageIndex, pageIndex + 1].filter(
-            (index) => index >= 0 && index < pageCount,
-          ),
-        ),
-      );
+    : contentMountFrames(pageCount, pageIndex);
+
+  // The shared basis for every mounted ContentLayer's own crossfade
+  // (logicalCrossfadePosition on each one, below): a slide's continuous
+  // LOGICAL position, 0..pageCount, periodic in scrollX. Built once here
+  // (not per ContentLayer instance) since every instance's formula is
+  // identical except for which logical index it peaks at; hoisting it
+  // means that per-index peak is the only thing distinguishing them.
+  //
+  // Physical scrollX / width is a slide's own real physical slot (see
+  // logicalToPhysical) one page further along than its logical index, so
+  // subtracting 1 undoes that offset; wrapping the result into [0, count)
+  // (Animated.modulo, which unlike JS's own % always returns a
+  // non-negative result) is what makes a wrap-adjacent neighbour's
+  // duplicate slot (loopSlideData) and its real slot both land on the
+  // SAME logical position. That's the whole point: a mounted
+  // ContentLayer's crossfade never needs to know or care which physical
+  // slot backs it, or be rebuilt when the silent snap moves scrollX from
+  // one to the other, since both already read as the same position here.
+  const logicalCrossfadePosition = useMemo(
+    () =>
+      Animated.modulo(
+        Animated.subtract(Animated.divide(scrollX, width), 1),
+        pageCount,
+      ),
+    [scrollX, width, pageCount],
+  );
 
   const canAutoAdvance =
     pageCount > 1 && !reduceMotionEnabled && !screenReaderEnabled;
@@ -494,15 +618,35 @@ export function HeroPager({
     });
   }, []);
 
+  // direction is which way `index` was reached (+1 forward, -1 back),
+  // always known at both call sites (auto-advance is always forward;
+  // VoiceOver's onAdjust already has it as its own delta): it decides the
+  // physical scroll target on a wrap. Animated (auto-advance; Reduce
+  // Motion is never on there, since canAutoAdvance excludes it): scrolls
+  // to physicalIndexRef.current + direction, the physically adjacent
+  // slot, so wrapping from the last page to the first animates FORWARD
+  // onto the duplicate first slide right next to it, not backward across
+  // the whole physical list to the real one; handleScrollEnd's own
+  // wrap-slot check silently corrects it onto the real slot once that
+  // animation settles, same as a manual swipe landing there would.
+  // Non-animated (Reduce Motion, VoiceOver only): jumps straight to the
+  // real slot (logicalToPhysical), skipping the duplicate entirely, since
+  // there's no animation for it to matter to and no later scroll-end event
+  // to rely on for a snap back (a non-animated scrollToIndex doesn't
+  // reliably fire one).
   const goToPage = useCallback(
-    (index: number) => {
+    (index: number, direction: 1 | -1) => {
       setPageIndex(index);
+      const physicalTarget = reduceMotionEnabled
+        ? logicalToPhysical(index, pageCount)
+        : physicalIndexRef.current + direction;
+      physicalIndexRef.current = physicalTarget;
       listRef.current?.scrollToIndex({
-        index,
+        index: physicalTarget,
         animated: !reduceMotionEnabled,
       });
     },
-    [reduceMotionEnabled],
+    [reduceMotionEnabled, pageCount],
   );
 
   // Which page progressAnim's current run belongs to, so this effect can
@@ -561,7 +705,7 @@ export function HeroPager({
     });
     animation.start(({ finished }) => {
       if (finished) {
-        goToPage((pageIndexRef.current + 1) % pageCount);
+        goToPage((pageIndexRef.current + 1) % pageCount, 1);
       }
     });
 
@@ -583,6 +727,18 @@ export function HeroPager({
   // onScrollBeginDrag/onScrollEndDrag pair did, each only touching
   // `touching`) let the auto-advance effect briefly see touching=false on
   // the OLD page and resume its countdown there before pageIndex caught up.
+  //
+  // pagingReleaseTarget itself needs no loop-awareness at all: called with
+  // the PHYSICAL page count and start (padded by loopSlideData, per
+  // physicalIndexRef), page N - 1's "next" physical neighbour already IS
+  // the duplicate first slide, and page 0's "previous" already IS the
+  // duplicate last slide, so a release past either edge naturally lands
+  // on the correct wrap target with no special-casing here. The result is
+  // still only ever converted to a LOGICAL pageIndex (physicalToLogical)
+  // before being committed; if it landed on a duplicate slot,
+  // handleScrollEnd is what silently corrects the physical position once
+  // the scroll genuinely settles there, not this handler (see its own
+  // comment for why not here).
   const handleScrollEndDrag = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
       const {
@@ -598,15 +754,16 @@ export function HeroPager({
       const target = pagingReleaseTarget(
         contentOffset.x,
         layoutMeasurement.width,
-        pageCount,
+        physicalPageCount,
         dragStartPageRef.current,
         velocity?.x ?? 0,
         targetContentOffset?.x ?? null,
       );
-      setPageIndex(target);
+      physicalIndexRef.current = target;
+      setPageIndex(physicalToLogical(target, pageCount));
       setTouching(false);
     },
-    [pageCount],
+    [pageCount, physicalPageCount],
   );
 
   // Safety net: corrects pageIndex if the scroll actually settles somewhere
@@ -616,6 +773,19 @@ export function HeroPager({
   // holds is a no-op: React bails out of a state update when the value is
   // unchanged, so the auto-advance effect (keyed on pageIndex) simply
   // doesn't re-run and progressAnim's fill is untouched.
+  //
+  // Also where a landing on one of loopSlideData's two duplicate slots
+  // gets silently corrected, not handleScrollEndDrag: forcing the physical
+  // scroll position elsewhere while the native scroll is still actively
+  // decelerating toward it (as it still is right at release) risks a
+  // visible hitch; waiting for the native scroll to genuinely be at rest
+  // here (onMomentumScrollEnd) avoids fighting that in-flight animation.
+  // The reposition itself (scrollToIndex, animated: false) is what stays
+  // invisible: the duplicate slot and the real slot it's replaced by show
+  // the exact same frame at the exact same settled position, and pageIndex
+  // itself was already committed to its correct (wrapped) LOGICAL value
+  // back at release, so this never triggers a second, redundant page
+  // change of its own.
   const handleScrollEnd = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
       const { contentOffset, layoutMeasurement } = event.nativeEvent;
@@ -624,11 +794,20 @@ export function HeroPager({
       }
       const settled = Math.min(
         Math.max(Math.round(contentOffset.x / layoutMeasurement.width), 0),
-        pageCount - 1,
+        physicalPageCount - 1,
       );
-      setPageIndex(settled);
+      const settledLogical = physicalToLogical(settled, pageCount);
+      setPageIndex(settledLogical);
+
+      if (isLoopWrapSlot(settled, pageCount)) {
+        const realSlot = logicalToPhysical(settledLogical, pageCount);
+        physicalIndexRef.current = realSlot;
+        listRef.current?.scrollToIndex({ index: realSlot, animated: false });
+      } else {
+        physicalIndexRef.current = settled;
+      }
     },
-    [pageCount],
+    [pageCount, physicalPageCount],
   );
 
   return (
@@ -639,13 +818,33 @@ export function HeroPager({
         <AnimatedFlatList
           ref={listRef}
           testID="home-pager"
-          data={slides}
+          data={physicalSlides}
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
-          keyExtractor={(item) => `${item.show.id}-${item.episodes[0].id}`}
+          // physical index suffix: loopSlideData's two duplicate slots
+          // hold the exact same item (same show id/episode id) as their
+          // real slot, which would otherwise collide.
+          keyExtractor={(item, index) =>
+            `${item.show.id}-${item.episodes[0].id}-${index}`
+          }
+          // Uniform, full-width pages: makes scrollToIndex (goToPage,
+          // handleScrollEnd's silent wrap correction) resolve synchronously
+          // to the exact offset instead of an estimate awaiting
+          // measurement, which matters most for that silent correction
+          // staying imperceptible.
+          getItemLayout={(_, index) => ({
+            length: width,
+            offset: width * index,
+            index,
+          })}
+          // Opens on logical slide 0, i.e. physical index 1 once the loop
+          // pads a duplicate last slide in front of it (logicalToPhysical
+          // above); physicalIndexRef's own initial value already assumes
+          // this.
+          initialScrollIndex={logicalToPhysical(0, pageCount)}
           onScrollBeginDrag={() => {
-            dragStartPageRef.current = pageIndexRef.current;
+            dragStartPageRef.current = physicalIndexRef.current;
             setTouching(true);
           }}
           onScrollEndDrag={handleScrollEndDrag}
@@ -661,7 +860,9 @@ export function HeroPager({
               scrollX={scrollX}
               reduceMotionEnabled={reduceMotionEnabled}
               pullDistance={pullDistance}
-              onBackdropLoad={() => markLoaded(index)}
+              onBackdropLoad={() =>
+                markLoaded(physicalToLogical(index, pageCount))
+              }
             />
           )}
         />
@@ -685,17 +886,17 @@ export function HeroPager({
         }}
       />
 
-      {contentMountRange.map((index) => (
+      {contentFrames.map((logicalIndex) => (
         <ContentLayer
-          key={index}
-          index={index}
-          slide={slides[index]}
-          badge={badgeFor(index)}
+          key={logicalIndex}
+          index={logicalIndex}
+          slide={slides[logicalIndex]}
+          badge={badgeFor(logicalIndex)}
           todayDate={todayDate}
-          scrollX={scrollX}
-          width={width}
+          logicalCrossfadePosition={logicalCrossfadePosition}
+          pageCount={pageCount}
           reduceMotionEnabled={reduceMotionEnabled}
-          interactive={index === pageIndex}
+          interactive={logicalIndex === pageIndex}
           onIndicatorAnchor={setIndicatorAnchorY}
         />
       ))}
@@ -713,7 +914,7 @@ export function HeroPager({
           // excludes it), so swiping the indicator up or down is how a
           // VoiceOver user moves between slides instead.
           onAdjust={(delta) =>
-            goToPage((pageIndex + delta + pageCount) % pageCount)
+            goToPage((pageIndex + delta + pageCount) % pageCount, delta)
           }
         />
       )}
@@ -732,9 +933,14 @@ export function HeroPager({
 // swipe; every change (which dot is active, whether the window's edges
 // are pinned, whether the window itself has slid) happens together, once,
 // exactly when pageIndex commits (HeroPager's handleScrollEndDrag, at
-// release, via pagingReleaseTarget; onMomentumScrollEnd only corrects it
-// after that if the real settle differs), via the same short
-// DOT_TRANSITION_MS animation on every affected dot.
+// release, via pagingReleaseTarget converted to a LOGICAL index;
+// onMomentumScrollEnd only corrects it after that if the real settle
+// differs), via the same short DOT_TRANSITION_MS animation on every
+// affected dot. count/currentPage are always the logical slide count and
+// index (dotWindowRange/dotKinds below have no idea the pager loops at
+// all): wrapping past either end is still just pageIndex committing to a
+// new value the same way any other page change does, honest linear
+// position and all, not a special jump.
 function PageIndicator({
   count,
   progressAnim,
@@ -1069,24 +1275,30 @@ function HeroPage({
 
 // Fixed overlay, a sibling of the paging FlatList in HeroPager (like the
 // scrim and PageIndicator): shows one slide's text/logo/meta/Open-in
-// block, does not move with the swipe. One instance is mounted per slide
-// in HeroPager's contentMountRange (the settled page plus one neighbour on
-// each side), each keyed by its own fixed `index`, each computing its own
-// native crossfade from `scrollX` centered on that index — the same
-// pattern HeroPage's backdrop already uses, and deliberately not a single
-// shared layer whose data and opacity followed a JS-tracked "current"
-// index: recreating that index-centered interpolation every time the
-// current page changed was what left content visibly lagging a slide
-// change (see HeroPager's contentMountRange comment). Because `index`
-// never changes for a mounted instance, its opacity node is built once
-// and never needs recreating.
+// block, does not move with the swipe. One instance is mounted per LOGICAL
+// slide in HeroPager's contentMountFrames (the settled page plus one
+// neighbour on each side), keyed by its own fixed logical `index`, each
+// computing its own native crossfade from HeroPager's shared
+// logicalCrossfadePosition, peaking at its own index — the same
+// index-keyed, built-once-per-instance approach HeroPage's backdrop
+// already uses for the analogous reason: recreating an index-centered
+// interpolation every time the current page changed was what left content
+// visibly lagging a slide change (see HeroPager's contentMountFrames
+// comment). Keyed and centered by LOGICAL index specifically, not a
+// physical scrollX position, because logicalCrossfadePosition is already
+// periodic in scrollX (see its own comment in HeroPager): a wrap
+// neighbour's crossfade reads the same way whether scrollX is currently
+// on that slide's own real physical slot or, mid a wrap transition, one
+// of loopSlideData's duplicate slots, so there's never a moment where
+// this needs to be recentered or remounted, unlike a plain
+// physical-position-centered version would.
 function ContentLayer({
   index,
   slide,
   badge,
   todayDate,
-  scrollX,
-  width,
+  logicalCrossfadePosition,
+  pageCount,
   reduceMotionEnabled,
   interactive,
   onIndicatorAnchor,
@@ -1095,8 +1307,8 @@ function ContentLayer({
   slide: HeroSlide;
   badge: string;
   todayDate: string;
-  scrollX: Animated.Value;
-  width: number;
+  logicalCrossfadePosition: Animated.AnimatedInterpolation<number>;
+  pageCount: number;
   reduceMotionEnabled: boolean;
   // Only the settled page's layer should take touches for its Open-in
   // button; the pre-mounted neighbours sit at the same screen position
@@ -1137,25 +1349,36 @@ function ContentLayer({
     [contentTop, onIndicatorAnchor],
   );
 
-  // Full opacity centered on this layer's own fixed index, down to 0 by
-  // half a page away in either direction: identical shape to HeroPage's
-  // backdropOpacity. Under Reduce Motion there's exactly one mounted
-  // layer (HeroPager's contentMountRange), so it's simply always shown.
-  const opacity = useMemo(
-    () =>
-      reduceMotionEnabled
-        ? 1
-        : scrollX.interpolate({
-            inputRange: [
-              (index - 0.5) * width,
-              index * width,
-              (index + 0.5) * width,
-            ],
-            outputRange: [0, 1, 0],
-            extrapolate: "clamp",
-          }),
-    [reduceMotionEnabled, scrollX, index, width],
-  );
+  // Full opacity centered on this layer's own fixed logical index, down to
+  // 0 by half a (logical) page away in either direction, the same
+  // triangular shape as HeroPage's backdropOpacity, just built from
+  // logicalCrossfadePosition (periodic) rather than scrollX directly: see
+  // that value's own comment in HeroPager for why. wrapped shifts things
+  // so the peak sits at pageCount / 2 instead of at this layer's own
+  // index, purely so the falloff can wrap smoothly across the 0/pageCount
+  // boundary (Animated.modulo) instead of needing a discontinuous split
+  // there; interpolating around that fixed, layer-independent midpoint
+  // is what lets the same three-point inputRange keep working regardless
+  // of which index this particular layer peaks at. Under Reduce Motion
+  // there's exactly one mounted layer (HeroPager's contentFrames), so
+  // it's simply always shown.
+  const opacity = useMemo(() => {
+    if (reduceMotionEnabled) {
+      return 1;
+    }
+    const wrapped = Animated.modulo(
+      Animated.add(
+        Animated.subtract(logicalCrossfadePosition, index),
+        pageCount / 2,
+      ),
+      pageCount,
+    );
+    return wrapped.interpolate({
+      inputRange: [pageCount / 2 - 0.5, pageCount / 2, pageCount / 2 + 0.5],
+      outputRange: [0, 1, 0],
+      extrapolate: "clamp",
+    });
+  }, [reduceMotionEnabled, logicalCrossfadePosition, index, pageCount]);
 
   return (
     <Animated.View
