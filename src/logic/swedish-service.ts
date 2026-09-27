@@ -67,7 +67,11 @@ interface KnownService {
 
 // TMDB provider IDs for Sweden, with the service's own name. Services not
 // listed here give no button. "Amazon Channel" variants (the same service
-// sold through Prime Video) are left out on purpose.
+// sold through Prime Video) are left out on purpose, as is Tele2 Play
+// (id 497): it is an operator TV bundle that requires a subscription with
+// that operator, and we only link directly to streaming services. Telia
+// Play is not in TMDB's Swedish provider data we have seen so far, so it
+// has no entry to exclude yet.
 const KNOWN_SERVICES: Record<number, KnownService> = {
   8: { service: "Netflix", startPage: "https://www.netflix.com" },
   119: { service: "Prime Video", startPage: "https://www.primevideo.com" },
@@ -78,6 +82,8 @@ const KNOWN_SERVICES: Record<number, KnownService> = {
   76: { service: "Viaplay", startPage: "https://viaplay.se" },
   493: { service: "SVT Play", startPage: "https://www.svtplay.se" },
   1944: { service: "TV4 Play", startPage: "https://www.tv4play.se" },
+  300: { service: "Pluto TV", startPage: "https://pluto.tv/se" },
+  151: { service: "BritBox", startPage: "https://www.britbox.com/se" },
 };
 
 // One service per show for now (ADR 0004); the menu for several services

@@ -18,12 +18,40 @@ import { Image } from "expo-image";
 
 import { useFollowList } from "@/hooks/useFollowList";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
+import { useSwedishService } from "@/hooks/useSwedishService";
 import { useToday } from "@/hooks/useToday";
 import { sortShowsByTitle } from "@/logic/shows-list";
+import {
+  heroAvailability,
+  OpenInSlot,
+  type HeroAvailability,
+} from "@/proto/HomeHeroB";
 import { IMAGE_BASE, type TmdbImage } from "@/proto/images";
 import { t, type } from "@/proto/tokens";
 import { useShowImages } from "@/proto/useShowImages";
 import type { TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
+
+// PROTOTYPE: the four Open-in states with synthetic inputs, not live TMDB
+// data. "Lookup failed" and "unmapped service" have no live example left
+// in the test set right now (Pluto TV and BritBox were just added to the
+// link table), so this is the only way to see all four in one place.
+const FORCED_STATES: { label: string; availability: HeroAvailability }[] = [
+  { label: "Lookup running", availability: { kind: "loading" } },
+  { label: "Lookup failed", availability: { kind: "none" } },
+  {
+    label: "Unmapped service (Tele2 Play)",
+    availability: heroAvailability(
+      [{ providerId: 497, providerName: "Tele2 Play" }],
+      false,
+      false,
+      null,
+    ),
+  },
+  {
+    label: "No Swedish service",
+    availability: heroAvailability([], false, false, null),
+  },
+];
 
 // The TVmaze IDs of the test set (spike 0001) and the two extra shows from
 // the PoC week log.
@@ -80,6 +108,18 @@ export default function DevImagesScreen() {
                 {following ? "Following…" : "Follow the test set (21 shows)"}
               </Text>
             </Pressable>
+
+            <View style={styles.forcedSection}>
+              <Text style={styles.meta}>
+                Forced states (synthetic inputs, same slot as Home&apos;s hero):
+              </Text>
+              {FORCED_STATES.map(({ label, availability }) => (
+                <View key={label} style={styles.forcedRow}>
+                  <Text style={styles.meta}>{label}</Text>
+                  <OpenInSlot availability={availability} />
+                </View>
+              ))}
+            </View>
           </View>
         }
         renderItem={({ item }) => (
@@ -102,6 +142,17 @@ function ShowImagesRow({
     show,
     deviceTimeZone(),
     todayDate,
+  );
+  const {
+    data: providers,
+    isLoading: providersLoading,
+    isError: providersError,
+  } = useSwedishService(show, true);
+  const availability = heroAvailability(
+    providers,
+    providersLoading,
+    providersError,
+    show.officialSite,
   );
   const half = (width - 16 * 2 - 8) / 2;
 
@@ -132,6 +183,19 @@ function ShowImagesRow({
               : data.pickReason === "followed"
                 ? "Picked when followed"
                 : "Not picked yet"}
+          </Text>
+          {/* PROTOTYPE: what Home's "Open in" slot would show for this show
+              right now, one of the four states, reviewed here across the
+              whole test set since Home itself only shows today's shows. */}
+          <Text style={styles.meta}>
+            Open in slot:{" "}
+            {availability.kind === "loading"
+              ? "loading…"
+              : availability.kind === "none"
+                ? "(nothing, lookup failed)"
+                : availability.kind === "button"
+                  ? `button · Open in ${availability.link.service}`
+                  : `text · ${availability.label}`}
           </Text>
 
           <View style={styles.logoBox}>
@@ -228,6 +292,8 @@ const styles = StyleSheet.create({
     borderRadius: t.radiusPill,
   },
   followAllLabel: { color: t.ink, fontWeight: "600" },
+  forcedSection: { gap: 16, marginTop: 4 },
+  forcedRow: { gap: 4 },
   row: {
     paddingHorizontal: 16,
     paddingVertical: 20,
