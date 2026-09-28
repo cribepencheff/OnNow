@@ -52,6 +52,26 @@ const AnimatedFlatList = Animated.createAnimatedComponent(
 
 const REF_HEIGHT = 844;
 
+// Short screens (iPhone SE is 667pt tall) tighten the vertical gaps below
+// the meta line so the page dots clear the tab bar at rest. The threshold
+// sits between the SE (667) and the next size up (iPhone 12/13 mini at 812,
+// 12 Pro at 844), so every screen taller than the SE keeps the regular
+// values below and looks exactly as before.
+const SHORT_SCREEN_MAX_HEIGHT = 700;
+
+// Vertical layout of the content block's lower half. The Open-in button
+// block sits OPEN_IN_MARGIN below the meta line (on top of the content
+// block's own row gap), the button is BUTTON_HEIGHT tall (kept at/above the
+// 44pt minimum tap target even when tightened), and the page dots sit
+// DOTS_GAP below the button. Each has a tighter value used only on short
+// screens; the regular values reproduce today's layout exactly.
+const OPEN_IN_MARGIN = 8;
+const OPEN_IN_MARGIN_SHORT = 0;
+const BUTTON_HEIGHT = 52;
+const BUTTON_HEIGHT_SHORT = 44;
+const DOTS_GAP = 16;
+const DOTS_GAP_SHORT = 8;
+
 // One constant, easy to change: how long each slide dwells before the
 // carousel auto-advances to the next one.
 const AUTO_ADVANCE_MS = 6000;
@@ -346,10 +366,20 @@ export function OpenInSlot({
   availability: HeroAvailability;
   onLayout?: (event: LayoutChangeEvent) => void;
 }) {
+  const { height } = useWindowDimensions();
+  const isShort = height < SHORT_SCREEN_MAX_HEIGHT;
+  // On short screens the reserved slot sits closer to the meta line and the
+  // button/placeholder shrink to BUTTON_HEIGHT_SHORT (still >= 44); taller
+  // screens keep styles.openInSlot's own regular values.
+  const slotStyle = isShort
+    ? { marginTop: OPEN_IN_MARGIN_SHORT, height: BUTTON_HEIGHT_SHORT }
+    : null;
+  const buttonHeightStyle = isShort ? { height: BUTTON_HEIGHT_SHORT } : null;
+
   return (
-    <View style={styles.openInSlot} onLayout={onLayout}>
+    <View style={[styles.openInSlot, slotStyle]} onLayout={onLayout}>
       {availability.kind === "loading" && (
-        <View style={styles.buttonPlaceholder} />
+        <View style={[styles.buttonPlaceholder, buttonHeightStyle]} />
       )}
       {availability.kind === "text" && (
         <Text style={styles.availabilityNote} numberOfLines={1}>
@@ -361,7 +391,7 @@ export function OpenInSlot({
           accessibilityRole="button"
           accessibilityLabel={`Open in ${availability.link.service}`}
           onPress={() => Linking.openURL(availability.link.url)}
-          style={styles.button}
+          style={[styles.button, buttonHeightStyle]}
         >
           <Text style={styles.buttonLabel}>
             Open in {availability.link.service}
@@ -1426,6 +1456,8 @@ const ContentLayer = memo(function ContentLayer({
   const { height } = useWindowDimensions();
   const scale = height / REF_HEIGHT;
   const contentTop = 452 * scale;
+  const isShort = height < SHORT_SCREEN_MAX_HEIGHT;
+  const dotsGap = isShort ? DOTS_GAP_SHORT : DOTS_GAP;
   const show = slide.show as TvMazeShowWithEmbeds;
   // Whether this slide's episode (or season drop) releases today or
   // tomorrow in the user's local time zone. slide.localDate is already the
@@ -1455,12 +1487,14 @@ const ContentLayer = memo(function ContentLayer({
   const handleButtonLayout = useCallback(
     (event: LayoutChangeEvent) => {
       const { y, height: buttonHeight } = event.nativeEvent.layout;
-      // Page dots sit 16 below the button (design system, "Home, direction
-      // B"); the button's own y is relative to `content`, which is itself
-      // offset from the slide's top by contentTop.
-      onIndicatorAnchor(contentTop + y + buttonHeight + 16);
+      // Page dots sit DOTS_GAP below the button (design system, "Home,
+      // direction B"; tighter on short screens). The button's own y and
+      // measured height already reflect the tightened slot on short screens,
+      // and y is relative to `content`, itself offset from the slide's top
+      // by contentTop.
+      onIndicatorAnchor(contentTop + y + buttonHeight + dotsGap);
     },
-    [contentTop, onIndicatorAnchor],
+    [contentTop, onIndicatorAnchor, dotsGap],
   );
 
   // Full opacity centered on this layer's own fixed logical index, down to
@@ -1578,11 +1612,13 @@ const styles = StyleSheet.create({
   // placeholder, text note, or nothing for "none"), so the reserved space
   // is constant and nothing below the Open-in slot shifts per slide.
   openInSlot: {
-    marginTop: 8, // 8 gap + 8 = 16 down from the meta line
-    height: 52,
+    // OPEN_IN_MARGIN on top of content's own 8 row gap = 16 below the meta
+    // line on regular screens (tightened on short, see OpenInSlot).
+    marginTop: OPEN_IN_MARGIN,
+    height: BUTTON_HEIGHT,
   },
   button: {
-    height: 52,
+    height: BUTTON_HEIGHT,
     borderRadius: t.radiusPill,
     backgroundColor: t.ink,
     alignItems: "center",
@@ -1595,7 +1631,7 @@ const styles = StyleSheet.create({
   },
   // Lookup running: the button's own shape, quiet, no text or spinner.
   buttonPlaceholder: {
-    height: 52,
+    height: BUTTON_HEIGHT,
     borderRadius: t.radiusPill,
     backgroundColor: t.surfaceRaised,
   },
