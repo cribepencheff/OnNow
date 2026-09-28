@@ -530,7 +530,22 @@ export function HeroPager({
   // Raw horizontal scroll offset, native driver: drives the backdrop
   // parallax and slide crossfade per page, and (via the listener below)
   // the dot indicator's position, all in real time with the swipe.
-  const [scrollX] = useState(() => new Animated.Value(0));
+  //
+  // Seeded to the loop's own opening physical offset (logical slide 0 lives
+  // at physical slot 1 once loopSlideData pads a duplicate last slide in
+  // front, logicalToPhysical), NOT 0. Every backdrop's opacity/parallax and
+  // every ContentLayer's crossfade is a function of scrollX, so a scrollX of
+  // 0 on the very first frame reads as physical slot 0 (the duplicate of the
+  // LAST slide): its backdrop interpolates to full opacity and
+  // logicalCrossfadePosition lands on count - 1, painting the last slide
+  // over slide 0 until the first real scroll event moves scrollX off 0.
+  // Seeding it to match initialContentOffset below keeps the Animated
+  // display layer aligned with the native scroll position from frame one,
+  // cold launch included. Frozen at mount like initialContentOffset (width
+  // and pageCount are read once); scroll events drive it thereafter.
+  const [scrollX] = useState(
+    () => new Animated.Value(width * logicalToPhysical(0, pageCount)),
+  );
   const handleScroll = useMemo(
     () =>
       Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], {
@@ -538,6 +553,23 @@ export function HeroPager({
       }),
     [scrollX],
   );
+
+  // The loop's opening native scroll position, frozen at mount. Paired with
+  // initialScrollIndex on the list below: VirtualizedList applies a
+  // contentOffset natively at ScrollView creation, before the first paint,
+  // and when one is present deliberately SKIPS its own post-layout
+  // scrollToIndex round trip (_maybeScrollToInitialScrollIndex guards on
+  // contentOffset == null). That round trip is exactly what flashed on a
+  // cold launch: initialScrollIndex alone only scrolls to slot 1 from inside
+  // onLayout, once the content has measured, a frame or more after the list
+  // first paints at offset 0 (the duplicate last slide). Frozen, not
+  // tracking width: this is only the INITIAL offset, and re-applying it on a
+  // later width change (rotation) would yank an already-scrolled pager back
+  // to slide 0.
+  const [initialContentOffset] = useState(() => ({
+    x: width * logicalToPhysical(0, pageCount),
+    y: 0,
+  }));
 
   // Pull-to-refresh: pins the pager itself (the FlatList below, wrapped in
   // an Animated.View since AnimatedFlatList's own style prop is cast back
@@ -887,8 +919,13 @@ export function HeroPager({
           // Opens on logical slide 0, i.e. physical index 1 once the loop
           // pads a duplicate last slide in front of it (logicalToPhysical
           // above); physicalIndexRef's own initial value already assumes
-          // this.
+          // this. initialScrollIndex still seeds VirtualizedList's initial
+          // render window; contentOffset (frozen, above) is what actually
+          // positions the native scroll before the first paint, so the list
+          // never flashes physical slot 0 on a cold launch (see both
+          // comments above for the full mechanism).
           initialScrollIndex={logicalToPhysical(0, pageCount)}
+          contentOffset={initialContentOffset}
           onScrollBeginDrag={() => {
             dragStartPageRef.current = physicalIndexRef.current;
             setTouching(true);
