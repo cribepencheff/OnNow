@@ -99,6 +99,25 @@ export function chooseBackdrop(
       };
 }
 
+// PROTOTYPE (quick experiment, home hero backdrop fallback): the
+// highest-rated backdrop TMDB has for the show, textless preferred.
+// Unlike chooseBackdrop above, this never looks at airingNow or the
+// changes endpoint (no "newest upload" concept at all): just a fixed
+// ranking (byVotes: vote_average, then vote_count) of whatever backdrops
+// currently exist, textlessBackdrops first (already byVotes-sorted, so
+// its own first element is the answer), falling back to the same ranking
+// over every backdrop, textless or not, only when there's no textless one
+// at all.
+export function chooseHighestRatedBackdrop(
+  images: TmdbImages,
+): TmdbImage | null {
+  const textless = textlessBackdrops(images);
+  if (textless.length > 0) {
+    return textless[0];
+  }
+  return (images.backdrops ?? []).slice().sort(byVotes)[0] ?? null;
+}
+
 // PROTOTYPE (quick experiment, home hero backdrop): a single episode's
 // TMDB stills, the same TmdbImage shape as backdrops/logos above, just
 // under its own "stills" key (TMDB's own

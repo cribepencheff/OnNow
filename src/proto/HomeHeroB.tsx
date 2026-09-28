@@ -1178,19 +1178,21 @@ const HeroPage = memo(function HeroPage({
   const scale = height / REF_HEIGHT;
   const show = item.show as TvMazeShowWithEmbeds;
   const { data: images } = useShowImages(show, deviceTimeZone(), todayDate);
-  const backdropPath = images?.backdrop?.filePath;
-  // PROTOTYPE (quick experiment): the episode's own TMDB still, when it
-  // has one, in place of the show's regular backdrop; falls back to
-  // backdropPath (above, untouched) so no slide ever goes blank. Nothing
-  // below this line (parallax, crossfade, pull-zoom, scrim) knows or
-  // cares which of the two it's showing.
+  // PROTOTYPE (quick experiment): highest-rated (chooseHighestRatedBackdrop),
+  // not images?.backdrop (the "official", stored pick behind the
+  // lead/settle re-pick window: still there, just not what this falls
+  // back to). The episode's own TMDB still, when it has one, takes
+  // priority over even this; falls back to it so no slide ever goes
+  // blank. Nothing below this line (parallax, crossfade, pull-zoom,
+  // scrim) knows or cares which of the two it's showing.
+  const fallbackBackdropPath = images?.highestRatedBackdrop?.file_path;
   const { data: episodeStill } = useEpisodeStill(
     show,
     item.episodes[0],
     deviceTimeZone(),
     todayDate,
   );
-  const displayPath = episodeStill?.filePath ?? backdropPath;
+  const displayPath = episodeStill?.filePath ?? fallbackBackdropPath;
   const backdropHeight = 580 * scale;
   const handleLoad = useCallback(
     () => onBackdropLoad(index),

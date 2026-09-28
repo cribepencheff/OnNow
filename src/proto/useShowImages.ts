@@ -25,6 +25,7 @@ import {
   changeWindows,
   chooseBackdrop,
   chooseEpisodeStill,
+  chooseHighestRatedBackdrop,
   chooseLogo,
   isAiringNow,
   textlessBackdrops,
@@ -93,6 +94,14 @@ export interface ShowImages {
   tmdbId: number | null;
   airingNow: boolean;
   backdrop: BackdropChoice | null;
+  // PROTOTYPE (quick experiment, home hero backdrop fallback): the
+  // highest-rated backdrop currently available (chooseHighestRatedBackdrop),
+  // recomputed fresh every time this query runs (once a day per show, via
+  // todayDate in the query key), independent of `backdrop` above and the
+  // lead/settle re-pick window that gates it — see that function's own
+  // comment for why re-picking on a schedule doesn't apply here the way it
+  // does for `backdrop`'s "newest upload" rule.
+  highestRatedBackdrop: TmdbImage | null;
   mostVoted: TmdbImage | null;
   secondMostVoted: TmdbImage | null;
   textlessCount: number;
@@ -159,6 +168,7 @@ export function useShowImages(
           tmdbId,
           airingNow,
           backdrop: null,
+          highestRatedBackdrop: null,
           mostVoted: null,
           secondMostVoted: null,
           textlessCount: 0,
@@ -175,6 +185,9 @@ export function useShowImages(
       );
       const textless = textlessBackdrops(images);
       const logo = chooseLogo(images);
+      // Unconditional, unlike `record` below: no re-pick window gating,
+      // see ShowImages.highestRatedBackdrop's own comment for why.
+      const highestRatedBackdrop = chooseHighestRatedBackdrop(images);
 
       let record = stored;
       if (trigger.should) {
@@ -223,6 +236,7 @@ export function useShowImages(
               newestTime: record.newestUploadTime,
             }
           : null,
+        highestRatedBackdrop,
         mostVoted: textless[0] ?? null,
         secondMostVoted: textless[1] ?? null,
         textlessCount: textless.length,
