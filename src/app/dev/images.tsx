@@ -1,8 +1,8 @@
 // PROTOTYPE (proto/home-backdrop, not for merge): a hidden developer screen,
-// development builds only. Lists every followed show with the backdrop and
-// logo the image rules picked, and the most voted and second most voted
-// backdrops side by side, to review the "second is better" rule. Opened by
-// a long press on Home's "+".
+// development builds only. Lists every followed show with what the hero
+// would show (the episode still, or the highest-rated backdrop fallback),
+// its logo, and the most and second most voted textless backdrops side by
+// side for reviewing the ranking. Opened by a long press on the Shows tab.
 
 import { useState } from "react";
 import {
@@ -20,6 +20,7 @@ import { useFollowList } from "@/hooks/useFollowList";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useSwedishService } from "@/hooks/useSwedishService";
 import { useToday } from "@/hooks/useToday";
+import { latestEpisode } from "@/logic/show-detail";
 import { sortShowsByTitle } from "@/logic/shows-list";
 import {
   heroAvailability,
@@ -28,8 +29,8 @@ import {
 } from "@/proto/HomeHeroB";
 import { IMAGE_BASE, type TmdbImage } from "@/proto/images";
 import { t, type } from "@/proto/tokens";
-import { useShowImages } from "@/proto/useShowImages";
-import type { TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
+import { useEpisodeStill, useShowImages } from "@/proto/useShowImages";
+import type { TvMazeEpisode, TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 
 // PROTOTYPE: the four Open-in states with synthetic inputs, not live TMDB
 // data. "Lookup failed" and "unmapped service" have no live example left
@@ -90,8 +91,8 @@ export default function DevImagesScreen() {
         ListHeaderComponent={
           <View style={styles.header}>
             <Text style={styles.meta}>
-              {shows.length} followed shows. Chosen backdrop and logo per the
-              rules in docs/design/design-system.md.
+              {shows.length} followed shows. What the hero shows (episode still
+              or highest-rated backdrop), logo, and the voted backdrops.
             </Text>
             <Pressable
               accessibilityRole="button"
@@ -155,6 +156,14 @@ function ShowImagesRow({
     show.officialSite,
   );
   const half = (width - 16 * 2 - 8) / 2;
+  // The episode whose still the hero would prefer for this show; the latest
+  // aired regular episode is a representative one that is likely to have a
+  // still (an upcoming episode often has none yet).
+  const stillEpisode = latestEpisode(
+    show._embedded.episodes,
+    deviceTimeZone(),
+    todayDate,
+  );
 
   return (
     <View style={styles.row} testID="dev-images-row">
@@ -164,25 +173,8 @@ function ShowImagesRow({
       {data && (
         <>
           <Text style={styles.meta}>
-            TMDB {data.tmdbId ?? "not found"} · airing now:{" "}
-            {data.airingNow ? "yes" : "no"} · textless backdrops:{" "}
+            TMDB {data.tmdbId ?? "not found"} · textless backdrops:{" "}
             {data.textlessCount} · English logo: {data.logo ? "yes" : "no"}
-          </Text>
-          <Text style={styles.meta}>
-            Picked: {data.backdrop?.rule ?? "none (no textless backdrop)"}
-            {data.backdrop?.newestTime
-              ? ` · uploaded ${data.backdrop.newestTime}`
-              : ""}
-          </Text>
-          {/* Stored (owner decision): the backdrop changes only on the
-              local release day of a new episode or drop, not on every
-              read. When and why it was last picked: */}
-          <Text style={styles.meta}>
-            {data.pickReason === "new-episode"
-              ? `Picked for ${data.pickEpisodeCode}`
-              : data.pickReason === "followed"
-                ? "Picked when followed"
-                : "Not picked yet"}
           </Text>
           {/* PROTOTYPE: what Home's "Open in" slot would show for this show
               right now, one of the four states, reviewed here across the
@@ -212,33 +204,72 @@ function ShowImagesRow({
             )}
           </View>
 
-          <View style={styles.pair}>
-            <Backdrop
-              label="Most voted"
-              image={data.mostVoted}
-              chosen={data.backdrop?.filePath === data.mostVoted?.file_path}
-              width={half}
+          {/* What the hero actually shows: the episode's own still when TMDB
+              has one, otherwise the highest-rated backdrop. */}
+          {stillEpisode && (
+            <EpisodeStillThumb
+              show={show}
+              episode={stillEpisode}
+              todayDate={todayDate}
+              width={width - 32}
             />
+          )}
+          <Backdrop
+            label="Highest-rated backdrop (hero fallback)"
+            image={data.highestRatedBackdrop}
+            width={width - 32}
+          />
+
+          <View style={styles.pair}>
+            <Backdrop label="Most voted" image={data.mostVoted} width={half} />
             <Backdrop
               label="Second most voted"
               image={data.secondMostVoted}
-              chosen={
-                data.backdrop?.filePath === data.secondMostVoted?.file_path
-              }
               width={half}
             />
           </View>
-          {data.backdrop &&
-            data.backdrop.filePath !== data.mostVoted?.file_path &&
-            data.backdrop.filePath !== data.secondMostVoted?.file_path && (
-              <Backdrop
-                label="Picked (newest)"
-                image={{ file_path: data.backdrop.filePath } as TmdbImage}
-                chosen
-                width={width - 32}
-              />
-            )}
         </>
+      )}
+    </View>
+  );
+}
+
+// The episode still the hero would use for a show, when TMDB has one. Its
+// own component so useEpisodeStill is called unconditionally (the parent
+// only renders it when there is an episode to look up).
+function EpisodeStillThumb({
+  show,
+  episode,
+  todayDate,
+  width,
+}: {
+  show: TvMazeShowWithEmbeds;
+  episode: TvMazeEpisode;
+  todayDate: string;
+  width: number;
+}) {
+  const { data: still } = useEpisodeStill(
+    show,
+    episode,
+    deviceTimeZone(),
+    todayDate,
+  );
+  const label = `Episode still · S${episode.season}E${episode.number} (hero prefers this)`;
+
+  return (
+    <View style={{ width, gap: 4 }}>
+      <Text style={styles.meta}>
+        {label}
+        {still ? "" : " · none, falls back to backdrop"}
+      </Text>
+      {still ? (
+        <Image
+          source={`${IMAGE_BASE}/w780${still.filePath}`}
+          style={[styles.backdrop, { width, height: (width * 9) / 16 }]}
+          contentFit="cover"
+        />
+      ) : (
+        <Text style={styles.meta}>none</Text>
       )}
     </View>
   );
@@ -247,19 +278,16 @@ function ShowImagesRow({
 function Backdrop({
   label,
   image,
-  chosen,
   width,
 }: {
   label: string;
   image: TmdbImage | null;
-  chosen: boolean;
   width: number;
 }) {
   return (
     <View style={{ width, gap: 4 }}>
-      <Text style={[styles.meta, chosen && { color: t.accent }]}>
+      <Text style={styles.meta}>
         {label}
-        {chosen ? " · picked" : ""}
         {image?.vote_count !== undefined
           ? ` · ${image.vote_average.toFixed(1)} (${image.vote_count})`
           : ""}
@@ -267,11 +295,7 @@ function Backdrop({
       {image ? (
         <Image
           source={`${IMAGE_BASE}/w780${image.file_path}`}
-          style={[
-            styles.backdrop,
-            { width, height: (width * 9) / 16 },
-            chosen && styles.chosen,
-          ]}
+          style={[styles.backdrop, { width, height: (width * 9) / 16 }]}
           contentFit="cover"
         />
       ) : (
@@ -313,5 +337,4 @@ const styles = StyleSheet.create({
   logo: { width: 240, height: 88 },
   pair: { flexDirection: "row", gap: 8 },
   backdrop: { borderRadius: t.radiusSm, backgroundColor: t.surface },
-  chosen: { borderWidth: 2, borderColor: t.accent },
 });

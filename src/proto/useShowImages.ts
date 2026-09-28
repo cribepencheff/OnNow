@@ -1,43 +1,28 @@
-// PROTOTYPE (proto/home-backdrop, not for merge): TMDB backdrop and logo for
-// a followed show, per docs/design/design-system.md "Imagery". Uses the same
-// EXPO_PUBLIC_TMDB_API_KEY as src/api/tmdb-client.ts.
+// PROTOTYPE (proto/home-backdrop, not for merge): TMDB backdrop, logo and
+// episode still for a followed show, per docs/design/design-system.md
+// "Imagery". Uses the same EXPO_PUBLIC_TMDB_API_KEY as
+// src/api/tmdb-client.ts.
 //
-// The backdrop is picked once and stored (owner decision, CRI-79-adjacent):
-// it changes only on the local release day of a new episode or a
-// whole-season drop, never on an ordinary re-read. See
-// src/proto/backdrop-storage.ts and images.ts's backdropPickTrigger.
+// The hero shows the episode's own TMDB still when it has one
+// (useEpisodeStill below), falling back to the highest-rated backdrop
+// (chooseHighestRatedBackdrop). Both are recomputed on each run; there is
+// no longer a stored "official" pick or a re-pick window (removed with the
+// /tv/{id}/changes machinery once episode stills were adopted).
 
 import { useQuery } from "@tanstack/react-query";
 
-import { addDays, localDateFromAirstamp } from "@/logic/local-date";
-import { episodeCode } from "@/logic/home";
-import { latestEpisode, regularEpisodes } from "@/logic/show-detail";
-import { nextForShow } from "@/logic/next-episode";
 import type { TvMazeEpisode, TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 import {
-  getStoredBackdrop,
-  saveStoredBackdrop,
-  type StoredBackdrop,
-} from "./backdrop-storage";
-import {
-  addedBackdrops,
-  backdropPickTrigger,
-  changeWindows,
-  chooseBackdrop,
   chooseEpisodeStill,
   chooseHighestRatedBackdrop,
   chooseLogo,
-  isAiringNow,
   textlessBackdrops,
-  type AddedBackdrop,
-  type BackdropChoice,
   type TmdbEpisodeImages,
   type TmdbImage,
   type TmdbImages,
 } from "./images";
 
 const KEY = process.env.EXPO_PUBLIC_TMDB_API_KEY;
-const LOOKBACK_WINDOWS = 6; // 6 × 14 days, about 12 weeks
 
 async function tmdb<T>(path: string): Promise<T> {
   if (!KEY) {
@@ -71,47 +56,20 @@ async function tmdbTvIdFor(show: TvMazeShowWithEmbeds): Promise<number | null> {
   return null;
 }
 
-// "S2E5" for a single episode, "Season 1, 8 episodes" for a drop (several
-// episodes of one season released the same local day).
-function releaseLabel(
-  latest: TvMazeEpisode,
-  episodes: TvMazeEpisode[],
-  timeZone: string,
-): string {
-  const localDate = localDateFromAirstamp(latest.airstamp, timeZone);
-  const sameDay = regularEpisodes(episodes).filter(
-    (episode) =>
-      episode.season === latest.season &&
-      episode.airstamp &&
-      localDateFromAirstamp(episode.airstamp, timeZone) === localDate,
-  );
-  return sameDay.length > 1
-    ? `Season ${latest.season}, ${sameDay.length} episodes`
-    : episodeCode(latest);
-}
-
 export interface ShowImages {
   tmdbId: number | null;
-  airingNow: boolean;
-  backdrop: BackdropChoice | null;
-  // PROTOTYPE (quick experiment, home hero backdrop fallback): the
-  // highest-rated backdrop currently available (chooseHighestRatedBackdrop),
-  // recomputed fresh every time this query runs (once a day per show, via
-  // todayDate in the query key), independent of `backdrop` above and the
-  // lead/settle re-pick window that gates it — see that function's own
-  // comment for why re-picking on a schedule doesn't apply here the way it
-  // does for `backdrop`'s "newest upload" rule.
+  // The highest-rated backdrop currently available
+  // (chooseHighestRatedBackdrop): the hero's backdrop fallback when an
+  // episode has no TMDB still. Recomputed fresh every time this query runs
+  // (once a day per show, via todayDate in the query key).
   highestRatedBackdrop: TmdbImage | null;
+  // The most and second most voted textless backdrops, and how many textless
+  // backdrops exist: shown side by side on the dev images screen to review
+  // the ranking (not used by Home itself).
   mostVoted: TmdbImage | null;
   secondMostVoted: TmdbImage | null;
   textlessCount: number;
   logo: TmdbImage | null;
-  // Whether the changes endpoint found an upload time for the stored
-  // backdrop, the last time it was (re-)picked.
-  newestDetermined: boolean;
-  // When and why the stored backdrop was picked, for the dev screen.
-  pickReason: StoredBackdrop["reason"] | null;
-  pickEpisodeCode: string | null;
 }
 
 export function useShowImages(
@@ -120,143 +78,48 @@ export function useShowImages(
   todayDate: string,
 ) {
   return useQuery({
-    // -v2: bump this suffix whenever ShowImages' shape changes. The
-    // cache is persisted to AsyncStorage (onnow.queryCache,
-    // hooks/query-client.ts) with staleTime: Infinity and a key that
-    // otherwise only changes once a day (todayDate), so an old cached
-    // entry from before a shape change can outlive the code that reads
-    // it: exactly what happened when highestRatedBackdrop was added
-    // (below) without bumping this, leaving it undefined in every
-    // already-cached entry until the next calendar day rolled the key
-    // over anyway. Bumping the version forces a fresh fetch immediately
-    // instead of waiting on that. useEpisodeStill calls this hook
-    // directly for its own tmdbId rather than reading the cache under a
-    // hardcoded key, so it picks up whatever version is current here
-    // automatically; nothing else in the app reads this key.
-    queryKey: ["proto-images-v2", show.id, todayDate],
+    // -v3: bump this suffix whenever ShowImages' shape changes. The cache is
+    // persisted to AsyncStorage (onnow.queryCache, hooks/query-client.ts)
+    // with staleTime: Infinity and a key that otherwise only changes once a
+    // day (todayDate), so an old cached entry from before a shape change can
+    // outlive the code that reads it; bumping the version forces a fresh
+    // fetch immediately. Bumped to v3 when the stored "official" backdrop
+    // pick and its fields (backdrop, airingNow, pickReason, ...) and the
+    // /tv/{id}/changes "newest upload" machinery were removed, in favour of
+    // episode-still-first with a highest-rated backdrop fallback.
+    // useEpisodeStill calls this hook directly for its own tmdbId rather than
+    // reading the cache under a hardcoded key, so it picks up whatever
+    // version is current here automatically; nothing else in the app reads
+    // this key.
+    queryKey: ["proto-images-v3", show.id, todayDate],
     staleTime: Infinity,
     // Without a key the lookup cannot work, so say so at once.
     retry: KEY ? 3 : false,
     queryFn: async (): Promise<ShowImages> => {
-      const episodes = show._embedded.episodes;
-      const latest = latestEpisode(episodes, timeZone, todayDate);
-      const next = nextForShow(
-        show,
-        episodes,
-        show._embedded.seasons,
-        timeZone,
-        addDays(todayDate, 1),
-      );
-      // Only used to decide the very first ("followed") pick's rule; a
-      // later re-pick always uses "newest" (see backdropPickTrigger).
-      const airingNow = isAiringNow(
-        latest
-          ? {
-              season: latest.season,
-              localDate: localDateFromAirstamp(latest.airstamp, timeZone),
-            }
-          : null,
-        next.kind === "episode" ? { season: next.episode.season } : null,
-        todayDate,
-      );
-      const latestReleaseDate = latest
-        ? localDateFromAirstamp(latest.airstamp, timeZone)
-        : null;
-      const nextReleaseDate =
-        next.kind === "episode"
-          ? localDateFromAirstamp(next.episode.airstamp, timeZone)
-          : null;
-
-      const stored = await getStoredBackdrop(show.id);
-      const trigger = backdropPickTrigger(
-        stored,
-        todayDate,
-        latestReleaseDate,
-        nextReleaseDate,
-      );
-
       const tmdbId = await tmdbTvIdFor(show);
       if (tmdbId === null) {
         return {
           tmdbId,
-          airingNow,
-          backdrop: null,
           highestRatedBackdrop: null,
           mostVoted: null,
           secondMostVoted: null,
           textlessCount: 0,
           logo: null,
-          newestDetermined: false,
-          pickReason: stored?.reason ?? null,
-          pickEpisodeCode: stored?.episodeCode ?? null,
         };
       }
 
-      // Always needed for the logo, and as candidates if a pick is due.
       const images = await tmdb<TmdbImages>(
         `/tv/${tmdbId}/images?include_image_language=en,null,xx`,
       );
       const textless = textlessBackdrops(images);
-      const logo = chooseLogo(images);
-      // Unconditional, unlike `record` below: no re-pick window gating,
-      // see ShowImages.highestRatedBackdrop's own comment for why.
-      const highestRatedBackdrop = chooseHighestRatedBackdrop(images);
-
-      let record = stored;
-      if (trigger.should) {
-        const useNewest = trigger.reason === "new-episode" || airingNow;
-        let added: AddedBackdrop[] = [];
-        if (useNewest) {
-          for (const { start, end } of changeWindows(
-            todayDate,
-            LOOKBACK_WINDOWS,
-          )) {
-            added = added.concat(
-              addedBackdrops(
-                await tmdb(
-                  `/tv/${tmdbId}/changes?start_date=${start}&end_date=${end}`,
-                ),
-              ),
-            );
-          }
-        }
-        // chooseBackdrop already does exactly this (find/second-most/only
-        // rule + the newest-upload lookup); reused as is.
-        const choice = chooseBackdrop(images, useNewest, added);
-        if (choice) {
-          record = {
-            filePath: choice.filePath,
-            reason: trigger.reason,
-            rule: choice.rule,
-            pickedForReleaseDate: trigger.releaseDate,
-            episodeCode:
-              trigger.reason === "new-episode" && latest
-                ? releaseLabel(latest, episodes, timeZone)
-                : null,
-            newestUploadTime: choice.newestTime,
-          };
-          await saveStoredBackdrop(show.id, record);
-        }
-      }
 
       return {
         tmdbId,
-        airingNow,
-        backdrop: record
-          ? {
-              filePath: record.filePath,
-              rule: record.rule as BackdropChoice["rule"],
-              newestTime: record.newestUploadTime,
-            }
-          : null,
-        highestRatedBackdrop,
+        highestRatedBackdrop: chooseHighestRatedBackdrop(images),
         mostVoted: textless[0] ?? null,
         secondMostVoted: textless[1] ?? null,
         textlessCount: textless.length,
-        logo,
-        newestDetermined: record?.newestUploadTime != null,
-        pickReason: record?.reason ?? null,
-        pickEpisodeCode: record?.episodeCode ?? null,
+        logo: chooseLogo(images),
       };
     },
   });
@@ -267,16 +130,15 @@ export interface EpisodeStill {
 }
 
 // PROTOTYPE (quick experiment, home hero backdrop): tries the episode's
-// own TMDB stills before falling back to the show's regular backdrop
-// (useShowImages above, untouched by this: it bypasses that choice for
-// display, never replaces or affects it). Reuses useShowImages purely to
-// get the already-resolved tmdbId; TanStack Query dedupes the identical
-// ["proto-images", show.id, todayDate] key across both calls (same as
+// own TMDB stills before falling back to the show's highest-rated backdrop
+// (useShowImages above). Reuses useShowImages purely to get the
+// already-resolved tmdbId; TanStack Query dedupes the identical
+// ["proto-images-v3", show.id, todayDate] key across both calls (same as
 // HeroPage and ContentLayer already share it today), so this never
-// double-fetches the show's own images. The still query itself is keyed
-// by season/episode number, not todayDate: a released episode's own
-// stills don't change day to day the way the show's re-picked backdrop
-// can, so there's no reason to refetch it on that schedule.
+// double-fetches the show's own images. The still query itself is keyed by
+// season/episode number, not todayDate: a released episode's own stills
+// don't change day to day the way the show's images can, so there's no
+// reason to refetch it on that schedule.
 export function useEpisodeStill(
   show: TvMazeShowWithEmbeds,
   episode: TvMazeEpisode,

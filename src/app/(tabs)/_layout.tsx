@@ -2,8 +2,6 @@ import { Pressable, type GestureResponderEvent } from "react-native";
 import { SymbolView } from "expo-symbols";
 import { Tabs, useRouter } from "expo-router";
 
-import { useBackdropUnfollowReset } from "@/proto/useBackdropUnfollowReset";
-
 // PROTOTYPE (proto/home-backdrop): the "+" and its image review screen
 // moved off Home (see below); the image review screen is now reached by a
 // long press on the Shows tab instead, development builds only. Typed
@@ -24,10 +22,6 @@ function ShowsTabButton(props: {
 }
 
 export default function TabLayout() {
-  // PROTOTYPE: clears a show's stored backdrop when it is unfollowed, so
-  // following it again picks anew.
-  useBackdropUnfollowReset();
-
   return (
     <Tabs
       // PROTOTYPE (proto/home-backdrop): the translucent tab bar of
