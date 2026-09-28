@@ -27,11 +27,7 @@ import { findHeroSlides, HeroPager, type HeroSlide } from "@/proto/HomeHeroB";
 import { t as protoTokens } from "@/proto/tokens";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useToday } from "@/hooks/useToday";
-import {
-  deriveHomeViewState,
-  homeCardMetaLine,
-  nextDayCountLabel,
-} from "@/logic/home";
+import { deriveHomeViewState, homeCardMetaLine } from "@/logic/home";
 import type { ShowEpisodesToday } from "@/logic/episodes-today";
 import { accent } from "@/theme/color";
 
@@ -277,7 +273,6 @@ export default function HomeScreen() {
         {heroSlides.length > 0 && (
           <HeroPager
             slides={heroSlides}
-            badgeFor={(index) => `UPCOMING · ${index + 1}/${heroSlides.length}`}
             todayDate={todayDate}
             pullDistance={pullDistance}
           />
@@ -292,14 +287,6 @@ export default function HomeScreen() {
               ...show,
               localDate: state.localDate,
             }))}
-            badgeFor={(index) =>
-              nextDayCountLabel(
-                state.localDate,
-                todayDate,
-                index,
-                state.shows.length,
-              )
-            }
             todayDate={todayDate}
             pullDistance={pullDistance}
           />

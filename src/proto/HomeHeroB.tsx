@@ -20,6 +20,7 @@ import * as Linking from "expo-linking";
 
 import { useSwedishService } from "@/hooks/useSwedishService";
 import { episodesLabel, upcomingDayLabel } from "@/logic/home";
+import { formatLabelDate } from "@/logic/next-episode-label";
 import {
   addDays,
   localDateFromAirstamp,
@@ -460,12 +461,10 @@ export function heroDayLabel(
 
 export function HeroPager({
   slides,
-  badgeFor,
   todayDate,
   pullDistance,
 }: {
   slides: HeroSlide[];
-  badgeFor: (pageIndex: number) => string;
   todayDate: string;
   // PROTOTYPE (proto/home-backdrop): how far the enclosing ScrollView has
   // been pulled past its resting top, in points, clamped to 0 outside
@@ -961,7 +960,6 @@ export function HeroPager({
           key={logicalIndex}
           index={logicalIndex}
           slide={slides[logicalIndex]}
-          badge={badgeFor(logicalIndex)}
           todayDate={todayDate}
           logicalCrossfadePosition={logicalCrossfadePosition}
           pageCount={pageCount}
@@ -1405,7 +1403,6 @@ const HeroPage = memo(function HeroPage({
 const ContentLayer = memo(function ContentLayer({
   index,
   slide,
-  badge,
   todayDate,
   logicalCrossfadePosition,
   pageCount,
@@ -1415,7 +1412,6 @@ const ContentLayer = memo(function ContentLayer({
 }: {
   index: number;
   slide: HeroSlide;
-  badge: string;
   todayDate: string;
   logicalCrossfadePosition: Animated.AnimatedInterpolation<number>;
   pageCount: number;
@@ -1431,6 +1427,14 @@ const ContentLayer = memo(function ContentLayer({
   const scale = height / REF_HEIGHT;
   const contentTop = 452 * scale;
   const show = slide.show as TvMazeShowWithEmbeds;
+  // Whether this slide's episode (or season drop) releases today or
+  // tomorrow in the user's local time zone. slide.localDate is already the
+  // airstamp resolved to a local date (findHeroSlides, local-date.ts), and
+  // todayDate is the same "today" the rest of the hero uses (useToday), so
+  // these are plain string compares against todayDate and the app's own
+  // addDays, not a fresh Date() comparison.
+  const isToday = slide.localDate === todayDate;
+  const isTomorrow = slide.localDate === addDays(todayDate, 1);
   // Shares its query key (show id + todayDate) with HeroPage's own call
   // for the same slide, so this never double-fetches: TanStack Query
   // serves both subscribers from the one cached result.
@@ -1496,7 +1500,12 @@ const ContentLayer = memo(function ContentLayer({
       pointerEvents={interactive ? "box-none" : "none"}
     >
       <View style={[styles.content, { top: contentTop }]}>
-        <Text style={styles.badge}>{badge}</Text>
+        <Text style={styles.badge}>
+          <Text style={isToday ? styles.badgeToday : undefined}>
+            {isToday ? "TODAY" : isTomorrow ? "TOMORROW" : "UPCOMING"}
+          </Text>
+          {` · ${index + 1}/${pageCount}`}
+        </Text>
         {logo ? (
           <Image
             source={`${IMAGE_BASE}/w500${logo.file_path}`}
@@ -1514,11 +1523,9 @@ const ContentLayer = memo(function ContentLayer({
           </View>
         )}
         <Text style={styles.meta} numberOfLines={1}>
-          <Text style={styles.metaDayLabel}>
-            {heroDayLabel(slide.localDate, todayDate)}
-          </Text>
-          {" · "}
-          {homeHeroMetaLine(slide.episodes)}
+          {`${formatLabelDate(slide.localDate, todayDate).toUpperCase()} · ${homeHeroMetaLine(
+            slide.episodes,
+          )}`}
         </Text>
         <OpenInSlot availability={availability} onLayout={handleButtonLayout} />
       </View>
@@ -1537,6 +1544,11 @@ const styles = StyleSheet.create({
     ...type.label,
     color: t.inkMuted,
     textTransform: "uppercase",
+  },
+  // "TODAY" eyebrow word: white, flagging a slide that airs today. The
+  // counter after it stays the muted badge grey (it inherits styles.badge).
+  badgeToday: {
+    color: t.ink,
   },
   logo: {
     width: 240,
@@ -1561,12 +1573,6 @@ const styles = StyleSheet.create({
   meta: {
     ...type.meta,
     color: t.inkMuted,
-  },
-  // The day label ("TODAY", "TOMORROW", weekday/date) stands out from the
-  // rest of the meta line, which stays muted.
-  metaDayLabel: {
-    ...type.meta,
-    color: t.ink,
   },
   // Fixed height across all four HeroAvailability states (button, loading
   // placeholder, text note, or nothing for "none"), so the reserved space
