@@ -120,7 +120,20 @@ export function useShowImages(
   todayDate: string,
 ) {
   return useQuery({
-    queryKey: ["proto-images", show.id, todayDate],
+    // -v2: bump this suffix whenever ShowImages' shape changes. The
+    // cache is persisted to AsyncStorage (onnow.queryCache,
+    // hooks/query-client.ts) with staleTime: Infinity and a key that
+    // otherwise only changes once a day (todayDate), so an old cached
+    // entry from before a shape change can outlive the code that reads
+    // it: exactly what happened when highestRatedBackdrop was added
+    // (below) without bumping this, leaving it undefined in every
+    // already-cached entry until the next calendar day rolled the key
+    // over anyway. Bumping the version forces a fresh fetch immediately
+    // instead of waiting on that. useEpisodeStill calls this hook
+    // directly for its own tmdbId rather than reading the cache under a
+    // hardcoded key, so it picks up whatever version is current here
+    // automatically; nothing else in the app reads this key.
+    queryKey: ["proto-images-v2", show.id, todayDate],
     staleTime: Infinity,
     // Without a key the lookup cannot work, so say so at once.
     retry: KEY ? 3 : false,
