@@ -39,7 +39,7 @@ import type {
 import { useAccessibilityFlags } from "./accessibility";
 import { IMAGE_BASE } from "./images";
 import { t, type } from "./tokens";
-import { useShowImages } from "./useShowImages";
+import { useEpisodeStill, useShowImages } from "./useShowImages";
 
 // FlatList is VirtualizedList-based: native-driven onScroll (below, for the
 // backdrop parallax and slide crossfade) needs it wrapped in
@@ -1179,6 +1179,18 @@ const HeroPage = memo(function HeroPage({
   const show = item.show as TvMazeShowWithEmbeds;
   const { data: images } = useShowImages(show, deviceTimeZone(), todayDate);
   const backdropPath = images?.backdrop?.filePath;
+  // PROTOTYPE (quick experiment): the episode's own TMDB still, when it
+  // has one, in place of the show's regular backdrop; falls back to
+  // backdropPath (above, untouched) so no slide ever goes blank. Nothing
+  // below this line (parallax, crossfade, pull-zoom, scrim) knows or
+  // cares which of the two it's showing.
+  const { data: episodeStill } = useEpisodeStill(
+    show,
+    item.episodes[0],
+    deviceTimeZone(),
+    todayDate,
+  );
+  const displayPath = episodeStill?.filePath ?? backdropPath;
   const backdropHeight = 580 * scale;
   const handleLoad = useCallback(
     () => onBackdropLoad(index),
@@ -1286,7 +1298,7 @@ const HeroPage = memo(function HeroPage({
       <Animated.View
         style={[StyleSheet.absoluteFill, { opacity: backdropOpacity }]}
       >
-        {backdropPath && (
+        {displayPath && (
           <Animated.View
             style={{
               position: "absolute",
@@ -1311,7 +1323,7 @@ const HeroPage = memo(function HeroPage({
               }}
             >
               <Image
-                source={`${IMAGE_BASE}/w1280${backdropPath}`}
+                source={`${IMAGE_BASE}/w1280${displayPath}`}
                 style={{ width: backdropWidth, height: backdropHeight }}
                 contentFit="cover"
                 contentPosition="center"

@@ -99,6 +99,25 @@ export function chooseBackdrop(
       };
 }
 
+// PROTOTYPE (quick experiment, home hero backdrop): a single episode's
+// TMDB stills, the same TmdbImage shape as backdrops/logos above, just
+// under its own "stills" key (TMDB's own
+// /tv/{id}/season/{s}/episode/{e}/images endpoint response shape).
+export interface TmdbEpisodeImages {
+  stills?: TmdbImage[];
+}
+
+// "The highest-rated still": same rule as any other TMDB image list here
+// (byVotes: vote_average, then vote_count). No language/textless filter,
+// unlike chooseBackdrop: episode stills are plain screenshots, not
+// promotional art that can carry alternate-language text baked in.
+export function chooseEpisodeStill(
+  images: TmdbEpisodeImages,
+): TmdbImage | null {
+  const stills = (images.stills ?? []).slice().sort(byVotes);
+  return stills[0] ?? null;
+}
+
 // "The most voted English logo, PNG preferred."
 export function chooseLogo(images: TmdbImages): TmdbImage | null {
   const english = (images.logos ?? [])
