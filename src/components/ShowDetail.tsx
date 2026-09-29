@@ -5,21 +5,25 @@
 // "Open in" and the territory state are MVP. Visual design comes later,
 // so styling here stays minimal and functional.
 
+import * as Haptics from "expo-haptics";
+import { Image } from "expo-image";
+import * as Linking from "expo-linking";
 import { useRef, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { Image } from "expo-image";
-import * as Haptics from "expo-haptics";
-import * as Linking from "expo-linking";
 
-import { TmdbCredit } from "./TmdbCredit";
-import { TvMazeCredit } from "./TvMazeCredit";
+import type {
+  TvMazeEpisode,
+  TvMazeSeason,
+  TvMazeShow,
+  TvMazeShowWithEmbeds,
+} from "@/api/tvmaze-types";
 import { useFollowList } from "@/hooks/useFollowList";
 import { useShow } from "@/hooks/useShow";
 import { useSwedishService } from "@/hooks/useSwedishService";
 import { useToday } from "@/hooks/useToday";
+import type { LocalDate } from "@/logic/local-date";
 import { plainTextSummary } from "@/logic/search-results";
 import { serviceLink } from "@/logic/service-link";
-import { availabilityText, openInLink } from "@/logic/swedish-service";
 import {
   allEpisodesAvailable,
   currentSeasonNumber,
@@ -35,14 +39,10 @@ import {
   type NextCard,
   type SeasonTab,
 } from "@/logic/show-detail";
-import type { LocalDate } from "@/logic/local-date";
-import type {
-  TvMazeEpisode,
-  TvMazeSeason,
-  TvMazeShow,
-  TvMazeShowWithEmbeds,
-} from "@/api/tvmaze-types";
+import { availabilityText, openInLink } from "@/logic/swedish-service";
 import { accent, withLightness } from "@/theme/color";
+import { TmdbCredit } from "./TmdbCredit";
+import { TvMazeCredit } from "./TvMazeCredit";
 
 function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
