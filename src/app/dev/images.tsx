@@ -197,7 +197,6 @@ function ShowImagesRow({
                 style={styles.logo}
                 contentFit="contain"
                 contentPosition="left"
-                tintColor={t.ink}
               />
             ) : (
               <Text style={styles.display}>{show.name}</Text>

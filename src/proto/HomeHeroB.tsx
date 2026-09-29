@@ -1546,7 +1546,6 @@ const ContentLayer = memo(function ContentLayer({
             style={styles.logo}
             contentFit="contain"
             contentPosition="left"
-            tintColor={t.ink}
             accessibilityLabel={show.name}
           />
         ) : (
