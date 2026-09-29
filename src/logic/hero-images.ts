@@ -1,22 +1,11 @@
-// PROTOTYPE (proto/home-backdrop, not for merge): the image rules from
-// docs/design/design-system.md, "Imagery". Pure and free of app imports, so
-// the throwaway report script can run it too.
+// The image rules from docs/design/design-system.md, "Imagery": which TMDB
+// image the hero shows, ranked from raw TMDB image-list data.
 
-export interface TmdbImage {
-  file_path: string;
-  iso_639_1: string | null;
-  vote_average: number;
-  vote_count: number;
-  width: number;
-  height: number;
-}
-
-export interface TmdbImages {
-  backdrops?: TmdbImage[];
-  logos?: TmdbImage[];
-}
-
-export const IMAGE_BASE = "https://image.tmdb.org/t/p";
+import type {
+  TmdbEpisodeImages,
+  TmdbImage,
+  TmdbImages,
+} from "@/api/tmdb-types";
 
 // Textless images have no language (TMDB: iso_639_1 null; newer uploads can
 // use "xx" for "no language").
@@ -32,13 +21,13 @@ export function textlessBackdrops(images: TmdbImages): TmdbImage[] {
   return (images.backdrops ?? []).filter(isTextless).sort(byVotes);
 }
 
-// PROTOTYPE (home hero backdrop): the highest-rated backdrop TMDB has for
-// the show, textless preferred. A fixed ranking (byVotes: vote_average,
-// then vote_count) of whatever backdrops currently exist, textlessBackdrops
-// first (already byVotes-sorted, so its own first element is the answer),
-// falling back to the same ranking over every backdrop, textless or not,
-// only when there's no textless one at all. This is the hero's backdrop
-// fallback when an episode has no TMDB still.
+// The highest-rated backdrop TMDB has for the show, textless preferred. A
+// fixed ranking (byVotes: vote_average, then vote_count) of whatever
+// backdrops currently exist, textlessBackdrops first (already byVotes-
+// sorted, so its own first element is the answer), falling back to the same
+// ranking over every backdrop, textless or not, only when there's no
+// textless one at all. This is the hero's backdrop fallback when an episode
+// has no TMDB still.
 export function chooseHighestRatedBackdrop(
   images: TmdbImages,
 ): TmdbImage | null {
@@ -47,14 +36,6 @@ export function chooseHighestRatedBackdrop(
     return textless[0];
   }
   return (images.backdrops ?? []).slice().sort(byVotes)[0] ?? null;
-}
-
-// PROTOTYPE (home hero backdrop): a single episode's TMDB stills, the same
-// TmdbImage shape as backdrops/logos above, just under its own "stills" key
-// (TMDB's own /tv/{id}/season/{s}/episode/{e}/images endpoint response
-// shape).
-export interface TmdbEpisodeImages {
-  stills?: TmdbImage[];
 }
 
 // "The highest-rated still": same rule as any other TMDB image list here

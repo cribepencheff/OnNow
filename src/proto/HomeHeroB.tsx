@@ -37,10 +37,11 @@ import type {
   TvMazeShow,
   TvMazeShowWithEmbeds,
 } from "@/api/tvmaze-types";
-import { useAccessibilityFlags } from "./accessibility";
-import { IMAGE_BASE } from "./images";
-import { t, type } from "./tokens";
-import { useEpisodeStill, useShowImages } from "./useShowImages";
+import { IMAGE_BASE } from "@/api/tmdb-types";
+import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
+import { useEpisodeStill } from "@/hooks/useEpisodeStill";
+import { useShowImages } from "@/hooks/useShowImages";
+import { t, type } from "@/theme/tokens";
 
 // FlatList is VirtualizedList-based: native-driven onScroll (below, for the
 // backdrop parallax and slide crossfade) needs it wrapped in

@@ -1,9 +1,8 @@
-// PROTOTYPE (proto/home-backdrop, not for merge): chooseHighestRatedBackdrop,
-// the home hero backdrop fallback's textless-preferred, highest-rated
-// ranking.
+// chooseHighestRatedBackdrop, the home hero backdrop fallback's
+// textless-preferred, highest-rated ranking.
 
-import { chooseHighestRatedBackdrop } from "./images";
-import type { TmdbImage } from "./images";
+import { chooseHighestRatedBackdrop } from "./hero-images";
+import type { TmdbImage } from "@/api/tmdb-types";
 
 function image(overrides: Partial<TmdbImage>): TmdbImage {
   return {

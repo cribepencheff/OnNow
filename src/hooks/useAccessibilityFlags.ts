@@ -1,6 +1,5 @@
-// PROTOTYPE (proto/home-backdrop, not for merge): Reduce Motion and
-// VoiceOver state, shared by the hero carousel and the "+" button. Both
-// come from React Native's built-in AccessibilityInfo, no new dependency.
+// Reduce Motion and VoiceOver state, shared by the hero carousel. Both come
+// from React Native's built-in AccessibilityInfo, no new dependency.
 
 import { useEffect, useState } from "react";
 import { AccessibilityInfo } from "react-native";

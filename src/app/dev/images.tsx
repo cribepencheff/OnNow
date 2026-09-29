@@ -27,10 +27,11 @@ import {
   OpenInSlot,
   type HeroAvailability,
 } from "@/proto/HomeHeroB";
-import { IMAGE_BASE, type TmdbImage } from "@/proto/images";
-import { t, type } from "@/proto/tokens";
-import { useEpisodeStill, useShowImages } from "@/proto/useShowImages";
+import { IMAGE_BASE, type TmdbImage } from "@/api/tmdb-types";
 import type { TvMazeEpisode, TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
+import { useEpisodeStill } from "@/hooks/useEpisodeStill";
+import { useShowImages } from "@/hooks/useShowImages";
+import { t, type } from "@/theme/tokens";
 
 // PROTOTYPE: the four Open-in states with synthetic inputs, not live TMDB
 // data. "Lookup failed" and "unmapped service" have no live example left

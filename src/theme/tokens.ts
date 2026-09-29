@@ -1,5 +1,8 @@
-// PROTOTYPE (proto/home-backdrop, not for merge): values from
-// docs/design/tokens.json, used as plain constants here.
+// Values from docs/design/tokens.json, used as plain constants here.
+//
+// t.accent currently duplicates theme/color.ts's accent (both #75e4af,
+// different casing). Left as two sources for now; reconcile in a later
+// cleanup rather than in this move.
 export const t = {
   bg: "#0b0c0f",
   bgTint: "#0d1814",

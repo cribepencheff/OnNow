@@ -1,30 +1,32 @@
-// PROTOTYPE (proto/home-backdrop, not for merge): TMDB backdrop, logo and
-// episode still for a followed show, per docs/design/design-system.md
-// "Imagery". Uses the same EXPO_PUBLIC_TMDB_API_KEY as
-// src/api/tmdb-client.ts.
+// TMDB backdrop, logo and episode still for a followed show, per
+// docs/design/design-system.md "Imagery". Uses the same
+// EXPO_PUBLIC_TMDB_API_KEY as src/api/tmdb-client.ts.
 //
 // The hero shows the episode's own TMDB still when it has one
-// (useEpisodeStill below), falling back to the highest-rated backdrop
-// (chooseHighestRatedBackdrop). Both are recomputed on each run; there is
-// no longer a stored "official" pick or a re-pick window (removed with the
-// /tv/{id}/changes machinery once episode stills were adopted).
+// (useEpisodeStill, src/hooks/useEpisodeStill.ts), falling back to the
+// highest-rated backdrop (chooseHighestRatedBackdrop). Both are recomputed
+// on each run; there is no longer a stored "official" pick or a re-pick
+// window (removed with the /tv/{id}/changes machinery once episode stills
+// were adopted).
+//
+// tmdb() and tmdbTvIdFor() below are this hook's own fetch helper, separate
+// from src/api/tmdb-client.ts's createTmdbClient (different retry
+// strategy, no injected fetchFn). Folding them into createTmdbClient is a
+// later piece of work; useEpisodeStill.ts imports tmdb() from here for now.
 
 import { useQuery } from "@tanstack/react-query";
 
-import type { TvMazeEpisode, TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
+import type { TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
+import type { TmdbImage } from "@/api/tmdb-types";
 import {
-  chooseEpisodeStill,
   chooseHighestRatedBackdrop,
   chooseLogo,
   textlessBackdrops,
-  type TmdbEpisodeImages,
-  type TmdbImage,
-  type TmdbImages,
-} from "./images";
+} from "@/logic/hero-images";
 
 const KEY = process.env.EXPO_PUBLIC_TMDB_API_KEY;
 
-async function tmdb<T>(path: string): Promise<T> {
+export async function tmdb<T>(path: string): Promise<T> {
   if (!KEY) {
     throw new Error("No TMDB key (EXPO_PUBLIC_TMDB_API_KEY)");
   }
@@ -72,6 +74,11 @@ export interface ShowImages {
   logo: TmdbImage | null;
 }
 
+interface TmdbImagesResponse {
+  backdrops?: TmdbImage[];
+  logos?: TmdbImage[];
+}
+
 export function useShowImages(
   show: TvMazeShowWithEmbeds,
   timeZone: string,
@@ -108,7 +115,7 @@ export function useShowImages(
         };
       }
 
-      const images = await tmdb<TmdbImages>(
+      const images = await tmdb<TmdbImagesResponse>(
         `/tv/${tmdbId}/images?include_image_language=en,null,xx`,
       );
       const textless = textlessBackdrops(images);
@@ -121,49 +128,6 @@ export function useShowImages(
         textlessCount: textless.length,
         logo: chooseLogo(images),
       };
-    },
-  });
-}
-
-export interface EpisodeStill {
-  filePath: string;
-}
-
-// PROTOTYPE (quick experiment, home hero backdrop): tries the episode's
-// own TMDB stills before falling back to the show's highest-rated backdrop
-// (useShowImages above). Reuses useShowImages purely to get the
-// already-resolved tmdbId; TanStack Query dedupes the identical
-// ["proto-images-v3", show.id, todayDate] key across both calls (same as
-// HeroPage and ContentLayer already share it today), so this never
-// double-fetches the show's own images. The still query itself is keyed by
-// season/episode number, not todayDate: a released episode's own stills
-// don't change day to day the way the show's images can, so there's no
-// reason to refetch it on that schedule.
-export function useEpisodeStill(
-  show: TvMazeShowWithEmbeds,
-  episode: TvMazeEpisode,
-  timeZone: string,
-  todayDate: string,
-) {
-  const { data: showImages } = useShowImages(show, timeZone, todayDate);
-  const tmdbId = showImages?.tmdbId ?? null;
-
-  return useQuery({
-    queryKey: ["proto-episode-still", show.id, episode.season, episode.number],
-    staleTime: Infinity,
-    // Regular episodes always have a number (FR-037, no specials); null
-    // here would only mean this episode somehow slipped through that.
-    enabled: tmdbId !== null && episode.number !== null,
-    retry: KEY ? 3 : false,
-    queryFn: async (): Promise<EpisodeStill | null> => {
-      if (tmdbId === null || episode.number === null) {
-        return null;
-      }
-      const images = await tmdb<TmdbEpisodeImages>(
-        `/tv/${tmdbId}/season/${episode.season}/episode/${episode.number}/images`,
-      );
-      const still = chooseEpisodeStill(images);
-      return still ? { filePath: still.file_path } : null;
     },
   });
 }

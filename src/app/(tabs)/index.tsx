@@ -22,9 +22,9 @@ import { useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
 
 import { HomeCard } from "@/components/HomeCard";
-import { useAccessibilityFlags } from "@/proto/accessibility";
 import { findHeroSlides, HeroPager, type HeroSlide } from "@/proto/HomeHeroB";
-import { t as protoTokens } from "@/proto/tokens";
+import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
+import { t as protoTokens } from "@/theme/tokens";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useToday } from "@/hooks/useToday";
 import { deriveHomeViewState, homeCardMetaLine } from "@/logic/home";
