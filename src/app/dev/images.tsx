@@ -22,11 +22,8 @@ import { useSwedishService } from "@/hooks/useSwedishService";
 import { useToday } from "@/hooks/useToday";
 import { latestEpisode } from "@/logic/show-detail";
 import { sortShowsByTitle } from "@/logic/shows-list";
-import {
-  heroAvailability,
-  OpenInSlot,
-  type HeroAvailability,
-} from "@/proto/HomeHeroB";
+import { OpenInSlot } from "@/components/Hero/HeroPage";
+import { heroAvailability, type HeroAvailability } from "@/logic/hero-carousel";
 import { IMAGE_BASE, type TmdbImage } from "@/api/tmdb-types";
 import type { TvMazeEpisode, TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 import { useEpisodeStill } from "@/hooks/useEpisodeStill";

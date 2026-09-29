@@ -1,11 +1,11 @@
-// PROTOTYPE (proto/home-backdrop, not for merge): the compact carousel
-// indicator's settled-pageIndex-only math (PageIndicator/Dot in
-// HomeHeroB.tsx): dotWindowRange and dotKinds. Also pagingReleaseTarget, the
-// page a manual swipe commits to at release (onScrollEndDrag), ahead of the
-// full momentum tail; pullStretchTransform, the pull-to-refresh backdrop
-// stretch's top-pin + zoom math; and the bidirectional loop's physical/
-// logical index mapping (loopSlideData, logicalToPhysical,
-// physicalToLogical, isLoopWrapSlot, contentMountFrames).
+// The compact carousel indicator's settled-pageIndex-only math
+// (PageIndicator/Dot, components/Hero/PageIndicator.tsx): dotWindowRange
+// and dotKinds. Also pagingReleaseTarget, the page a manual swipe commits
+// to at release (onScrollEndDrag), ahead of the full momentum tail;
+// pullStretchTransform, the pull-to-refresh backdrop stretch's top-pin +
+// zoom math; and the bidirectional loop's physical/logical index mapping
+// (loopSlideData, logicalToPhysical, physicalToLogical, isLoopWrapSlot,
+// contentMountFrames).
 
 import {
   contentMountFrames,
@@ -17,7 +17,7 @@ import {
   pagingReleaseTarget,
   physicalToLogical,
   pullStretchTransform,
-} from "./HomeHeroB";
+} from "./hero-carousel";
 
 describe("dotWindowRange", () => {
   it("renders every dot, with no edge hint, when count fits within one window", () => {

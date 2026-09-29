@@ -7,7 +7,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Animated,
-  FlatList,
   Pressable,
   RefreshControl,
   StyleSheet,
@@ -21,15 +20,14 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
 
-import { HomeCard } from "@/components/HomeCard";
-import { findHeroSlides, HeroPager, type HeroSlide } from "@/proto/HomeHeroB";
+import { HeroPager } from "@/components/Hero/HeroPager";
 import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
-import { t as protoTokens } from "@/theme/tokens";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useToday } from "@/hooks/useToday";
-import { deriveHomeViewState, homeCardMetaLine } from "@/logic/home";
-import type { ShowEpisodesToday } from "@/logic/episodes-today";
+import { deriveHomeViewState } from "@/logic/home";
+import { findHeroSlides, type HeroSlide } from "@/logic/hero-carousel";
 import { accent } from "@/theme/color";
+import { t as protoTokens } from "@/theme/tokens";
 
 function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -100,8 +98,6 @@ export default function HomeScreen() {
       setRefreshingActive(false);
     }
   }, [refetch]);
-
-  const [pageIndex, setPageIndex] = useState(0);
 
   const state = deriveHomeViewState({
     followedCount,
@@ -231,17 +227,6 @@ export default function HomeScreen() {
       extrapolateRight: "clamp",
     });
   }, [scrollY, pullRestOffsetY]);
-
-  const handleMomentumScrollEnd = useCallback(
-    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const { contentOffset, layoutMeasurement } = event.nativeEvent;
-      if (layoutMeasurement.width === 0) {
-        return;
-      }
-      setPageIndex(Math.round(contentOffset.x / layoutMeasurement.width));
-    },
-    [],
-  );
 
   return (
     <View style={[styles.container, { backgroundColor: protoTokens.bg }]}>
@@ -413,69 +398,6 @@ function PullToRefreshIndicator({
   );
 }
 
-interface EpisodePagerProps {
-  shows: ShowEpisodesToday[];
-  badgeLabel: string;
-  width: number;
-  pageIndex: number;
-  onMomentumScrollEnd: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
-}
-
-// Today's shows (FR-004, FR-005) and the next day with episodes (FR-006)
-// use the same pager: one card per show, paged horizontally, with a badge
-// above (the count, or the day and the count) and page dots below.
-function EpisodePager({
-  shows,
-  badgeLabel,
-  width,
-  pageIndex,
-  onMomentumScrollEnd,
-}: EpisodePagerProps) {
-  const router = useRouter();
-
-  return (
-    <View style={styles.pagerContainer}>
-      <Text style={styles.badge}>{badgeLabel}</Text>
-      <FlatList
-        testID="home-pager"
-        data={shows}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(item) => String(item.show.id)}
-        onMomentumScrollEnd={onMomentumScrollEnd}
-        renderItem={({ item }) => (
-          <View style={{ width }}>
-            <HomeCard
-              show={item.show}
-              metaLine={homeCardMetaLine(item.show, item.episodes)}
-              onPress={() =>
-                router.push({
-                  pathname: "/show/[id]",
-                  params: { id: String(item.show.id) },
-                })
-              }
-            />
-          </View>
-        )}
-      />
-      {shows.length > 1 && (
-        <View
-          style={styles.dots}
-          accessibilityLabel={`Show ${pageIndex + 1} of ${shows.length}`}
-        >
-          {shows.map((show, index) => (
-            <View
-              key={show.show.id}
-              style={[styles.dot, index === pageIndex && styles.dotActive]}
-            />
-          ))}
-        </View>
-      )}
-    </View>
-  );
-}
-
 function EmptyFollowList({ onPress }: { onPress: () => void }) {
   return (
     <Pressable
@@ -499,32 +421,6 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-  },
-  pagerContainer: {
-    flex: 1,
-    paddingHorizontal: 16,
-  },
-  badge: {
-    fontSize: 13,
-    fontWeight: "700",
-    letterSpacing: 0.5,
-    color: "#666666",
-    marginBottom: 8,
-  },
-  dots: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 6,
-    paddingVertical: 12,
-  },
-  dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: "#D0D0D0",
-  },
-  dotActive: {
-    backgroundColor: accent,
   },
   emptyState: {
     flex: 1,
