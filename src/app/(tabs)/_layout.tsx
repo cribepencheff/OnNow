@@ -2,11 +2,10 @@ import { Pressable, type GestureResponderEvent } from "react-native";
 import { SymbolView } from "expo-symbols";
 import { Tabs, useRouter } from "expo-router";
 
-// PROTOTYPE (proto/home-backdrop): the "+" and its image review screen
-// moved off Home (see below); the image review screen is now reached by a
-// long press on the Shows tab instead, development builds only. Typed
-// loosely rather than importing expo-router's internal
-// BottomTabBarButtonProps, which is not part of its public exports.
+// The hidden image review screen is reached by a long press on the Shows
+// tab, development builds only. Typed loosely rather than importing
+// expo-router's internal BottomTabBarButtonProps, which is not part of
+// its public exports.
 function ShowsTabButton(props: {
   children?: React.ReactNode;
   onPress?: (event: GestureResponderEvent) => void;
@@ -24,9 +23,9 @@ function ShowsTabButton(props: {
 export default function TabLayout() {
   return (
     <Tabs
-      // PROTOTYPE (proto/home-backdrop): the translucent tab bar of
-      // direction B: surface at 72% with a hairline top edge; active ink,
-      // others ink-subtle. No background blur (expo-blur is not installed).
+      // The translucent tab bar: surface at 72% with a hairline top edge;
+      // active ink, others ink-subtle. No background blur (expo-blur is
+      // not installed).
       screenOptions={{
         tabBarStyle: {
           position: "absolute",
@@ -50,7 +49,7 @@ export default function TabLayout() {
               size={size}
             />
           ),
-          // PROTOTYPE: no header; the "+" floats over the backdrop.
+          // No native header: the hero backdrop fills the screen.
           headerShown: false,
         }}
       />
@@ -80,7 +79,7 @@ export default function TabLayout() {
               size={size}
             />
           ),
-          // PROTOTYPE: long press opens the hidden image review screen.
+          // Long press opens the hidden image review screen.
           tabBarButton: ShowsTabButton,
         }}
       />

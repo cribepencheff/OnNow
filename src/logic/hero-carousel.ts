@@ -263,7 +263,7 @@ export function pullStretchTransform(
 // on Shows and Search, where there is no button to contradict. Exported
 // for the dev images screen, to review every followed show's availability
 // state side by side (Home only ever shows the current one).
-export function homeHeroMetaLine(episodes: TvMazeEpisode[]): string {
+export function heroMetaLine(episodes: TvMazeEpisode[]): string {
   const code = episodesLabel(episodes);
   const title = episodes.length === 1 ? episodes[0]?.name : null;
   return title ? `${code} · ${title}` : code;

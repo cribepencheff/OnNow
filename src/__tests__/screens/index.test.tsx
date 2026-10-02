@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
-import HomeScreen, { HomeHeaderAddButton } from "@/app/(tabs)/index";
+import HomeScreen from "@/app/(tabs)/index";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import type { TvMazeEpisode, TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 
@@ -336,21 +336,5 @@ describe("HomeScreen", () => {
     expect(
       screen.getByText("Couldn't load your shows. Pull to refresh."),
     ).toBeTruthy();
-  });
-});
-
-// Rendered through the Home tab's native header (`(tabs)/_layout.tsx`), not
-// HomeScreen itself. (No longer covered by a real-navigation-header test:
-// the "+" button this exercised was removed from Home, 86d0a4a. This
-// component itself is now unused by the app and untested elsewhere; kept
-// here since it still exports cleanly and nothing has asked for its
-// removal yet.)
-describe("HomeHeaderAddButton (FR-007)", () => {
-  it("opens Search when pressed", async () => {
-    await render(<HomeHeaderAddButton />);
-
-    fireEvent.press(screen.getByRole("button", { name: "Add show" }));
-
-    expect(mockPush).toHaveBeenCalledWith("/search");
   });
 });

@@ -1,5 +1,5 @@
-// PROTOTYPE (proto/home-backdrop, not for merge): a hidden developer screen,
-// development builds only. Lists every followed show with what the hero
+// A hidden developer screen, development builds only. Lists every
+// followed show with what the hero
 // would show (the episode still, or the highest-rated backdrop fallback),
 // its logo, and the most and second most voted textless backdrops side by
 // side for reviewing the ranking. Opened by a long press on the Shows tab.
@@ -30,8 +30,8 @@ import { useEpisodeStill } from "@/hooks/useEpisodeStill";
 import { useShowImages } from "@/hooks/useShowImages";
 import { t, type } from "@/theme/tokens";
 
-// PROTOTYPE: the four Open-in states with synthetic inputs, not live TMDB
-// data. "Lookup failed" and "unmapped service" have no live example left
+// The four Open-in states with synthetic inputs, not live TMDB data.
+// "Lookup failed" and "unmapped service" have no live example left
 // in the test set right now (Pluto TV and BritBox were just added to the
 // link table), so this is the only way to see all four in one place.
 const FORCED_STATES: { label: string; availability: HeroAvailability }[] = [
@@ -174,9 +174,9 @@ function ShowImagesRow({
             TMDB {data.tmdbId ?? "not found"} · textless backdrops:{" "}
             {data.textlessCount} · English logo: {data.logo ? "yes" : "no"}
           </Text>
-          {/* PROTOTYPE: what Home's "Open in" slot would show for this show
-              right now, one of the four states, reviewed here across the
-              whole test set since Home itself only shows today's shows. */}
+          {/* What Home's "Open in" slot would show for this show right
+              now, one of the four states, reviewed here across the whole
+              test set since Home itself only shows today's shows. */}
           <Text style={styles.meta}>
             Open in slot:{" "}
             {availability.kind === "loading"

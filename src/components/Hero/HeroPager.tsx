@@ -25,6 +25,7 @@ import {
   physicalToLogical,
   type HeroSlide,
 } from "@/logic/hero-carousel";
+import { REF_HEIGHT } from "@/theme/tokens";
 import { ContentLayer, HeroPage } from "./HeroPage";
 import { PageIndicator } from "./PageIndicator";
 
@@ -35,8 +36,6 @@ import { PageIndicator } from "./PageIndicator";
 const AnimatedFlatList = Animated.createAnimatedComponent(
   FlatList,
 ) as unknown as typeof FlatList;
-
-const REF_HEIGHT = 844;
 
 // One constant, easy to change: how long each slide dwells before the
 // carousel auto-advances to the next one.

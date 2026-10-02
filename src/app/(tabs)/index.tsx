@@ -18,7 +18,6 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { SymbolView } from "expo-symbols";
 
 import { HeroPager } from "@/components/Hero/HeroPager";
 import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
@@ -27,37 +26,10 @@ import { useToday } from "@/hooks/useToday";
 import { deriveHomeViewState } from "@/logic/home";
 import { findHeroSlides, type HeroSlide } from "@/logic/hero-carousel";
 import { accent } from "@/theme/color";
-import { t as protoTokens } from "@/theme/tokens";
+import { t as tokens } from "@/theme/tokens";
 
 function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
-}
-
-// FR-007: the "+" in Home's header, opening Search. Rendered through the
-// tab navigator's own `headerRight` (configured in `(tabs)/_layout.tsx`)
-// rather than as custom content inside the screen body: a previous version
-// placed it in an in-screen row, which did not render in Expo Go. Using the
-// native header slot puts it under React Navigation's own header layout
-// instead of this screen's.
-export function HomeHeaderAddButton() {
-  const router = useRouter();
-
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel="Add show"
-      onPress={() => router.push("/search")}
-      hitSlop={16}
-      style={styles.headerAddButton}
-      testID="home-add-show"
-    >
-      <SymbolView
-        name={{ ios: "plus", android: "add", web: "add" }}
-        tintColor={accent}
-        size={22}
-      />
-    </Pressable>
-  );
 }
 
 export default function HomeScreen() {
@@ -107,10 +79,10 @@ export default function HomeScreen() {
     nextDayEpisodes,
   });
 
-  // PROTOTYPE (proto/home-backdrop): the hero's 7-day horizon (see
-  // HOME_HERO_HORIZON_DAYS in HomeHeroB.tsx). Falls back to the existing
-  // single nearest-day pager (state.kind === "next-day") only when nothing
-  // followed has an episode within the horizon at all.
+  // The hero's 7-day horizon (see HOME_HERO_HORIZON_DAYS in
+  // logic/hero-carousel.ts). Falls back to the existing single nearest-day
+  // pager (state.kind === "next-day") only when nothing followed has an
+  // episode within the horizon at all.
   const heroSlides = useMemo(
     () => findHeroSlides(followedShows, deviceTimeZone(), todayDate),
     [followedShows, todayDate],
@@ -118,12 +90,12 @@ export default function HomeScreen() {
 
   const openSearch = useCallback(() => router.push("/search"), [router]);
 
-  // PROTOTYPE (proto/home-backdrop): the outer ScrollView's raw vertical
-  // offset, native-driven, and how far it's been pulled past its resting
-  // top (see pullDistance below) drive HeroPager's stretchy backdrop on
-  // pull-to-refresh (Apple TV Store tab style: the backdrop's top edge
-  // stays pinned and the image zooms into the pulled gap, while the
-  // foreground moves down with the pull as normal).
+  // The outer ScrollView's raw vertical offset, native-driven, and how far
+  // it's been pulled past its resting top (see pullDistance below) drive
+  // HeroPager's stretchy backdrop on pull-to-refresh (Apple TV Store tab
+  // style: the backdrop's top edge stays pinned and the image zooms into
+  // the pulled gap, while the foreground moves down with the pull as
+  // normal).
   const [scrollY] = useState(() => new Animated.Value(0));
   // The ScrollView's real resting offset: 0 whenever contentInset.top is 0
   // (contentInsetAdjustmentBehavior="never" keeps it that way here), but
@@ -229,7 +201,7 @@ export default function HomeScreen() {
   }, [scrollY, pullRestOffsetY]);
 
   return (
-    <View style={[styles.container, { backgroundColor: protoTokens.bg }]}>
+    <View style={[styles.container, { backgroundColor: tokens.bg }]}>
       <Animated.ScrollView
         contentContainerStyle={styles.scrollContent}
         contentInsetAdjustmentBehavior="never"
@@ -254,7 +226,6 @@ export default function HomeScreen() {
           />
         }
       >
-        {/* PROTOTYPE (proto/home-backdrop): Home, direction B. */}
         {heroSlides.length > 0 && (
           <HeroPager
             slides={heroSlides}
@@ -306,10 +277,10 @@ export default function HomeScreen() {
   );
 }
 
-// PROTOTYPE (proto/home-backdrop): the visible pull-to-refresh spinner,
-// drawn ON TOP of the hero backdrop (the native RefreshControl's own
-// indicator is hidden, see the RefreshControl above for why). Pinned just
-// below the safe-area top and staying put while the content moves (the
+// The visible pull-to-refresh spinner, drawn ON TOP of the hero backdrop
+// (the native RefreshControl's own indicator is hidden, see the
+// RefreshControl above for why). Pinned just below the safe-area top and
+// staying put while the content moves (the
 // Twitter/X pattern), rather than riding the gap the pull opens: the gap is
 // covered by the pinned, zooming backdrop here, so a gap-centred spinner
 // would sit behind it.
@@ -365,7 +336,7 @@ function PullToRefreshIndicator({
 
   // Built once (useMemo): Animated.add + .interpolate build native graph
   // nodes, and rebuilding them each render would leave them stale (same
-  // class of bug as the backdrop's pullTransform in HomeHeroB.tsx). Both
+  // class of bug as the backdrop's pullTransform in HeroPage.tsx). Both
   // inputs are native-driven, so the sum and its clamp stay native too.
   const opacity = useMemo(
     () =>
@@ -415,9 +386,6 @@ function EmptyFollowList({ onPress }: { onPress: () => void }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  headerAddButton: {
-    paddingHorizontal: 16,
   },
   scrollContent: {
     flexGrow: 1,

@@ -77,8 +77,8 @@ beforeEach(() => {
 // CRI-79, FR-030, PRD 5.6: Show detail opens from Home, Calendar, Shows and
 // Search, through the real navigation tree.
 describe("Show detail (real navigation)", () => {
-  // Home's hero (direction B, proto/home-backdrop) has no tap-to-open
-  // handler yet: nothing in components/Hero/HeroPager.tsx or HeroPage.tsx
+  // Home's hero has no tap-to-open handler yet: nothing in
+  // components/Hero/HeroPager.tsx or HeroPage.tsx
   // navigates to /show/[id] (the only onPress anywhere in the hero opens
   // the external "Open in" link). FR-030 is therefore not met on Home
   // right now. Left pending rather than deleted or rewritten to pass

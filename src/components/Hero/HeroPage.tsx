@@ -28,13 +28,11 @@ import {
   HERO_CROSSFADE_FLOOR,
   HERO_PARALLAX_FACTOR,
   heroAvailability,
-  homeHeroMetaLine,
+  heroMetaLine,
   type HeroAvailability,
   type HeroSlide,
 } from "@/logic/hero-carousel";
-import { t, type } from "@/theme/tokens";
-
-const REF_HEIGHT = 844;
+import { REF_HEIGHT, t, type } from "@/theme/tokens";
 
 // Short screens (iPhone SE is 667pt tall) tighten the vertical gaps below
 // the meta line so the page dots clear the tab bar at rest. The threshold
@@ -397,8 +395,8 @@ export const ContentLayer = memo(function ContentLayer({
   const handleButtonLayout = useCallback(
     (event: LayoutChangeEvent) => {
       const { y, height: buttonHeight } = event.nativeEvent.layout;
-      // Page dots sit DOTS_GAP below the button (design system, "Home,
-      // direction B"; tighter on short screens). The button's own y and
+      // Page dots sit DOTS_GAP below the button (design system, tighter on
+      // short screens). The button's own y and
       // measured height already reflect the tightened slot on short screens,
       // and y is relative to `content`, itself offset from the slide's top
       // by contentTop.
@@ -466,7 +464,7 @@ export const ContentLayer = memo(function ContentLayer({
           </View>
         )}
         <Text style={styles.meta} numberOfLines={1}>
-          {`${formatLabelDate(slide.localDate, todayDate).toUpperCase()} · ${homeHeroMetaLine(
+          {`${formatLabelDate(slide.localDate, todayDate).toUpperCase()} · ${heroMetaLine(
             slide.episodes,
           )}`}
         </Text>
