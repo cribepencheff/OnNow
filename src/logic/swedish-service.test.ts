@@ -113,16 +113,34 @@ describe("openInLink (FR-014, ADR 0004, CRI-82)", () => {
     );
   });
 
-  it("skips services not in the table and takes the next known one (Ludwig: BritBox, then TV4 Play)", () => {
+  it("opens the first known service in TMDB's order (Ludwig: BritBox)", () => {
     expect(openInLink(swedishProviders(providersLudwig), null)).toEqual({
+      service: "BritBox",
+      url: "https://www.britbox.com/se",
+    });
+  });
+
+  it("opens the service's start page for Pluto TV (Hell's Kitchen)", () => {
+    expect(openInLink(swedishProviders(providersHellsKitchen), null)).toEqual({
+      service: "Pluto TV",
+      url: "https://pluto.tv/se",
+    });
+  });
+
+  it("skips a service not in the table and takes the next known one", () => {
+    const providers = [
+      { providerId: 497, providerName: "Tele2 Play" },
+      { providerId: 1944, providerName: "TV4 Play" },
+    ];
+    expect(openInLink(providers, null)).toEqual({
       service: "TV4 Play",
       url: "https://www.tv4play.se",
     });
   });
 
-  it("gives no link when no Swedish service is in the table (Hell's Kitchen: Pluto TV)", () => {
+  it("gives no link when no Swedish service is in the table (Tele2 Play)", () => {
     expect(
-      openInLink(swedishProviders(providersHellsKitchen), null),
+      openInLink([{ providerId: 497, providerName: "Tele2 Play" }], null),
     ).toBeNull();
   });
 

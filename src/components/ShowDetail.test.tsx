@@ -376,15 +376,16 @@ describe("ShowDetail", () => {
     expect(screen.queryByRole("button", { name: /^Open in/ })).toBeNull();
   });
 
-  it('CRI-84: says "On Pluto TV" as text, without a button, for a service not in the link table (Hell\'s Kitchen)', async () => {
+  it("CRI-84: keeps the Open in button for Pluto TV, now that it is in the link table (Hell's Kitchen)", async () => {
     mockShow(showSlowHorsesFixture);
     mockFollowed(true);
     mockSwedishServices([PLUTO_TV]);
     await render(<ShowDetail showId={45039} />);
 
-    expect(screen.getByText("On Pluto TV")).toBeTruthy();
-    expect(screen.queryByRole("button", { name: /^Open in/ })).toBeNull();
-    expect(screen.queryByRole("button", { name: /Pluto/ })).toBeNull();
+    expect(
+      screen.getByRole("button", { name: "Open in Pluto TV" }),
+    ).toBeTruthy();
+    expect(screen.queryByText(/^On /)).toBeNull();
   });
 
   it("CRI-84: keeps the Open in button and no text for a linked service (Neagley)", async () => {
