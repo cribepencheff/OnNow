@@ -604,15 +604,14 @@ describe("ShowDetail", () => {
     expect(screen.queryByTestId("show-detail-availability")).toBeNull();
   });
 
-  it("FR-014: falls back to TVmaze's direct link when there is no TMDB key", async () => {
+  it("CRI-106: shows no Open in without a TMDB answer, not TVmaze's direct link", async () => {
     mockShow(showSlowHorsesFixture);
     mockFollowed(true);
     mockStreamingServices(null);
     await render(<ShowDetail showId={45039} />);
 
-    expect(
-      screen.getByRole("button", { name: "Open in Apple TV" }),
-    ).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /^Open in/ })).toBeNull();
+    expect(screen.queryByTestId("show-detail-availability")).toBeNull();
   });
 
   it("FR-029, CRI-86: shows Open in before following, next to Follow", async () => {

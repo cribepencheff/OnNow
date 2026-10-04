@@ -11,7 +11,7 @@ import {
   type LocalDate,
 } from "@/logic/local-date";
 import { formatLabelDate, MONTHS, WEEKDAYS } from "@/logic/next-episode-label";
-import { serviceLink, type ServiceLink } from "@/logic/service-link";
+import type { ServiceLink } from "@/logic/service-link";
 import {
   availabilityText,
   NOT_ON_TMDB,
@@ -350,15 +350,10 @@ export function heroAvailability(
   officialSite: string | null,
   region: string | undefined,
 ): HeroAvailability {
-  // Not on TMDB: unknown, and TVmaze's official site is often another
-  // region's (CRI-102).
-  if (providers === NOT_ON_TMDB) {
+  // No answer from TMDB (not on TMDB, a failed lookup, no key): nothing.
+  // TVmaze's official site is often another region's (CRI-102, CRI-106).
+  if (providers === NOT_ON_TMDB || providers === null || isError) {
     return { kind: "none" };
-  }
-  if (isError || providers === null) {
-    // No TMDB key or a failed lookup: the TVmaze-based link, as in Show detail.
-    const direct = serviceLink(officialSite);
-    return direct ? { kind: "button", link: direct } : { kind: "none" };
   }
   if (isLoading || providers === undefined || region === undefined) {
     return { kind: "loading" };

@@ -88,14 +88,11 @@ describe("heroEpisodeTitle (CRI-94)", () => {
 describe("heroAvailability (FR-014, FR-029)", () => {
   const netflixSite = "https://www.netflix.com/title/80057281";
 
-  it("falls back to the TVmaze link when the lookup fails, as Show detail does", () => {
+  it("shows nothing when the lookup fails or there is no key, not TVmaze's link (CRI-106)", () => {
     expect(heroAvailability(undefined, false, true, netflixSite, "SE")).toEqual(
-      { kind: "button", link: expect.objectContaining({ service: "Netflix" }) },
+      { kind: "none" },
     );
-  });
-
-  it("shows nothing when the lookup fails and TVmaze has no service link", () => {
-    expect(heroAvailability(undefined, false, true, null, "SE")).toEqual({
+    expect(heroAvailability(null, false, false, netflixSite, "SE")).toEqual({
       kind: "none",
     });
   });
