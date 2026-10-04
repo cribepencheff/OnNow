@@ -1,10 +1,12 @@
 // Each show's IMDb rating from OMDb, kept per show in plain AsyncStorage
-// (CRI-87, ADR 0013, NFR-006). "No rating" is cached too.
+// (CRI-87, ADR 0013, NFR-006). "No rating" is cached too, but briefly:
+// OMDb lags IMDb on new shows (CRI-92).
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Ratings move slowly; a week keeps OMDb requests far below the free tier.
 export const RATING_CACHE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+export const NO_RATING_CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
 interface CachedRating {
   checkedAt: number;
@@ -25,9 +27,11 @@ export async function getCachedRating(
     return undefined;
   }
   const cached = JSON.parse(raw) as CachedRating;
-  return now - cached.checkedAt > RATING_CACHE_MAX_AGE_MS
-    ? undefined
-    : cached.rating;
+  const maxAge =
+    cached.rating === null
+      ? NO_RATING_CACHE_MAX_AGE_MS
+      : RATING_CACHE_MAX_AGE_MS;
+  return now - cached.checkedAt > maxAge ? undefined : cached.rating;
 }
 
 export async function saveRating(
