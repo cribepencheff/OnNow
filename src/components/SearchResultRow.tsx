@@ -1,5 +1,5 @@
 // A single Search result row (PRD 5.4, FR-024, FR-025): poster, title, meta
-// line, two line summary, network, and a follow circle. Once followed, the
+// line, two line summary, and a follow circle. Once followed, the
 // row shows the next episode or status instead of the summary. Tapping the
 // row opens Show detail; the circle still follows without opening it (PRD
 // 5.4, 5.5, CRI-79). Screen reader users get the row as one button, with
@@ -12,11 +12,7 @@ import { FollowCircle } from "./FollowCircle";
 import { useShow } from "@/hooks/useShow";
 import { nextForShow } from "@/logic/next-episode";
 import { nextEpisodeLabel } from "@/logic/next-episode-label";
-import {
-  plainTextSummary,
-  searchResultMetaLine,
-  searchResultNetworkName,
-} from "@/logic/search-results";
+import { plainTextSummary, searchResultMetaLine } from "@/logic/search-results";
 import { today } from "@/logic/local-date";
 import type { TvMazeShow } from "@/api/tvmaze-types";
 
@@ -38,7 +34,6 @@ export function SearchResultRow({
   onPress,
 }: SearchResultRowProps) {
   const summary = plainTextSummary(show.summary);
-  const network = searchResultNetworkName(show);
 
   return (
     <Pressable
@@ -77,11 +72,6 @@ export function SearchResultRow({
               {summary}
             </Text>
           )
-        )}
-        {network && (
-          <Text style={styles.network} numberOfLines={1}>
-            {network}
-          </Text>
         )}
       </View>
       <FollowCircle
@@ -152,9 +142,5 @@ const styles = StyleSheet.create({
   nextLine: {
     fontSize: 13,
     fontWeight: "500",
-  },
-  network: {
-    fontSize: 12,
-    color: "#888888",
   },
 });

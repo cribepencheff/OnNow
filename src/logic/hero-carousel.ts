@@ -11,7 +11,6 @@ import {
   type LocalDate,
 } from "@/logic/local-date";
 import { formatLabelDate } from "@/logic/next-episode-label";
-import { searchResultNetworkName } from "@/logic/search-results";
 import { serviceLink, type ServiceLink } from "@/logic/service-link";
 import {
   availabilityText,
@@ -259,28 +258,15 @@ export function pullStretchTransform(
   };
 }
 
-// ADR 0015, FR-031: the date is the original premiere, on the service
-// TVmaze gives, never a claim about the user's region.
-export function heroPremiereLine(
-  slide: HeroSlide,
-  todayDate: LocalDate,
-): string {
-  const day =
-    slide.localDate === todayDate
-      ? "today"
-      : slide.localDate === addDays(todayDate, 1)
-        ? "tomorrow"
-        : formatLabelDate(slide.localDate, todayDate);
-  const network = searchResultNetworkName(slide.show);
-  return network ? `Premieres ${day} on ${network}` : `Premieres ${day}`;
+// "Fri 9 Oct · S2E4": the original air date (FR-031, ADR 0015), no verb and
+// no network; where to watch is the "Open in" button.
+export function heroDateLine(slide: HeroSlide, todayDate: LocalDate): string {
+  return `${formatLabelDate(slide.localDate, todayDate)} · ${episodesLabel(slide.episodes)}`;
 }
 
-// The hero's second meta line: the episode code, and its title when the
-// slide is a single episode.
-export function heroEpisodeLine(episodes: TvMazeEpisode[]): string {
-  const code = episodesLabel(episodes);
-  const title = episodes.length === 1 ? episodes[0]?.name : null;
-  return title ? `${code} · ${title}` : code;
+// The episode title, for a single-episode slide only.
+export function heroEpisodeTitle(episodes: TvMazeEpisode[]): string | null {
+  return episodes.length === 1 ? episodes[0]?.name || null : null;
 }
 
 // What goes where the "Open in" button would be, in one of four states, so

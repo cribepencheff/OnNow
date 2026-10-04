@@ -131,12 +131,13 @@ describe("ShowDetail", () => {
     resolvedOptionsSpy.mockRestore();
   });
 
-  it("FR-028: shows title, year, network, status line and summary", async () => {
+  it("FR-028: shows title, year, status line and summary, and no network", async () => {
     mockShow(showSlowHorsesFixture);
     await render(<ShowDetail showId={45039} />);
 
     expect(screen.getByText("Slow Horses")).toBeTruthy();
-    expect(screen.getByText("2022 · Apple TV")).toBeTruthy();
+    // Exact match: the year alone, no " · Apple TV".
+    expect(screen.getByText("2022")).toBeTruthy();
     expect(screen.getByTestId("show-detail-status")).toHaveTextContent(
       "Airing · next ep Wed 30 Sep",
     );
@@ -309,7 +310,7 @@ describe("ShowDetail", () => {
     mockShow(showNeagleyFixture);
     await render(<ShowDetail showId={82707} />);
 
-    expect(screen.getByText("2026 · Prime Video")).toBeTruthy();
+    expect(screen.getByText("2026")).toBeTruthy();
     expect(screen.getByTestId("show-detail-status")).toHaveTextContent(
       "Future uncertain",
     );

@@ -131,10 +131,8 @@ describe("HomeScreen", () => {
     expect(screen.getByTestId("home-pager")).toBeTruthy();
     expect(screen.getByText("TODAY · 1/1")).toBeTruthy();
     expect(screen.getByText("Slow Horses")).toBeTruthy();
-    expect(
-      screen.getAllByText("Premieres today on AMC").length,
-    ).toBeGreaterThan(0);
-    expect(screen.getByText("S1E1 · Episode")).toBeTruthy();
+    expect(screen.getByText("Mon 21 Sep · S1E1")).toBeTruthy();
+    expect(screen.getAllByText("Episode").length).toBeGreaterThan(0);
   });
 
   it("renders several cards with paging and a count label when several shows have an episode today (FR-004, FR-005)", async () => {
@@ -189,10 +187,8 @@ describe("HomeScreen", () => {
     await render(<HomeScreen />);
 
     expect(screen.getByText("TODAY · 1/3")).toBeTruthy();
-    expect(
-      screen.getAllByText("Premieres today on AMC").length,
-    ).toBeGreaterThan(0);
-    expect(screen.getByText("S1E1 · Episode")).toBeTruthy();
+    expect(screen.getByText("Mon 21 Sep · S1E1")).toBeTruthy();
+    expect(screen.getAllByText("Episode").length).toBeGreaterThan(0);
 
     await fireEvent(screen.getByTestId("home-pager"), "momentumScrollEnd", {
       nativeEvent: {
@@ -202,10 +198,8 @@ describe("HomeScreen", () => {
     });
 
     expect(screen.getByText("TODAY · 2/3")).toBeTruthy();
-    expect(
-      screen.getAllByText("Premieres today on AMC").length,
-    ).toBeGreaterThan(0);
-    expect(screen.getByText("S1E2 · Episode")).toBeTruthy();
+    expect(screen.getByText("Mon 21 Sep · S1E2")).toBeTruthy();
+    expect(screen.getAllByText("Episode").length).toBeGreaterThan(0);
   });
 
   it("shows one card labelled TOMORROW · 1/1 when one show releases on the next day with episodes (FR-006)", async () => {
@@ -230,10 +224,8 @@ describe("HomeScreen", () => {
     // Network dropped from the meta line (94e72ad: "the network
     // contradicted the Open in button... the episode itself, not the
     // network, goes here instead").
-    expect(
-      screen.getAllByText("Premieres tomorrow on AMC").length,
-    ).toBeGreaterThan(0);
-    expect(screen.getByText("S2E3 · Episode")).toBeTruthy();
+    expect(screen.getByText("Tue 22 Sep · S2E3")).toBeTruthy();
+    expect(screen.getAllByText("Episode").length).toBeGreaterThan(0);
   });
 
   it("shows two cards labelled TOMORROW · 1/2 and 2/2 when two shows release on the next day with episodes (FR-006)", async () => {
@@ -282,10 +274,8 @@ describe("HomeScreen", () => {
     await render(<HomeScreen />);
 
     expect(screen.getByText("UPCOMING · 1/1")).toBeTruthy();
-    expect(
-      screen.getAllByText("Premieres Thu 24 Sep on AMC").length,
-    ).toBeGreaterThan(0);
-    expect(screen.getByText("S1E1 · Episode")).toBeTruthy();
+    expect(screen.getByText("Thu 24 Sep · S1E1")).toBeTruthy();
+    expect(screen.getAllByText("Episode").length).toBeGreaterThan(0);
   });
 
   // Unlike the hero's own 7-day horizon (see the FR-012-does-not-apply test
@@ -310,10 +300,7 @@ describe("HomeScreen", () => {
     await render(<HomeScreen />);
 
     expect(screen.getByText("TOMORROW · 1/1")).toBeTruthy();
-    expect(
-      screen.getAllByText("Premieres tomorrow on AMC").length,
-    ).toBeGreaterThan(0);
-    expect(screen.getByText("Episodes 1–3")).toBeTruthy();
+    expect(screen.getByText("Tue 22 Sep · Episodes 1–3")).toBeTruthy();
   });
 
   it("shows Add your first show when the follow list is empty and opens Search (backlog CRI-66, PRD FR-013)", async () => {

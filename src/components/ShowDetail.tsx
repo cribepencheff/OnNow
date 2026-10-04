@@ -158,7 +158,9 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
 
       <View style={styles.section}>
         <ImdbRating show={show} textStyle={styles.meta} />
-        <Text style={styles.meta}>{showDetailMetaLine(show)}</Text>
+        {show.premiered && (
+          <Text style={styles.meta}>{showDetailMetaLine(show)}</Text>
+        )}
         <Text style={styles.meta} testID="show-detail-status">
           {showStateLabel(state, todayDate)}
         </Text>

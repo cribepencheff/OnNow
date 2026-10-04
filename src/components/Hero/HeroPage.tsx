@@ -31,8 +31,8 @@ import {
   HERO_CROSSFADE_FLOOR,
   HERO_PARALLAX_FACTOR,
   heroAvailability,
-  heroEpisodeLine,
-  heroPremiereLine,
+  heroDateLine,
+  heroEpisodeTitle,
   type HeroAvailability,
   type HeroSlide,
 } from "@/logic/hero-carousel";
@@ -504,13 +504,13 @@ export const ContentLayer = memo(function ContentLayer({
               </Text>
             </View>
           )}
-          {/* Two fixed lines: the premiere in full, then code and title. */}
+          {/* Two fixed lines: date and code, then the episode title. */}
           <View>
             <Text style={styles.meta} numberOfLines={1}>
-              {heroPremiereLine(slide, todayDate)}
+              {heroDateLine(slide, todayDate)}
             </Text>
             <Text style={styles.meta} numberOfLines={1}>
-              {heroEpisodeLine(slide.episodes)}
+              {heroEpisodeTitle(slide.episodes) ?? " "}
             </Text>
           </View>
         </View>

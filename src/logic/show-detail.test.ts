@@ -78,9 +78,9 @@ describe("relativeDayLabel (PRD 5.5, ADR 0001)", () => {
 });
 
 describe("showDetailMetaLine (FR-028)", () => {
-  it("shows year and network, leaving the status to the status line", () => {
-    expect(showDetailMetaLine(slowHorses)).toBe("2022 · Apple TV");
-    expect(showDetailMetaLine(killingEve)).toBe("2018 · AMC+");
+  it("shows the year only: no network, the status has its own line", () => {
+    expect(showDetailMetaLine(slowHorses)).toBe("2022");
+    expect(showDetailMetaLine(killingEve)).toBe("2018");
   });
 });
 
