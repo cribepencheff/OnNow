@@ -1,17 +1,20 @@
 // A show's IMDb rating through OMDb (CRI-87, ADR 0013), looked up when
 // the rating is shown, kept per show for a week, or a day when OMDb has
 // none yet (CRI-92). null means no rating to show: no IMDb ID, no key, or
-// OMDb has none.
+// OMDb has none. The IMDb ID is TVmaze's, else TMDB's (CRI-103).
 
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 
 import { omdbClient } from "@/api/omdb-client";
 import { getCachedRating, saveRating } from "@/storage/imdb-rating";
 import type { TvMazeShow } from "@/api/tvmaze-types";
+import { useShowExternals } from "./useShowExternals";
 
-export function useImdbRating(show: TvMazeShow): UseQueryResult<string | null> {
-  const imdbId = show.externals?.imdb ?? null;
-  return useQuery({
+export function useImdbRating(
+  show: TvMazeShow,
+): UseQueryResult<string | null> & { imdbId: string | null } {
+  const imdbId = useShowExternals(show).imdb;
+  const query = useQuery({
     queryKey: ["imdbRating", show.id],
     enabled: imdbId !== null,
     // Freshness is decided by the storage; an hour re-reads it so a long
@@ -31,4 +34,5 @@ export function useImdbRating(show: TvMazeShow): UseQueryResult<string | null> {
       return result.rating;
     },
   });
+  return { ...query, imdbId };
 }

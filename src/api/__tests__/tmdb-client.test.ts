@@ -1,5 +1,6 @@
 import { NOT_ON_TMDB } from "@/logic/streaming-service";
 import { createTmdbClient } from "../tmdb-client";
+import externalIdsJayZ from "../fixtures/tmdb-external-ids-jay-z.json";
 import findNeagley from "../fixtures/tmdb-find-neagley.json";
 import providersNeagley from "../fixtures/tmdb-providers-neagley.json";
 
@@ -229,5 +230,38 @@ describe("TmdbClient.findOriginCountries (FR-028)", () => {
       client.findOriginCountries(NEAGLEY_EXTERNALS),
     ).resolves.toBeNull();
     expect(fetchFn).not.toHaveBeenCalled();
+  });
+});
+
+describe("TmdbClient.findExternalIds (CRI-103)", () => {
+  it("finds JAŸ-Z IN 8 by name, then reads its IMDb and TheTVDB IDs", async () => {
+    const fetchFn = jest
+      .fn()
+      .mockResolvedValueOnce(jsonResponse(JAY_Z_SEARCH))
+      .mockResolvedValueOnce(jsonResponse(externalIdsJayZ));
+    const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
+
+    await expect(client.findExternalIds(JAY_Z)).resolves.toEqual({
+      imdb: "tt43619535",
+      thetvdb: 479659,
+    });
+    expect(fetchFn.mock.calls[1][0]).toContain("/3/tv/326440/external_ids");
+  });
+
+  it("is NOT_ON_TMDB for an unknown show, null without a key", async () => {
+    const fetchFn = jest
+      .fn()
+      .mockResolvedValue(jsonResponse({ tv_results: [] }));
+    const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
+    await expect(client.findExternalIds(NEAGLEY_EXTERNALS)).resolves.toBe(
+      NOT_ON_TMDB,
+    );
+
+    const noKey = createTmdbClient({
+      apiKey: undefined,
+      fetchFn,
+      wait: noWait,
+    });
+    await expect(noKey.findExternalIds(NEAGLEY_EXTERNALS)).resolves.toBeNull();
   });
 });

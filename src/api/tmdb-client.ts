@@ -15,6 +15,11 @@ import {
   type ProviderAnswer,
   type TmdbFindResponse,
 } from "@/logic/streaming-service";
+import {
+  tmdbExternalIds,
+  type ExternalIds,
+  type TmdbExternalIdsResponse,
+} from "@/logic/external-ids";
 import { matchTmdbSearch, type TmdbSearchResult } from "@/logic/tmdb-match";
 import type { TvMazeExternals, TvMazeShow } from "./tvmaze-types";
 
@@ -60,6 +65,11 @@ export interface TmdbClient {
   ) => Promise<ProviderAnswer | null>;
   // ISO codes, [] when TMDB does not know the show, null without a key.
   findOriginCountries: (show: TmdbShowRef) => Promise<string[] | null>;
+  // TMDB's IMDb and TheTVDB IDs for the show (CRI-103); NOT_ON_TMDB when
+  // TMDB does not know it, null without a key.
+  findExternalIds: (
+    show: TmdbShowRef,
+  ) => Promise<ExternalIds | typeof NOT_ON_TMDB | null>;
 }
 
 export class TmdbResponseError extends Error {
@@ -166,7 +176,25 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     return tmdbOriginCountries(await findShow(show, apiKey));
   }
 
-  return { findStreamingProviders, findOriginCountries };
+  async function findExternalIds(
+    show: TmdbShowRef,
+  ): Promise<ExternalIds | typeof NOT_ON_TMDB | null> {
+    if (!apiKey) {
+      return null;
+    }
+    const tvId = tmdbTvId(await findShow(show, apiKey));
+    if (tvId === null) {
+      return NOT_ON_TMDB;
+    }
+    return tmdbExternalIds(
+      await requestJson<TmdbExternalIdsResponse>(
+        `/tv/${tvId}/external_ids`,
+        apiKey,
+      ),
+    );
+  }
+
+  return { findStreamingProviders, findOriginCountries, findExternalIds };
 }
 
 export const tmdbClient = createTmdbClient({

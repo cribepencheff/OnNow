@@ -77,7 +77,10 @@ const mockedUseImdbRating = useImdbRating as jest.MockedFunction<
 >;
 
 function mockImdbRating(rating: string | null | undefined) {
-  mockedUseImdbRating.mockReturnValue({ data: rating } as never);
+  // The IMDb ID is the show's own here (TVmaze has it).
+  mockedUseImdbRating.mockImplementation(
+    (show) => ({ data: rating, imdbId: show.externals?.imdb ?? null }) as never,
+  );
 }
 
 const APPLE_TV = { providerId: 350, providerName: "Apple TV" };
