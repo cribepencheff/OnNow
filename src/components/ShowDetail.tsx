@@ -241,13 +241,17 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
 // text says what TMDB's data shows, once it has answered (CRI-84).
 function useOpenIn(show: TvMazeShow) {
   const { data: providers, isError, region } = useStreamingService(show, true);
-  const link = providers
+  // Not on TMDB shows nothing: TVmaze's official site is often another
+  // region's (CRI-102).
+  const link = Array.isArray(providers)
     ? openInLink(providers, show.officialSite)
     : providers === null || isError
       ? serviceLink(show.officialSite)
       : null;
   const availability =
-    providers && region && !link ? availabilityText(providers, region) : null;
+    Array.isArray(providers) && region && !link
+      ? availabilityText(providers, region)
+      : null;
   return { link, availability };
 }
 

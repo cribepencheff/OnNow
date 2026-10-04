@@ -1,7 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import { NOT_ON_TMDB } from "@/logic/streaming-service";
 import {
   getCachedProviders,
+  NOT_ON_TMDB_MAX_AGE_MS,
   saveProviders,
   SERVICE_CACHE_MAX_AGE_MS,
 } from "./streaming-service";
@@ -51,5 +53,22 @@ describe("streaming service cache (CRI-82, NFR-005)", () => {
       JSON.stringify({ checkedAt: 0, providers: [] }),
     );
     expect(await getCachedProviders(92764, "SE", 1)).toBeNull();
+  });
+
+  it('CRI-102: keeps "not on TMDB" for a day, then asks again', async () => {
+    await saveProviders(92764, "SE", NOT_ON_TMDB, 0);
+    expect(await getCachedProviders(92764, "SE", NOT_ON_TMDB_MAX_AGE_MS)).toBe(
+      NOT_ON_TMDB,
+    );
+    expect(
+      await getCachedProviders(92764, "SE", NOT_ON_TMDB_MAX_AGE_MS + 1),
+    ).toBeNull();
+  });
+
+  it("CRI-102: keeps a found answer, even an empty one, for 30 days", async () => {
+    await saveProviders(1, "SE", [], 0);
+    expect(
+      await getCachedProviders(1, "SE", NOT_ON_TMDB_MAX_AGE_MS + 1),
+    ).toEqual([]);
   });
 });

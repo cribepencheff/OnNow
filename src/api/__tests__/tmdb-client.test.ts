@@ -1,3 +1,4 @@
+import { NOT_ON_TMDB } from "@/logic/streaming-service";
 import { createTmdbClient } from "../tmdb-client";
 import findNeagley from "../fixtures/tmdb-find-neagley.json";
 import providersNeagley from "../fixtures/tmdb-providers-neagley.json";
@@ -105,7 +106,7 @@ describe("TmdbClient (FR-014, NFR-005, CRI-82)", () => {
     );
   });
 
-  it('CRI-99: is null, not "no services", when TMDB does not know the show', async () => {
+  it('CRI-102: is NOT_ON_TMDB, not "no services", when TMDB does not know the show', async () => {
     const fetchFn = jest
       .fn()
       .mockResolvedValue(jsonResponse({ tv_results: [] }));
@@ -113,7 +114,7 @@ describe("TmdbClient (FR-014, NFR-005, CRI-82)", () => {
 
     await expect(
       client.findStreamingProviders(NEAGLEY_EXTERNALS, "SE"),
-    ).resolves.toBeNull();
+    ).resolves.toBe(NOT_ON_TMDB);
   });
 
   it("CRI-99: searches by name when TVmaze has no IMDb or TheTVDB ID (JAŸ-Z IN 8)", async () => {
@@ -140,9 +141,9 @@ describe("TmdbClient (FR-014, NFR-005, CRI-82)", () => {
     );
     const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
 
-    await expect(
-      client.findStreamingProviders(JAY_Z, "SE"),
-    ).resolves.toBeNull();
+    await expect(client.findStreamingProviders(JAY_Z, "SE")).resolves.toBe(
+      NOT_ON_TMDB,
+    );
     expect(fetchFn).toHaveBeenCalledTimes(1);
   });
 

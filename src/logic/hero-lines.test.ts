@@ -7,6 +7,7 @@ import {
   heroDateLine,
   heroEpisodeTitle,
 } from "./hero-carousel";
+import { NOT_ON_TMDB } from "./streaming-service";
 
 const paramount = {
   id: 1,
@@ -97,6 +98,12 @@ describe("heroAvailability (FR-014, FR-029)", () => {
     expect(heroAvailability(undefined, false, true, null, "SE")).toEqual({
       kind: "none",
     });
+  });
+
+  it("shows nothing when TMDB does not know the show, not TVmaze's link (CRI-102)", () => {
+    expect(
+      heroAvailability(NOT_ON_TMDB, false, false, netflixSite, "SE"),
+    ).toEqual({ kind: "none" });
   });
 
   it("holds the slot while the lookup runs", () => {

@@ -12,7 +12,7 @@ import { useShow } from "@/hooks/useShow";
 import { useFollowList } from "@/hooks/useFollowList";
 import { useStreamingService } from "@/hooks/useStreamingService";
 import { useImdbRating } from "@/hooks/useImdbRating";
-import type { StreamingProvider } from "@/logic/streaming-service";
+import { NOT_ON_TMDB, type ProviderAnswer } from "@/logic/streaming-service";
 import showMobLandFixture from "@/api/fixtures/show-mobland.json";
 import showSlowHorsesFixture from "@/api/fixtures/show-slow-horses.json";
 import showSiloFixture from "@/api/fixtures/show-silo.json";
@@ -59,9 +59,10 @@ const mockedUseStreamingService = useStreamingService as jest.MockedFunction<
 >;
 
 // TMDB's Swedish services for the show (CRI-82): a list once looked up,
-// null without a TMDB key, undefined while loading.
+// null without a TMDB key, undefined while loading, NOT_ON_TMDB when TMDB
+// does not know the show.
 function mockStreamingServices(
-  providers: StreamingProvider[] | null | undefined,
+  providers: ProviderAnswer | null | undefined,
   isLoading = false,
 ) {
   mockedUseStreamingService.mockReturnValue({
@@ -588,6 +589,16 @@ describe("ShowDetail", () => {
     await render(<ShowDetail showId={82707} />);
 
     expect(screen.queryByRole("button", { name: /^Open in/ })).toBeNull();
+  });
+
+  it("CRI-102: shows no Open in and no text when TMDB does not know the show, not TVmaze's link", async () => {
+    mockShow(showSlowHorsesFixture);
+    mockFollowed(true);
+    mockStreamingServices(NOT_ON_TMDB);
+    await render(<ShowDetail showId={45039} />);
+
+    expect(screen.queryByRole("button", { name: /^Open in/ })).toBeNull();
+    expect(screen.queryByTestId("show-detail-availability")).toBeNull();
   });
 
   it("FR-014: falls back to TVmaze's direct link when there is no TMDB key", async () => {
