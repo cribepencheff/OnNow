@@ -131,7 +131,11 @@ per season come in the MVP.
   "Apple TV · Seasons 1–2").
   References: Next Episode (episode blocks, "of 10"), PlayPilot (primary
   button by the image, services with season, episode cards with stills).
-  Not included: cast, ratings, reviews, trailers, similar shows, FAQ, lists.
+  The IMDb rating sits just below the backdrop, above year and network,
+  linked to the show on IMDb, and is left out when there is none (CRI-87,
+  ADR 0013).
+  Not included: cast, other ratings, reviews, trailers, similar shows, FAQ,
+  lists.
 - **Between seasons:** when the current season has ended, the "next"
   episode card becomes a next season card, so it is clear when new episodes
   can be expected. It shows what the data source provides and nothing more:
@@ -242,7 +246,7 @@ Reached from an icon. Territory and notifications.
 | FR-025 | After following, the result row shows the next episode or "No date yet" | PoC |
 | FR-026 | Before the user types, Search shows "New this week": series premieres and new seasons starting this week | MVP |
 | FR-027 | Search results show the services that carry the show in the user's territory | MVP |
-| FR-028 | Show detail view with image, title, year, status, service, summary, next and latest episode. PoC shows the network instead of the service | PoC |
+| FR-028 | Show detail view with image, title, year, status, service, summary, next and latest episode. PoC shows the network instead of the service. MVP adds the IMDb rating from OMDb (ADR 0013) | PoC, MVP |
 | FR-029 | Show detail has a "Follow" / "Following" toggle button and, followed or not, "Open in [service]" as a full button when the show has a service in the user's territory (CRI-86). PoC: "Follow", and a quiet "Following" that unfollows; "Open in [service]" only when followed, for the show's Swedish service (FR-014); the service list in the user's territory is MVP | PoC, MVP |
 | FR-030 | Show detail opens from Search, Home, Calendar and Shows | PoC |
 | FR-031 | MVP: episode dates are the original premiere and are labelled as such, with the premiere service ("Premieres today on Paramount+"). "Open in" says the series is on a service in the user's region, never that the episode is. No "Not in [country] yet" label (ADR 0015). After MVP: episodes not yet available in the user's region are labelled "Not in [country] yet" and do not count as new today, from per-episode availability behind our own server (spike 0003, ADR 0015) | MVP, After MVP |
