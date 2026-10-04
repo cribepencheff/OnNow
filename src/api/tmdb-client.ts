@@ -8,9 +8,11 @@
 // falls back to what TVmaze alone gives.
 
 import {
+  NOT_ON_TMDB,
   regionProviders,
   tmdbOriginCountries,
   tmdbTvId,
+  type ProviderAnswer,
   type StreamingProvider,
   type TmdbFindResponse,
 } from "@/logic/streaming-service";
@@ -51,12 +53,12 @@ export interface TmdbClientOptions {
 }
 
 export interface TmdbClient {
-  // The region's services for a show, [] when TMDB has none, null when
-  // there is no API key or TMDB does not know the show (not cached, CRI-99).
+  // The region's services for a show, [] when TMDB has none, NOT_ON_TMDB
+  // when TMDB does not know the show, null when there is no API key.
   findStreamingProviders: (
     show: TmdbShowRef,
     region: string,
-  ) => Promise<StreamingProvider[] | null>;
+  ) => Promise<ProviderAnswer | null>;
   // ISO codes, [] when TMDB does not know the show, null without a key.
   findOriginCountries: (show: TmdbShowRef) => Promise<string[] | null>;
 }
@@ -142,13 +144,13 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
   async function findStreamingProviders(
     show: TmdbShowRef,
     region: string,
-  ): Promise<StreamingProvider[] | null> {
+  ): Promise<ProviderAnswer | null> {
     if (!apiKey) {
       return null;
     }
     const tvId = tmdbTvId(await findShow(show, apiKey));
     if (tvId === null) {
-      return null;
+      return NOT_ON_TMDB;
     }
     return regionProviders(
       await requestJson(`/tv/${tvId}/watch/providers`, apiKey),

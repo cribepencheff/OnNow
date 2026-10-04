@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { renderHook, waitFor } from "@testing-library/react-native";
 
 import { tmdbClient } from "@/api/tmdb-client";
+import { NOT_ON_TMDB } from "@/logic/streaming-service";
 import { saveProviders } from "@/storage/streaming-service";
 import type { TvMazeShow } from "@/api/tvmaze-types";
 import showNeagleyFixture from "@/api/fixtures/show-neagley.json";
@@ -79,6 +80,21 @@ describe("useStreamingService (FR-014, NFR-005, CRI-82)", () => {
 
     expect(result.current.data).toBeUndefined();
     expect(mockedFind).not.toHaveBeenCalled();
+
+    await unmount();
+    client.unmount();
+  });
+
+  it('CRI-102: saves "not on TMDB", so the next launch does not search again', async () => {
+    mockedFind.mockResolvedValue(NOT_ON_TMDB);
+    const { result, unmount, client } = await renderFor(true);
+
+    await waitFor(() => expect(result.current.data).toBe(NOT_ON_TMDB));
+    expect(
+      JSON.parse(
+        (await AsyncStorage.getItem("onnow.streamingService.v2.SE.82707"))!,
+      ).providers,
+    ).toBe(NOT_ON_TMDB);
 
     await unmount();
     client.unmount();

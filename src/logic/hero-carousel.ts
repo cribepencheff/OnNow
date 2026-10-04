@@ -14,8 +14,9 @@ import { formatLabelDate, MONTHS, WEEKDAYS } from "@/logic/next-episode-label";
 import { serviceLink, type ServiceLink } from "@/logic/service-link";
 import {
   availabilityText,
+  NOT_ON_TMDB,
   openInLink,
-  type StreamingProvider,
+  type ProviderAnswer,
 } from "@/logic/streaming-service";
 import type { TvMazeEpisode, TvMazeShow } from "@/api/tvmaze-types";
 
@@ -343,12 +344,17 @@ export type HeroAvailability =
   | { kind: "text"; label: string };
 
 export function heroAvailability(
-  providers: StreamingProvider[] | null | undefined,
+  providers: ProviderAnswer | null | undefined,
   isLoading: boolean,
   isError: boolean,
   officialSite: string | null,
   region: string | undefined,
 ): HeroAvailability {
+  // Not on TMDB: unknown, and TVmaze's official site is often another
+  // region's (CRI-102).
+  if (providers === NOT_ON_TMDB) {
+    return { kind: "none" };
+  }
   if (isError || providers === null) {
     // No TMDB key or a failed lookup: the TVmaze-based link, as in Show detail.
     const direct = serviceLink(officialSite);

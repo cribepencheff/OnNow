@@ -12,6 +12,11 @@ export interface StreamingProvider {
   providerName: string;
 }
 
+// TMDB has no show to match (CRI-99): unknown, so nothing is shown. Not the
+// same as "no services", which says "Unavailable in Sweden" (CRI-102).
+export const NOT_ON_TMDB = "not-on-tmdb";
+export type ProviderAnswer = StreamingProvider[] | typeof NOT_ON_TMDB;
+
 // The parts of TMDB's responses this app reads, as returned.
 export interface TmdbFindResponse {
   tv_results?: { id: number; origin_country?: string[] }[];
