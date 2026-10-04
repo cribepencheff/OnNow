@@ -184,6 +184,7 @@ describe("HomeScreen", () => {
     }));
     (useImdbRating as jest.Mock).mockImplementation((show) => ({
       data: show.id === 1 ? "8.1" : undefined,
+      imdbId: show.externals?.imdb ?? null,
     }));
     mockFollowedEpisodes({
       followedShows: [

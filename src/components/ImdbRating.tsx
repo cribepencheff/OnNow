@@ -26,8 +26,7 @@ export function ImdbRating({
   show: TvMazeShow;
   textStyle: StyleProp<TextStyle>;
 }) {
-  const { data: rating } = useImdbRating(show);
-  const imdbId = show.externals?.imdb;
+  const { data: rating, imdbId } = useImdbRating(show);
   if (!rating || !imdbId) {
     return null;
   }

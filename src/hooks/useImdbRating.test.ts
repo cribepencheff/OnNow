@@ -2,12 +2,23 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { renderHook, waitFor } from "@testing-library/react-native";
 
 import { omdbClient } from "@/api/omdb-client";
+import { tmdbClient } from "@/api/tmdb-client";
+import { NOT_ON_TMDB } from "@/logic/streaming-service";
 import { NO_RATING_CACHE_MAX_AGE_MS, saveRating } from "@/storage/imdb-rating";
 import type { TvMazeShow } from "@/api/tvmaze-types";
 import showMoblandFixture from "@/api/fixtures/show-mobland.json";
 import { useImdbRating } from "./useImdbRating";
 import { createTestQueryClient, wrapperWithQueryClient } from "./test-utils";
 
+jest.mock("@/api/tmdb-client", () => ({
+  ...jest.requireActual("@/api/tmdb-client"),
+  tmdbClient: {
+    findExternalIds: jest.fn(async () => ({
+      imdb: "tt43619535",
+      thetvdb: 479659,
+    })),
+  },
+}));
 jest.mock("@/api/omdb-client", () => ({
   omdbClient: { findImdbRating: jest.fn() },
 }));
@@ -124,12 +135,33 @@ describe("useImdbRating (CRI-87, ADR 0013)", () => {
     client.unmount();
   });
 
-  it("does not look up a show without an IMDb ID", async () => {
+  it("CRI-103: uses TMDB's IMDb ID when TVmaze has none (JAŸ-Z IN 8)", async () => {
+    mockedFind.mockResolvedValue({ rating: "8.2" });
+    const jayZ = {
+      id: 92764,
+      name: "JAŸ-Z IN 8",
+      premiered: "2026-09-18",
+      externals: { tvrage: null, imdb: null, thetvdb: null },
+    } as TvMazeShow;
+    const { result, unmount, client } = await renderFor(jayZ);
+
+    await waitFor(() => expect(result.current.data).toBe("8.2"));
+    expect(result.current.imdbId).toBe("tt43619535");
+    expect(mockedFind).toHaveBeenCalledWith("tt43619535");
+
+    await unmount();
+    client.unmount();
+  });
+
+  it("does not look up a show without an IMDb ID on TVmaze or TMDB", async () => {
+    const findExternalIds = tmdbClient.findExternalIds as jest.Mock;
+    findExternalIds.mockResolvedValueOnce(NOT_ON_TMDB);
     const { result, unmount, client } = await renderFor({
       ...mobland,
       externals: { tvrage: null, thetvdb: null, imdb: null },
     });
 
+    await waitFor(() => expect(findExternalIds).toHaveBeenCalled());
     expect(result.current.data).toBeUndefined();
     expect(mockedFind).not.toHaveBeenCalled();
 
