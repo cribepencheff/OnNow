@@ -12,6 +12,7 @@ jest.mock("./useRegion", () => ({
   useRegion: () => ({ region: "SE" }),
 }));
 jest.mock("@/api/tmdb-client", () => ({
+  ...jest.requireActual("@/api/tmdb-client"),
   tmdbClient: { findStreamingProviders: jest.fn() },
 }));
 
@@ -44,12 +45,17 @@ describe("useStreamingService (FR-014, NFR-005, CRI-82)", () => {
 
     await waitFor(() => expect(result.current.data).toEqual(PRIME));
     expect(mockedFind).toHaveBeenCalledWith(
-      { imdb: "tt33539520", thetvdb: 455064 },
+      {
+        imdb: "tt33539520",
+        thetvdb: 455064,
+        name: "Neagley",
+        premiered: "2026-09-16",
+      },
       "SE",
     );
     expect(
       JSON.parse(
-        (await AsyncStorage.getItem("onnow.streamingService.SE.82707"))!,
+        (await AsyncStorage.getItem("onnow.streamingService.v2.SE.82707"))!,
       ).providers,
     ).toEqual(PRIME);
 
@@ -78,14 +84,14 @@ describe("useStreamingService (FR-014, NFR-005, CRI-82)", () => {
     client.unmount();
   });
 
-  it("does not cache when there is no API key (null), so a later lookup can run", async () => {
+  it("does not cache a null answer (no API key, or no TMDB match, CRI-99), so a later lookup can run", async () => {
     mockedFind.mockResolvedValue(null);
     const { result, unmount, client } = await renderFor(true);
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data).toBeNull();
     expect(
-      await AsyncStorage.getItem("onnow.streamingService.SE.82707"),
+      await AsyncStorage.getItem("onnow.streamingService.v2.SE.82707"),
     ).toBeNull();
 
     await unmount();

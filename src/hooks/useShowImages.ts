@@ -23,6 +23,7 @@ import {
   chooseLogo,
   textlessBackdrops,
 } from "@/logic/hero-images";
+import { matchTmdbSearch, type TmdbSearchResult } from "@/logic/tmdb-match";
 
 const KEY = process.env.EXPO_PUBLIC_TMDB_API_KEY;
 
@@ -45,6 +46,16 @@ export async function tmdb<T>(path: string): Promise<T> {
 
 async function tmdbTvIdFor(show: TvMazeShowWithEmbeds): Promise<number | null> {
   const { imdb, thetvdb } = show.externals ?? { imdb: null, thetvdb: null };
+  // Neither ID on TVmaze: a name search, taken only on a safe match (CRI-99).
+  if (!imdb && !thetvdb) {
+    const search = await tmdb<{ results?: TmdbSearchResult[] }>(
+      `/search/tv?query=${encodeURIComponent(show.name)}`,
+    );
+    return (
+      matchTmdbSearch(search.results ?? [], show.name, show.premiered)?.id ??
+      null
+    );
+  }
   for (const [id, source] of [
     [imdb, "imdb_id"],
     [thetvdb, "tvdb_id"],
@@ -98,7 +109,8 @@ export function useShowImages(
     // reading the cache under a hardcoded key, so it picks up whatever
     // version is current here automatically; nothing else in the app reads
     // this key.
-    queryKey: ["proto-images-v3", show.id, todayDate],
+    // v4: drops "no TMDB match" answers cached before the name match (CRI-99).
+    queryKey: ["proto-images-v4", show.id, todayDate],
     staleTime: Infinity,
     // Without a key the lookup cannot work, so say so at once.
     retry: KEY ? 3 : false,

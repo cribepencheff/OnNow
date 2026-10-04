@@ -44,4 +44,12 @@ describe("streaming service cache (CRI-82, NFR-005)", () => {
   it("stays within TMDB's 6 month caching limit", () => {
     expect(SERVICE_CACHE_MAX_AGE_MS).toBeLessThan(180 * 24 * 60 * 60 * 1000);
   });
+
+  it("CRI-99: ignores entries saved before the name match, under the old key", async () => {
+    await AsyncStorage.setItem(
+      "onnow.streamingService.SE.92764",
+      JSON.stringify({ checkedAt: 0, providers: [] }),
+    );
+    expect(await getCachedProviders(92764, "SE", 1)).toBeNull();
+  });
 });

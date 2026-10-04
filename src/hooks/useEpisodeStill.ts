@@ -1,7 +1,7 @@
 // Tries the episode's own TMDB stills before falling back to the show's
 // highest-rated backdrop (useShowImages, src/hooks/useShowImages.ts).
 // Reuses useShowImages purely to get the already-resolved tmdbId;
-// TanStack Query dedupes the identical ["proto-images-v3", show.id,
+// TanStack Query dedupes the identical ["proto-images-v4", show.id,
 // todayDate] key across both calls (same as HeroPage and ContentLayer
 // already share it), so this never double-fetches the show's own images.
 // The still query itself is keyed by season/episode number, not todayDate:
