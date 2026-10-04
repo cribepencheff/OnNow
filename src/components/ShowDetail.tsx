@@ -45,6 +45,7 @@ import {
 import { showState, showStateLabel } from "@/logic/show-state";
 import { availabilityText, openInLink } from "@/logic/swedish-service";
 import { accent, withLightness } from "@/theme/color";
+import { t, type } from "@/theme/tokens";
 import { TmdbCredit } from "./TmdbCredit";
 import { TvMazeCredit } from "./TvMazeCredit";
 
@@ -81,6 +82,8 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
   // A TMDB backdrop, textless first (ADR 0012): no title text in the image.
   const { data: images } = useShowImages(show, timeZone, todayDate);
   const backdropPath = images?.highestRatedBackdrop?.file_path;
+  const logo = images?.logo;
+  const { link, availability } = useOpenIn(show);
 
   const [selectedSeason, setSelectedSeason] = useState(
     () => currentSeasonNumber(episodes, timeZone, todayDate) ?? tabs[0]?.number,
@@ -91,24 +94,66 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
       style={styles.screen}
       contentContainerStyle={styles.scrollContent}
     >
-      <Image
-        source={backdropPath ? `${IMAGE_BASE}/w1280${backdropPath}` : undefined}
-        style={styles.heroImage}
-        testID="show-detail-backdrop"
-        contentFit="cover"
-        accessibilityIgnoresInvertColors
-      />
+      <View style={styles.hero} testID="show-detail-hero">
+        <Image
+          source={
+            backdropPath ? `${IMAGE_BASE}/w1280${backdropPath}` : undefined
+          }
+          style={styles.heroImage}
+          testID="show-detail-backdrop"
+          contentFit="cover"
+          accessibilityIgnoresInvertColors
+        />
+        {/* The Home hero's scrim, logo or title, status line and "Open in"
+            on the backdrop, in every state (CRI-86). */}
+        <View pointerEvents="none" style={styles.heroScrim} />
+        <View style={styles.heroContent}>
+          {logo ? (
+            <Image
+              source={`${IMAGE_BASE}/w500${logo.file_path}`}
+              style={styles.heroLogo}
+              contentFit="contain"
+              contentPosition="left"
+              accessibilityLabel={show.name}
+              testID="show-detail-logo"
+            />
+          ) : (
+            <View style={styles.heroTitleBand}>
+              <Text style={styles.heroTitle} numberOfLines={2}>
+                {show.name}
+              </Text>
+            </View>
+          )}
+          <Text style={styles.heroStatus} testID="show-detail-status">
+            {showStateLabel(state, todayDate)}
+          </Text>
+          {link && (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`Open in ${link.service}`}
+              // An https link: iOS opens the service's app at the show when
+              // it is installed, and the website otherwise.
+              onPress={() => Linking.openURL(link.url)}
+              style={[styles.button, styles.buttonAccent, styles.heroButton]}
+              testID="show-detail-open-in"
+            >
+              <Text style={styles.followLabel}>Open in {link.service}</Text>
+            </Pressable>
+          )}
+        </View>
+      </View>
 
       <View style={styles.section}>
-        <Text style={styles.title}>{show.name}</Text>
         <Text style={styles.meta}>{showDetailMetaLine(show)}</Text>
-        <Text style={styles.meta} testID="show-detail-status">
-          {showStateLabel(state, todayDate)}
-        </Text>
         {allEpisodesAvailable(episodes, seasons, timeZone, todayDate) && (
           <Text style={styles.meta}>All episodes available</Text>
         )}
-        <FollowAction show={show} />
+        <View style={styles.actionRow}>
+          <FollowToggle showId={show.id} />
+          {availability && (
+            <Text style={styles.availability}>{availability}</Text>
+          )}
+        </View>
         {summary && <Text style={styles.summary}>{summary}</Text>}
       </View>
 
@@ -167,73 +212,60 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
   );
 }
 
-// FR-029: "Follow" / "Following" is one toggle button that stays in place,
-// so an unfollow is undone by tapping again; it updates at once (CRI-86).
-// "Open in [service]" is a full button in every show state, followed or not;
-// the status line says whether anything is airing (FR-014, CRI-84).
-function FollowAction({ show }: { show: TvMazeShow }) {
-  const { isFollowed, follow, unfollow } = useFollowList();
-  const showId = show.id;
-  const followed = isFollowed(showId);
+// "Open in [service]" for the show's Swedish service (FR-014, CRI-82),
+// followed or not (FR-029, CRI-86). Without a TMDB key, or when the lookup
+// fails, TVmaze's direct link stands in (CRI-80). Without a link, a quiet
+// text says what TMDB's data shows, once it has answered (CRI-84).
+function useOpenIn(show: TvMazeShow) {
   const { data: providers, isError } = useSwedishService(show, true);
-
   const link = providers
     ? openInLink(providers, show.officialSite)
     : providers === null || isError
       ? serviceLink(show.officialSite)
       : null;
-  // Only once TMDB has answered: while loading, without a key or when the
-  // lookup fails, nothing is claimed (CRI-84).
   const availability = providers && !link ? availabilityText(providers) : null;
+  return { link, availability };
+}
+
+// FR-029: "Follow" / "Following" is one toggle button that stays in place,
+// so an unfollow is undone by tapping again; it updates at once (CRI-86).
+function FollowToggle({ showId }: { showId: number }) {
+  const { isFollowed, follow, unfollow } = useFollowList();
+  const followed = isFollowed(showId);
 
   return (
-    <View style={styles.actionRow}>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={followed ? "Following" : "Follow"}
-        accessibilityHint={followed ? "Unfollows the show" : undefined}
-        accessibilityState={{ selected: followed }}
-        onPress={() => {
-          if (followed) {
-            unfollow(showId);
-          } else {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            follow(showId);
-          }
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={followed ? "Following" : "Follow"}
+      accessibilityHint={followed ? "Unfollows the show" : undefined}
+      accessibilityState={{ selected: followed }}
+      onPress={() => {
+        if (followed) {
+          unfollow(showId);
+        } else {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          follow(showId);
+        }
+      }}
+      style={[
+        styles.button,
+        followed ? styles.buttonQuiet : styles.buttonAccent,
+      ]}
+    >
+      {/* The same symbols as the follow circle in Search. */}
+      <SymbolView
+        name={{
+          ios: followed ? "checkmark" : "plus",
+          android: followed ? "check" : "add",
+          web: followed ? "check" : "add",
         }}
-        style={[
-          styles.button,
-          followed ? styles.buttonQuiet : styles.buttonAccent,
-        ]}
-      >
-        {/* The same symbols as the follow circle in Search. */}
-        <SymbolView
-          name={{
-            ios: followed ? "checkmark" : "plus",
-            android: followed ? "check" : "add",
-            web: followed ? "check" : "add",
-          }}
-          tintColor={followed ? QUIET_LABEL : "#FFFFFF"}
-          size={16}
-        />
-        <Text style={followed ? styles.buttonQuietLabel : styles.followLabel}>
-          {followed ? "Following" : "Follow"}
-        </Text>
-      </Pressable>
-      {link && (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={`Open in ${link.service}`}
-          // An https link: iOS opens the service's app at the show when
-          // it is installed, and the website otherwise.
-          onPress={() => Linking.openURL(link.url)}
-          style={[styles.button, styles.buttonAccent]}
-        >
-          <Text style={styles.followLabel}>Open in {link.service}</Text>
-        </Pressable>
-      )}
-      {availability && <Text style={styles.availability}>{availability}</Text>}
-    </View>
+        tintColor={followed ? QUIET_LABEL : "#FFFFFF"}
+        size={16}
+      />
+      <Text style={followed ? styles.buttonQuietLabel : styles.followLabel}>
+        {followed ? "Following" : "Follow"}
+      </Text>
+    </Pressable>
   );
 }
 
@@ -426,6 +458,48 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: 32,
   },
+  hero: {
+    position: "relative",
+  },
+  // Scrim, logo, title and text colours as in the Home hero (HeroPage,
+  // HeroPager), so text on the backdrop stays readable.
+  heroScrim: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: "55%",
+    experimental_backgroundImage:
+      "linear-gradient(to bottom, rgba(11,12,15,0) 0%, rgba(11,12,15,0.75) 50%, rgba(11,12,15,1) 100%)",
+  },
+  heroContent: {
+    position: "absolute",
+    left: 16,
+    right: 16,
+    bottom: 16,
+    gap: 8,
+  },
+  heroLogo: {
+    width: 240,
+    height: 88,
+  },
+  heroTitleBand: {
+    height: 88,
+    justifyContent: "center",
+  },
+  heroTitle: {
+    ...type.display,
+    fontSize: 40,
+    lineHeight: 44,
+    color: t.ink,
+  },
+  heroStatus: {
+    ...type.meta,
+    color: t.inkMuted,
+  },
+  heroButton: {
+    marginVertical: 0,
+  },
   heroImage: {
     width: "100%",
     aspectRatio: 1,
@@ -435,10 +509,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 20,
     gap: 6,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "700",
   },
   meta: {
     fontSize: 15,

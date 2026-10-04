@@ -29,10 +29,9 @@ jest.mock("@/hooks/useShow", () => ({
 jest.mock("@/hooks/useSwedishService", () => ({
   useSwedishService: jest.fn(),
 }));
+const mockShowImages = jest.fn();
 jest.mock("@/hooks/useShowImages", () => ({
-  useShowImages: () => ({
-    data: { highestRatedBackdrop: { file_path: "/textless.jpg" } },
-  }),
+  useShowImages: () => mockShowImages(),
 }));
 jest.mock("@/hooks/useFollowList", () => ({
   useFollowList: jest.fn(),
@@ -98,6 +97,12 @@ describe("ShowDetail", () => {
     unfollow.mockReset();
     mockFollowed(false);
     mockSwedishServices(undefined);
+    mockShowImages.mockReturnValue({
+      data: {
+        highestRatedBackdrop: { file_path: "/textless.jpg" },
+        logo: null,
+      },
+    });
     (Linking.openURL as jest.Mock).mockClear();
     // Episode days are local to the user's time zone (ADR 0001).
     const original = Intl.DateTimeFormat.prototype.resolvedOptions;
@@ -358,6 +363,34 @@ describe("ShowDetail", () => {
     });
 
     expect(notAiring.props.style).toEqual(airing.props.style);
+  });
+
+  it("CRI-86: puts the title, status line and Open in on the backdrop", async () => {
+    mockShow(showSlowHorsesFixture);
+    mockSwedishServices([APPLE_TV]);
+    await render(<ShowDetail showId={45039} />);
+
+    const hero = within(screen.getByTestId("show-detail-hero"));
+    expect(hero.getByText("Slow Horses")).toBeTruthy();
+    expect(hero.getByTestId("show-detail-status")).toBeTruthy();
+    expect(hero.getByRole("button", { name: "Open in Apple TV" })).toBeTruthy();
+  });
+
+  it("CRI-86: shows the TMDB logo instead of the title when there is one, as on Home", async () => {
+    mockShow(showSlowHorsesFixture);
+    mockShowImages.mockReturnValue({
+      data: {
+        highestRatedBackdrop: { file_path: "/textless.jpg" },
+        logo: { file_path: "/logo.png" },
+      },
+    });
+    await render(<ShowDetail showId={45039} />);
+
+    const hero = within(screen.getByTestId("show-detail-hero"));
+    expect(
+      JSON.stringify(hero.getByTestId("show-detail-logo").props.source),
+    ).toContain("/w500/logo.png");
+    expect(hero.queryByText("Slow Horses")).toBeNull();
   });
 
   it("CRI-86: shows the TMDB backdrop, not the TVmaze poster", async () => {

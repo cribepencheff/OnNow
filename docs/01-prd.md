@@ -137,16 +137,19 @@ per season come in the MVP.
   the next announced episode or season with its date if there is one,
   otherwise the show's status as the source states it. The exact states and
   wording are decided from the results of spike 0001 (principle: data first).
-- **Status line (CRI-86):** under the meta line, one state derived from
-  TVmaze's status, episodes and seasons, dated facts first: "Airing · next
-  ep <date>" (next episode in the season that is airing), "Season <n> ·
-  <date>" (a dated next season), "Season <n> · TBA" (a new season listed
-  without a date), "Between seasons" (Running, nothing listed; no renewal
-  implied), "Future uncertain" (To Be Determined), "Ended". "Open in" is
-  a full button in every state; the status line says whether anything is
-  airing. "Follow" and "Following" are one toggle button that updates at
-  once. The image is a square crop of a textless TMDB backdrop (ADR 0012). TVmaze and TMDB give season dates
-  as full dates or none, never a year only, so there is no year state.
+- **Hero (CRI-86):** a square crop of a textless TMDB backdrop (ADR 0012).
+  On the backdrop, as on Home: the show's TMDB logo (the title as text when
+  there is none), the status line, and "Open in [service]" as a full button
+  in every state, followed or not. Below the backdrop: year and network,
+  then a "Follow" / "Following" toggle button that updates at once.
+- **Status line (CRI-86):** one state derived from TVmaze's status,
+  episodes and seasons, dated facts first: "Airing · next ep <date>" (next
+  episode in the season that is airing), "Season <n> · <date>" (a dated
+  next season), "Season <n> · TBA" (a new season listed without a date),
+  "Between seasons" (Running, nothing listed; no renewal implied), "Future
+  uncertain" (To Be Determined), "Ended". It alone says whether anything is
+  airing. TVmaze and TMDB give season dates as full dates or none, never a
+  year only, so there is no year state.
 - **Status wording:** TVmaze's fixed status values are shown in plain words
   in Shows and Search: "To Be Determined" reads "Renewal not
   announced", "In Development" reads "In development"; "Running" and
