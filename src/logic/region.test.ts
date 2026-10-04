@@ -4,12 +4,7 @@ import {
   FALLBACK_REGION,
   type StoredRegion,
 } from "./region";
-import {
-  countryName,
-  isSupportedRegion,
-  regionName,
-  regionNameInSentence,
-} from "./regions";
+import { countryName, isSupportedRegion, regionName } from "./regions";
 
 describe("detectRegion (FR-016, CRI-88, ADR 0014)", () => {
   it("takes the region of the phone's first locale", () => {
@@ -75,15 +70,6 @@ describe("regions (CRI-88)", () => {
     for (const code of ["US", "GB", "CZ", "PH", "CN", "KR"]) {
       expect(countryName(code)).toBe(names.of(code));
     }
-  });
-
-  it("adds the article where a name needs one in a sentence", () => {
-    expect(regionNameInSentence("SE")).toBe("Sweden");
-    expect(regionNameInSentence("GB")).toBe("the United Kingdom");
-    expect(regionNameInSentence("NL")).toBe("the Netherlands");
-    expect(regionNameInSentence("US")).toBe("the United States");
-    // The device's "Czechia" takes no article.
-    expect(regionNameInSentence("CZ")).toBe("Czechia");
   });
 
   it("shows the code itself for an unknown region", () => {

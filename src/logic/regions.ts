@@ -152,26 +152,6 @@ export const REGIONS: readonly Region[] = [
   { code: "ZW", name: "Zimbabwe" },
 ];
 
-// Names that read with "the" in a sentence ("in the Netherlands"), by name
-// rather than code, since the device's names and TMDB's differ.
-const WITH_ARTICLE = new Set([
-  "Bahamas",
-  "Congo",
-  "Czech Republic",
-  "Dominican Republic",
-  "Holy See",
-  "Netherlands",
-  "Palestinian Territories",
-  "Palestinian Territory",
-  "Philippines",
-  "Turks & Caicos Islands",
-  "Turks and Caicos Islands",
-  "United Arab Emirates",
-  "United Kingdom",
-  "United States",
-  "United States of America",
-]);
-
 export function isSupportedRegion(code: string): boolean {
   return REGIONS.some((region) => region.code === code);
 }
@@ -188,10 +168,4 @@ export function countryName(code: string): string | null {
 
 export function regionName(code: string): string {
   return countryName(code) ?? code;
-}
-
-// "Sweden", "the United Kingdom": the name as it reads inside a sentence.
-export function regionNameInSentence(code: string): string {
-  const name = regionName(code);
-  return WITH_ARTICLE.has(name) ? `the ${name}` : name;
 }

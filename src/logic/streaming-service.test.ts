@@ -173,27 +173,24 @@ describe("openInLink (FR-014, ADR 0004, CRI-82)", () => {
 // CRI-84: when there is no button, a quiet text says what TMDB's Swedish
 // data (from JustWatch) shows, and nothing more (data first).
 describe("availabilityText (FR-014, CRI-84)", () => {
-  it('is "Not streaming in Sweden" without a Swedish service (Special Forces)', () => {
+  it('is "Unavailable" without a Swedish service (Special Forces)', () => {
     expect(
-      availabilityText(regionProviders(providersSpecialForces, "SE"), "SE"),
-    ).toBe("Not streaming in Sweden");
+      availabilityText(regionProviders(providersSpecialForces, "SE")),
+    ).toBe("Unavailable");
   });
 
   it('names a Swedish service that has no link as "On [service]" (Hell\'s Kitchen: Pluto TV)', () => {
-    expect(
-      availabilityText(regionProviders(providersHellsKitchen, "SE"), "SE"),
-    ).toBe("On Pluto TV");
+    expect(availabilityText(regionProviders(providersHellsKitchen, "SE"))).toBe(
+      "On Pluto TV",
+    );
   });
 
   it("names every service in TMDB's order when there are several (CRI-90)", () => {
     expect(
-      availabilityText(
-        [
-          { providerId: 151, providerName: "BritBox" },
-          { providerId: 9999, providerName: "Other" },
-        ],
-        "SE",
-      ),
+      availabilityText([
+        { providerId: 151, providerName: "BritBox" },
+        { providerId: 9999, providerName: "Other" },
+      ]),
     ).toBe("On BritBox, Other");
   });
 });
@@ -236,14 +233,8 @@ describe("streaming services per region (FR-017, CRI-88)", () => {
     });
   });
 
-  it("names the user's region when nothing streams there", () => {
-    expect(availabilityText([], "SE")).toBe("Not streaming in Sweden");
-    expect(availabilityText([], "US")).toBe(
-      "Not streaming in the United States",
-    );
-    expect(availabilityText([], "GB")).toBe(
-      "Not streaming in the United Kingdom",
-    );
+  it('says "Unavailable", with no country, when nothing streams in the region (CRI-91)', () => {
+    expect(availabilityText([])).toBe("Unavailable");
   });
 });
 
@@ -282,9 +273,7 @@ describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
       { providerId: 365, providerName: "Bravo TV" },
     ];
     expect(openInLink(payTv, null)).toBeNull();
-    expect(availabilityText(payTv, "US")).toBe(
-      "Not streaming in the United States",
-    );
+    expect(availabilityText(payTv)).toBe("Unavailable");
   });
 
   it("prefers a real service with a start page over an add-on channel", () => {
@@ -330,7 +319,7 @@ describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
       { providerId: 464, providerName: "Kocowa" },
     ];
     expect(openInLink(providers, null)).toBeNull();
-    expect(availabilityText(providers, "US")).toBe("On Kocowa, HiDive");
+    expect(availabilityText(providers)).toBe("On Kocowa, HiDive");
   });
 
   it("opens Crunchyroll itself for Frieren in Sweden, not its Amazon add-on", () => {
@@ -358,10 +347,9 @@ describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
 
   it("names an add-on channel via its host in the text", () => {
     expect(
-      availabilityText(
-        [{ providerId: 296, providerName: "Hayu Amazon Channel" }],
-        "SE",
-      ),
+      availabilityText([
+        { providerId: 296, providerName: "Hayu Amazon Channel" },
+      ]),
     ).toBe("On hayu via Prime Video");
   });
 });

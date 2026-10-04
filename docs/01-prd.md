@@ -88,8 +88,9 @@ first user is the author, who currently uses Next Episode.
 - **Result row (references: PlayPilot, Spotify "Add to playlist"):** large
   portrait poster on the left. Next to it: title in bold, a meta line with
   year and status ("2026 · Returning", "Ended"), a two line summary, and the
-  services in the user's region on their own line (MVP, FR-027). The
-  original network is not shown.
+  services in the user's region on their own line (MVP, FR-027), or
+  "Unavailable" when there is none, as in Show detail. The original
+  network is not shown.
 - **Follow control:** a circle at the right edge of each row, aligned in one
   column. Not followed: hollow circle with a "+" at lower opacity. Followed:
   filled with the accent colour and a check, with light haptic feedback. The
@@ -114,9 +115,10 @@ The PoC has a slice of this view with TVmaze data only: the network instead
 of services, "Follow" and "Following" as the actions, and no "Not in Sweden
 yet" state (CRI-79). "Open in [service]" is part of the PoC too, for the
 show's Swedish service from TMDB (CRI-80, CRI-82, FR-014). Without a
-button, a quiet text says what TMDB's Swedish data shows: "Not streaming in
-Sweden" when there is no service, or "On [service]" for a service the app
-cannot link to (CRI-84). This is availability per show, since TMDB cannot
+button, a quiet text says what TMDB's data shows: "Unavailable" when there
+is no service in the user's region (MVP; the PoC said "Not streaming in
+Sweden"), or "On [service]" for a service the app cannot link to (CRI-84,
+CRI-91). This is availability per show, since TMDB cannot
 give it per season (spike 0002). The list of services in the user's
 territory, the menu for several services (FR-015) and the territory state
 per season come in the MVP.
@@ -239,7 +241,7 @@ Reached from an icon. Territory and notifications.
 | FR-011 | Data refreshes on app start when stale, and on pull to refresh | PoC |
 | FR-012 | Several episodes of one show on the same day appear as one item | PoC |
 | FR-013 | An empty follow list shows an empty Home with "Add your first show", which opens Search | PoC |
-| FR-014 | "Open in [service]" opens the show in the service's app when the ID is known, otherwise the service's app, and the service's website when the app is not installed (ADR 0004). PoC: in Show detail when followed, for the show's Swedish service from TMDB: the show itself when TVmaze's official site is on that service (Apple TV, Netflix, HBO Max), otherwise the service's start page; no Swedish service gives no button (ADR 0004, CRI-82). Several services: one is picked, the menu (FR-015) is MVP. MVP: pay-TV and operator apps never count; add-on channels open their host app ("Open in Prime Video") with a bag icon marking the extra subscription ("Requires hayu subscription" below the button in Show detail, the bag inside the button on Home); the button appears only when it opens the service itself, otherwise the info area below the hero lists the services as text ("On Crunchyroll, HIDIVE") or says "Not streaming in [country]" (ADR 0004, CRI-90) | PoC, MVP |
+| FR-014 | "Open in [service]" opens the show in the service's app when the ID is known, otherwise the service's app, and the service's website when the app is not installed (ADR 0004). PoC: in Show detail when followed, for the show's Swedish service from TMDB: the show itself when TVmaze's official site is on that service (Apple TV, Netflix, HBO Max), otherwise the service's start page; no Swedish service gives no button (ADR 0004, CRI-82). Several services: one is picked, the menu (FR-015) is MVP. MVP: pay-TV and operator apps never count; add-on channels open their host app ("Open in Prime Video") with a bag icon marking the extra subscription ("Requires hayu subscription" below the button in Show detail, the bag inside the button on Home); the button appears only when it opens the service itself, otherwise the info area below the hero lists the services as text ("On Crunchyroll, HIDIVE") or says "Unavailable" when there is no service in the user's region (ADR 0004, CRI-90, CRI-91) | PoC, MVP |
 | FR-015 | When a show is on several services, a menu lets the user choose; the choice is remembered per show | MVP |
 | FR-016 | Territory setting, defaulting to the phone's region (ADR 0014). Until a settings view exists, a "Streaming region" line in the Shows footer opens the picker (CRI-88) | MVP |
 | FR-017 | Service availability per territory decides which services are offered | MVP |
@@ -252,7 +254,7 @@ Reached from an icon. Territory and notifications.
 | FR-024 | Search results show poster, title, year, status, a two line summary and a follow circle at the right edge | PoC |
 | FR-025 | After following, the result row shows the next episode or "No date yet" | PoC |
 | FR-026 | Before the user types, Search shows "New this week": series premieres and new seasons starting this week | MVP |
-| FR-027 | Search results show the services that carry the show in the user's territory | MVP |
+| FR-027 | Search results show the services that carry the show in the user's territory, or "Unavailable" when there is none (same wording as Show detail, CRI-91) | MVP |
 | FR-028 | Show detail view with image, title, year, status, service, summary, next and latest episode. PoC shows the network instead of the service. MVP: a meta line with the premiere year, up to two origin countries from TMDB and up to three genres from TVmaze ("2026 · Philippines · Drama, Thriller"), any missing part left out; the country is the show's origin, kept on purpose, and the original network stays out of the UI. MVP adds the IMDb rating from OMDb (ADR 0013) | PoC, MVP |
 | FR-029 | Show detail has a "Follow" / "Following" toggle button and, followed or not, "Open in [service]" as a full button when the show has a service in the user's territory (CRI-86). PoC: "Follow", and a quiet "Following" that unfollows; "Open in [service]" only when followed, for the show's Swedish service (FR-014); the service list in the user's territory is MVP | PoC, MVP |
 | FR-030 | Show detail opens from Search, Home, Calendar and Shows | PoC |
