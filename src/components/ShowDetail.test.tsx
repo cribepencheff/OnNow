@@ -365,14 +365,15 @@ describe("ShowDetail", () => {
     expect(notAiring.props.style).toEqual(airing.props.style);
   });
 
-  it("CRI-86: puts the title, status line and Open in on the backdrop", async () => {
+  it("CRI-86: puts the title and Open in on the backdrop, and the status line below it", async () => {
     mockShow(showSlowHorsesFixture);
     mockSwedishServices([APPLE_TV]);
     await render(<ShowDetail showId={45039} />);
 
     const hero = within(screen.getByTestId("show-detail-hero"));
     expect(hero.getByText("Slow Horses")).toBeTruthy();
-    expect(hero.getByTestId("show-detail-status")).toBeTruthy();
+    expect(hero.queryByTestId("show-detail-status")).toBeNull();
+    expect(screen.getByTestId("show-detail-status")).toBeTruthy();
     expect(hero.getByRole("button", { name: "Open in Apple TV" })).toBeTruthy();
   });
 

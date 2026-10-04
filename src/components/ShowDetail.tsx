@@ -104,8 +104,8 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
           contentFit="cover"
           accessibilityIgnoresInvertColors
         />
-        {/* The Home hero's scrim, logo or title, status line and "Open in"
-            on the backdrop, in every state (CRI-86). */}
+        {/* The Home hero's scrim, logo or title, and "Open in" on the
+            backdrop, in every state (CRI-86). */}
         <View pointerEvents="none" style={styles.heroScrim} />
         <View style={styles.heroContent}>
           {logo ? (
@@ -124,9 +124,6 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
               </Text>
             </View>
           )}
-          <Text style={styles.heroStatus} testID="show-detail-status">
-            {showStateLabel(state, todayDate)}
-          </Text>
           {link && (
             <Pressable
               accessibilityRole="button"
@@ -145,6 +142,9 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
 
       <View style={styles.section}>
         <Text style={styles.meta}>{showDetailMetaLine(show)}</Text>
+        <Text style={styles.meta} testID="show-detail-status">
+          {showStateLabel(state, todayDate)}
+        </Text>
         {allEpisodesAvailable(episodes, seasons, timeZone, todayDate) && (
           <Text style={styles.meta}>All episodes available</Text>
         )}
@@ -462,7 +462,7 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   // Scrim, logo, title and text colours as in the Home hero (HeroPage,
-  // HeroPager), so text on the backdrop stays readable.
+  // HeroPager), so the logo and title on the backdrop stay readable.
   heroScrim: {
     position: "absolute",
     left: 0,
@@ -492,10 +492,6 @@ const styles = StyleSheet.create({
     fontSize: 40,
     lineHeight: 44,
     color: t.ink,
-  },
-  heroStatus: {
-    ...type.meta,
-    color: t.inkMuted,
   },
   heroButton: {
     marginVertical: 0,

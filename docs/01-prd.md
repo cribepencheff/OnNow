@@ -139,8 +139,8 @@ per season come in the MVP.
   wording are decided from the results of spike 0001 (principle: data first).
 - **Hero (CRI-86):** a square crop of a textless TMDB backdrop (ADR 0012).
   On the backdrop, as on Home: the show's TMDB logo (the title as text when
-  there is none), the status line, and "Open in [service]" as a full button
-  in every state, followed or not. Below the backdrop: year and network,
+  there is none) and "Open in [service]" as a full button in every state,
+  followed or not. Below the backdrop: year and network, the status line,
   then a "Follow" / "Following" toggle button that updates at once.
 - **Status line (CRI-86):** one state derived from TVmaze's status,
   episodes and seasons, dated facts first: "Airing · next ep <date>" (next
