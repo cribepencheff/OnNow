@@ -1,9 +1,8 @@
 // "Open in [service]" for every show that can be streamed in the user's
 // region (FR-014, FR-017, ADR 0004, ADR 0014). TMDB's watch providers for
 // the region (data from JustWatch, spike 0002) say which service carries
-// the show; the link is the show's own page at that service when TVmaze's
-// official site is on it, otherwise the service's start page. A service
-// not in the table, or no service in the region, gives no link.
+// the show. Pay-TV never counts; add-on channels open their host. Services
+// without a start page get no button, only text (CRI-90).
 
 import { regionNameInSentence } from "./regions";
 import { serviceLink, type ServiceLink } from "./service-link";
@@ -69,18 +68,30 @@ interface KnownService {
 }
 
 // TMDB provider IDs, with the service's own name. Start pages carry no
-// country: the services send visitors to their local site. Services not
-// listed here give no button. "Amazon Channel" variants (the same service
-// sold through Prime Video) are left out on purpose, as is Tele2 Play
-// (id 497): it is an operator TV bundle that requires a subscription with
-// that operator, and we only link directly to streaming services. Telia
-// Play is not in TMDB's Swedish provider data we have seen so far, so it
-// has no entry to exclude yet.
+// country: the services send visitors to their local site. Each was checked
+// to load (CRI-90); TMDB has several IDs for some services.
+const PRIME_VIDEO = {
+  service: "Prime Video",
+  startPage: "https://www.primevideo.com",
+};
+const NETFLIX = { service: "Netflix", startPage: "https://www.netflix.com" };
+const PARAMOUNT = {
+  service: "Paramount+",
+  startPage: "https://www.paramountplus.com",
+};
+const PEACOCK = { service: "Peacock", startPage: "https://www.peacocktv.com" };
+const ITVX = { service: "ITVX", startPage: "https://www.itv.com" };
+const DISCOVERY = {
+  service: "discovery+",
+  startPage: "https://www.discoveryplus.com",
+};
 const KNOWN_SERVICES: Record<number, KnownService> = {
-  8: { service: "Netflix", startPage: "https://www.netflix.com" },
-  // TMDB has two IDs for Prime Video, depending on the region.
-  9: { service: "Prime Video", startPage: "https://www.primevideo.com" },
-  119: { service: "Prime Video", startPage: "https://www.primevideo.com" },
+  8: NETFLIX,
+  1796: NETFLIX,
+  9: PRIME_VIDEO,
+  119: PRIME_VIDEO,
+  613: PRIME_VIDEO,
+  2100: PRIME_VIDEO,
   337: { service: "Disney+", startPage: "https://www.disneyplus.com" },
   350: { service: "Apple TV", startPage: "https://tv.apple.com" },
   1899: { service: "HBO Max", startPage: "https://www.hbomax.com" },
@@ -90,20 +101,102 @@ const KNOWN_SERVICES: Record<number, KnownService> = {
   1944: { service: "TV4 Play", startPage: "https://www.tv4play.se" },
   300: { service: "Pluto TV", startPage: "https://pluto.tv" },
   151: { service: "BritBox", startPage: "https://www.britbox.com" },
-  531: { service: "Paramount+", startPage: "https://www.paramountplus.com" },
-  2303: { service: "Paramount+", startPage: "https://www.paramountplus.com" },
-  2616: { service: "Paramount+", startPage: "https://www.paramountplus.com" },
+  223: { service: "hayu", startPage: "https://www.hayu.com" },
+  11: { service: "MUBI", startPage: "https://mubi.com" },
+  // Behind a Cloudflare bot check: verified as Crunchyroll's own domain,
+  // not by an automated page load (CRI-90).
+  283: { service: "Crunchyroll", startPage: "https://www.crunchyroll.com" },
+  531: PARAMOUNT,
+  2303: PARAMOUNT,
+  2616: PARAMOUNT,
+  // United States
+  15: { service: "Hulu", startPage: "https://www.hulu.com" },
+  386: PEACOCK,
+  387: PEACOCK,
+  43: { service: "Starz", startPage: "https://www.starz.com" },
+  526: { service: "AMC+", startPage: "https://www.amcplus.com" },
+  520: DISCOVERY,
+  510: DISCOVERY,
+  524: DISCOVERY,
+  207: {
+    service: "The Roku Channel",
+    startPage: "https://therokuchannel.roku.com",
+  },
+  73: { service: "Tubi", startPage: "https://tubitv.com" },
+  // United Kingdom
+  39: { service: "NOW", startPage: "https://www.nowtv.com" },
+  38: { service: "BBC iPlayer", startPage: "https://www.bbc.co.uk/iplayer" },
+  41: ITVX,
+  2300: ITVX,
+  103: { service: "Channel 4", startPage: "https://www.channel4.com" },
+  333: { service: "5", startPage: "https://www.channel5.com" },
 };
 
+// Pay-TV, operator bundles and network apps that need a TV provider login.
+// They are never offered as a streaming service: no button, no text.
+const PAY_TV = new Set([
+  257, // fuboTV
+  2528, // YouTube TV
+  2383, // Philo
+  1809, // Sling TV
+  467, // DIRECTV GO
+  486, // Spectrum On Demand
+  29, // Sky Go
+  497, // Tele2 Play
+  553, // Telia Play
+  1961, // Allente
+  365, // Bravo TV
+  123, // FXNow
+  80, // AMC
+  156, // A&E
+  157, // Lifetime
+]);
+
+// Add-on channels sold inside another service, as TMDB names them
+// ("Hayu Amazon Channel"): the channel opens in the host's app.
+const HOSTS: { suffix: RegExp; host: KnownService }[] = [
+  { suffix: / Amazon Channel$/i, host: PRIME_VIDEO },
+  { suffix: / Apple TV channel$/i, host: KNOWN_SERVICES[350] },
+  { suffix: / Roku Premium Channel$/i, host: KNOWN_SERVICES[207] },
+];
+
+// The channel by its own name where we know it ("Hayu" is "hayu").
+const CHANNEL_NAMES: Record<string, string> = Object.fromEntries(
+  Object.values(KNOWN_SERVICES).map((known) => [
+    known.service.toLowerCase(),
+    known.service,
+  ]),
+);
+
+function addOnChannel(
+  provider: StreamingProvider,
+): { name: string; host: KnownService } | null {
+  // name: the channel itself ("Crunchyroll"); host: where it opens.
+  for (const { suffix, host } of HOSTS) {
+    if (suffix.test(provider.providerName)) {
+      const channel = provider.providerName.replace(suffix, "");
+      const name = CHANNEL_NAMES[channel.toLowerCase()] ?? channel;
+      return { name, host };
+    }
+  }
+  return null;
+}
+
+function isStreaming(provider: StreamingProvider): boolean {
+  return !PAY_TV.has(provider.providerId);
+}
+
 // One service per show for now (ADR 0004); the menu for several services
-// (FR-015) is MVP. A known service whose direct show link TVmaze gives
-// comes first, since it opens the show itself; otherwise the first known
-// service in TMDB's order, at its start page.
+// (FR-015) is MVP. In order: the show's own page when TVmaze's official
+// site is on a known service, then a known service's start page, then an
+// add-on channel's host (CRI-90). Within each, TMDB's order. Anything else
+// gives no button: it would not open the service itself.
 export function openInLink(
   providers: StreamingProvider[],
   officialSite: string | null,
 ): ServiceLink | null {
-  const known = providers
+  const streaming = providers.filter(isStreaming);
+  const known = streaming
     .map((provider) => KNOWN_SERVICES[provider.providerId])
     .filter((service): service is KnownService => service !== undefined);
 
@@ -111,21 +204,47 @@ export function openInLink(
   if (direct && known.some((service) => service.service === direct.service)) {
     return direct;
   }
+  if (known[0]) {
+    return { service: known[0].service, url: known[0].startPage };
+  }
 
-  const first = known[0];
-  return first ? { service: first.service, url: first.startPage } : null;
+  for (const provider of streaming) {
+    const channel = addOnChannel(provider);
+    if (channel) {
+      return {
+        service: channel.host.service,
+        url: channel.host.startPage,
+        requires: channel.name,
+      };
+    }
+  }
+  return null;
+}
+
+// The button's accessibility label: the app that opens, and the extra
+// subscription an add-on channel needs (CRI-90).
+export function openInAccessibilityLabel(link: ServiceLink): string {
+  return link.requires
+    ? `Open in ${link.service}, requires ${link.requires} subscription`
+    : `Open in ${link.service}`;
 }
 
 // When there is no "Open in" button, a quiet text says what TMDB's data
-// for the region (from JustWatch) shows, and nothing more (data first, CRI-84): no
-// service at all, or the first service TMDB lists, in TMDB's own name, when
-// it is not in the link table (Pluto TV for Hell's Kitchen).
+// for the region (from JustWatch) shows, and nothing more (data first,
+// CRI-84): every streaming service it lists, in TMDB's order and names
+// ("On Crunchyroll, HIDIVE"), or none at all (CRI-90). Pay-TV never counts.
 export function availabilityText(
   providers: StreamingProvider[],
   region: string,
 ): string {
-  const first = providers[0];
-  return first
-    ? `On ${first.providerName}`
+  const names = providers.filter(isStreaming).map((provider) => {
+    const channel = addOnChannel(provider);
+    return channel
+      ? `${channel.name} via ${channel.host.service}`
+      : provider.providerName;
+  });
+  const unique = [...new Set(names)];
+  return unique.length > 0
+    ? `On ${unique.join(", ")}`
     : `Not streaming in ${regionNameInSentence(region)}`;
 }

@@ -45,9 +45,14 @@ import {
   type SeasonTab,
 } from "@/logic/show-detail";
 import { showState, showStateLabel } from "@/logic/show-state";
-import { availabilityText, openInLink } from "@/logic/streaming-service";
+import {
+  availabilityText,
+  openInAccessibilityLabel,
+  openInLink,
+} from "@/logic/streaming-service";
 import { accent, withLightness } from "@/theme/color";
 import { OmdbCredit } from "./OmdbCredit";
+import { PaidSubscriptionMarker } from "./PaidSubscriptionMarker";
 import { t, type } from "@/theme/tokens";
 import { TmdbCredit } from "./TmdbCredit";
 import { TvMazeCredit } from "./TvMazeCredit";
@@ -128,17 +133,26 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
             </View>
           )}
           {link && (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={`Open in ${link.service}`}
-              // An https link: iOS opens the service's app at the show when
-              // it is installed, and the website otherwise.
-              onPress={() => Linking.openURL(link.url)}
-              style={[styles.button, styles.buttonAccent, styles.heroButton]}
-              testID="show-detail-open-in"
-            >
-              <Text style={styles.followLabel}>Open in {link.service}</Text>
-            </Pressable>
+            <View style={styles.heroAction}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={openInAccessibilityLabel(link)}
+                // An https link: iOS opens the service's app at the show when
+                // it is installed, and the website otherwise.
+                onPress={() => Linking.openURL(link.url)}
+                style={[styles.button, styles.buttonAccent, styles.heroButton]}
+                testID="show-detail-open-in"
+              >
+                <Text style={styles.followLabel}>Open in {link.service}</Text>
+              </Pressable>
+              {link.requires && (
+                <PaidSubscriptionMarker
+                  channel={link.requires}
+                  color={t.inkMuted}
+                  textStyle={styles.heroRequires}
+                />
+              )}
+            </View>
           )}
         </View>
       </View>
@@ -149,15 +163,16 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
         <Text style={styles.meta} testID="show-detail-status">
           {showStateLabel(state, todayDate)}
         </Text>
+        {/* No button that opens the service: say where it streams (CRI-90). */}
+        {availability && (
+          <Text style={styles.meta} testID="show-detail-availability">
+            {availability}
+          </Text>
+        )}
         {allEpisodesAvailable(episodes, seasons, timeZone, todayDate) && (
           <Text style={styles.meta}>All episodes available</Text>
         )}
-        <View style={styles.actionRow}>
-          <FollowToggle showId={show.id} />
-          {availability && (
-            <Text style={styles.availability}>{availability}</Text>
-          )}
-        </View>
+        <FollowToggle showId={show.id} />
         {summary && <Text style={styles.summary}>{summary}</Text>}
       </View>
 
@@ -527,6 +542,15 @@ const styles = StyleSheet.create({
   heroButton: {
     marginVertical: 0,
   },
+  // An add-on's extra subscription, directly below the button (CRI-90).
+  heroAction: {
+    alignSelf: "flex-start",
+    gap: 4,
+  },
+  heroRequires: {
+    ...type.meta,
+    color: t.inkMuted,
+  },
   heroImage: {
     width: "100%",
     aspectRatio: 1,
@@ -551,11 +575,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#333333",
     lineHeight: 21,
-  },
-  actionRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
   },
   // One shape for every action button; accent or quiet fill.
   button: {
@@ -583,10 +602,6 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontWeight: "700",
     fontSize: 16,
-  },
-  availability: {
-    color: "#666666",
-    fontSize: 15,
   },
   sectionLabel: {
     fontSize: 13,

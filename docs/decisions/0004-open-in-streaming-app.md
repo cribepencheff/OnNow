@@ -6,6 +6,7 @@ Amended 2026-09-23: website fallback added when the app is not installed
 Amended 2026-09-23, "PoC version" (CRI-80): see the section below.
 Amended 2026-09-24, TMDB as the source of the Swedish service (CRI-82): see
 the last section.
+Amended 2026-10-04, coverage across regions (CRI-90): see the last section.
 
 ## Context
 The user always ends up in a streaming app. A clear action to get there fits
@@ -76,3 +77,40 @@ show.
   official site.
 - **Without a TMDB key, or if the lookup fails:** the keyless PoC version
   above stands in.
+
+## Coverage across regions (amendment 2026-10-04, CRI-90)
+Checked on Watch What Happens Live in SE, US and GB, where TMDB lists
+operator apps, add-on channels and services the link table did not know.
+- **Pay-TV never counts.** Operator bundles, virtual pay-TV and network
+  apps that need a TV provider login (fuboTV, YouTube TV, Sling TV, Sky Go,
+  Tele2 Play, Telia Play, Allente, Bravo TV and others, listed by TMDB ID)
+  give no button and are never named. A real streaming service is picked
+  when the show has one; otherwise it reads "Not streaming in [country]".
+- **Add-on channels count** ("Hayu Amazon Channel", "... Apple TV
+  channel", "... Roku Premium Channel"). The button says what actually
+  happens: it names the host app that opens ("Open in Prime Video"), and
+  marks the channel as an extra paid subscription with a generic bag icon
+  from our icon set (not a store's own mark). In Show detail the bag and
+  "Requires hayu subscription" sit on a small line directly below the
+  button; in the Home hero the bag sits inside the button, so its height
+  stays fixed. Accessibility label: "Open in Prime Video, requires hayu
+  subscription". The marker is one reusable component for any service that
+  needs an extra subscription. In text (no button): "On hayu via Prime
+  Video".
+- **A button only when it opens the service itself:** a known start page
+  or an add-on channel's host. A service without a start page gets no
+  button. Instead, the info area below the hero lists every streaming
+  service TMDB gives, comma-separated, in TMDB's order and names ("On
+  Crunchyroll, HIDIVE"). "Not streaming in [country]" goes in the same
+  place. A fallback to TMDB's where-to-watch page was built and dropped
+  (owner, 2026-10-04): the button would not open the service.
+- **Order:** the show's own page, then a known service's start page, then
+  an add-on channel's host; TMDB's order within each.
+- **More start pages,** each checked to load: Hulu, Peacock, Starz, AMC+,
+  discovery+, The Roku Channel and Tubi (US); NOW, BBC iPlayer, ITVX,
+  Channel 4, 5 and hayu (UK); MUBI; and the extra TMDB IDs for Netflix and
+  Prime Video with ads. Crunchyroll's site sits behind a Cloudflare bot
+  check, so its start page was verified as its own domain rather than by an
+  automated page load. Without it, Frieren in Sweden opened the Crunchyroll
+  Amazon Channel even though TMDB lists Crunchyroll itself.
+

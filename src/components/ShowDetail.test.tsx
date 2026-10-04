@@ -412,6 +412,48 @@ describe("ShowDetail", () => {
     expect(hero.getByRole("button", { name: "Open in Apple TV" })).toBeTruthy();
   });
 
+  it("CRI-90: names services without a start page below the hero, with no button", async () => {
+    mockShow(showSlowHorsesFixture);
+    mockStreamingServices([
+      { providerId: 464, providerName: "Kocowa" },
+      { providerId: 430, providerName: "HiDive" },
+    ]);
+    await render(<ShowDetail showId={45039} />);
+
+    expect(screen.queryByRole("button", { name: /^Open in/ })).toBeNull();
+    expect(
+      within(screen.getByTestId("show-detail-hero")).queryByText(/^On /),
+    ).toBeNull();
+    expect(screen.getByTestId("show-detail-availability")).toHaveTextContent(
+      "On Kocowa, HiDive",
+    );
+  });
+
+  it("CRI-90: an add-on opens its host, with the extra subscription below the button", async () => {
+    mockShow(showSlowHorsesFixture);
+    mockStreamingServices([
+      { providerId: 296, providerName: "Hayu Amazon Channel" },
+    ]);
+    await render(<ShowDetail showId={45039} />);
+
+    const button = screen.getByRole("button", {
+      name: "Open in Prime Video, requires hayu subscription",
+    });
+    expect(button).toHaveTextContent("Open in Prime Video");
+    const hero = within(screen.getByTestId("show-detail-hero"));
+    expect(hero.getByTestId("paid-subscription-marker")).toHaveTextContent(
+      "Requires hayu subscription",
+    );
+  });
+
+  it("CRI-90: a service of its own has no subscription marker", async () => {
+    mockShow(showSlowHorsesFixture);
+    mockStreamingServices([APPLE_TV]);
+    await render(<ShowDetail showId={45039} />);
+
+    expect(screen.queryByTestId("paid-subscription-marker")).toBeNull();
+  });
+
   it("CRI-86: shows the TMDB logo instead of the title when there is one, as on Home", async () => {
     mockShow(showSlowHorsesFixture);
     mockShowImages.mockReturnValue({

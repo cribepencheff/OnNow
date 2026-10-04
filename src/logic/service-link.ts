@@ -11,6 +11,9 @@ export interface ServiceLink {
   // (network "HBO" is the service "HBO Max").
   service: string;
   url: string;
+  // An add-on channel the user must subscribe to; the link opens its host
+  // app, named in `service` (CRI-90).
+  requires?: string;
 }
 
 interface KnownService {

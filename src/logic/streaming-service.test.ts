@@ -1,5 +1,6 @@
 import {
   availabilityText,
+  openInAccessibilityLabel,
   openInLink,
   regionProviders,
   tmdbTvId,
@@ -14,6 +15,8 @@ import providersLegends from "@/api/fixtures/tmdb-providers-legends.json";
 import providersThePitt from "@/api/fixtures/tmdb-providers-the-pitt.json";
 import providersHellsKitchen from "@/api/fixtures/tmdb-providers-hell-s-kitchen.json";
 import providersSpecialForces from "@/api/fixtures/tmdb-providers-special-forces-world-s-toughest-test.json";
+import providersWwhl from "@/api/fixtures/tmdb-providers-watch-what-happens-live.json";
+import providersFrieren from "@/api/fixtures/tmdb-providers-frieren.json";
 import showSlowHorses from "@/api/fixtures/show-slow-horses.json";
 import showKillingEve from "@/api/fixtures/show-killing-eve.json";
 import showLegends from "@/api/fixtures/show-legends.json";
@@ -36,7 +39,7 @@ describe("tmdbTvId (spike 0002, CRI-82)", () => {
 
 describe("regionProviders (FR-014, CRI-82)", () => {
   it("reads Sweden's subscription services", () => {
-    expect(regionProviders(providersNeagley, "SE")).toEqual([
+    expect(regionProviders(providersNeagley, "SE")).toMatchObject([
       { providerId: 119, providerName: "Amazon Prime Video" },
     ]);
   });
@@ -45,7 +48,7 @@ describe("regionProviders (FR-014, CRI-82)", () => {
     expect(
       regionProviders(providersLudwig, "SE").map((p) => p.providerName),
     ).toEqual(["BritBox", "TV4 Play", "BritBox Amazon Channel", "SVT"]);
-    expect(regionProviders(providersHellsKitchen, "SE")).toEqual([
+    expect(regionProviders(providersHellsKitchen, "SE")).toMatchObject([
       { providerId: 300, providerName: "Pluto TV" },
     ]);
   });
@@ -141,7 +144,7 @@ describe("openInLink (FR-014, ADR 0004, CRI-82)", () => {
     });
   });
 
-  it("skips a service not in the table and takes the next known one", () => {
+  it("skips an operator bundle and takes the next known one", () => {
     const providers = [
       { providerId: 497, providerName: "Tele2 Play" },
       { providerId: 1944, providerName: "TV4 Play" },
@@ -152,7 +155,7 @@ describe("openInLink (FR-014, ADR 0004, CRI-82)", () => {
     });
   });
 
-  it("gives no link when no Swedish service is in the table (Tele2 Play)", () => {
+  it("gives no link for an operator bundle alone (Tele2 Play, CRI-90)", () => {
     expect(
       openInLink([{ providerId: 497, providerName: "Tele2 Play" }], null),
     ).toBeNull();
@@ -181,7 +184,7 @@ describe("availabilityText (FR-014, CRI-84)", () => {
     ).toBe("On Pluto TV");
   });
 
-  it("names the first service in TMDB's order when there are several", () => {
+  it("names every service in TMDB's order when there are several (CRI-90)", () => {
     expect(
       availabilityText(
         [
@@ -190,7 +193,7 @@ describe("availabilityText (FR-014, CRI-84)", () => {
         ],
         "SE",
       ),
-    ).toBe("On BritBox");
+    ).toBe("On BritBox, Other");
   });
 });
 
@@ -240,5 +243,124 @@ describe("streaming services per region (FR-017, CRI-88)", () => {
     expect(availabilityText([], "GB")).toBe(
       "Not streaming in the United Kingdom",
     );
+  });
+});
+
+// CRI-90: "Open in" across regions, on Watch What Happens Live (Bravo in the
+// US): pay-TV is never a streaming service, add-on channels open their host,
+// and services without a start page are named in text, without a button.
+describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
+  it("opens hayu through Prime Video in Sweden (an add-on channel)", () => {
+    expect(openInLink(regionProviders(providersWwhl, "SE"), null)).toEqual({
+      service: "Prime Video",
+      url: "https://www.primevideo.com",
+      requires: "hayu",
+    });
+  });
+
+  it("skips fuboTV and opens Peacock in the US", () => {
+    expect(openInLink(regionProviders(providersWwhl, "US"), null)).toEqual({
+      service: "Peacock",
+      url: "https://www.peacocktv.com",
+    });
+  });
+
+  it("skips Sky Go and opens hayu through Prime Video in the UK", () => {
+    expect(openInLink(regionProviders(providersWwhl, "GB"), null)).toEqual({
+      service: "Prime Video",
+      url: "https://www.primevideo.com",
+      requires: "hayu",
+    });
+  });
+
+  it("never counts pay-TV or operator bundles, for the link or the text", () => {
+    const payTv = [
+      { providerId: 257, providerName: "fuboTV" },
+      { providerId: 29, providerName: "Sky Go" },
+      { providerId: 553, providerName: "Telia Play" },
+      { providerId: 365, providerName: "Bravo TV" },
+    ];
+    expect(openInLink(payTv, null)).toBeNull();
+    expect(availabilityText(payTv, "US")).toBe(
+      "Not streaming in the United States of America",
+    );
+  });
+
+  it("prefers a real service with a start page over an add-on channel", () => {
+    expect(
+      openInLink(
+        [
+          { providerId: 296, providerName: "Hayu Amazon Channel" },
+          { providerId: 1899, providerName: "HBO Max" },
+        ],
+        null,
+      ),
+    ).toEqual({ service: "HBO Max", url: "https://www.hbomax.com" });
+  });
+
+  it("opens Apple TV and Roku add-on channels through their hosts", () => {
+    expect(
+      openInLink(
+        [{ providerId: 1854, providerName: "AMC Plus Apple TV channel" }],
+        null,
+      ),
+    ).toEqual({
+      service: "Apple TV",
+      url: "https://tv.apple.com",
+      requires: "AMC Plus",
+    });
+    expect(
+      openInLink(
+        [{ providerId: 633, providerName: "Paramount+ Roku Premium Channel" }],
+        null,
+      ),
+    ).toEqual({
+      service: "The Roku Channel",
+      url: "https://therokuchannel.roku.com",
+      requires: "Paramount+",
+    });
+  });
+
+  it("gives no button for services without a start page, and names them all", () => {
+    const providers = [
+      { providerId: 464, providerName: "Kocowa" },
+      { providerId: 430, providerName: "HiDive" },
+      { providerId: 257, providerName: "fuboTV" },
+      { providerId: 464, providerName: "Kocowa" },
+    ];
+    expect(openInLink(providers, null)).toBeNull();
+    expect(availabilityText(providers, "US")).toBe("On Kocowa, HiDive");
+  });
+
+  it("opens Crunchyroll itself for Frieren in Sweden, not its Amazon add-on", () => {
+    expect(openInLink(regionProviders(providersFrieren, "SE"), null)).toEqual({
+      service: "Crunchyroll",
+      url: "https://www.crunchyroll.com",
+    });
+  });
+
+  it("labels an add-on button with the app that opens and the subscription it needs", () => {
+    expect(
+      openInAccessibilityLabel({
+        service: "Prime Video",
+        url: "https://www.primevideo.com",
+        requires: "hayu",
+      }),
+    ).toBe("Open in Prime Video, requires hayu subscription");
+    expect(
+      openInAccessibilityLabel({
+        service: "Peacock",
+        url: "https://www.peacocktv.com",
+      }),
+    ).toBe("Open in Peacock");
+  });
+
+  it("names an add-on channel via its host in the text", () => {
+    expect(
+      availabilityText(
+        [{ providerId: 296, providerName: "Hayu Amazon Channel" }],
+        "SE",
+      ),
+    ).toBe("On hayu via Prime Video");
   });
 });
