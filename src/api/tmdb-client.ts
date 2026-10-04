@@ -13,7 +13,6 @@ import {
   tmdbOriginCountries,
   tmdbTvId,
   type ProviderAnswer,
-  type StreamingProvider,
   type TmdbFindResponse,
 } from "@/logic/streaming-service";
 import { matchTmdbSearch, type TmdbSearchResult } from "@/logic/tmdb-match";

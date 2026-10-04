@@ -12,11 +12,7 @@ import { useShow } from "@/hooks/useShow";
 import { useFollowList } from "@/hooks/useFollowList";
 import { useStreamingService } from "@/hooks/useStreamingService";
 import { useImdbRating } from "@/hooks/useImdbRating";
-import {
-  NOT_ON_TMDB,
-  type ProviderAnswer,
-  type StreamingProvider,
-} from "@/logic/streaming-service";
+import { NOT_ON_TMDB, type ProviderAnswer } from "@/logic/streaming-service";
 import showMobLandFixture from "@/api/fixtures/show-mobland.json";
 import showSlowHorsesFixture from "@/api/fixtures/show-slow-horses.json";
 import showSiloFixture from "@/api/fixtures/show-silo.json";
