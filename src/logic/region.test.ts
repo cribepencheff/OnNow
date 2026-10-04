@@ -4,7 +4,7 @@ import {
   FALLBACK_REGION,
   type StoredRegion,
 } from "./region";
-import { isSupportedRegion, regionName, regionNameInSentence } from "./regions";
+import { countryName, isSupportedRegion, regionName } from "./regions";
 
 describe("detectRegion (FR-016, CRI-88, ADR 0014)", () => {
   it("takes the region of the phone's first locale", () => {
@@ -59,18 +59,32 @@ describe("currentRegion (FR-016, CRI-88, ADR 0014)", () => {
 });
 
 describe("regions (CRI-88)", () => {
-  it("names regions with TMDB's English names", () => {
+  it("names regions with CLDR's English names, as Intl.DisplayNames would", () => {
     expect(regionName("SE")).toBe("Sweden");
-    expect(regionName("US")).toBe("United States of America");
+    expect(regionName("US")).toBe("United States");
+    expect(regionName("TR")).toBe("Türkiye");
   });
 
-  it("adds the article where a name needs one in a sentence", () => {
-    expect(regionNameInSentence("SE")).toBe("Sweden");
-    expect(regionNameInSentence("GB")).toBe("the United Kingdom");
-    expect(regionNameInSentence("NL")).toBe("the Netherlands");
+  it("matches Intl.DisplayNames where the engine has it (Node, not Hermes)", () => {
+    const names = new Intl.DisplayNames(["en"], { type: "region" });
+    for (const code of ["US", "GB", "CZ", "PH", "CN", "KR"]) {
+      expect(countryName(code)).toBe(names.of(code));
+    }
   });
 
   it("shows the code itself for an unknown region", () => {
-    expect(regionName("AQ")).toBe("AQ");
+    expect(regionName("XX")).toBe("XX");
+  });
+});
+
+describe("countryName (FR-028)", () => {
+  it("names a supported region and a country outside the list", () => {
+    expect(countryName("PH")).toBe("Philippines");
+    // China has no TMDB watch region; its name comes from Intl.DisplayNames.
+    expect(countryName("CN")).toBe("China");
+  });
+
+  it("is null for a code it cannot name", () => {
+    expect(countryName("XX")).toBeNull();
   });
 });

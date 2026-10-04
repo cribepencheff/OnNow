@@ -39,7 +39,7 @@ describe("SearchResultRow", () => {
     jest.useRealTimers();
   });
 
-  it("shows the title, meta line, network and summary before following", async () => {
+  it("shows the title, meta line and summary before following, and no network", async () => {
     const show = showSlowHorsesFixture as unknown as TvMazeShow;
 
     await render(
@@ -52,7 +52,7 @@ describe("SearchResultRow", () => {
 
     expect(screen.getByText("Slow Horses")).toBeTruthy();
     expect(screen.getByText("2022 · Running")).toBeTruthy();
-    expect(screen.getByText("Apple TV")).toBeTruthy();
+    expect(screen.queryByText("Apple TV")).toBeNull();
     expect(screen.getByText(/Slow Horses follows the story/)).toBeTruthy();
   });
 

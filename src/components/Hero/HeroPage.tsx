@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import { Image } from "expo-image";
 import * as Linking from "expo-linking";
+import { useRouter } from "expo-router";
 
 import { IMAGE_BASE } from "@/api/tmdb-types";
 import type { TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
@@ -23,14 +24,15 @@ import { useStreamingService } from "@/hooks/useStreamingService";
 import { useEpisodeStill } from "@/hooks/useEpisodeStill";
 import { useShowImages } from "@/hooks/useShowImages";
 import { addDays } from "@/logic/local-date";
-import { formatLabelDate } from "@/logic/next-episode-label";
 import { openInAccessibilityLabel } from "@/logic/streaming-service";
+import { ImdbRating } from "../ImdbRating";
 import { PaidSubscriptionMarker } from "../PaidSubscriptionMarker";
 import {
   HERO_CROSSFADE_FLOOR,
   HERO_PARALLAX_FACTOR,
   heroAvailability,
-  heroMetaLine,
+  heroDateLine,
+  heroEpisodeTitle,
   type HeroAvailability,
   type HeroSlide,
 } from "@/logic/hero-carousel";
@@ -161,6 +163,7 @@ export const HeroPage = memo(function HeroPage({
 }) {
   const { height } = useWindowDimensions();
   const scale = height / REF_HEIGHT;
+  const router = useRouter();
   const show = item.show as TvMazeShowWithEmbeds;
   const { data: images } = useShowImages(show, deviceTimeZone(), todayDate);
   // The show's highest-rated backdrop (chooseHighestRatedBackdrop), used
@@ -279,7 +282,17 @@ export const HeroPage = memo(function HeroPage({
     // zoom (below) never renders outside this View's bounds: the pager
     // itself is what's pinned (HeroPager's pagerPinTranslateY), so this
     // View's own top never moves relative to it, at rest or mid-pull.
-    <View style={{ width, height, overflow: "visible" }}>
+    // FR-030: a tap opens Show detail; a swipe still pages (the list owns the drag).
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={show.name}
+      accessibilityHint="Opens the show"
+      onPress={() =>
+        router.push({ pathname: "/show/[id]", params: { id: show.id } })
+      }
+      style={{ width, height, overflow: "visible" }}
+      testID="home-card"
+    >
       <Animated.View
         style={[StyleSheet.absoluteFill, { opacity: backdropOpacity }]}
       >
@@ -319,7 +332,7 @@ export const HeroPage = memo(function HeroPage({
           </Animated.View>
         )}
       </Animated.View>
-    </View>
+    </Pressable>
   );
 });
 
@@ -376,7 +389,9 @@ export const ContentLayer = memo(function ContentLayer({
 }) {
   const { height } = useWindowDimensions();
   const scale = height / REF_HEIGHT;
-  const contentTop = 452 * scale;
+  // Raised by one meta line so the two-line meta block leaves the button
+  // and dots where they were.
+  const contentTop = 452 * scale - type.meta.lineHeight;
   const isShort = height < SHORT_SCREEN_MAX_HEIGHT;
   const dotsGap = isShort ? DOTS_GAP_SHORT : DOTS_GAP;
   const show = slide.show as TvMazeShowWithEmbeds;
@@ -456,33 +471,49 @@ export const ContentLayer = memo(function ContentLayer({
       style={[StyleSheet.absoluteFill, { opacity }]}
       pointerEvents={interactive ? "box-none" : "none"}
     >
-      <View style={[styles.content, { top: contentTop }]}>
-        <Text style={styles.badge}>
-          <Text style={isToday ? styles.badgeToday : undefined}>
-            {isToday ? "TODAY" : isTomorrow ? "TOMORROW" : "UPCOMING"}
-          </Text>
-          {` · ${index + 1}/${pageCount}`}
-        </Text>
-        {logo ? (
-          <Image
-            source={`${IMAGE_BASE}/w500${logo.file_path}`}
-            style={styles.logo}
-            contentFit="contain"
-            contentPosition="left"
-            accessibilityLabel={show.name}
-          />
-        ) : (
-          <View style={styles.titleBand}>
-            <Text style={styles.displayTitle} numberOfLines={2}>
-              {show.name}
+      {/* Only the links take touches; the rest passes through to the
+          pager below, which pages on a swipe and opens detail on a tap. */}
+      <View
+        style={[styles.content, { top: contentTop }]}
+        pointerEvents="box-none"
+      >
+        <View style={styles.badgeRow} pointerEvents="box-none">
+          <View pointerEvents="none">
+            <Text style={styles.badge}>
+              <Text style={isToday ? styles.badgeToday : undefined}>
+                {isToday ? "TODAY" : isTomorrow ? "TOMORROW" : "UPCOMING"}
+              </Text>
+              {` · ${index + 1}/${pageCount}`}
             </Text>
           </View>
-        )}
-        <Text style={styles.meta} numberOfLines={1}>
-          {`${formatLabelDate(slide.localDate, todayDate).toUpperCase()} · ${heroMetaLine(
-            slide.episodes,
-          )}`}
-        </Text>
+          <ImdbRating show={show} textStyle={styles.badge} />
+        </View>
+        <View pointerEvents="none" style={styles.passThrough}>
+          {logo ? (
+            <Image
+              source={`${IMAGE_BASE}/w500${logo.file_path}`}
+              style={styles.logo}
+              contentFit="contain"
+              contentPosition="left"
+              accessibilityLabel={show.name}
+            />
+          ) : (
+            <View style={styles.titleBand}>
+              <Text style={styles.displayTitle} numberOfLines={2}>
+                {show.name}
+              </Text>
+            </View>
+          )}
+          {/* Two fixed lines: date and code, then the episode title. */}
+          <View>
+            <Text style={styles.meta} numberOfLines={1}>
+              {heroDateLine(slide, todayDate)}
+            </Text>
+            <Text style={styles.meta} numberOfLines={1}>
+              {heroEpisodeTitle(slide.episodes) ?? " "}
+            </Text>
+          </View>
+        </View>
         <OpenInSlot availability={availability} onLayout={handleButtonLayout} />
       </View>
     </Animated.View>
@@ -494,6 +525,15 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 24,
     right: 24,
+    gap: 8,
+  },
+  badgeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  // Keeps the content block's own row gap inside the pass-through group.
+  passThrough: {
     gap: 8,
   },
   badge: {

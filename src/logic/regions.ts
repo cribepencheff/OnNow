@@ -1,6 +1,9 @@
 // The regions TMDB has watch provider data for, with TMDB's English names
 // (GET /watch/providers/regions, snapshot 2026-10-04, CRI-88, ADR 0014).
+// The names are the fallback for codes CLDR does not name (countryName).
 // Only these can be a user's region: elsewhere there is nothing to show.
+
+import { COUNTRY_NAMES } from "./country-names";
 
 export interface Region {
   code: string;
@@ -149,32 +152,20 @@ export const REGIONS: readonly Region[] = [
   { code: "ZW", name: "Zimbabwe" },
 ];
 
-// Names that read with "the" in a sentence ("in the Netherlands").
-const WITH_ARTICLE = new Set([
-  "AE",
-  "BS",
-  "CD",
-  "CZ",
-  "DO",
-  "GB",
-  "NL",
-  "PH",
-  "PS",
-  "TC",
-  "US",
-  "VA",
-]);
-
 export function isSupportedRegion(code: string): boolean {
   return REGIONS.some((region) => region.code === code);
 }
 
-export function regionName(code: string): string {
-  return REGIONS.find((region) => region.code === code)?.name ?? code;
+// A country's English name: CLDR's (the names Intl.DisplayNames gives),
+// TMDB's as the fallback; null when neither knows it.
+export function countryName(code: string): string | null {
+  return (
+    COUNTRY_NAMES[code] ??
+    REGIONS.find((region) => region.code === code)?.name ??
+    null
+  );
 }
 
-// "Sweden", "the United Kingdom": the name as it reads inside a sentence.
-export function regionNameInSentence(code: string): string {
-  const name = regionName(code);
-  return WITH_ARTICLE.has(code) ? `the ${name}` : name;
+export function regionName(code: string): string {
+  return countryName(code) ?? code;
 }

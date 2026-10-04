@@ -2,6 +2,7 @@
 // FR-033, FR-034, FR-037, CRI-79). TVmaze data only, in its own terms
 // (principle: data first). Views only render this (ADR 0009).
 
+import { countryName } from "./regions";
 import {
   addDays,
   daysBetween,
@@ -10,7 +11,6 @@ import {
 } from "./local-date";
 import { nextForShow } from "./next-episode";
 import { formatLabelDate, nextDateLabel } from "./next-episode-label";
-import { searchResultNetworkName } from "./search-results";
 import { statusLabel } from "./show-status";
 import type {
   TvMazeEpisode,
@@ -46,11 +46,16 @@ export function relativeDayLabel(
   return formatLabelDate(localDate, todayDate);
 }
 
-// "2022 · Apple TV": year and network (FR-028). The status has its own
-// line (show-state.ts).
-export function showDetailMetaLine(show: TvMazeShow): string {
+// "2026 · Philippines · Drama, Thriller" (FR-028): first year, the first
+// origin country (TMDB), up to three genres (TVmaze). Missing parts drop.
+export function showDetailMetaLine(
+  show: TvMazeShow,
+  originCountries: string[],
+): string {
   const year = show.premiered ? show.premiered.slice(0, 4) : null;
-  return [year, searchResultNetworkName(show)].filter(Boolean).join(" · ");
+  const country = originCountries[0] ? countryName(originCountries[0]) : null;
+  const genres = (show.genres ?? []).slice(0, 3).join(", ");
+  return [year, country, genres].filter(Boolean).join(" · ");
 }
 
 // FR-037: specials are never shown.

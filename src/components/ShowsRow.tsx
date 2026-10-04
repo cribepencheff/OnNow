@@ -1,6 +1,6 @@
 // A followed show row in the Shows list (PRD 5.3, FR-002, FR-010, FR-035),
 // in the same visual language as Search's result row: poster, title,
-// network, and a line with the next episode or status. Tapping the row
+// and a line with the next episode or status. Tapping the row
 // opens Show detail (FR-030, CRI-79). Swipe left reveals
 // "Unfollow" (react-native-gesture-handler's Swipeable, Expo Go
 // compatible, no dev build needed); a full swipe alone does not unfollow,
@@ -14,7 +14,6 @@ import { Swipeable } from "react-native-gesture-handler";
 
 import { nextForShow } from "@/logic/next-episode";
 import { showsRowLine } from "@/logic/shows-list";
-import { searchResultNetworkName } from "@/logic/search-results";
 import type { LocalDate } from "@/logic/local-date";
 import type { TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 
@@ -43,8 +42,7 @@ export function ShowsRow({
     todayDate,
   );
   const line = showsRowLine(next, show.status, timeZone, todayDate);
-  const network = searchResultNetworkName(show);
-  const label = [show.name, network, line].filter(Boolean).join(", ");
+  const label = [show.name, line].filter(Boolean).join(", ");
 
   return (
     <Swipeable
@@ -78,11 +76,6 @@ export function ShowsRow({
           <Text style={styles.line} numberOfLines={1}>
             {line}
           </Text>
-          {network && (
-            <Text style={styles.network} numberOfLines={1}>
-              {network}
-            </Text>
-          )}
         </View>
       </Pressable>
     </Swipeable>
@@ -138,10 +131,6 @@ const styles = StyleSheet.create({
   line: {
     fontSize: 13,
     fontWeight: "500",
-  },
-  network: {
-    fontSize: 12,
-    color: "#888888",
   },
   actionContainer: {
     width: ACTION_WIDTH,

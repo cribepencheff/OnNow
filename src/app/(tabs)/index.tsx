@@ -1,7 +1,5 @@
 // Home (PRD 5.1, FR-004, FR-005, FR-006, FR-007, FR-011, FR-012, FR-013,
-// FR-037): which followed shows have a new episode today. Visual design
-// comes later, so styling here stays minimal and functional; nothing below
-// the card is a Design phase decision (backlog CRI-66).
+// FR-037): which followed shows have a new episode today.
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -369,17 +367,24 @@ function PullToRefreshIndicator({
   );
 }
 
+// FR-007, FR-013: Home's only way into Search; with shows followed, Search
+// is reached from the Shows tab.
 function EmptyFollowList({ onPress }: { onPress: () => void }) {
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel="Add your first show"
-      onPress={onPress}
-      style={styles.emptyState}
-      testID="home-empty-state"
-    >
-      <Text style={styles.emptyStateText}>Add your first show</Text>
-    </Pressable>
+    <View style={styles.emptyState} testID="home-empty-state">
+      <Text style={styles.emptyStatePrompt}>
+        Follow your shows to see what comes out today.
+      </Text>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Add your first show"
+        onPress={onPress}
+        style={styles.emptyStateButton}
+        testID="home-add-show"
+      >
+        <Text style={styles.emptyStateButtonLabel}>Add your first show</Text>
+      </Pressable>
+    </View>
   );
 }
 
@@ -394,11 +399,25 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    gap: 16,
+    paddingHorizontal: 32,
   },
-  emptyStateText: {
-    fontSize: 17,
-    fontWeight: "600",
-    color: accent,
+  emptyStatePrompt: {
+    color: "#666666",
+    fontSize: 15,
+    textAlign: "center",
+  },
+  // Show detail's accent action button.
+  emptyStateButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 24,
+    backgroundColor: accent,
+  },
+  emptyStateButtonLabel: {
+    color: "#FFFFFF",
+    fontWeight: "700",
+    fontSize: 16,
   },
   quietLine: {
     flex: 1,

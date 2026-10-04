@@ -32,6 +32,20 @@ what the data knows:
 The wording changes land with the Home work; nothing in the UI changes with
 this ADR.
 
+## Amendment (CRI-91)
+The premiere wording above was tried on Home and dropped by the owner:
+"Premieres Fri 9 Oct on Paramount+" read wrong on a mid-season episode,
+and most slides are regular episodes. The original network is also left
+out of the UI app-wide, since it says nothing about where the user can
+watch.
+- **Dates are shown as the date, with no verb and no network:** "Fri 9 Oct ·
+  S2E4", with the episode title on the line below. They are still the
+  original air date.
+- **Where to watch is only "Open in"** (ADR 0004, ADR 0014). The network
+  stays in the data model.
+- "Season 3 premiere" labels for episode 1 of a season are kept (PRD 5.4,
+  5.5): they state a fact about the episode, not where it airs.
+
 ## Path for a public release
 Season and episode availability per region needs Streaming Availability,
 or a source like it, behind our own server on a paid plan. From spike

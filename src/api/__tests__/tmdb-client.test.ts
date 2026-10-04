@@ -129,3 +129,42 @@ describe("TmdbClient (FR-014, NFR-005, CRI-82)", () => {
     ).rejects.toThrow("TMDB responded with 500");
   });
 });
+
+describe("TmdbClient.findOriginCountries (FR-028)", () => {
+  it("reads the origin countries from the find result, with no extra request", async () => {
+    const fetchFn = jest.fn().mockResolvedValueOnce(jsonResponse(findNeagley));
+    const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
+
+    await expect(
+      client.findOriginCountries(NEAGLEY_EXTERNALS),
+    ).resolves.toEqual(["US"]);
+    expect(fetchFn).toHaveBeenCalledTimes(1);
+  });
+
+  it("falls back to TheTVDB, and is empty when TMDB does not know the show", async () => {
+    const fetchFn = jest
+      .fn()
+      .mockResolvedValueOnce(jsonResponse({ tv_results: [] }))
+      .mockResolvedValueOnce(jsonResponse({ tv_results: [] }));
+    const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
+
+    await expect(
+      client.findOriginCountries(NEAGLEY_EXTERNALS),
+    ).resolves.toEqual([]);
+    expect(fetchFn.mock.calls[1][0]).toContain("external_source=tvdb_id");
+  });
+
+  it("is null without an API key", async () => {
+    const fetchFn = jest.fn();
+    const client = createTmdbClient({
+      apiKey: undefined,
+      fetchFn,
+      wait: noWait,
+    });
+
+    await expect(
+      client.findOriginCountries(NEAGLEY_EXTERNALS),
+    ).resolves.toBeNull();
+    expect(fetchFn).not.toHaveBeenCalled();
+  });
+});
