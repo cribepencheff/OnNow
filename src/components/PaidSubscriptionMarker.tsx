@@ -11,34 +11,27 @@ const BAG = {
   web: "shopping_bag",
 } as const;
 
+// The line under an add-on's "Open in" button; the button itself has no bag
+// (CRI-101). Screen readers get it from the button's label.
 export function PaidSubscriptionMarker({
   channel,
-  iconOnly = false,
   color,
   textStyle,
 }: {
   // The subscription the user pays for ("hayu").
   channel: string;
-  // Inside a button: the bag alone, the button's label says the rest.
-  iconOnly?: boolean;
   color: string;
   textStyle?: TextStyle;
 }) {
-  const icon = (
-    <SymbolView
-      name={BAG}
-      tintColor={color}
-      size={iconOnly ? 16 : 13}
-      accessibilityElementsHidden
-      importantForAccessibility="no"
-    />
-  );
-  if (iconOnly) {
-    return icon;
-  }
   return (
     <View style={styles.row} testID="paid-subscription-marker">
-      {icon}
+      <SymbolView
+        name={BAG}
+        tintColor={color}
+        size={13}
+        accessibilityElementsHidden
+        importantForAccessibility="no"
+      />
       <Text style={textStyle}>{`Requires ${channel} subscription`}</Text>
     </View>
   );

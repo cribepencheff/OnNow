@@ -4,10 +4,10 @@ import { OpenInSlot } from "./HeroPage";
 
 jest.mock("expo-linking", () => ({ openURL: jest.fn() }));
 
-// CRI-90, CRI-101, ADR 0004: an add-on's extra subscription is a bag inside
-// the hero's button and a "Requires" line under it, as in Show detail.
+// CRI-90, CRI-101, ADR 0004: an add-on's extra subscription is the
+// "Requires" line under the hero's button, as in Show detail.
 describe("OpenInSlot (FR-014, CRI-90)", () => {
-  it("names the host app, keeps the bag inside the button, and says what it requires below it (CRI-101)", async () => {
+  it("names the host app, and says what it requires below the button (CRI-101)", async () => {
     await render(
       <OpenInSlot
         availability={{

@@ -89,14 +89,13 @@ operator apps, add-on channels and services the link table did not know.
   (CRI-91, CRI-97; was "Not streaming in [country]").
 - **Add-on channels count** ("Hayu Amazon Channel", "... Apple TV
   channel", "... Roku Premium Channel"). The button says what actually
-  happens: it names the host app that opens ("Open in Prime Video"), and
-  marks the channel as an extra paid subscription with a generic bag icon
-  from our icon set (not a store's own mark). In Show detail the bag and
-  "Requires hayu subscription" sit on a small line directly below the
-  button; in the Home hero the bag sits inside the button and the same
-  line sits below it, in a line reserved on every slide so nothing shifts
-  (CRI-101). Accessibility label: "Open in Prime Video, requires hayu
-  subscription". The marker is one reusable component for any service that
+  happens: it names the host app that opens ("Open in Prime Video"). A
+  small line directly below the button marks the channel as an extra paid
+  subscription: a generic bag icon from our icon set (not a store's own
+  mark) and "Requires hayu subscription". It is the same in Show detail and
+  the Home hero, where the line is reserved on every slide so nothing
+  shifts. The button itself has no icon (CRI-101). Accessibility label:
+  "Open in Prime Video, requires hayu subscription". The marker is one reusable component for any service that
   needs an extra subscription. In text (no button): "On hayu via Prime
   Video".
 - **A button only when it opens the service itself:** a known start page

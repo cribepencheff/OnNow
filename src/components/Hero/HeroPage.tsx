@@ -108,18 +108,9 @@ export function OpenInSlot({
             onPress={() => Linking.openURL(availability.link.url)}
             style={[styles.button, buttonHeightStyle]}
           >
-            <View style={styles.buttonContent}>
-              <Text style={styles.buttonLabel}>
-                Open in {availability.link.service}
-              </Text>
-              {availability.link.requires && (
-                <PaidSubscriptionMarker
-                  channel={availability.link.requires}
-                  iconOnly
-                  color={t.bg}
-                />
-              )}
-            </View>
+            <Text style={styles.buttonLabel}>
+              Open in {availability.link.service}
+            </Text>
           </Pressable>
           {/* As in Show detail, under the button (CRI-90, CRI-101). */}
           {availability.link.requires && (
@@ -604,11 +595,6 @@ const styles = StyleSheet.create({
     backgroundColor: t.ink,
     alignItems: "center",
     justifyContent: "center",
-  },
-  buttonContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
   },
   buttonLabel: {
     color: t.bg,
