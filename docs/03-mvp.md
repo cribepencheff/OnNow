@@ -11,7 +11,7 @@ use, and so do a few friends.
 - An excellent add flow, including the first run experience and "New this
   week" in Search (FR-026)
 - Show detail view (FR-028 to FR-030)
-- "Recommended for you" under the Home hero, derived from the follow list
+- "Top picks for you" under the Home hero, derived from the follow list
   (FR-038, ADR 0016)
 - "Open in [service]" with a menu for several services (FR-014, FR-015)
 - Territory setting and service availability (FR-016, FR-017)

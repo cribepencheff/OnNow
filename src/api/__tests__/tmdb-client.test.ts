@@ -2,6 +2,7 @@ import { NOT_ON_TMDB } from "@/logic/streaming-service";
 import { createTmdbClient } from "../tmdb-client";
 import externalIdsJayZ from "../fixtures/tmdb-external-ids-jay-z.json";
 import findNeagley from "../fixtures/tmdb-find-neagley.json";
+import recommendationsMobland from "../fixtures/tmdb-recommendations-mobland.json";
 import providersNeagley from "../fixtures/tmdb-providers-neagley.json";
 
 function jsonResponse(body: unknown, status = 200): Response {
@@ -263,5 +264,46 @@ describe("TmdbClient.findExternalIds (CRI-103)", () => {
       wait: noWait,
     });
     await expect(noKey.findExternalIds(NEAGLEY_EXTERNALS)).resolves.toBeNull();
+  });
+});
+
+describe("TmdbClient recommendations (FR-038)", () => {
+  it("finds the show, then its recommendations, with its own TMDB id", async () => {
+    const fetchFn = jest
+      .fn()
+      .mockResolvedValueOnce(jsonResponse(JAY_Z_SEARCH))
+      .mockResolvedValueOnce(jsonResponse(recommendationsMobland));
+    const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
+
+    const answer = await client.findRecommendations(JAY_Z);
+    expect(answer).toMatchObject({ tvId: 326440 });
+    expect(
+      typeof answer === "object" && answer !== null && answer.results[0].name,
+    ).toBe("Gangs of London");
+    expect(fetchFn.mock.calls[1][0]).toContain("/3/tv/326440/recommendations");
+  });
+
+  it("is NOT_ON_TMDB for an unknown show", async () => {
+    const fetchFn = jest
+      .fn()
+      .mockResolvedValue(jsonResponse({ tv_results: [] }));
+    const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
+
+    await expect(client.findRecommendations(NEAGLEY_EXTERNALS)).resolves.toBe(
+      NOT_ON_TMDB,
+    );
+  });
+
+  it("reads a TMDB show's external IDs by its TMDB id", async () => {
+    const fetchFn = jest
+      .fn()
+      .mockResolvedValueOnce(jsonResponse(externalIdsJayZ));
+    const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
+
+    await expect(client.externalIdsById(326440)).resolves.toEqual({
+      imdb: "tt43619535",
+      thetvdb: 479659,
+    });
+    expect(fetchFn.mock.calls[0][0]).toContain("/3/tv/326440/external_ids");
   });
 });

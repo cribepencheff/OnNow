@@ -20,6 +20,7 @@ import {
   type ExternalIds,
   type TmdbExternalIdsResponse,
 } from "@/logic/external-ids";
+import type { TmdbRecommendation } from "@/logic/recommendations";
 import { matchTmdbSearch, type TmdbSearchResult } from "@/logic/tmdb-match";
 import type { TvMazeExternals, TvMazeShow } from "./tvmaze-types";
 
@@ -29,6 +30,11 @@ export type TmdbShowRef = Pick<TvMazeExternals, "imdb" | "thetvdb"> & {
   name: string;
   premiered: string | null;
 };
+
+export interface TmdbRecommendations {
+  tvId: number;
+  results: TmdbRecommendation[];
+}
 
 export function tmdbShowRef(show: TvMazeShow): TmdbShowRef {
   return {
@@ -70,6 +76,13 @@ export interface TmdbClient {
   findExternalIds: (
     show: TmdbShowRef,
   ) => Promise<ExternalIds | typeof NOT_ON_TMDB | null>;
+  // TMDB's recommendations for a followed show, with its own TMDB id so
+  // followed shows can be left out (FR-038, ADR 0016).
+  findRecommendations: (
+    show: TmdbShowRef,
+  ) => Promise<TmdbRecommendations | typeof NOT_ON_TMDB | null>;
+  // A TMDB show's IMDb and TheTVDB IDs, to find it on TVmaze (FR-038).
+  externalIdsById: (tmdbId: number) => Promise<ExternalIds | null>;
 }
 
 export class TmdbResponseError extends Error {
@@ -194,7 +207,42 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     );
   }
 
-  return { findStreamingProviders, findOriginCountries, findExternalIds };
+  async function findRecommendations(
+    show: TmdbShowRef,
+  ): Promise<TmdbRecommendations | typeof NOT_ON_TMDB | null> {
+    if (!apiKey) {
+      return null;
+    }
+    const tvId = tmdbTvId(await findShow(show, apiKey));
+    if (tvId === null) {
+      return NOT_ON_TMDB;
+    }
+    const response = await requestJson<{ results?: TmdbRecommendation[] }>(
+      `/tv/${tvId}/recommendations`,
+      apiKey,
+    );
+    return { tvId, results: response.results ?? [] };
+  }
+
+  async function externalIdsById(tmdbId: number): Promise<ExternalIds | null> {
+    if (!apiKey) {
+      return null;
+    }
+    return tmdbExternalIds(
+      await requestJson<TmdbExternalIdsResponse>(
+        `/tv/${tmdbId}/external_ids`,
+        apiKey,
+      ),
+    );
+  }
+
+  return {
+    findStreamingProviders,
+    findOriginCountries,
+    findExternalIds,
+    findRecommendations,
+    externalIdsById,
+  };
 }
 
 export const tmdbClient = createTmdbClient({

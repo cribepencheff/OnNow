@@ -42,13 +42,17 @@ first user is the author, who currently uses Next Episode.
   episodes of the next day with episodes,
   labelled with that day ("TOMORROW" or a date, with the year when it is
   not in the current year) and the count, in the same pager as today.
-- **Below the hero:** one row, "Recommended for you" (FR-038, ADR 0016):
+- **Below the hero:** one row, "Top picks for you" (FR-038, ADR 0016):
   TMDB's recommendations for each followed show, already followed shows
   removed, ranked by how many followed shows recommend the same title. The
-  cards reuse the app's existing cards; each has a small "Follow" /
-  "Following" toggle that updates at once, and tapping a card opens Show
-  detail. Hidden when the follow list is empty. No charts or trending on
-  Home.
+  cards are built from the app's existing components and design system
+  tokens: a poster, the show's name, and the Search follow circle, which
+  follows at once; tapping a card opens Show detail. A show followed from
+  the row stays in it, marked as followed. A "Refresh" control under the
+  row drops followed shows and shows the next ones in rank order (11–20,
+  then 21–30, wrapping around when the list runs out), with no new TMDB
+  fetch unless the day's data is stale. Hidden when the follow list is
+  empty. No charts or trending on Home.
 
 ### 5.2 Calendar
 - **Job:** give an overview backwards and forwards in time.
@@ -251,7 +255,7 @@ Reached from an icon. Territory and notifications.
 | FR-009 | Selecting a day in Calendar lists that day's episodes | PoC |
 | FR-036 | Calendar swipes between months and shows a "Today" button when away from today | PoC |
 | FR-037 | Specials are never shown, only regular episodes. No setting | PoC |
-| FR-038 | Under the hero, Home shows one row, "Recommended for you": TMDB recommendations for each followed show, followed shows removed, ranked by how many followed shows recommend the same title, cached for a day, each card with a Follow toggle and opening Show detail; hidden when the follow list is empty (ADR 0016) | MVP |
+| FR-038 | Under the hero, Home shows one row, "Top picks for you": TMDB recommendations for each followed show, followed shows removed, ranked by how many followed shows recommend the same title, cached for a day. The cards are built from the app's existing components and design system tokens; each follows at once from its circle and opens Show detail on a tap, and a show followed from the row stays in it, marked as followed. A "Refresh" control under the row drops followed shows and shows the next ones in rank order (11–20, then 21–30, wrapping around), with no new TMDB fetch unless the day's data is stale. Hidden when the follow list is empty (ADR 0016) | MVP |
 | FR-010 | Shows lists followed series with next episode or status | PoC |
 | FR-011 | Data refreshes on app start when stale, and on pull to refresh | PoC |
 | FR-012 | Several episodes of one show on the same day appear as one item. On the Home hero, all of a show's episodes within the 7 days are one slide with a date and episode range (CRI-94) | PoC, MVP |

@@ -1,0 +1,165 @@
+{
+ "page": 1,
+ "results": [
+  {
+   "id": 4046,
+   "name": "Spooks",
+   "original_name": "Spooks",
+   "poster_path": "/5kODxCYihuM49oQWke6GfHdsRT6.jpg",
+   "first_air_date": "2002-05-13",
+   "popularity": 48.8
+  },
+  {
+   "id": 61859,
+   "name": "The Night Manager",
+   "original_name": "The Night Manager",
+   "poster_path": "/1MccRnw41qQjREuZkovqP2UX1i3.jpg",
+   "first_air_date": "2016-02-21",
+   "popularity": 27.0129
+  },
+  {
+   "id": 93166,
+   "name": "The Capture",
+   "original_name": "The Capture",
+   "poster_path": "/6keUrgntgKt299a39UJCDYldb8b.jpg",
+   "first_air_date": "2019-09-03",
+   "popularity": 27.087
+  },
+  {
+   "id": 72748,
+   "name": "Strike",
+   "original_name": "Strike",
+   "poster_path": "/9IF5DMeUcEaPXclFAfyMGP8CRg5.jpg",
+   "first_air_date": "2017-08-27",
+   "popularity": 19.8569
+  },
+  {
+   "id": 71146,
+   "name": "Condor",
+   "original_name": "Condor",
+   "poster_path": "/xgmkmT4Uik4QpvRipYUxcqNx5yR.jpg",
+   "first_air_date": "2018-06-06",
+   "popularity": 14.4255
+  },
+  {
+   "id": 129552,
+   "name": "The Night Agent",
+   "original_name": "The Night Agent",
+   "poster_path": "/4c5yUNcaff4W4aPrkXE6zr7papX.jpg",
+   "first_air_date": "2023-03-23",
+   "popularity": 110.2495
+  },
+  {
+   "id": 60855,
+   "name": "Legends",
+   "original_name": "Legends",
+   "poster_path": "/gXZbSYN3i2DjHKJORZiBf8P9LDF.jpg",
+   "first_air_date": "2014-08-13",
+   "popularity": 19.0535
+  },
+  {
+   "id": 3476,
+   "name": "Inspector Morse",
+   "original_name": "Inspector Morse",
+   "poster_path": "/cvGqqBcCwahSQgLsCLdUKZG1Skq.jpg",
+   "first_air_date": "1987-01-06",
+   "popularity": 32.257
+  },
+  {
+   "id": 207334,
+   "name": "The Veil",
+   "original_name": "The Veil",
+   "poster_path": "/6aM5Lyp3zUtPyc0WVofES6UrV06.jpg",
+   "first_air_date": "2024-04-30",
+   "popularity": 8.4918
+  },
+  {
+   "id": 213306,
+   "name": "Cross",
+   "original_name": "Cross",
+   "poster_path": "/6hhKdavCEZi8d584ZtIrQIrBvZI.jpg",
+   "first_air_date": "2024-11-14",
+   "popularity": 32.2999
+  },
+  {
+   "id": 252000,
+   "name": "Down Cemetery Road",
+   "original_name": "Down Cemetery Road",
+   "poster_path": "/pjmQbrJ3FesJobbqCnUwBCtfcvH.jpg",
+   "first_air_date": "2025-10-29",
+   "popularity": 10.4304
+  },
+  {
+   "id": 19885,
+   "name": "Sherlock",
+   "original_name": "Sherlock",
+   "poster_path": "/7WTsnHkbA0FaG6R9twfFde0I9hl.jpg",
+   "first_air_date": "2010-07-25",
+   "popularity": 46.1363
+  },
+  {
+   "id": 16343,
+   "name": "Above Suspicion",
+   "original_name": "Above Suspicion",
+   "poster_path": "/2ms6LrCx3RowpeGg2PWZq0XEY2Y.jpg",
+   "first_air_date": "2009-01-04",
+   "popularity": 13.7381
+  },
+  {
+   "id": 72750,
+   "name": "Killing Eve",
+   "original_name": "Killing Eve",
+   "poster_path": "/4wKhTVw8aGq5AZMa0Q1spERdi7n.jpg",
+   "first_air_date": "2018-04-08",
+   "popularity": 40.9761
+  },
+  {
+   "id": 225385,
+   "name": "Black Doves",
+   "original_name": "Black Doves",
+   "poster_path": "/uoXtkm2P4HPPL8T3IBJ02G3hCC4.jpg",
+   "first_air_date": "2024-12-05",
+   "popularity": 22.8948
+  },
+  {
+   "id": 220801,
+   "name": "Fool Me Once",
+   "original_name": "Fool Me Once",
+   "poster_path": "/Ertv4WLEyHgi8zN4ldOKgPcGAZ.jpg",
+   "first_air_date": "2024-01-01",
+   "popularity": 11.9011
+  },
+  {
+   "id": 114922,
+   "name": "Citadel",
+   "original_name": "Citadel",
+   "poster_path": "/5MHtxPEfmN4b0rHzfEZRcm6v9WI.jpg",
+   "first_air_date": "2023-04-27",
+   "popularity": 26.4364
+  },
+  {
+   "id": 233629,
+   "name": "Bodies",
+   "original_name": "Bodies",
+   "poster_path": "/qWX71nLvoLsBNPEjddZMC75lq6I.jpg",
+   "first_air_date": "2023-10-19",
+   "popularity": 11.5564
+  },
+  {
+   "id": 46930,
+   "name": "Ripper Street",
+   "original_name": "Ripper Street",
+   "poster_path": "/6w8yKYsA7RkuyauW224kBZQebFt.jpg",
+   "first_air_date": "2012-12-30",
+   "popularity": 27.7902
+  },
+  {
+   "id": 137127,
+   "name": "Dalgliesh",
+   "original_name": "Dalgliesh",
+   "poster_path": "/8pqCanIwJFehhZdP00gXE0qc9xc.jpg",
+   "first_air_date": "2021-11-04",
+   "popularity": 14.0865
+  }
+ ]
+}
