@@ -1,7 +1,10 @@
+import { StyleSheet } from "react-native";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
 import HomeScreen from "@/app/(tabs)/index";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
+import { useImdbRating } from "@/hooks/useImdbRating";
+import { useShowImages } from "@/hooks/useShowImages";
 import type { TvMazeEpisode, TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 
 const mockPush = jest.fn();
@@ -164,6 +167,56 @@ describe("HomeScreen", () => {
 
     expect(screen.getByText("TODAY · 2/3")).toBeTruthy();
     expect(screen.getByText("Silo")).toBeTruthy();
+  });
+
+  // CRI-94: every slide's rows have one height whatever they hold, so the
+  // label, title and date line never jump between slides.
+  it("gives the label row and title block one height with or without an IMDb chip and logo (CRI-94)", async () => {
+    const withChip = makeShow({
+      id: 1,
+      name: "MobLand",
+      externals: { tvrage: null, thetvdb: null, imdb: "tt31510819" },
+    });
+    const plain = makeShow({ id: 2, name: "Outside" });
+    (useShowImages as jest.Mock).mockImplementation((show) => ({
+      data: show.id === 1 ? { logo: { file_path: "/logo.png" } } : undefined,
+      isLoading: false,
+    }));
+    (useImdbRating as jest.Mock).mockImplementation((show) => ({
+      data: show.id === 1 ? "8.1" : undefined,
+    }));
+    mockFollowedEpisodes({
+      followedShows: [
+        { show: withChip, episodes: [makeEpisode()] },
+        { show: plain, episodes: [makeEpisode()] },
+      ],
+    });
+
+    try {
+      await render(<HomeScreen />);
+
+      // Both slides are mounted: one with chip and logo, one without either.
+      expect(screen.getAllByTestId("imdb-rating")).toHaveLength(1);
+      // A logo replaces the text title.
+      expect(screen.queryByText("MobLand")).toBeNull();
+      expect(screen.getByText("Outside")).toBeTruthy();
+
+      const heights = (testID: string) =>
+        screen
+          .getAllByTestId(testID)
+          .map((view) => StyleSheet.flatten(view.props.style).height);
+      expect(heights("hero-label-row")).toEqual([20, 20]);
+      expect(heights("hero-title-block")).toEqual([88, 88]);
+    } finally {
+      (useShowImages as jest.Mock).mockImplementation(() => ({
+        data: undefined,
+        isLoading: false,
+        isError: false,
+      }));
+      (useImdbRating as jest.Mock).mockImplementation(() => ({
+        data: undefined,
+      }));
+    }
   });
 
   // CRI-94: one slide per show, so the counter counts slides, not episodes.

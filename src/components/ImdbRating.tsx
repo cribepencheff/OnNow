@@ -14,6 +14,11 @@ import type { TvMazeShow } from "@/api/tvmaze-types";
 import { useImdbRating } from "@/hooks/useImdbRating";
 import { imdbTitleUrl } from "@/logic/imdb-rating";
 
+// The mark's fixed height: line height, padding and border. The Home hero
+// reserves it on every slide.
+const MARK_LINE_HEIGHT = 14;
+export const IMDB_CHIP_HEIGHT = MARK_LINE_HEIGHT + 2 * 2 + 2 * 1;
+
 export function ImdbRating({
   show,
   textStyle,
@@ -52,6 +57,7 @@ const styles = StyleSheet.create({
   // The mark is text until design, in Show detail's badge style.
   mark: {
     fontSize: 11,
+    lineHeight: MARK_LINE_HEIGHT,
     fontWeight: "700",
     color: "#666666",
     borderWidth: 1,

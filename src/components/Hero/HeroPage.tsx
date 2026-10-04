@@ -4,7 +4,7 @@
 // (contentMountFrames, logic/hero-carousel.ts). Measurements are for a
 // 390 × 844 screen and scale with the screen height here.
 
-import { memo, useCallback, useMemo } from "react";
+import { memo, useCallback, useEffect, useMemo } from "react";
 import {
   Animated,
   Pressable,
@@ -25,7 +25,7 @@ import { useEpisodeStill } from "@/hooks/useEpisodeStill";
 import { useShowImages } from "@/hooks/useShowImages";
 import { addDays } from "@/logic/local-date";
 import { openInAccessibilityLabel } from "@/logic/streaming-service";
-import { ImdbRating } from "../ImdbRating";
+import { IMDB_CHIP_HEIGHT, ImdbRating } from "../ImdbRating";
 import { PaidSubscriptionMarker } from "../PaidSubscriptionMarker";
 import {
   HERO_CROSSFADE_FLOOR,
@@ -172,13 +172,17 @@ export const HeroPage = memo(function HeroPage({
   const scale = height / REF_HEIGHT;
   const router = useRouter();
   const show = item.show as TvMazeShowWithEmbeds;
-  const { data: images } = useShowImages(show, deviceTimeZone(), todayDate);
+  const { data: images, isLoading: imagesLoading } = useShowImages(
+    show,
+    deviceTimeZone(),
+    todayDate,
+  );
   // The show's highest-rated backdrop (chooseHighestRatedBackdrop), used
   // when the episode has no TMDB still of its own (displayPath below prefers
   // the still). Nothing below this line (parallax, crossfade, pull-zoom,
   // scrim) knows or cares which of the two it's showing.
   const fallbackBackdropPath = images?.highestRatedBackdrop?.file_path;
-  const { data: episodeStill } = useEpisodeStill(
+  const { data: episodeStill, isLoading: stillLoading } = useEpisodeStill(
     show,
     item.episodes[0],
     deviceTimeZone(),
@@ -186,10 +190,18 @@ export const HeroPage = memo(function HeroPage({
   );
   const displayPath = episodeStill?.filePath ?? fallbackBackdropPath;
   const backdropHeight = 580 * scale;
+  // Ready for auto-advance once the image loads, fails, or turns out not to
+  // exist; a slide without an image must never hold the pager.
   const handleLoad = useCallback(
     () => onBackdropLoad(index),
     [onBackdropLoad, index],
   );
+  const noImage = !displayPath && !imagesLoading && !stillLoading;
+  useEffect(() => {
+    if (noImage) {
+      onBackdropLoad(index);
+    }
+  }, [noImage, onBackdropLoad, index]);
 
   // Overscanned wider than the screen and centered, so the parallax shift
   // below never reveals the page background at either edge. Only needed
@@ -334,6 +346,8 @@ export const HeroPage = memo(function HeroPage({
                 contentPosition="center"
                 accessibilityIgnoresInvertColors
                 onLoad={handleLoad}
+                onError={handleLoad}
+                testID="hero-backdrop-image"
               />
             </Animated.View>
           </Animated.View>
@@ -484,7 +498,11 @@ export const ContentLayer = memo(function ContentLayer({
         style={[styles.content, { top: contentTop }]}
         pointerEvents="box-none"
       >
-        <View style={styles.badgeRow} pointerEvents="box-none">
+        <View
+          style={styles.badgeRow}
+          pointerEvents="box-none"
+          testID="hero-label-row"
+        >
           <View pointerEvents="none">
             <Text style={styles.badge}>
               <Text style={isToday ? styles.badgeToday : undefined}>
@@ -496,21 +514,21 @@ export const ContentLayer = memo(function ContentLayer({
           <ImdbRating show={show} textStyle={styles.badge} />
         </View>
         <View pointerEvents="none" style={styles.passThrough}>
-          {logo ? (
-            <Image
-              source={`${IMAGE_BASE}/w500${logo.file_path}`}
-              style={styles.logo}
-              contentFit="contain"
-              contentPosition="left"
-              accessibilityLabel={show.name}
-            />
-          ) : (
-            <View style={styles.titleBand}>
+          <View style={styles.titleBlock} testID="hero-title-block">
+            {logo ? (
+              <Image
+                source={`${IMAGE_BASE}/w500${logo.file_path}`}
+                style={styles.logo}
+                contentFit="contain"
+                contentPosition="left"
+                accessibilityLabel={show.name}
+              />
+            ) : (
               <Text style={styles.displayTitle} numberOfLines={2}>
                 {show.name}
               </Text>
-            </View>
-          )}
+            )}
+          </View>
           {/* Two fixed lines: date and code, then the episode title. */}
           <View>
             <Text style={styles.meta} numberOfLines={1}>
@@ -534,7 +552,9 @@ const styles = StyleSheet.create({
     right: 24,
     gap: 8,
   },
+  // As tall as the IMDb chip, chip or not, so nothing below shifts per slide.
   badgeRow: {
+    height: IMDB_CHIP_HEIGHT,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -553,15 +573,14 @@ const styles = StyleSheet.create({
   badgeToday: {
     color: t.ink,
   },
+  // One height for a logo and a text title, so nothing below shifts.
+  titleBlock: {
+    height: 88,
+    justifyContent: "center",
+  },
   logo: {
     width: 240,
     height: 88,
-  },
-  // Same 88px height as the logo box, so a plain-title slide takes exactly
-  // as much vertical space as a logo slide and nothing below it shifts.
-  titleBand: {
-    height: 88,
-    justifyContent: "center",
   },
   displayTitle: {
     ...type.display,
