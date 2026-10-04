@@ -212,20 +212,20 @@ export function openInLink(
     const channel = addOnChannel(provider);
     if (channel) {
       return {
-        service: channel.name,
-        via: channel.host.service,
+        service: channel.host.service,
         url: channel.host.startPage,
+        requires: channel.name,
       };
     }
   }
   return null;
 }
 
-// The whole button text in one line, host included, for places without
-// room for a line below the button (the Home hero, CRI-90).
-export function openInFullName(link: ServiceLink): string {
-  return link.via
-    ? `Open in ${link.service} via ${link.via}`
+// The button's accessibility label: the app that opens, and the extra
+// subscription an add-on channel needs (CRI-90).
+export function openInAccessibilityLabel(link: ServiceLink): string {
+  return link.requires
+    ? `Open in ${link.service}, requires ${link.requires} subscription`
     : `Open in ${link.service}`;
 }
 

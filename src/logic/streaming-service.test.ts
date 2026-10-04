@@ -1,6 +1,6 @@
 import {
   availabilityText,
-  openInFullName,
+  openInAccessibilityLabel,
   openInLink,
   regionProviders,
   tmdbTvId,
@@ -252,9 +252,9 @@ describe("streaming services per region (FR-017, CRI-88)", () => {
 describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
   it("opens hayu through Prime Video in Sweden (an add-on channel)", () => {
     expect(openInLink(regionProviders(providersWwhl, "SE"), null)).toEqual({
-      service: "hayu",
-      via: "Prime Video",
+      service: "Prime Video",
       url: "https://www.primevideo.com",
+      requires: "hayu",
     });
   });
 
@@ -267,9 +267,9 @@ describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
 
   it("skips Sky Go and opens hayu through Prime Video in the UK", () => {
     expect(openInLink(regionProviders(providersWwhl, "GB"), null)).toEqual({
-      service: "hayu",
-      via: "Prime Video",
+      service: "Prime Video",
       url: "https://www.primevideo.com",
+      requires: "hayu",
     });
   });
 
@@ -305,9 +305,9 @@ describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
         null,
       ),
     ).toEqual({
-      service: "AMC Plus",
-      via: "Apple TV",
+      service: "Apple TV",
       url: "https://tv.apple.com",
+      requires: "AMC Plus",
     });
     expect(
       openInLink(
@@ -315,9 +315,9 @@ describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
         null,
       ),
     ).toEqual({
-      service: "Paramount+",
-      via: "The Roku Channel",
+      service: "The Roku Channel",
       url: "https://therokuchannel.roku.com",
+      requires: "Paramount+",
     });
   });
 
@@ -339,16 +339,19 @@ describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
     });
   });
 
-  it("writes the host into one line where there is no room below the button", () => {
+  it("labels an add-on button with the app that opens and the subscription it needs", () => {
     expect(
-      openInFullName({
-        service: "hayu",
-        via: "Prime Video",
+      openInAccessibilityLabel({
+        service: "Prime Video",
         url: "https://www.primevideo.com",
+        requires: "hayu",
       }),
-    ).toBe("Open in hayu via Prime Video");
+    ).toBe("Open in Prime Video, requires hayu subscription");
     expect(
-      openInFullName({ service: "Peacock", url: "https://www.peacocktv.com" }),
+      openInAccessibilityLabel({
+        service: "Peacock",
+        url: "https://www.peacocktv.com",
+      }),
     ).toBe("Open in Peacock");
   });
 

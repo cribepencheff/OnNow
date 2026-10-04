@@ -47,11 +47,12 @@ import {
 import { showState, showStateLabel } from "@/logic/show-state";
 import {
   availabilityText,
-  openInFullName,
+  openInAccessibilityLabel,
   openInLink,
 } from "@/logic/streaming-service";
 import { accent, withLightness } from "@/theme/color";
 import { OmdbCredit } from "./OmdbCredit";
+import { PaidSubscriptionMarker } from "./PaidSubscriptionMarker";
 import { t, type } from "@/theme/tokens";
 import { TmdbCredit } from "./TmdbCredit";
 import { TvMazeCredit } from "./TvMazeCredit";
@@ -135,7 +136,7 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
             <View style={styles.heroAction}>
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel={openInFullName(link)}
+                accessibilityLabel={openInAccessibilityLabel(link)}
                 // An https link: iOS opens the service's app at the show when
                 // it is installed, and the website otherwise.
                 onPress={() => Linking.openURL(link.url)}
@@ -144,7 +145,13 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
               >
                 <Text style={styles.followLabel}>Open in {link.service}</Text>
               </Pressable>
-              {link.via && <Text style={styles.heroVia}>via {link.via}</Text>}
+              {link.requires && (
+                <PaidSubscriptionMarker
+                  channel={link.requires}
+                  color={t.inkMuted}
+                  textStyle={styles.heroRequires}
+                />
+              )}
             </View>
           )}
         </View>
@@ -535,12 +542,12 @@ const styles = StyleSheet.create({
   heroButton: {
     marginVertical: 0,
   },
-  // The add-on's host, directly below the button (CRI-90).
+  // An add-on's extra subscription, directly below the button (CRI-90).
   heroAction: {
     alignSelf: "flex-start",
     gap: 4,
   },
-  heroVia: {
+  heroRequires: {
     ...type.meta,
     color: t.inkMuted,
   },

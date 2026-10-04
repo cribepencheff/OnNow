@@ -24,7 +24,8 @@ import { useEpisodeStill } from "@/hooks/useEpisodeStill";
 import { useShowImages } from "@/hooks/useShowImages";
 import { addDays } from "@/logic/local-date";
 import { formatLabelDate } from "@/logic/next-episode-label";
-import { openInFullName } from "@/logic/streaming-service";
+import { openInAccessibilityLabel } from "@/logic/streaming-service";
+import { PaidSubscriptionMarker } from "../PaidSubscriptionMarker";
 import {
   HERO_CROSSFADE_FLOOR,
   HERO_PARALLAX_FACTOR,
@@ -94,13 +95,24 @@ export function OpenInSlot({
       {availability.kind === "button" && (
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel={openInFullName(availability.link)}
+          accessibilityLabel={openInAccessibilityLabel(availability.link)}
           onPress={() => Linking.openURL(availability.link.url)}
           style={[styles.button, buttonHeightStyle]}
         >
-          <Text style={styles.buttonLabel}>
-            {openInFullName(availability.link)}
-          </Text>
+          {/* Same height for every slide: an add-on's extra subscription is
+              only the bag inside the button (CRI-90). */}
+          <View style={styles.buttonContent}>
+            <Text style={styles.buttonLabel}>
+              Open in {availability.link.service}
+            </Text>
+            {availability.link.requires && (
+              <PaidSubscriptionMarker
+                channel={availability.link.requires}
+                iconOnly
+                color={t.bg}
+              />
+            )}
+          </View>
         </Pressable>
       )}
       {/* kind === "none": nothing to show, height still reserved above. */}
@@ -533,6 +545,11 @@ const styles = StyleSheet.create({
     backgroundColor: t.ink,
     alignItems: "center",
     justifyContent: "center",
+  },
+  buttonContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
   },
   buttonLabel: {
     color: t.bg,

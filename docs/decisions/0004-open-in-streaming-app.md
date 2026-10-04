@@ -87,11 +87,16 @@ operator apps, add-on channels and services the link table did not know.
   give no button and are never named. A real streaming service is picked
   when the show has one; otherwise it reads "Not streaming in [country]".
 - **Add-on channels count** ("Hayu Amazon Channel", "... Apple TV
-  channel", "... Roku Premium Channel") and open the host's app. In Show
-  detail the button names the channel only ("Open in Crunchyroll") with a
-  small line directly below it ("via Prime Video"). The Home hero has no
-  room below its button, so it keeps one line ("Open in Crunchyroll via
-  Prime Video"). In text: "On Crunchyroll via Prime Video".
+  channel", "... Roku Premium Channel"). The button says what actually
+  happens: it names the host app that opens ("Open in Prime Video"), and
+  marks the channel as an extra paid subscription with a generic bag icon
+  from our icon set (not a store's own mark). In Show detail the bag and
+  "Requires hayu subscription" sit on a small line directly below the
+  button; in the Home hero the bag sits inside the button, so its height
+  stays fixed. Accessibility label: "Open in Prime Video, requires hayu
+  subscription". The marker is one reusable component for any service that
+  needs an extra subscription. In text (no button): "On hayu via Prime
+  Video".
 - **A button only when it opens the service itself:** a known start page
   or an add-on channel's host. A service without a start page gets no
   button. Instead, the info area below the hero lists every streaming

@@ -429,7 +429,7 @@ describe("ShowDetail", () => {
     );
   });
 
-  it("CRI-90: names the add-on on the button and its host on a line below", async () => {
+  it("CRI-90: an add-on opens its host, with the extra subscription below the button", async () => {
     mockShow(showSlowHorsesFixture);
     mockStreamingServices([
       { providerId: 296, providerName: "Hayu Amazon Channel" },
@@ -437,14 +437,21 @@ describe("ShowDetail", () => {
     await render(<ShowDetail showId={45039} />);
 
     const button = screen.getByRole("button", {
-      name: "Open in hayu via Prime Video",
+      name: "Open in Prime Video, requires hayu subscription",
     });
-    expect(button).toHaveTextContent("Open in hayu");
-    expect(
-      within(screen.getByTestId("show-detail-hero")).getByText(
-        "via Prime Video",
-      ),
-    ).toBeTruthy();
+    expect(button).toHaveTextContent("Open in Prime Video");
+    const hero = within(screen.getByTestId("show-detail-hero"));
+    expect(hero.getByTestId("paid-subscription-marker")).toHaveTextContent(
+      "Requires hayu subscription",
+    );
+  });
+
+  it("CRI-90: a service of its own has no subscription marker", async () => {
+    mockShow(showSlowHorsesFixture);
+    mockStreamingServices([APPLE_TV]);
+    await render(<ShowDetail showId={45039} />);
+
+    expect(screen.queryByTestId("paid-subscription-marker")).toBeNull();
   });
 
   it("CRI-86: shows the TMDB logo instead of the title when there is one, as on Home", async () => {
