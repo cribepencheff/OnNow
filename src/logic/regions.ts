@@ -169,6 +169,22 @@ export function isSupportedRegion(code: string): boolean {
   return REGIONS.some((region) => region.code === code);
 }
 
+// A country's English name for any ISO code, not only supported regions;
+// null when unknown, so the caller shows nothing rather than a raw code.
+export function countryName(code: string): string | null {
+  const known = REGIONS.find((region) => region.code === code)?.name;
+  if (known) {
+    return known;
+  }
+  try {
+    // Not every JS engine has DisplayNames; without it, unlisted codes drop.
+    const name = new Intl.DisplayNames(["en"], { type: "region" }).of(code);
+    return name && name !== code ? name : null;
+  } catch {
+    return null;
+  }
+}
+
 export function regionName(code: string): string {
   return REGIONS.find((region) => region.code === code)?.name ?? code;
 }

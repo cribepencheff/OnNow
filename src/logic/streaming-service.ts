@@ -13,8 +13,8 @@ export interface StreamingProvider {
 }
 
 // The parts of TMDB's responses this app reads, as returned.
-interface TmdbFindResponse {
-  tv_results?: { id: number }[];
+export interface TmdbFindResponse {
+  tv_results?: { id: number; origin_country?: string[] }[];
 }
 
 interface TmdbProvider {
@@ -37,6 +37,11 @@ interface TmdbProvidersResponse {
 
 export function tmdbTvId(find: TmdbFindResponse): number | null {
   return find.tv_results?.[0]?.id ?? null;
+}
+
+// The show's origin countries as ISO codes, as TMDB gives them.
+export function tmdbOriginCountries(find: TmdbFindResponse): string[] {
+  return find.tv_results?.[0]?.origin_country ?? [];
 }
 
 // A region's services for a show: subscription ("flatrate") first, then

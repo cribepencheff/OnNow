@@ -33,6 +33,10 @@ jest.mock("@/hooks/useStreamingService", () => ({
 jest.mock("@/hooks/useImdbRating", () => ({
   useImdbRating: jest.fn(),
 }));
+const mockOriginCountries = jest.fn(() => ({ data: ["GB"] }));
+jest.mock("@/hooks/useOriginCountries", () => ({
+  useOriginCountries: () => mockOriginCountries(),
+}));
 const mockShowImages = jest.fn();
 jest.mock("@/hooks/useShowImages", () => ({
   useShowImages: () => mockShowImages(),
@@ -106,6 +110,7 @@ describe("ShowDetail", () => {
   let resolvedOptionsSpy: jest.SpyInstance;
 
   beforeEach(() => {
+    mockOriginCountries.mockReturnValue({ data: ["GB"] });
     follow.mockReset();
     unfollow.mockReset();
     mockFollowed(false);
@@ -131,13 +136,15 @@ describe("ShowDetail", () => {
     resolvedOptionsSpy.mockRestore();
   });
 
-  it("FR-028: shows title, year, status line and summary, and no network", async () => {
+  it("FR-028: shows title, year, origin country, genres, status line and summary, and no network", async () => {
     mockShow(showSlowHorsesFixture);
     await render(<ShowDetail showId={45039} />);
 
     expect(screen.getByText("Slow Horses")).toBeTruthy();
-    // Exact match: the year alone, no " · Apple TV".
-    expect(screen.getByText("2022")).toBeTruthy();
+    // Year · origin country (TMDB) · genres (TVmaze), no network.
+    expect(
+      screen.getByText("2022 · United Kingdom · Drama, Thriller, Espionage"),
+    ).toBeTruthy();
     expect(screen.getByTestId("show-detail-status")).toHaveTextContent(
       "Airing · next ep Wed 30 Sep",
     );
@@ -308,9 +315,14 @@ describe("ShowDetail", () => {
   // CRI-81: whole-season releases and plain status wording.
   it("CRI-81: shows Neagley's drop as one latest item, the status in plain words, and All episodes available", async () => {
     mockShow(showNeagleyFixture);
+    mockOriginCountries.mockReturnValue({ data: ["US"] });
     await render(<ShowDetail showId={82707} />);
 
-    expect(screen.getByText("2026")).toBeTruthy();
+    expect(
+      screen.getByText(
+        "2026 · United States of America · Drama, Action, Thriller",
+      ),
+    ).toBeTruthy();
     expect(screen.getByTestId("show-detail-status")).toHaveTextContent(
       "Future uncertain",
     );

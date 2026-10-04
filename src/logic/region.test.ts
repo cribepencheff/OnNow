@@ -4,7 +4,12 @@ import {
   FALLBACK_REGION,
   type StoredRegion,
 } from "./region";
-import { isSupportedRegion, regionName, regionNameInSentence } from "./regions";
+import {
+  countryName,
+  isSupportedRegion,
+  regionName,
+  regionNameInSentence,
+} from "./regions";
 
 describe("detectRegion (FR-016, CRI-88, ADR 0014)", () => {
   it("takes the region of the phone's first locale", () => {
@@ -72,5 +77,17 @@ describe("regions (CRI-88)", () => {
 
   it("shows the code itself for an unknown region", () => {
     expect(regionName("AQ")).toBe("AQ");
+  });
+});
+
+describe("countryName (FR-028)", () => {
+  it("names a supported region and a country outside the list", () => {
+    expect(countryName("PH")).toBe("Philippines");
+    // China has no TMDB watch region; its name comes from Intl.DisplayNames.
+    expect(countryName("CN")).toBe("China");
+  });
+
+  it("is null for a code it cannot name", () => {
+    expect(countryName("XX")).toBeNull();
   });
 });

@@ -39,7 +39,8 @@ and most slides are regular episodes. The original network is also left
 out of the UI app-wide, since it says nothing about where the user can
 watch.
 - **Dates are shown as the date, with no verb and no network:** "Fri 9 Oct ·
-  S2E4 · Blank Curtain". They are still the original air date.
+  S2E4", with the episode title on the line below. They are still the
+  original air date.
 - **Where to watch is only "Open in"** (ADR 0004, ADR 0014). The network
   stays in the data model.
 - "Season 3 premiere" labels for episode 1 of a season are kept (PRD 5.4,

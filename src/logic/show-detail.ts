@@ -2,6 +2,7 @@
 // FR-033, FR-034, FR-037, CRI-79). TVmaze data only, in its own terms
 // (principle: data first). Views only render this (ADR 0009).
 
+import { countryName } from "./regions";
 import {
   addDays,
   daysBetween,
@@ -45,10 +46,20 @@ export function relativeDayLabel(
   return formatLabelDate(localDate, todayDate);
 }
 
-// "2022": the series' first year (FR-028). No network: where to watch is
-// "Open in". The status has its own line (show-state.ts).
-export function showDetailMetaLine(show: TvMazeShow): string {
-  return show.premiered ? show.premiered.slice(0, 4) : "";
+// "2026 · Philippines · Drama, Thriller" (FR-028): first year, up to two
+// origin countries (TMDB), up to three genres (TVmaze). Missing parts drop.
+export function showDetailMetaLine(
+  show: TvMazeShow,
+  originCountries: string[],
+): string {
+  const year = show.premiered ? show.premiered.slice(0, 4) : null;
+  const countries = originCountries
+    .slice(0, 2)
+    .map(countryName)
+    .filter(Boolean)
+    .join(", ");
+  const genres = (show.genres ?? []).slice(0, 3).join(", ");
+  return [year, countries, genres].filter(Boolean).join(" · ");
 }
 
 // FR-037: specials are never shown.

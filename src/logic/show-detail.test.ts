@@ -78,9 +78,38 @@ describe("relativeDayLabel (PRD 5.5, ADR 0001)", () => {
 });
 
 describe("showDetailMetaLine (FR-028)", () => {
-  it("shows the year only: no network, the status has its own line", () => {
-    expect(showDetailMetaLine(slowHorses)).toBe("2022");
-    expect(showDetailMetaLine(killingEve)).toBe("2018");
+  it("is year · origin countries · genres, with no network", () => {
+    expect(showDetailMetaLine(slowHorses, ["GB"])).toBe(
+      "2022 · United Kingdom · Drama, Thriller, Espionage",
+    );
+  });
+
+  it("shows at most two countries and three genres", () => {
+    const fourGenres = {
+      ...killingEve,
+      genres: ["Drama", "Crime", "Thriller", "Comedy"],
+    };
+    expect(showDetailMetaLine(fourGenres, ["GB", "US", "CA"])).toBe(
+      "2018 · United Kingdom, United States of America · Drama, Crime, Thriller",
+    );
+  });
+
+  it("drops a missing part without an empty separator", () => {
+    expect(showDetailMetaLine(slowHorses, [])).toBe(
+      "2022 · Drama, Thriller, Espionage",
+    );
+    expect(showDetailMetaLine({ ...slowHorses, genres: [] }, ["GB"])).toBe(
+      "2022 · United Kingdom",
+    );
+    expect(
+      showDetailMetaLine({ ...slowHorses, premiered: null, genres: [] }, []),
+    ).toBe("");
+  });
+
+  it("drops a country code it cannot name", () => {
+    expect(showDetailMetaLine({ ...slowHorses, genres: [] }, ["XX"])).toBe(
+      "2022",
+    );
   });
 });
 

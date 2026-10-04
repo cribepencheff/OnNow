@@ -20,6 +20,7 @@ import type {
   TvMazeShowWithEmbeds,
 } from "@/api/tvmaze-types";
 import { useFollowList } from "@/hooks/useFollowList";
+import { useOriginCountries } from "@/hooks/useOriginCountries";
 import { useShow } from "@/hooks/useShow";
 import { useShowImages } from "@/hooks/useShowImages";
 import { useStreamingService } from "@/hooks/useStreamingService";
@@ -91,6 +92,8 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
   const backdropPath = images?.highestRatedBackdrop?.file_path;
   const logo = images?.logo;
   const { link, availability } = useOpenIn(show);
+  const { data: originCountries } = useOriginCountries(show);
+  const metaLine = showDetailMetaLine(show, originCountries ?? []);
 
   const [selectedSeason, setSelectedSeason] = useState(
     () => currentSeasonNumber(episodes, timeZone, todayDate) ?? tabs[0]?.number,
@@ -158,9 +161,7 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
 
       <View style={styles.section}>
         <ImdbRating show={show} textStyle={styles.meta} />
-        {show.premiered && (
-          <Text style={styles.meta}>{showDetailMetaLine(show)}</Text>
-        )}
+        {metaLine !== "" && <Text style={styles.meta}>{metaLine}</Text>}
         <Text style={styles.meta} testID="show-detail-status">
           {showStateLabel(state, todayDate)}
         </Text>

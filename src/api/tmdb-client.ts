@@ -1,5 +1,6 @@
-// TMDB client for one question: which streaming services carry a show in
-// the user's region (FR-014, FR-017, spike 0002, ADR 0014). TMDB's watch provider data comes
+// TMDB client for which streaming services carry a show in the user's
+// region (FR-014, FR-017, spike 0002, ADR 0014), and the show's origin
+// countries (FR-028). TMDB's watch provider data comes
 // from JustWatch; both must be credited (NFR-007, see TmdbCredit).
 //
 // The API key comes from EXPO_PUBLIC_TMDB_API_KEY in .env, which is never
@@ -8,8 +9,10 @@
 
 import {
   regionProviders,
+  tmdbOriginCountries,
   tmdbTvId,
   type StreamingProvider,
+  type TmdbFindResponse,
 } from "@/logic/streaming-service";
 import type { TvMazeExternals } from "./tvmaze-types";
 
@@ -37,6 +40,10 @@ export interface TmdbClient {
     externals: Pick<TvMazeExternals, "imdb" | "thetvdb">,
     region: string,
   ) => Promise<StreamingProvider[] | null>;
+  // ISO codes, [] when TMDB does not know the show, null without a key.
+  findOriginCountries: (
+    externals: Pick<TvMazeExternals, "imdb" | "thetvdb">,
+  ) => Promise<string[] | null>;
 }
 
 export class TmdbResponseError extends Error {
@@ -81,30 +88,27 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     }
   }
 
-  async function findTvId(
+  // The show's TMDB find result: by IMDb ID first, then TheTVDB.
+  async function findShow(
     externals: Pick<TvMazeExternals, "imdb" | "thetvdb">,
     key: string,
-  ): Promise<number | null> {
+  ): Promise<TmdbFindResponse> {
     if (externals.imdb) {
-      const id = tmdbTvId(
-        await requestJson(
-          `/find/${externals.imdb}?external_source=imdb_id`,
-          key,
-        ),
+      const found = await requestJson<TmdbFindResponse>(
+        `/find/${externals.imdb}?external_source=imdb_id`,
+        key,
       );
-      if (id !== null) {
-        return id;
+      if (tmdbTvId(found) !== null) {
+        return found;
       }
     }
     if (externals.thetvdb) {
-      return tmdbTvId(
-        await requestJson(
-          `/find/${externals.thetvdb}?external_source=tvdb_id`,
-          key,
-        ),
+      return requestJson<TmdbFindResponse>(
+        `/find/${externals.thetvdb}?external_source=tvdb_id`,
+        key,
       );
     }
-    return null;
+    return {};
   }
 
   async function findStreamingProviders(
@@ -114,7 +118,7 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     if (!apiKey) {
       return null;
     }
-    const tvId = await findTvId(externals, apiKey);
+    const tvId = tmdbTvId(await findShow(externals, apiKey));
     if (tvId === null) {
       return [];
     }
@@ -124,7 +128,16 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     );
   }
 
-  return { findStreamingProviders };
+  async function findOriginCountries(
+    externals: Pick<TvMazeExternals, "imdb" | "thetvdb">,
+  ): Promise<string[] | null> {
+    if (!apiKey) {
+      return null;
+    }
+    return tmdbOriginCountries(await findShow(externals, apiKey));
+  }
+
+  return { findStreamingProviders, findOriginCountries };
 }
 
 export const tmdbClient = createTmdbClient({

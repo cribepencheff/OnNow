@@ -3,6 +3,7 @@ import {
   openInAccessibilityLabel,
   openInLink,
   regionProviders,
+  tmdbOriginCountries,
   tmdbTvId,
 } from "./streaming-service";
 import findNeagley from "@/api/fixtures/tmdb-find-neagley.json";
@@ -362,5 +363,20 @@ describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
         "SE",
       ),
     ).toBe("On hayu via Prime Video");
+  });
+});
+
+describe("tmdbOriginCountries (FR-028)", () => {
+  it("reads the origin countries from a real TMDB find result (Neagley)", () => {
+    expect(tmdbOriginCountries(findNeagley)).toEqual(["US"]);
+    expect(
+      tmdbOriginCountries({
+        tv_results: [{ id: 247718, origin_country: ["GB", "US"] }],
+      }),
+    ).toEqual(["GB", "US"]);
+  });
+
+  it("is empty when TMDB does not know the show", () => {
+    expect(tmdbOriginCountries({ tv_results: [] })).toEqual([]);
   });
 });
