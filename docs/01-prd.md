@@ -48,8 +48,8 @@ first user is the author, who currently uses Next Episode.
   same visual language as Search: poster, show title, episode code and
   episode title. Several episodes of one show on the same day become one row
   ("Episodes 1–8"). Episodes not yet available in Sweden are muted with the
-  label (MVP). Tapping a row opens Show detail (MVP; in the PoC nothing
-  happens).
+  label (after MVP, ADR 0015). Tapping a row opens Show detail (MVP; in the
+  PoC nothing happens).
 - **Empty day:** a short line, for example "Nothing on this day".
 - **Back to today:** when the user has moved away from today, a "Today"
   button appears. It is the only primary action in the view and disappears
@@ -156,7 +156,7 @@ per season come in the MVP.
   - aired: normal style
   - today: a quiet highlight (a status, not an action)
   - upcoming: muted, with date or "TBA"
-  - not in Sweden yet: muted, with the label
+  - not in Sweden yet: muted, with the label (after MVP, ADR 0015)
   - finale: a small "Finale" badge on the last episode of a season
   An announced season without episodes gets a muted tab with its premiere
   date or "Announced".
@@ -228,8 +228,8 @@ Reached from an icon. Territory and notifications.
 | FR-028 | Show detail view with image, title, year, status, service, summary, next and latest episode. PoC shows the network instead of the service | PoC |
 | FR-029 | Show detail has one primary action: "Follow" when not followed, "Open in [service]" when followed. PoC: "Follow", and a quiet "Following" that unfollows; "Open in [service]" for the show's Swedish service (FR-014); the service list in the user's territory is MVP | PoC, MVP |
 | FR-030 | Show detail opens from Search, Home, Calendar and Shows | PoC |
-| FR-031 | Episodes whose season is not available in the user's territory are labelled "Not in [country] yet" and do not count as new today. PoC: availability per show only ("Not streaming in Sweden", "On [service]" in Show detail, CRI-84), since TMDB cannot give it per season (spike 0002) | MVP |
-| FR-032 | Show detail has season tabs with the current season preselected and episodes marked aired, today, upcoming (muted), not in territory yet (muted) and finale. PoC: all but "not in territory yet", which is MVP | PoC, MVP |
+| FR-031 | MVP: episode dates are the original premiere and are labelled as such, with the premiere service ("Premieres today on Paramount+"). "Open in" says the series is on a service in the user's region, never that the episode is. No "Not in [country] yet" label (ADR 0015). After MVP: episodes not yet available in the user's region are labelled "Not in [country] yet" and do not count as new today, from per-episode availability behind our own server (spike 0003, ADR 0015) | MVP, After MVP |
+| FR-032 | Show detail has season tabs with the current season preselected and episodes marked aired, today, upcoming (muted), not in territory yet (muted) and finale. PoC and MVP: all but "not in territory yet", which comes after MVP (ADR 0015) | PoC, After MVP |
 | FR-033 | Announced future seasons appear as muted tabs with premiere date or "Announced" | PoC |
 | FR-034 | Between seasons, the next episode card shows the next announced episode or season with its date, otherwise the show status from the data source | PoC |
 | FR-035 | In Shows, a show between seasons shows its next announced date or its status from the data source instead of a next episode | PoC |
@@ -252,12 +252,13 @@ TVmaze is accepted for the PoC. TMDB and Wikidata are proposed for MVP and
 later. See `decisions/0005-data-sources.md`.
 
 ## 9. Open questions
-- **Territory gap (decided, FR-031):** an episode can air in the US before
-  its season is available in Sweden (example: MobLand season 2 airs on
-  Paramount+ in the US, while Swedish services only carry season 1). Such
-  episodes are labelled "Not in Sweden yet" instead of counting as new today.
-  Needs season level availability from the data source, to verify in the
-  data source spike. The PoC week test measures how common this is.
+- **Territory gap (decided, FR-031, ADR 0015):** an episode can air in the
+  US before it is available in the user's region (example: MobLand season 2
+  on Paramount+ in the US, about four days ahead of SkyShowtime in Sweden).
+  In the MVP the app labels dates as the original premiere and does not
+  claim regional availability. A "Not in [country] yet" label needs
+  per-episode availability behind our own server, for a public release
+  (spike 0003).
 - Name (working name: On Now)
 - Notifications: morning summary, per episode, or both
 - Menu for several services: anchored to the button or centred overlay
