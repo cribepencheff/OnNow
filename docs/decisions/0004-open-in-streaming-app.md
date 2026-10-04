@@ -75,8 +75,11 @@ show.
   and free with ads). The menu (FR-015) stays MVP.
 - **No Swedish service:** no button (data first), even when TVmaze has an
   official site.
-- **Without a TMDB key, or if the lookup fails:** the keyless PoC version
-  above stands in.
+- **Without an answer from TMDB** (no key, a failed lookup, or a show TMDB
+  does not know): no button and no text. The keyless PoC version above
+  (TVmaze's official site) no longer stands in: it often points at another
+  region's site (CRI-102, CRI-106). TVmaze's official site is still used to
+  open the show's own page on a service TMDB lists for the region.
 
 ## Coverage across regions (amendment 2026-10-04, CRI-90)
 Checked on Watch What Happens Live in SE, US and GB, where TMDB lists
