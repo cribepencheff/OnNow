@@ -32,8 +32,9 @@ Use **OMDb**, looked up by the IMDb ID from TVmaze.
   same pattern as the TMDB key. Without a key, nothing is looked up and no
   rating is shown.
 - The rating is looked up when Show detail opens. It is kept per show in
-  plain AsyncStorage for 7 days, and a "no rating" answer is kept too.
-  Ratings move slowly, so a week is fresh enough.
+  plain AsyncStorage for 7 days, and a "no rating" answer is kept for 1 day
+  (CRI-92, see the note below). Ratings move slowly, so a week is fresh
+  enough.
 - "N/A", an empty or missing `imdbRating`, or `Response: "False"` all
   mean no rating, and nothing is shown. A 401 (bad key or daily limit
   reached) is an error and also shows nothing; it is not cached.
@@ -52,3 +53,16 @@ Use **OMDb**, looked up by the IMDb ID from TVmaze.
   IMDb's logo guidelines must be checked before the real mark is used.
 - ADR 0005's rejection of IMDb as a direct source still stands. OMDb is a
   third-party API in between.
+
+## Note: OMDb lags IMDb on new shows (CRI-92)
+OMDb returned `imdbRating: "N/A"` for Honor Thy Mother (tt41793323) while
+IMDb itself showed 8.2. OMDb catches up with IMDb some time after a new
+show gets its first rating. We accept the gap and add no fallback source.
+- A "no rating" answer is kept for 1 day instead of 7, so a new show picks
+  up its rating within a day of OMDb having it. A real rating is still kept
+  for 7 days.
+- Without a rating the IMDb mark is not shown at all, on Home or in Show
+  detail. There is never an empty or "—" mark.
+- Request budget: a show without a rating costs at most one request per
+  device per day instead of per week. Few followed shows are new enough to
+  lack a rating, so the shared 1,000 a day stays far off.
