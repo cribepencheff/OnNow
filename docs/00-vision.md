@@ -74,8 +74,8 @@ A "+" on Home is the clear call to action for adding shows. It opens the same
 search as Shows.
 
 ## Not doing
-Watched/unwatched tracking, movies, charts, and recommendations not derived
-from the follow list (ADR 0016), trailers and video previews, social
+Watched/unwatched tracking, movies, all-time charts and trending without a
+time link, recommendations not derived from the follow list (ADR 0016), trailers and video previews, social
 features, accounts and sync, importing from other apps, localization, ads.
 No own ratings or user reviews; an external rating (IMDb) is shown as
 information.

@@ -52,7 +52,16 @@ first user is the author, who currently uses Next Episode.
   row drops followed shows and shows the next ones in rank order (11–20,
   then 21–30, wrapping around when the list runs out), with no new TMDB
   fetch unless the day's data is stale. Hidden when the follow list is
-  empty. No charts or trending on Home.
+  empty.
+- **Second row:** "Airing this week" (FR-039, ADR 0016): TMDB's on-the-air
+  list (an episode within the next 7 days), scripted shows only, in TMDB's
+  popularity order, shows the user follows left out. The same cards as
+  "Top picks for you", plus the next episode's air date in the window in
+  the hero's words ("Today", "Tomorrow", then the weekday, "Fri"). A show
+  followed from the row stays in it, marked as followed; no Refresh.
+  Always shown, also with an empty follow list, when it is the first row
+  under the hero. No all-time charts, and no trending without a time link,
+  on Home.
 
 ### 5.2 Calendar
 - **Job:** give an overview backwards and forwards in time.
@@ -256,6 +265,7 @@ Reached from an icon. Territory and notifications.
 | FR-036 | Calendar swipes between months and shows a "Today" button when away from today | PoC |
 | FR-037 | Specials are never shown, only regular episodes. No setting | PoC |
 | FR-038 | Under the hero, Home shows one row, "Top picks for you": TMDB recommendations for each followed show, followed shows removed, ranked by how many followed shows recommend the same title, cached for a day. The cards are built from the app's existing components and design system tokens; each follows at once from its circle and opens Show detail on a tap, and a show followed from the row stays in it, marked as followed. A "Refresh" control under the row drops followed shows and shows the next ones in rank order (11–20, then 21–30, wrapping around), with no new TMDB fetch unless the day's data is stale. Hidden when the follow list is empty (ADR 0016) | MVP |
+| FR-039 | Under "Top picks for you", Home shows "Airing this week": TMDB's on-the-air list (an episode within the next 7 days), scripted only, in TMDB's popularity order, followed shows left out, each card with the next episode's air date ("Today", "Tomorrow", "Fri"), following at once from its circle and opening Show detail; a show followed from the row stays in it, marked as followed. Always shown, also with an empty follow list (ADR 0016) | MVP |
 | FR-010 | Shows lists followed series with next episode or status | PoC |
 | FR-011 | Data refreshes on app start when stale, and on pull to refresh | PoC |
 | FR-012 | Several episodes of one show on the same day appear as one item. On the Home hero, all of a show's episodes within the 7 days are one slide with a date and episode range (CRI-94) | PoC, MVP |

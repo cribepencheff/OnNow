@@ -65,6 +65,13 @@ Expo with React Native and TypeScript (ADR 0007).
   (`onnow.queryCache`) and plain storage. A storage expiry does nothing
   while a query with `staleTime: Infinity` keeps serving the old answer
   (CRI-102).
+- **Time-based decisions check the clock when they act.** Whether data is
+  stale, or a day has passed, is decided at the moment of the action (a
+  pull, a tap, a launch) against the current time, for example
+  `query.isStaleByTime(ms)`. Never use TanStack's `isStale`, its
+  `stale: true` filter, or any value computed at the last render: they
+  only change when the screen redraws, so an app left open past the limit
+  would skip the refresh (CRI-95, CRI-96).
 
 ## Testing (ADR 0008)
 - Write tests first, then iterate until they pass.
