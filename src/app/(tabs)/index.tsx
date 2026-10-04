@@ -380,7 +380,7 @@ function EmptyFollowList({ onPress }: { onPress: () => void }) {
         accessibilityLabel="Add your first show"
         onPress={onPress}
         style={styles.emptyStateButton}
-        testID="home-add-shows"
+        testID="home-add-show"
       >
         <Text style={styles.emptyStateButtonLabel}>Add your first show</Text>
       </Pressable>
