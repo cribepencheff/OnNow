@@ -1,6 +1,6 @@
-// A followed show's Swedish streaming services (FR-014, CRI-82), looked up
-// once through TMDB and kept with the show in plain storage for 30 days
-// (NFR-005). Only followed shows are looked up. The result is null when
+// A show's Swedish streaming services (FR-014, CRI-82), looked up once
+// through TMDB and kept with the show in plain storage for 30 days
+// (NFR-005). Show detail looks them up for any show, followed or not. The result is null when
 // there is no TMDB key, and is then not cached.
 
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";

@@ -1,4 +1,4 @@
-// Each followed show's Swedish streaming services, looked up once through
+// Each show's Swedish streaming services, looked up once through
 // TMDB and kept with the show (FR-014, NFR-005, CRI-82). Plain AsyncStorage,
 // one key per show, like the follow list (NFR-006), not the query cache,
 // which is only kept for a day.
