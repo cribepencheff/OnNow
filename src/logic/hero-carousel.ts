@@ -311,9 +311,19 @@ export function heroEpisodeRange(episodes: TvMazeEpisode[]): string {
   return `${episodeCode(first)}–${episodeCode(last)}`;
 }
 
-// The episode title, for a single-episode slide only.
+// TVmaze's stand-ins for a title not announced yet.
+const PLACEHOLDER_TITLE = /^(Episode \d+|TBA)$/i;
+
+// The first episode's title; on a slide with several, the episode count
+// when that title is missing or a placeholder ("2 episodes").
 export function heroEpisodeTitle(episodes: TvMazeEpisode[]): string | null {
-  return episodes.length === 1 ? episodes[0]?.name || null : null;
+  const title = episodes[0]?.name?.trim() || null;
+  if (episodes.length <= 1) {
+    return title;
+  }
+  return title && !PLACEHOLDER_TITLE.test(title)
+    ? title
+    : `${episodes.length} episodes`;
 }
 
 // What goes where the "Open in" button would be, in one of four states, so

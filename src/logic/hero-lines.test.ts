@@ -51,14 +51,32 @@ describe("heroDateLine (FR-031, ADR 0015)", () => {
   });
 });
 
-describe("heroEpisodeTitle", () => {
+describe("heroEpisodeTitle (CRI-94)", () => {
   it("is the title of a single episode", () => {
     expect(heroEpisodeTitle([episode])).toBe("Blank Curtain");
   });
 
-  it("is null without a title, or for several episodes", () => {
+  it("is null for a single episode without a title", () => {
     expect(heroEpisodeTitle([{ ...episode, name: "" }])).toBeNull();
-    expect(heroEpisodeTitle([episode, { ...episode, number: 5 }])).toBeNull();
+  });
+
+  it("is the first episode's title on a slide with several", () => {
+    expect(
+      heroEpisodeTitle([episode, { ...episode, number: 5, name: "Next" }]),
+    ).toBe("Blank Curtain");
+  });
+
+  it('is the episode count when the first title is a placeholder ("Episode 9", "TBA")', () => {
+    const second = { ...episode, number: 10, name: "Episode 10" };
+    expect(heroEpisodeTitle([{ ...episode, name: "Episode 9" }, second])).toBe(
+      "2 episodes",
+    );
+    expect(heroEpisodeTitle([{ ...episode, name: "TBA" }, second])).toBe(
+      "2 episodes",
+    );
+    expect(heroEpisodeTitle([{ ...episode, name: "" }, second])).toBe(
+      "2 episodes",
+    );
   });
 });
 
