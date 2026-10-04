@@ -29,6 +29,10 @@ jest.mock("@/hooks/useShow", () => ({
 jest.mock("@/hooks/useSwedishService", () => ({
   useSwedishService: jest.fn(),
 }));
+const mockShowImages = jest.fn();
+jest.mock("@/hooks/useShowImages", () => ({
+  useShowImages: () => mockShowImages(),
+}));
 jest.mock("@/hooks/useFollowList", () => ({
   useFollowList: jest.fn(),
 }));
@@ -93,6 +97,12 @@ describe("ShowDetail", () => {
     unfollow.mockReset();
     mockFollowed(false);
     mockSwedishServices(undefined);
+    mockShowImages.mockReturnValue({
+      data: {
+        highestRatedBackdrop: { file_path: "/textless.jpg" },
+        logo: null,
+      },
+    });
     (Linking.openURL as jest.Mock).mockClear();
     // Episode days are local to the user's time zone (ADR 0001).
     const original = Intl.DateTimeFormat.prototype.resolvedOptions;
@@ -107,12 +117,15 @@ describe("ShowDetail", () => {
     resolvedOptionsSpy.mockRestore();
   });
 
-  it("FR-028: shows title, year, status, network and summary", async () => {
+  it("FR-028: shows title, year, network, status line and summary", async () => {
     mockShow(showSlowHorsesFixture);
     await render(<ShowDetail showId={45039} />);
 
     expect(screen.getByText("Slow Horses")).toBeTruthy();
-    expect(screen.getByText("2022 · Running · Apple TV")).toBeTruthy();
+    expect(screen.getByText("2022 · Apple TV")).toBeTruthy();
+    expect(screen.getByTestId("show-detail-status")).toHaveTextContent(
+      "Airing · next ep Wed 30 Sep",
+    );
     expect(screen.getByText(/Slow Horses follows the story/)).toBeTruthy();
   });
 
@@ -143,21 +156,22 @@ describe("ShowDetail", () => {
     expect(latest.getByText("Fri 4 Sep")).toBeTruthy();
   });
 
-  it("FR-034: between seasons without a date, the next card shows the status from TVmaze", async () => {
+  it("FR-034: between seasons with an undated new season, the status line says TBA and there is no next card", async () => {
     mockShow(showFoundationFixture);
     await render(<ShowDetail showId={35951} />);
 
-    const next = within(screen.getByTestId("show-detail-next"));
-    expect(next.getByText("Running")).toBeTruthy();
+    expect(screen.getByTestId("show-detail-status")).toHaveTextContent(
+      "Season 4 · TBA",
+    );
+    expect(screen.queryByTestId("show-detail-next")).toBeNull();
   });
 
-  it("FR-034: an ended show's next card shows its status, and the latest card its last episode", async () => {
+  it("FR-034: an ended show says Ended in the status line, and the latest card shows its last episode", async () => {
     mockShow(showKillingEveFixture);
     await render(<ShowDetail showId={22904} />);
 
-    expect(
-      within(screen.getByTestId("show-detail-next")).getByText("Ended"),
-    ).toBeTruthy();
+    expect(screen.getByTestId("show-detail-status")).toHaveTextContent("Ended");
+    expect(screen.queryByTestId("show-detail-next")).toBeNull();
     const latest = within(screen.getByTestId("show-detail-latest"));
     expect(latest.getByText("Hello, Losers")).toBeTruthy();
     expect(latest.getByText("Sun 10 Apr 2022")).toBeTruthy();
@@ -244,7 +258,7 @@ describe("ShowDetail", () => {
     expect(follow).toHaveBeenCalledWith(45039);
   });
 
-  it("FR-029: shows a quiet Following when followed, which unfollows when pressed", async () => {
+  it("FR-029: shows Following as a toggle when followed, which unfollows when pressed", async () => {
     mockShow(showSlowHorsesFixture);
     mockFollowed(true);
     await render(<ShowDetail showId={45039} />);
@@ -260,20 +274,17 @@ describe("ShowDetail", () => {
     mockShow(showNeagleyFixture);
     await render(<ShowDetail showId={82707} />);
 
-    expect(
-      screen.getByText("2026 · Renewal not announced · Prime Video"),
-    ).toBeTruthy();
+    expect(screen.getByText("2026 · Prime Video")).toBeTruthy();
+    expect(screen.getByTestId("show-detail-status")).toHaveTextContent(
+      "Future uncertain",
+    );
     expect(screen.getByText("All episodes available")).toBeTruthy();
     expect(
       within(screen.getByTestId("show-detail-latest")).getByText(
         "Season 1 · all 8 episodes · 7 days ago",
       ),
     ).toBeTruthy();
-    expect(
-      within(screen.getByTestId("show-detail-next")).getByText(
-        "Renewal not announced",
-      ),
-    ).toBeTruthy();
+    expect(screen.queryByTestId("show-detail-next")).toBeNull();
   });
 
   it("CRI-81: shows The Diplomat's season 3 drop as the latest item and its season 4 premiere as next", async () => {
@@ -335,6 +346,61 @@ describe("ShowDetail", () => {
     );
 
     expect(Linking.openURL).toHaveBeenCalledWith("https://www.primevideo.com");
+  });
+
+  it("CRI-86: Open in is the same full button whether airing or not", async () => {
+    mockFollowed(true);
+    mockSwedishServices([APPLE_TV]);
+    mockShow(showSlowHorsesFixture);
+    await render(<ShowDetail showId={45039} />);
+    const airing = screen.getByRole("button", { name: "Open in Apple TV" });
+
+    mockSwedishServices([PRIME_VIDEO]);
+    mockShow(showNeagleyFixture);
+    await render(<ShowDetail showId={82707} />);
+    const notAiring = screen.getByRole("button", {
+      name: "Open in Prime Video",
+    });
+
+    expect(notAiring.props.style).toEqual(airing.props.style);
+  });
+
+  it("CRI-86: puts the title and Open in on the backdrop, and the status line below it", async () => {
+    mockShow(showSlowHorsesFixture);
+    mockSwedishServices([APPLE_TV]);
+    await render(<ShowDetail showId={45039} />);
+
+    const hero = within(screen.getByTestId("show-detail-hero"));
+    expect(hero.getByText("Slow Horses")).toBeTruthy();
+    expect(hero.queryByTestId("show-detail-status")).toBeNull();
+    expect(screen.getByTestId("show-detail-status")).toBeTruthy();
+    expect(hero.getByRole("button", { name: "Open in Apple TV" })).toBeTruthy();
+  });
+
+  it("CRI-86: shows the TMDB logo instead of the title when there is one, as on Home", async () => {
+    mockShow(showSlowHorsesFixture);
+    mockShowImages.mockReturnValue({
+      data: {
+        highestRatedBackdrop: { file_path: "/textless.jpg" },
+        logo: { file_path: "/logo.png" },
+      },
+    });
+    await render(<ShowDetail showId={45039} />);
+
+    const hero = within(screen.getByTestId("show-detail-hero"));
+    expect(
+      JSON.stringify(hero.getByTestId("show-detail-logo").props.source),
+    ).toContain("/w500/logo.png");
+    expect(hero.queryByText("Slow Horses")).toBeNull();
+  });
+
+  it("CRI-86: shows the TMDB backdrop, not the TVmaze poster", async () => {
+    mockShow(showSlowHorsesFixture);
+    await render(<ShowDetail showId={45039} />);
+
+    expect(
+      JSON.stringify(screen.getByTestId("show-detail-backdrop").props.source),
+    ).toContain("/w1280/textless.jpg");
   });
 
   it("FR-014: uses the Swedish service, not the US network (MobLand: SkyShowtime; Killing Eve: Netflix)", async () => {
@@ -401,7 +467,7 @@ describe("ShowDetail", () => {
     expect(screen.queryByText("Not streaming in Sweden")).toBeNull();
   });
 
-  it("CRI-84: shows no availability text while loading, when the lookup fails, or when not followed", async () => {
+  it("CRI-84: shows no availability text while loading or when the lookup fails", async () => {
     mockShow(showSlowHorsesFixture);
     mockFollowed(true);
     mockSwedishServices(undefined, true);
@@ -417,11 +483,14 @@ describe("ShowDetail", () => {
     const failed = await render(<ShowDetail showId={45039} />);
     expect(screen.queryByText("Not streaming in Sweden")).toBeNull();
     await failed.unmount();
+  });
 
+  it("FR-029, CRI-86: says what the data shows before following, too", async () => {
+    mockShow(showSlowHorsesFixture);
     mockFollowed(false);
     mockSwedishServices([]);
     await render(<ShowDetail showId={45039} />);
-    expect(screen.queryByText("Not streaming in Sweden")).toBeNull();
+    expect(screen.getByText("Not streaming in Sweden")).toBeTruthy();
   });
 
   it("FR-014: shows no Open in button while the Swedish service is looked up", async () => {
@@ -444,17 +513,19 @@ describe("ShowDetail", () => {
     ).toBeTruthy();
   });
 
-  it("FR-029: keeps Follow as the only action when not followed, and does not look up the service", async () => {
+  it("FR-029, CRI-86: shows Open in before following, next to Follow", async () => {
     mockShow(showSlowHorsesFixture);
     mockFollowed(false);
     mockSwedishServices([APPLE_TV]);
     await render(<ShowDetail showId={45039} />);
 
     expect(screen.getByRole("button", { name: "Follow" })).toBeTruthy();
-    expect(screen.queryByRole("button", { name: /^Open in/ })).toBeNull();
+    expect(
+      screen.getByRole("button", { name: "Open in Apple TV" }),
+    ).toBeTruthy();
     expect(mockedUseSwedishService).toHaveBeenCalledWith(
       expect.objectContaining({ id: 45039 }),
-      false,
+      true,
     );
   });
 

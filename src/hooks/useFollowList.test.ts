@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from "@testing-library/react-native";
+import { act, renderHook, waitFor } from "@testing-library/react-native";
 
 import { follow, getFollowedIds, unfollow } from "@/storage/follow-list";
 import { useFollowList } from "./useFollowList";
@@ -76,6 +76,57 @@ describe("useFollowList", () => {
 
     await waitFor(() => expect(result.current.isFollowed(5)).toBe(false));
     expect(mockedUnfollow).toHaveBeenCalledWith(5);
+
+    await unmount();
+    client.unmount();
+  });
+
+  // CRI-86: following is a local write, so the UI must not wait for it.
+  it("shows a follow immediately, before storage has finished (CRI-86)", async () => {
+    mockedGetFollowedIds.mockResolvedValue([]);
+    mockedFollow.mockReturnValue(new Promise(() => {}));
+    const client = createTestQueryClient();
+
+    const { result, unmount } = await renderHook(() => useFollowList(), {
+      wrapper: wrapperWithQueryClient(client),
+    });
+    await waitFor(() => expect(result.current.followedIds.size).toBe(0));
+
+    await act(async () => {
+      result.current.follow(5);
+    });
+
+    // Storage never resolves here, so this can only come from the optimistic
+    // update.
+    await waitFor(() => expect(result.current.isFollowed(5)).toBe(true));
+    expect(mockedFollow).toHaveBeenCalledWith(5);
+
+    await unmount();
+    client.unmount();
+  });
+
+  it("shows an unfollow immediately, and puts it back if storage fails (CRI-86)", async () => {
+    mockedGetFollowedIds.mockResolvedValue([5]);
+    let fail: (error: Error) => void = () => {};
+    mockedUnfollow.mockReturnValue(
+      new Promise((_, reject) => {
+        fail = reject;
+      }),
+    );
+    const client = createTestQueryClient();
+
+    const { result, unmount } = await renderHook(() => useFollowList(), {
+      wrapper: wrapperWithQueryClient(client),
+    });
+    await waitFor(() => expect(result.current.isFollowed(5)).toBe(true));
+
+    await act(async () => {
+      result.current.unfollow(5).catch(() => {});
+    });
+    await waitFor(() => expect(result.current.isFollowed(5)).toBe(false));
+
+    await act(async () => fail(new Error("disk full")));
+    await waitFor(() => expect(result.current.isFollowed(5)).toBe(true));
 
     await unmount();
     client.unmount();
