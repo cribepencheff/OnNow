@@ -58,6 +58,13 @@ Expo with React Native and TypeScript (ADR 0007).
   views, so they can be unit tested.
 - The follow list lives in its own plain local storage, not in the query
   cache.
+- **A fix that changes a cached answer changes its cache key.** When a fix
+  changes what a cached lookup should return, bump that cache's key (or
+  drop its old entries) in the same PR, so a stale answer cannot outlive
+  the fix. Check every layer: the persisted query cache
+  (`onnow.queryCache`) and plain storage. A storage expiry does nothing
+  while a query with `staleTime: Infinity` keeps serving the old answer
+  (CRI-102).
 
 ## Testing (ADR 0008)
 - Write tests first, then iterate until they pass.
