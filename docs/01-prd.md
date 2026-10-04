@@ -143,7 +143,9 @@ per season come in the MVP.
   <date>" (a dated next season), "Season <n> · TBA" (a new season listed
   without a date), "Between seasons" (Running, nothing listed; no renewal
   implied), "Future uncertain" (To Be Determined), "Ended". "Open in" is
-  the primary action only while airing. TVmaze and TMDB give season dates
+  a full button in every state; the status line says whether anything is
+  airing. "Follow" and "Following" are one toggle button that updates at
+  once. The image is a square crop of a textless TMDB backdrop (ADR 0012). TVmaze and TMDB give season dates
   as full dates or none, never a year only, so there is no year state.
 - **Status wording:** TVmaze's fixed status values are shown in plain words
   in Shows and Search: "To Be Determined" reads "Renewal not

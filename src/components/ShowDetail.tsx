@@ -12,6 +12,7 @@ import { SymbolView } from "expo-symbols";
 import { useRef, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
+import { IMAGE_BASE } from "@/api/tmdb-types";
 import type {
   TvMazeEpisode,
   TvMazeSeason,
@@ -20,6 +21,7 @@ import type {
 } from "@/api/tvmaze-types";
 import { useFollowList } from "@/hooks/useFollowList";
 import { useShow } from "@/hooks/useShow";
+import { useShowImages } from "@/hooks/useShowImages";
 import { useSwedishService } from "@/hooks/useSwedishService";
 import { useToday } from "@/hooks/useToday";
 import type { LocalDate } from "@/logic/local-date";
@@ -40,7 +42,7 @@ import {
   type NextCard,
   type SeasonTab,
 } from "@/logic/show-detail";
-import { showState, showStateLabel, type ShowState } from "@/logic/show-state";
+import { showState, showStateLabel } from "@/logic/show-state";
 import { availabilityText, openInLink } from "@/logic/swedish-service";
 import { accent, withLightness } from "@/theme/color";
 import { TmdbCredit } from "./TmdbCredit";
@@ -76,6 +78,9 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
   const next = nextCard(show, episodes, seasons, timeZone, todayDate);
   const tabs = seasonTabs(seasons, episodes, todayDate);
   const state = showState(show, episodes, seasons, timeZone, todayDate);
+  // A TMDB backdrop, textless first (ADR 0012): no title text in the image.
+  const { data: images } = useShowImages(show, timeZone, todayDate);
+  const backdropPath = images?.highestRatedBackdrop?.file_path;
 
   const [selectedSeason, setSelectedSeason] = useState(
     () => currentSeasonNumber(episodes, timeZone, todayDate) ?? tabs[0]?.number,
@@ -87,8 +92,9 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
       contentContainerStyle={styles.scrollContent}
     >
       <Image
-        source={show.image?.original ?? show.image?.medium ?? undefined}
+        source={backdropPath ? `${IMAGE_BASE}/w1280${backdropPath}` : undefined}
         style={styles.heroImage}
+        testID="show-detail-backdrop"
         contentFit="cover"
         accessibilityIgnoresInvertColors
       />
@@ -102,7 +108,7 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
         {allEpisodesAvailable(episodes, seasons, timeZone, todayDate) && (
           <Text style={styles.meta}>All episodes available</Text>
         )}
-        <FollowAction show={show} state={state} />
+        <FollowAction show={show} />
         {summary && <Text style={styles.summary}>{summary}</Text>}
       </View>
 
@@ -161,11 +167,11 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
   );
 }
 
-// FR-029: "Follow" / "Following" is one toggle that stays in place, so an
-// unfollow is undone by tapping again. When followed, "Open in [service]"
-// follows it (FR-014, CRI-82, CRI-84); it is the primary action only while
-// the show is airing, otherwise a quiet secondary one (CRI-86).
-function FollowAction({ show, state }: { show: TvMazeShow; state: ShowState }) {
+// FR-029: "Follow" / "Following" is one toggle button that stays in place,
+// so an unfollow is undone by tapping again; it updates at once (CRI-86).
+// When followed, "Open in [service]" is a full button in every show state;
+// the status line says whether anything is airing (FR-014, CRI-84).
+function FollowAction({ show }: { show: TvMazeShow }) {
   const { isFollowed, follow, unfollow } = useFollowList();
   const showId = show.id;
   const followed = isFollowed(showId);
@@ -182,7 +188,6 @@ function FollowAction({ show, state }: { show: TvMazeShow; state: ShowState }) {
   // lookup fails, nothing is claimed (CRI-84).
   const availability =
     followed && providers && !link ? availabilityText(providers) : null;
-  const openInIsPrimary = state.kind === "airing";
 
   return (
     <View style={styles.actionRow}>
@@ -199,10 +204,9 @@ function FollowAction({ show, state }: { show: TvMazeShow; state: ShowState }) {
             follow(showId);
           }
         }}
-        hitSlop={8}
         style={[
-          followed ? styles.followingStatus : styles.followButton,
-          styles.iconLabel,
+          styles.button,
+          followed ? styles.buttonQuiet : styles.buttonAccent,
         ]}
       >
         {/* The same symbols as the follow circle in Search. */}
@@ -212,10 +216,10 @@ function FollowAction({ show, state }: { show: TvMazeShow; state: ShowState }) {
             android: followed ? "check" : "add",
             web: followed ? "check" : "add",
           }}
-          tintColor={followed ? QUIET : "#FFFFFF"}
+          tintColor={followed ? QUIET_LABEL : "#FFFFFF"}
           size={16}
         />
-        <Text style={followed ? styles.followingLabel : styles.followLabel}>
+        <Text style={followed ? styles.buttonQuietLabel : styles.followLabel}>
           {followed ? "Following" : "Follow"}
         </Text>
       </Pressable>
@@ -226,15 +230,9 @@ function FollowAction({ show, state }: { show: TvMazeShow; state: ShowState }) {
           // An https link: iOS opens the service's app at the show when
           // it is installed, and the website otherwise.
           onPress={() => Linking.openURL(link.url)}
-          hitSlop={8}
-          style={openInIsPrimary ? styles.followButton : styles.followingStatus}
-          testID={openInIsPrimary ? "open-in-primary" : "open-in-secondary"}
+          style={[styles.button, styles.buttonAccent]}
         >
-          <Text
-            style={openInIsPrimary ? styles.followLabel : styles.followingLabel}
-          >
-            Open in {link.service}
-          </Text>
+          <Text style={styles.followLabel}>Open in {link.service}</Text>
         </Pressable>
       )}
       {availability && <Text style={styles.availability}>{availability}</Text>}
@@ -422,7 +420,7 @@ function EpisodeList({
 
 const STILL_ASPECT_RATIO = 16 / 9;
 const MUTED = "#999999";
-const QUIET = "#666666";
+const QUIET_LABEL = "#333333";
 
 const styles = StyleSheet.create({
   screen: {
@@ -459,18 +457,27 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 16,
   },
-  followButton: {
+  // One shape for every action button; accent or quiet fill.
+  button: {
+    flexDirection: "row",
+    alignItems: "center",
     alignSelf: "flex-start",
-    backgroundColor: accent,
-    paddingHorizontal: 28,
+    gap: 6,
+    paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 24,
     marginVertical: 8,
   },
-  iconLabel: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
+  buttonAccent: {
+    backgroundColor: accent,
+  },
+  buttonQuiet: {
+    backgroundColor: "#F0F0F0",
+  },
+  buttonQuietLabel: {
+    color: QUIET_LABEL,
+    fontWeight: "700",
+    fontSize: 16,
   },
   followLabel: {
     color: "#FFFFFF",
@@ -479,16 +486,6 @@ const styles = StyleSheet.create({
   },
   availability: {
     color: "#666666",
-    fontSize: 15,
-  },
-  followingStatus: {
-    alignSelf: "flex-start",
-    paddingVertical: 12,
-    marginVertical: 8,
-  },
-  followingLabel: {
-    color: "#666666",
-    fontWeight: "600",
     fontSize: 15,
   },
   sectionLabel: {

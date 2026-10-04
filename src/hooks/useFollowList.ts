@@ -22,18 +22,42 @@ export function useFollowList() {
     queryFn: getFollowedIds,
   });
 
+  // Optimistic (CRI-86): the list changes at once, storage catches up, and
+  // a failed write puts the list back.
+  function optimistic(change: (ids: ShowId[], showId: ShowId) => ShowId[]) {
+    return {
+      onMutate: async (showId: ShowId) => {
+        await queryClient.cancelQueries({ queryKey: FOLLOWED_IDS_QUERY_KEY });
+        const previous = queryClient.getQueryData<ShowId[]>(
+          FOLLOWED_IDS_QUERY_KEY,
+        );
+        queryClient.setQueryData<ShowId[]>(FOLLOWED_IDS_QUERY_KEY, (ids) =>
+          change(ids ?? [], showId),
+        );
+        return { previous };
+      },
+      onError: (
+        _error: unknown,
+        _showId: ShowId,
+        context: { previous: ShowId[] | undefined } | undefined,
+      ) => {
+        queryClient.setQueryData(FOLLOWED_IDS_QUERY_KEY, context?.previous);
+      },
+      onSettled: () =>
+        queryClient.invalidateQueries({ queryKey: FOLLOWED_IDS_QUERY_KEY }),
+    };
+  }
+
   const followMutation = useMutation({
     mutationFn: (showId: ShowId) => follow(showId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: FOLLOWED_IDS_QUERY_KEY });
-    },
+    ...optimistic((ids, showId) =>
+      ids.includes(showId) ? ids : [...ids, showId],
+    ),
   });
 
   const unfollowMutation = useMutation({
     mutationFn: (showId: ShowId) => unfollow(showId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: FOLLOWED_IDS_QUERY_KEY });
-    },
+    ...optimistic((ids, showId) => ids.filter((id) => id !== showId)),
   });
 
   const followedIds = new Set(followedIdsQuery.data ?? []);

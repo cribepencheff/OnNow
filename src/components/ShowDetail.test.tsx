@@ -29,6 +29,11 @@ jest.mock("@/hooks/useShow", () => ({
 jest.mock("@/hooks/useSwedishService", () => ({
   useSwedishService: jest.fn(),
 }));
+jest.mock("@/hooks/useShowImages", () => ({
+  useShowImages: () => ({
+    data: { highestRatedBackdrop: { file_path: "/textless.jpg" } },
+  }),
+}));
 jest.mock("@/hooks/useFollowList", () => ({
   useFollowList: jest.fn(),
 }));
@@ -338,18 +343,30 @@ describe("ShowDetail", () => {
     expect(Linking.openURL).toHaveBeenCalledWith("https://www.primevideo.com");
   });
 
-  it("CRI-86: Open in is primary while airing, secondary otherwise", async () => {
+  it("CRI-86: Open in is the same full button whether airing or not", async () => {
     mockFollowed(true);
     mockSwedishServices([APPLE_TV]);
     mockShow(showSlowHorsesFixture);
     await render(<ShowDetail showId={45039} />);
-    expect(screen.getByTestId("open-in-primary")).toBeTruthy();
+    const airing = screen.getByRole("button", { name: "Open in Apple TV" });
 
     mockSwedishServices([PRIME_VIDEO]);
     mockShow(showNeagleyFixture);
     await render(<ShowDetail showId={82707} />);
-    expect(screen.getByTestId("open-in-secondary")).toBeTruthy();
-    expect(screen.queryByTestId("open-in-primary")).toBeNull();
+    const notAiring = screen.getByRole("button", {
+      name: "Open in Prime Video",
+    });
+
+    expect(notAiring.props.style).toEqual(airing.props.style);
+  });
+
+  it("CRI-86: shows the TMDB backdrop, not the TVmaze poster", async () => {
+    mockShow(showSlowHorsesFixture);
+    await render(<ShowDetail showId={45039} />);
+
+    expect(
+      JSON.stringify(screen.getByTestId("show-detail-backdrop").props.source),
+    ).toContain("/w1280/textless.jpg");
   });
 
   it("FR-014: uses the Swedish service, not the US network (MobLand: SkyShowtime; Killing Eve: Netflix)", async () => {
