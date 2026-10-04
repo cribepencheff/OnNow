@@ -47,9 +47,9 @@ first user is the author, who currently uses Next Episode.
 - **Day list:** below the grid, the selected day's episodes. Rows use the
   same visual language as Search: poster, show title, episode code and
   episode title. Several episodes of one show on the same day become one row
-  ("Episodes 1–8"). Episodes not yet available in Sweden are muted with the
-  label (after MVP, ADR 0015). Tapping a row opens Show detail (MVP; in the
-  PoC nothing happens).
+  ("Episodes 1–8"). Episodes not yet available in the user's region are
+  muted with the label (after MVP, ADR 0015). Tapping a row opens Show
+  detail (MVP; in the PoC nothing happens).
 - **Empty day:** a short line, for example "Nothing on this day".
 - **Back to today:** when the user has moved away from today, a "Today"
   button appears. It is the only primary action in the view and disappears
@@ -85,7 +85,8 @@ first user is the author, who currently uses Next Episode.
 - **Result row (references: PlayPilot, Spotify "Add to playlist"):** large
   portrait poster on the left. Next to it: title in bold, a meta line with
   year and status ("2026 · Returning", "Ended"), a two line summary, and the
-  services in Sweden on their own line (MVP; PoC shows the network).
+  services in the user's region on their own line (MVP; PoC shows the
+  network).
 - **Follow control:** a circle at the right edge of each row, aligned in one
   column. Not followed: hollow circle with a "+" at lower opacity. Followed:
   filled with the accent colour and a check, with light haptic feedback. The
@@ -173,7 +174,8 @@ per season come in the MVP.
   - aired: normal style
   - today: a quiet highlight (a status, not an action)
   - upcoming: muted, with date or "TBA"
-  - not in Sweden yet: muted, with the label (after MVP, ADR 0015)
+  - not in the user's region yet: muted, with the label (after MVP, ADR
+    0015)
   - finale: a small "Finale" badge on the last episode of a season
   An announced season without episodes gets a muted tab with its premiere
   date or "Announced".
@@ -232,7 +234,7 @@ Reached from an icon. Territory and notifications.
 | FR-013 | An empty follow list shows an empty Home with "Add your first show", which opens Search | PoC |
 | FR-014 | "Open in [service]" opens the show in the service's app when the ID is known, otherwise the service's app, and the service's website when the app is not installed (ADR 0004). PoC: in Show detail when followed, for the show's Swedish service from TMDB: the show itself when TVmaze's official site is on that service (Apple TV, Netflix, HBO Max), otherwise the service's start page; no Swedish service gives no button (ADR 0004, CRI-82). Several services: one is picked, the menu (FR-015) is MVP | PoC, MVP |
 | FR-015 | When a show is on several services, a menu lets the user choose; the choice is remembered per show | MVP |
-| FR-016 | Territory setting, defaulting to the phone's region | MVP |
+| FR-016 | Territory setting, defaulting to the phone's region (ADR 0014). Until a settings view exists, a "Streaming region" line in the Shows footer opens the picker (CRI-88) | MVP |
 | FR-017 | Service availability per territory decides which services are offered | MVP |
 | FR-018 | Local notifications (model to be decided) | MVP |
 | FR-019 | Settings view | MVP |

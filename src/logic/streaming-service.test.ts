@@ -1,9 +1,9 @@
 import {
   availabilityText,
   openInLink,
-  swedishProviders,
+  regionProviders,
   tmdbTvId,
-} from "./swedish-service";
+} from "./streaming-service";
 import findNeagley from "@/api/fixtures/tmdb-find-neagley.json";
 import providersNeagley from "@/api/fixtures/tmdb-providers-neagley.json";
 import providersMobLand from "@/api/fixtures/tmdb-providers-mobland.json";
@@ -34,26 +34,26 @@ describe("tmdbTvId (spike 0002, CRI-82)", () => {
   });
 });
 
-describe("swedishProviders (FR-014, CRI-82)", () => {
+describe("regionProviders (FR-014, CRI-82)", () => {
   it("reads Sweden's subscription services", () => {
-    expect(swedishProviders(providersNeagley)).toEqual([
+    expect(regionProviders(providersNeagley, "SE")).toEqual([
       { providerId: 119, providerName: "Amazon Prime Video" },
     ]);
   });
 
   it("lists subscription services first, then free, then with ads", () => {
     expect(
-      swedishProviders(providersLudwig).map((p) => p.providerName),
+      regionProviders(providersLudwig, "SE").map((p) => p.providerName),
     ).toEqual(["BritBox", "TV4 Play", "BritBox Amazon Channel", "SVT"]);
-    expect(swedishProviders(providersHellsKitchen)).toEqual([
+    expect(regionProviders(providersHellsKitchen, "SE")).toEqual([
       { providerId: 300, providerName: "Pluto TV" },
     ]);
   });
 
   it("is empty when the show has no service in Sweden", () => {
-    expect(swedishProviders(providersSpecialForces)).toEqual([]);
-    expect(swedishProviders({ results: {} })).toEqual([]);
-    expect(swedishProviders({})).toEqual([]);
+    expect(regionProviders(providersSpecialForces, "SE")).toEqual([]);
+    expect(regionProviders({ results: {} }, "SE")).toEqual([]);
+    expect(regionProviders({}, "SE")).toEqual([]);
   });
 });
 
@@ -61,7 +61,7 @@ describe("openInLink (FR-014, ADR 0004, CRI-82)", () => {
   it("opens the show directly when TVmaze's official site is that Swedish service", () => {
     expect(
       openInLink(
-        swedishProviders(providersSlowHorses),
+        regionProviders(providersSlowHorses, "SE"),
         showSlowHorses.officialSite,
       ),
     ).toEqual({
@@ -69,13 +69,19 @@ describe("openInLink (FR-014, ADR 0004, CRI-82)", () => {
       url: "https://tv.apple.com/show/slow-horses/umc.cmc.2szz3fdt71tl1ulnbp8utgq5o",
     });
     expect(
-      openInLink(swedishProviders(providersLegends), showLegends.officialSite),
+      openInLink(
+        regionProviders(providersLegends, "SE"),
+        showLegends.officialSite,
+      ),
     ).toEqual({
       service: "Netflix",
       url: "https://www.netflix.com/title/81708404",
     });
     expect(
-      openInLink(swedishProviders(providersThePitt), showThePitt.officialSite),
+      openInLink(
+        regionProviders(providersThePitt, "SE"),
+        showThePitt.officialSite,
+      ),
     ).toEqual({
       service: "HBO Max",
       url: "https://www.hbomax.com/show/e6e7bad9-d48d-4434-b334-7c651ffc4bdf",
@@ -84,20 +90,26 @@ describe("openInLink (FR-014, ADR 0004, CRI-82)", () => {
 
   it("opens the service's start page when there is no direct show link (Neagley, Prime Video)", () => {
     expect(
-      openInLink(swedishProviders(providersNeagley), showNeagley.officialSite),
+      openInLink(
+        regionProviders(providersNeagley, "SE"),
+        showNeagley.officialSite,
+      ),
     ).toEqual({ service: "Prime Video", url: "https://www.primevideo.com" });
   });
 
   it("opens SkyShowtime for MobLand, a Paramount+ show in the US", () => {
     expect(
-      openInLink(swedishProviders(providersMobLand), showMobLand.officialSite),
+      openInLink(
+        regionProviders(providersMobLand, "SE"),
+        showMobLand.officialSite,
+      ),
     ).toEqual({ service: "SkyShowtime", url: "https://www.skyshowtime.com" });
   });
 
   it("uses the Swedish service, not TVmaze's US one, when they differ (Killing Eve: AMC+ in the US, Netflix in Sweden)", () => {
     expect(
       openInLink(
-        swedishProviders(providersKillingEve),
+        regionProviders(providersKillingEve, "SE"),
         showKillingEve.officialSite,
       ),
     ).toEqual({ service: "Netflix", url: "https://www.netflix.com" });
@@ -114,16 +126,18 @@ describe("openInLink (FR-014, ADR 0004, CRI-82)", () => {
   });
 
   it("opens the first known service in TMDB's order (Ludwig: BritBox)", () => {
-    expect(openInLink(swedishProviders(providersLudwig), null)).toEqual({
+    expect(openInLink(regionProviders(providersLudwig, "SE"), null)).toEqual({
       service: "BritBox",
-      url: "https://www.britbox.com/se",
+      url: "https://www.britbox.com",
     });
   });
 
   it("opens the service's start page for Pluto TV (Hell's Kitchen)", () => {
-    expect(openInLink(swedishProviders(providersHellsKitchen), null)).toEqual({
+    expect(
+      openInLink(regionProviders(providersHellsKitchen, "SE"), null),
+    ).toEqual({
       service: "Pluto TV",
-      url: "https://pluto.tv/se",
+      url: "https://pluto.tv",
     });
   });
 
@@ -147,7 +161,7 @@ describe("openInLink (FR-014, ADR 0004, CRI-82)", () => {
   it("gives no link without a Swedish service, even when TVmaze has an official site (data first)", () => {
     expect(openInLink([], showSlowHorses.officialSite)).toBeNull();
     expect(
-      openInLink(swedishProviders(providersSpecialForces), null),
+      openInLink(regionProviders(providersSpecialForces, "SE"), null),
     ).toBeNull();
   });
 });
@@ -156,23 +170,75 @@ describe("openInLink (FR-014, ADR 0004, CRI-82)", () => {
 // data (from JustWatch) shows, and nothing more (data first).
 describe("availabilityText (FR-014, CRI-84)", () => {
   it('is "Not streaming in Sweden" without a Swedish service (Special Forces)', () => {
-    expect(availabilityText(swedishProviders(providersSpecialForces))).toBe(
-      "Not streaming in Sweden",
-    );
+    expect(
+      availabilityText(regionProviders(providersSpecialForces, "SE"), "SE"),
+    ).toBe("Not streaming in Sweden");
   });
 
   it('names a Swedish service that has no link as "On [service]" (Hell\'s Kitchen: Pluto TV)', () => {
-    expect(availabilityText(swedishProviders(providersHellsKitchen))).toBe(
-      "On Pluto TV",
-    );
+    expect(
+      availabilityText(regionProviders(providersHellsKitchen, "SE"), "SE"),
+    ).toBe("On Pluto TV");
   });
 
   it("names the first service in TMDB's order when there are several", () => {
     expect(
-      availabilityText([
-        { providerId: 151, providerName: "BritBox" },
-        { providerId: 9999, providerName: "Other" },
-      ]),
+      availabilityText(
+        [
+          { providerId: 151, providerName: "BritBox" },
+          { providerId: 9999, providerName: "Other" },
+        ],
+        "SE",
+      ),
     ).toBe("On BritBox");
+  });
+});
+
+// CRI-88, ADR 0014: the same show reads differently per region, from the
+// same recorded TMDB response (MobLand).
+describe("streaming services per region (FR-017, CRI-88)", () => {
+  const mobland = showMobLand as unknown as { officialSite: string | null };
+
+  it("reads each region's own services", () => {
+    expect(regionProviders(providersMobLand, "SE")[0].providerName).toBe(
+      "SkyShowtime",
+    );
+    expect(regionProviders(providersMobLand, "US")[1].providerName).toBe(
+      "Paramount Plus Premium",
+    );
+    expect(regionProviders(providersMobLand, "GB")[0].providerName).toBe(
+      "Amazon Prime Video",
+    );
+  });
+
+  it("is empty for a region TMDB has no data for", () => {
+    expect(regionProviders(providersMobLand, "AQ")).toEqual([]);
+  });
+
+  it("opens the region's service (SE: SkyShowtime, US: Paramount+, GB: Prime Video)", () => {
+    const linkIn = (region: string) =>
+      openInLink(
+        regionProviders(providersMobLand, region),
+        mobland.officialSite,
+      );
+    expect(linkIn("SE")?.service).toBe("SkyShowtime");
+    expect(linkIn("US")).toEqual({
+      service: "Paramount+",
+      url: "https://www.paramountplus.com",
+    });
+    expect(linkIn("GB")).toEqual({
+      service: "Prime Video",
+      url: "https://www.primevideo.com",
+    });
+  });
+
+  it("names the user's region when nothing streams there", () => {
+    expect(availabilityText([], "SE")).toBe("Not streaming in Sweden");
+    expect(availabilityText([], "US")).toBe(
+      "Not streaming in the United States of America",
+    );
+    expect(availabilityText([], "GB")).toBe(
+      "Not streaming in the United Kingdom",
+    );
   });
 });

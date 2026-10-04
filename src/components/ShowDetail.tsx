@@ -23,7 +23,7 @@ import { useFollowList } from "@/hooks/useFollowList";
 import { useImdbRating } from "@/hooks/useImdbRating";
 import { useShow } from "@/hooks/useShow";
 import { useShowImages } from "@/hooks/useShowImages";
-import { useSwedishService } from "@/hooks/useSwedishService";
+import { useStreamingService } from "@/hooks/useStreamingService";
 import { useToday } from "@/hooks/useToday";
 import { imdbTitleUrl } from "@/logic/imdb-rating";
 import type { LocalDate } from "@/logic/local-date";
@@ -45,7 +45,7 @@ import {
   type SeasonTab,
 } from "@/logic/show-detail";
 import { showState, showStateLabel } from "@/logic/show-state";
-import { availabilityText, openInLink } from "@/logic/swedish-service";
+import { availabilityText, openInLink } from "@/logic/streaming-service";
 import { accent, withLightness } from "@/theme/color";
 import { OmdbCredit } from "./OmdbCredit";
 import { t, type } from "@/theme/tokens";
@@ -217,18 +217,20 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
   );
 }
 
-// "Open in [service]" for the show's Swedish service (FR-014, CRI-82),
+// "Open in [service]" for the show's service in the user's region (FR-014,
+// ADR 0014),
 // followed or not (FR-029, CRI-86). Without a TMDB key, or when the lookup
 // fails, TVmaze's direct link stands in (CRI-80). Without a link, a quiet
 // text says what TMDB's data shows, once it has answered (CRI-84).
 function useOpenIn(show: TvMazeShow) {
-  const { data: providers, isError } = useSwedishService(show, true);
+  const { data: providers, isError, region } = useStreamingService(show, true);
   const link = providers
     ? openInLink(providers, show.officialSite)
     : providers === null || isError
       ? serviceLink(show.officialSite)
       : null;
-  const availability = providers && !link ? availabilityText(providers) : null;
+  const availability =
+    providers && region && !link ? availabilityText(providers, region) : null;
   return { link, availability };
 }
 

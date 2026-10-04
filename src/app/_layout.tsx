@@ -26,6 +26,13 @@ export default function RootLayout() {
             options={{ title: "", headerBackButtonDisplayMode: "minimal" }}
           />
           <Stack.Screen
+            name="region"
+            options={{
+              title: "Region",
+              headerBackButtonDisplayMode: "minimal",
+            }}
+          />
+          <Stack.Screen
             name="search"
             options={{ presentation: "modal", headerShown: false }}
           />

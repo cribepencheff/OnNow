@@ -1,11 +1,11 @@
-// Each show's Swedish streaming services, looked up once through
-// TMDB and kept with the show (FR-014, NFR-005, CRI-82). Plain AsyncStorage,
+// Each show's streaming services in a region, looked up once through
+// TMDB and kept per show and region (FR-014, NFR-005, ADR 0014). Plain AsyncStorage,
 // one key per show, like the follow list (NFR-006), not the query cache,
 // which is only kept for a day.
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import type { SwedishProvider } from "@/logic/swedish-service";
+import type { StreamingProvider } from "@/logic/streaming-service";
 
 // Refreshed after 30 days, since shows move between services. TMDB does not
 // allow keeping its data longer than 6 months (spike 0002).
@@ -13,18 +13,19 @@ export const SERVICE_CACHE_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
 
 interface CachedServices {
   checkedAt: number;
-  providers: SwedishProvider[];
+  providers: StreamingProvider[];
 }
 
-function storageKey(showId: number): string {
-  return `onnow.swedishService.${showId}`;
+function storageKey(showId: number, region: string): string {
+  return `onnow.streamingService.${region}.${showId}`;
 }
 
 export async function getCachedProviders(
   showId: number,
+  region: string,
   now: number,
-): Promise<SwedishProvider[] | null> {
-  const raw = await AsyncStorage.getItem(storageKey(showId));
+): Promise<StreamingProvider[] | null> {
+  const raw = await AsyncStorage.getItem(storageKey(showId, region));
   if (raw === null) {
     return null;
   }
@@ -36,9 +37,13 @@ export async function getCachedProviders(
 
 export async function saveProviders(
   showId: number,
-  providers: SwedishProvider[],
+  region: string,
+  providers: StreamingProvider[],
   now: number,
 ): Promise<void> {
   const cached: CachedServices = { checkedAt: now, providers };
-  await AsyncStorage.setItem(storageKey(showId), JSON.stringify(cached));
+  await AsyncStorage.setItem(
+    storageKey(showId, region),
+    JSON.stringify(cached),
+  );
 }

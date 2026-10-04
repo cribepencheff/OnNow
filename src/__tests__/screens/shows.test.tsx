@@ -21,6 +21,9 @@ jest.mock("@/hooks/useFollowedEpisodes", () => ({
 jest.mock("@/hooks/useFollowList", () => ({
   useFollowList: jest.fn(),
 }));
+jest.mock("@/hooks/useRegion", () => ({
+  useRegion: () => ({ region: "SE" }),
+}));
 jest.mock("@/hooks/useToday", () => ({
   useToday: () => "2026-09-21",
 }));
@@ -280,6 +283,14 @@ describe("ShowsScreen", () => {
     await fireEvent.press(screen.getByLabelText("Search shows"));
 
     expect(mockPush).toHaveBeenCalledWith("/search");
+  });
+
+  it("shows the streaming region and opens the region picker (FR-016, CRI-88)", async () => {
+    await render(<ShowsScreen />);
+
+    await fireEvent.press(screen.getByText("Streaming region: Sweden"));
+
+    expect(mockPush).toHaveBeenCalledWith("/region");
   });
 
   it("shows the TVmaze credit (NFR-007)", async () => {

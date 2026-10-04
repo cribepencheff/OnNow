@@ -18,7 +18,7 @@ import { Image } from "expo-image";
 
 import { useFollowList } from "@/hooks/useFollowList";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
-import { useSwedishService } from "@/hooks/useSwedishService";
+import { useStreamingService } from "@/hooks/useStreamingService";
 import { useToday } from "@/hooks/useToday";
 import { latestEpisode } from "@/logic/show-detail";
 import { sortShowsByTitle } from "@/logic/shows-list";
@@ -34,6 +34,9 @@ import { t, type } from "@/theme/tokens";
 // "Lookup failed" and "unmapped service" have no live example left
 // in the test set right now (Pluto TV and BritBox were just added to the
 // link table), so this is the only way to see all four in one place.
+// Any region works for the forced copy; the owner's is used.
+const SAMPLE_REGION = "SE";
+
 const FORCED_STATES: { label: string; availability: HeroAvailability }[] = [
   { label: "Lookup running", availability: { kind: "loading" } },
   { label: "Lookup failed", availability: { kind: "none" } },
@@ -44,11 +47,12 @@ const FORCED_STATES: { label: string; availability: HeroAvailability }[] = [
       false,
       false,
       null,
+      SAMPLE_REGION,
     ),
   },
   {
-    label: "No Swedish service",
-    availability: heroAvailability([], false, false, null),
+    label: "No service in the region",
+    availability: heroAvailability([], false, false, null, SAMPLE_REGION),
   },
 ];
 
@@ -146,12 +150,14 @@ function ShowImagesRow({
     data: providers,
     isLoading: providersLoading,
     isError: providersError,
-  } = useSwedishService(show, true);
+    region,
+  } = useStreamingService(show, true);
   const availability = heroAvailability(
     providers,
     providersLoading,
     providersError,
     show.officialSite,
+    region,
   );
   const half = (width - 16 * 2 - 8) / 2;
   // The episode whose still the hero would prefer for this show; the latest

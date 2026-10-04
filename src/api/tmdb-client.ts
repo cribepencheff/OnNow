@@ -1,5 +1,5 @@
 // TMDB client for one question: which streaming services carry a show in
-// Sweden (FR-014, spike 0002, CRI-82). TMDB's watch provider data comes
+// the user's region (FR-014, FR-017, spike 0002, ADR 0014). TMDB's watch provider data comes
 // from JustWatch; both must be credited (NFR-007, see TmdbCredit).
 //
 // The API key comes from EXPO_PUBLIC_TMDB_API_KEY in .env, which is never
@@ -7,10 +7,10 @@
 // falls back to what TVmaze alone gives.
 
 import {
-  swedishProviders,
+  regionProviders,
   tmdbTvId,
-  type SwedishProvider,
-} from "@/logic/swedish-service";
+  type StreamingProvider,
+} from "@/logic/streaming-service";
 import type { TvMazeExternals } from "./tvmaze-types";
 
 const BASE_URL = "https://api.themoviedb.org/3";
@@ -31,11 +31,12 @@ export interface TmdbClientOptions {
 }
 
 export interface TmdbClient {
-  // Sweden's services for a show, [] when TMDB has none or does not know
-  // the show, null when there is no API key.
-  findSwedishProviders: (
+  // The region's services for a show, [] when TMDB has none or does not
+  // know the show, null when there is no API key.
+  findStreamingProviders: (
     externals: Pick<TvMazeExternals, "imdb" | "thetvdb">,
-  ) => Promise<SwedishProvider[] | null>;
+    region: string,
+  ) => Promise<StreamingProvider[] | null>;
 }
 
 export class TmdbResponseError extends Error {
@@ -106,9 +107,10 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     return null;
   }
 
-  async function findSwedishProviders(
+  async function findStreamingProviders(
     externals: Pick<TvMazeExternals, "imdb" | "thetvdb">,
-  ): Promise<SwedishProvider[] | null> {
+    region: string,
+  ): Promise<StreamingProvider[] | null> {
     if (!apiKey) {
       return null;
     }
@@ -116,12 +118,13 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     if (tvId === null) {
       return [];
     }
-    return swedishProviders(
+    return regionProviders(
       await requestJson(`/tv/${tvId}/watch/providers`, apiKey),
+      region,
     );
   }
 
-  return { findSwedishProviders };
+  return { findStreamingProviders };
 }
 
 export const tmdbClient = createTmdbClient({
