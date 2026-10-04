@@ -24,7 +24,6 @@ import { latestEpisode } from "@/logic/show-detail";
 import { sortShowsByTitle } from "@/logic/shows-list";
 import { OpenInSlot } from "@/components/Hero/HeroPage";
 import { heroAvailability, type HeroAvailability } from "@/logic/hero-carousel";
-import { openInLabel } from "@/logic/streaming-service";
 import { IMAGE_BASE, type TmdbImage } from "@/api/tmdb-types";
 import type { TvMazeEpisode, TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 import { useEpisodeStill } from "@/hooks/useEpisodeStill";
@@ -191,7 +190,7 @@ function ShowImagesRow({
               : availability.kind === "none"
                 ? "(nothing, lookup failed)"
                 : availability.kind === "button"
-                  ? `button · ${openInLabel(availability.link)}`
+                  ? `button · Open in ${availability.link.service}`
                   : `text · ${availability.label}`}
           </Text>
 

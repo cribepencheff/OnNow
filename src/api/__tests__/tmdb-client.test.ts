@@ -28,12 +28,7 @@ describe("TmdbClient (FR-014, NFR-005, CRI-82)", () => {
     await expect(
       client.findStreamingProviders(NEAGLEY_EXTERNALS, "SE"),
     ).resolves.toEqual([
-      {
-        providerId: 119,
-        providerName: "Amazon Prime Video",
-        watchLink:
-          "https://www.themoviedb.org/tv/273207-neagley/watch?locale=SE",
-      },
+      { providerId: 119, providerName: "Amazon Prime Video" },
     ]);
 
     const [findUrl] = fetchFn.mock.calls[0];

@@ -1,6 +1,5 @@
 import {
   availabilityText,
-  openInLabel,
   openInLink,
   regionProviders,
   tmdbTvId,
@@ -183,7 +182,7 @@ describe("availabilityText (FR-014, CRI-84)", () => {
     ).toBe("On Pluto TV");
   });
 
-  it("names the first service in TMDB's order when there are several", () => {
+  it("names every service in TMDB's order when there are several (CRI-90)", () => {
     expect(
       availabilityText(
         [
@@ -192,7 +191,7 @@ describe("availabilityText (FR-014, CRI-84)", () => {
         ],
         "SE",
       ),
-    ).toBe("On BritBox");
+    ).toBe("On BritBox, Other");
   });
 });
 
@@ -245,19 +244,10 @@ describe("streaming services per region (FR-017, CRI-88)", () => {
   });
 });
 
-const WWHL_LINK = (region: string) =>
-  `https://www.themoviedb.org/tv/22980-watch-what-happens-live-with-andy-cohen/watch?locale=${region}`;
-
 // CRI-90: "Open in" across regions, on Watch What Happens Live (Bravo in the
 // US): pay-TV is never a streaming service, add-on channels open their host,
-// and any other streaming service falls back to TMDB's where-to-watch page.
+// and services without a start page are named in text, without a button.
 describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
-  it("keeps TMDB's where-to-watch page for the region with each provider", () => {
-    expect(regionProviders(providersWwhl, "SE")[0].watchLink).toBe(
-      WWHL_LINK("SE"),
-    );
-  });
-
   it("opens hayu through Prime Video in Sweden (an add-on channel)", () => {
     expect(openInLink(regionProviders(providersWwhl, "SE"), null)).toEqual({
       service: "hayu via Prime Video",
@@ -281,14 +271,10 @@ describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
 
   it("never counts pay-TV or operator bundles, for the link or the text", () => {
     const payTv = [
-      { providerId: 257, providerName: "fuboTV", watchLink: WWHL_LINK("US") },
-      { providerId: 29, providerName: "Sky Go", watchLink: WWHL_LINK("US") },
-      {
-        providerId: 553,
-        providerName: "Telia Play",
-        watchLink: WWHL_LINK("US"),
-      },
-      { providerId: 365, providerName: "Bravo TV", watchLink: WWHL_LINK("US") },
+      { providerId: 257, providerName: "fuboTV" },
+      { providerId: 29, providerName: "Sky Go" },
+      { providerId: 553, providerName: "Telia Play" },
+      { providerId: 365, providerName: "Bravo TV" },
     ];
     expect(openInLink(payTv, null)).toBeNull();
     expect(availabilityText(payTv, "US")).toBe(
@@ -329,13 +315,15 @@ describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
     });
   });
 
-  it("falls back to TMDB's where-to-watch page for a service without a start page", () => {
-    expect(
-      openInLink(
-        [{ providerId: 79, providerName: "NBC", watchLink: WWHL_LINK("US") }],
-        null,
-      ),
-    ).toEqual({ service: "NBC", url: WWHL_LINK("US"), viaTmdb: true });
+  it("gives no button for services without a start page, and names them all", () => {
+    const providers = [
+      { providerId: 283, providerName: "Crunchyroll" },
+      { providerId: 430, providerName: "HiDive" },
+      { providerId: 257, providerName: "fuboTV" },
+      { providerId: 283, providerName: "Crunchyroll" },
+    ];
+    expect(openInLink(providers, null)).toBeNull();
+    expect(availabilityText(providers, "US")).toBe("On Crunchyroll, HiDive");
   });
 
   it("names an add-on channel via its host in the text", () => {
@@ -345,14 +333,5 @@ describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
         "SE",
       ),
     ).toBe("On hayu via Prime Video");
-  });
-
-  it("labels the button by where it goes", () => {
-    expect(
-      openInLabel({ service: "Peacock", url: "https://www.peacocktv.com" }),
-    ).toBe("Open in Peacock");
-    expect(
-      openInLabel({ service: "NBC", url: WWHL_LINK("US"), viaTmdb: true }),
-    ).toBe("Where to watch");
   });
 });

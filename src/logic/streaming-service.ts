@@ -1,9 +1,8 @@
 // "Open in [service]" for every show that can be streamed in the user's
 // region (FR-014, FR-017, ADR 0004, ADR 0014). TMDB's watch providers for
 // the region (data from JustWatch, spike 0002) say which service carries
-// the show. Pay-TV never counts; add-on channels open their host; any other
-// streaming service without a start page opens TMDB's where-to-watch page
-// (CRI-90).
+// the show. Pay-TV never counts; add-on channels open their host. Services
+// without a start page get no button, only text (CRI-90).
 
 import { regionNameInSentence } from "./regions";
 import { serviceLink, type ServiceLink } from "./service-link";
@@ -11,8 +10,6 @@ import { serviceLink, type ServiceLink } from "./service-link";
 export interface StreamingProvider {
   providerId: number;
   providerName: string;
-  // TMDB's where-to-watch page for the show in this region (CRI-90).
-  watchLink?: string;
 }
 
 // The parts of TMDB's responses this app reads, as returned.
@@ -60,7 +57,6 @@ export function regionProviders(
   ].map((provider) => ({
     providerId: provider.provider_id,
     providerName: provider.provider_name,
-    ...(inRegion.link ? { watchLink: inRegion.link } : {}),
   }));
 }
 
@@ -189,8 +185,8 @@ function isStreaming(provider: StreamingProvider): boolean {
 // One service per show for now (ADR 0004); the menu for several services
 // (FR-015) is MVP. In order: the show's own page when TVmaze's official
 // site is on a known service, then a known service's start page, then an
-// add-on channel's host, then TMDB's where-to-watch page (CRI-90). Within
-// each, TMDB's order.
+// add-on channel's host (CRI-90). Within each, TMDB's order. Anything else
+// gives no button: it would not open the service itself.
 export function openInLink(
   providers: StreamingProvider[],
   officialSite: string | null,
@@ -214,30 +210,22 @@ export function openInLink(
       return { service: channel.name, url: channel.host.startPage };
     }
   }
-
-  const other = streaming.find((provider) => provider.watchLink);
-  return other?.watchLink
-    ? { service: other.providerName, url: other.watchLink, viaTmdb: true }
-    : null;
-}
-
-// The button's words: the service, or TMDB's page when that is where it
-// goes (CRI-90).
-export function openInLabel(link: ServiceLink): string {
-  return link.viaTmdb ? "Where to watch" : `Open in ${link.service}`;
+  return null;
 }
 
 // When there is no "Open in" button, a quiet text says what TMDB's data
-// for the region (from JustWatch) shows, and nothing more (data first, CRI-84): no
-// service at all, or the first service TMDB lists, in TMDB's own name, when
-// it is not in the link table (Pluto TV for Hell's Kitchen).
+// for the region (from JustWatch) shows, and nothing more (data first,
+// CRI-84): every streaming service it lists, in TMDB's order and names
+// ("On Crunchyroll, HIDIVE"), or none at all (CRI-90). Pay-TV never counts.
 export function availabilityText(
   providers: StreamingProvider[],
   region: string,
 ): string {
-  const first = providers.find(isStreaming);
-  if (!first) {
-    return `Not streaming in ${regionNameInSentence(region)}`;
-  }
-  return `On ${addOnChannel(first)?.name ?? first.providerName}`;
+  const names = providers
+    .filter(isStreaming)
+    .map((provider) => addOnChannel(provider)?.name ?? provider.providerName);
+  const unique = [...new Set(names)];
+  return unique.length > 0
+    ? `On ${unique.join(", ")}`
+    : `Not streaming in ${regionNameInSentence(region)}`;
 }

@@ -84,23 +84,23 @@ operator apps, add-on channels and services the link table did not know.
 - **Pay-TV never counts.** Operator bundles, virtual pay-TV and network
   apps that need a TV provider login (fuboTV, YouTube TV, Sling TV, Sky Go,
   Tele2 Play, Telia Play, Allente, Bravo TV and others, listed by TMDB ID)
-  give no button and no "On ..." text. A real streaming service is picked
+  give no button and are never named. A real streaming service is picked
   when the show has one; otherwise it reads "Not streaming in [country]".
 - **Add-on channels count** ("Hayu Amazon Channel", "... Apple TV
   channel", "... Roku Premium Channel"). They are named as the channel via
   the host ("hayu via Prime Video") and open the host's app.
-- **Fallback:** any other streaming service without a known start page
-  opens TMDB's where-to-watch page for the show and region (TMDB's own
-  `link` in the watch provider response). The button then reads "Where to
-  watch", since it does not open the service itself. A show that streams
-  somewhere always has a button.
+- **A button only when it opens the service itself:** a known start page
+  or an add-on channel's host. A service without a start page gets no
+  button. Instead, the info area below the hero lists every streaming
+  service TMDB gives, comma-separated, in TMDB's order and names ("On
+  Crunchyroll, HIDIVE"). "Not streaming in [country]" goes in the same
+  place. A fallback to TMDB's where-to-watch page was built and dropped
+  (owner, 2026-10-04): the button would not open the service.
 - **Order:** the show's own page, then a known service's start page, then
-  an add-on channel's host, then TMDB's page; TMDB's order within each.
+  an add-on channel's host; TMDB's order within each.
 - **More start pages,** each checked to load: Hulu, Peacock, Starz, AMC+,
   discovery+, The Roku Channel and Tubi (US); NOW, BBC iPlayer, ITVX,
   Channel 4, 5 and hayu (UK); MUBI; and the extra TMDB IDs for Netflix and
-  Prime Video with ads. Crunchyroll blocks automated checks and stays on the
-  TMDB fallback.
-- The cached services carry TMDB's link now, so the cache key was bumped;
-  each show is looked up once more.
+  Prime Video with ads. Crunchyroll blocks automated checks, so it has no
+  start page and is named in text.
 

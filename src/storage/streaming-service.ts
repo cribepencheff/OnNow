@@ -17,8 +17,7 @@ interface CachedServices {
 }
 
 function storageKey(showId: number, region: string): string {
-  // v2: entries now carry TMDB's where-to-watch link (CRI-90).
-  return `onnow.streamingService.v2.${region}.${showId}`;
+  return `onnow.streamingService.${region}.${showId}`;
 }
 
 export async function getCachedProviders(

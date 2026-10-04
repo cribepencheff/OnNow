@@ -412,22 +412,20 @@ describe("ShowDetail", () => {
     expect(hero.getByRole("button", { name: "Open in Apple TV" })).toBeTruthy();
   });
 
-  it("CRI-90: opens TMDB's where-to-watch page for a service without a start page", async () => {
+  it("CRI-90: names services without a start page below the hero, with no button", async () => {
     mockShow(showSlowHorsesFixture);
     mockStreamingServices([
-      {
-        providerId: 79,
-        providerName: "NBC",
-        watchLink: "https://www.themoviedb.org/tv/1/watch?locale=US",
-      },
+      { providerId: 283, providerName: "Crunchyroll" },
+      { providerId: 430, providerName: "HiDive" },
     ]);
     await render(<ShowDetail showId={45039} />);
 
-    await fireEvent.press(
-      screen.getByRole("button", { name: "Where to watch" }),
-    );
-    expect(Linking.openURL).toHaveBeenCalledWith(
-      "https://www.themoviedb.org/tv/1/watch?locale=US",
+    expect(screen.queryByRole("button", { name: /^Open in/ })).toBeNull();
+    expect(
+      within(screen.getByTestId("show-detail-hero")).queryByText(/^On /),
+    ).toBeNull();
+    expect(screen.getByTestId("show-detail-availability")).toHaveTextContent(
+      "On Crunchyroll, HiDive",
     );
   });
 
