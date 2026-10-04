@@ -27,7 +27,6 @@ import { useStreamingService } from "@/hooks/useStreamingService";
 import { useToday } from "@/hooks/useToday";
 import type { LocalDate } from "@/logic/local-date";
 import { plainTextSummary } from "@/logic/search-results";
-import { serviceLink } from "@/logic/service-link";
 import {
   allEpisodesAvailable,
   currentSeasonNumber,
@@ -236,18 +235,14 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
 
 // "Open in [service]" for the show's service in the user's region (FR-014,
 // ADR 0014),
-// followed or not (FR-029, CRI-86). Without a TMDB key, or when the lookup
-// fails, TVmaze's direct link stands in (CRI-80). Without a link, a quiet
-// text says what TMDB's data shows, once it has answered (CRI-84).
+// followed or not (FR-029, CRI-86). Without an answer from TMDB, nothing
+// (CRI-106). Without a link, a quiet text says what TMDB's data shows,
+// once it has answered (CRI-84).
 function useOpenIn(show: TvMazeShow) {
-  const { data: providers, isError, region } = useStreamingService(show, true);
-  // Not on TMDB shows nothing: TVmaze's official site is often another
-  // region's (CRI-102).
+  const { data: providers, region } = useStreamingService(show, true);
   const link = Array.isArray(providers)
     ? openInLink(providers, show.officialSite)
-    : providers === null || isError
-      ? serviceLink(show.officialSite)
-      : null;
+    : null;
   const availability =
     Array.isArray(providers) && region && !link
       ? availabilityText(providers, region)
