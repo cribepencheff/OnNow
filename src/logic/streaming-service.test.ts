@@ -1,5 +1,6 @@
 import {
   availabilityText,
+  openInFullName,
   openInLink,
   regionProviders,
   tmdbTvId,
@@ -15,6 +16,7 @@ import providersThePitt from "@/api/fixtures/tmdb-providers-the-pitt.json";
 import providersHellsKitchen from "@/api/fixtures/tmdb-providers-hell-s-kitchen.json";
 import providersSpecialForces from "@/api/fixtures/tmdb-providers-special-forces-world-s-toughest-test.json";
 import providersWwhl from "@/api/fixtures/tmdb-providers-watch-what-happens-live.json";
+import providersFrieren from "@/api/fixtures/tmdb-providers-frieren.json";
 import showSlowHorses from "@/api/fixtures/show-slow-horses.json";
 import showKillingEve from "@/api/fixtures/show-killing-eve.json";
 import showLegends from "@/api/fixtures/show-legends.json";
@@ -250,7 +252,8 @@ describe("streaming services per region (FR-017, CRI-88)", () => {
 describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
   it("opens hayu through Prime Video in Sweden (an add-on channel)", () => {
     expect(openInLink(regionProviders(providersWwhl, "SE"), null)).toEqual({
-      service: "hayu via Prime Video",
+      service: "hayu",
+      via: "Prime Video",
       url: "https://www.primevideo.com",
     });
   });
@@ -264,7 +267,8 @@ describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
 
   it("skips Sky Go and opens hayu through Prime Video in the UK", () => {
     expect(openInLink(regionProviders(providersWwhl, "GB"), null)).toEqual({
-      service: "hayu via Prime Video",
+      service: "hayu",
+      via: "Prime Video",
       url: "https://www.primevideo.com",
     });
   });
@@ -301,7 +305,8 @@ describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
         null,
       ),
     ).toEqual({
-      service: "AMC Plus via Apple TV",
+      service: "AMC Plus",
+      via: "Apple TV",
       url: "https://tv.apple.com",
     });
     expect(
@@ -310,20 +315,41 @@ describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
         null,
       ),
     ).toEqual({
-      service: "Paramount+ via The Roku Channel",
+      service: "Paramount+",
+      via: "The Roku Channel",
       url: "https://therokuchannel.roku.com",
     });
   });
 
   it("gives no button for services without a start page, and names them all", () => {
     const providers = [
-      { providerId: 283, providerName: "Crunchyroll" },
+      { providerId: 464, providerName: "Kocowa" },
       { providerId: 430, providerName: "HiDive" },
       { providerId: 257, providerName: "fuboTV" },
-      { providerId: 283, providerName: "Crunchyroll" },
+      { providerId: 464, providerName: "Kocowa" },
     ];
     expect(openInLink(providers, null)).toBeNull();
-    expect(availabilityText(providers, "US")).toBe("On Crunchyroll, HiDive");
+    expect(availabilityText(providers, "US")).toBe("On Kocowa, HiDive");
+  });
+
+  it("opens Crunchyroll itself for Frieren in Sweden, not its Amazon add-on", () => {
+    expect(openInLink(regionProviders(providersFrieren, "SE"), null)).toEqual({
+      service: "Crunchyroll",
+      url: "https://www.crunchyroll.com",
+    });
+  });
+
+  it("writes the host into one line where there is no room below the button", () => {
+    expect(
+      openInFullName({
+        service: "hayu",
+        via: "Prime Video",
+        url: "https://www.primevideo.com",
+      }),
+    ).toBe("Open in hayu via Prime Video");
+    expect(
+      openInFullName({ service: "Peacock", url: "https://www.peacocktv.com" }),
+    ).toBe("Open in Peacock");
   });
 
   it("names an add-on channel via its host in the text", () => {

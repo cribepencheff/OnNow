@@ -415,7 +415,7 @@ describe("ShowDetail", () => {
   it("CRI-90: names services without a start page below the hero, with no button", async () => {
     mockShow(showSlowHorsesFixture);
     mockStreamingServices([
-      { providerId: 283, providerName: "Crunchyroll" },
+      { providerId: 464, providerName: "Kocowa" },
       { providerId: 430, providerName: "HiDive" },
     ]);
     await render(<ShowDetail showId={45039} />);
@@ -425,19 +425,25 @@ describe("ShowDetail", () => {
       within(screen.getByTestId("show-detail-hero")).queryByText(/^On /),
     ).toBeNull();
     expect(screen.getByTestId("show-detail-availability")).toHaveTextContent(
-      "On Crunchyroll, HiDive",
+      "On Kocowa, HiDive",
     );
   });
 
-  it("CRI-90: names an add-on channel via its host on the button", async () => {
+  it("CRI-90: names the add-on on the button and its host on a line below", async () => {
     mockShow(showSlowHorsesFixture);
     mockStreamingServices([
       { providerId: 296, providerName: "Hayu Amazon Channel" },
     ]);
     await render(<ShowDetail showId={45039} />);
 
+    const button = screen.getByRole("button", {
+      name: "Open in hayu via Prime Video",
+    });
+    expect(button).toHaveTextContent("Open in hayu");
     expect(
-      screen.getByRole("button", { name: "Open in hayu via Prime Video" }),
+      within(screen.getByTestId("show-detail-hero")).getByText(
+        "via Prime Video",
+      ),
     ).toBeTruthy();
   });
 

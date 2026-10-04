@@ -24,6 +24,7 @@ import { useEpisodeStill } from "@/hooks/useEpisodeStill";
 import { useShowImages } from "@/hooks/useShowImages";
 import { addDays } from "@/logic/local-date";
 import { formatLabelDate } from "@/logic/next-episode-label";
+import { openInFullName } from "@/logic/streaming-service";
 import {
   HERO_CROSSFADE_FLOOR,
   HERO_PARALLAX_FACTOR,
@@ -93,12 +94,12 @@ export function OpenInSlot({
       {availability.kind === "button" && (
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel={`Open in ${availability.link.service}`}
+          accessibilityLabel={openInFullName(availability.link)}
           onPress={() => Linking.openURL(availability.link.url)}
           style={[styles.button, buttonHeightStyle]}
         >
           <Text style={styles.buttonLabel}>
-            Open in {availability.link.service}
+            {openInFullName(availability.link)}
           </Text>
         </Pressable>
       )}

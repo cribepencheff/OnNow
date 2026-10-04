@@ -103,6 +103,9 @@ const KNOWN_SERVICES: Record<number, KnownService> = {
   151: { service: "BritBox", startPage: "https://www.britbox.com" },
   223: { service: "hayu", startPage: "https://www.hayu.com" },
   11: { service: "MUBI", startPage: "https://mubi.com" },
+  // Behind a Cloudflare bot check: verified as Crunchyroll's own domain,
+  // not by an automated page load (CRI-90).
+  283: { service: "Crunchyroll", startPage: "https://www.crunchyroll.com" },
   531: PARAMOUNT,
   2303: PARAMOUNT,
   2616: PARAMOUNT,
@@ -168,11 +171,12 @@ const CHANNEL_NAMES: Record<string, string> = Object.fromEntries(
 function addOnChannel(
   provider: StreamingProvider,
 ): { name: string; host: KnownService } | null {
+  // name: the channel itself ("Crunchyroll"); host: where it opens.
   for (const { suffix, host } of HOSTS) {
     if (suffix.test(provider.providerName)) {
       const channel = provider.providerName.replace(suffix, "");
       const name = CHANNEL_NAMES[channel.toLowerCase()] ?? channel;
-      return { name: `${name} via ${host.service}`, host };
+      return { name, host };
     }
   }
   return null;
@@ -207,10 +211,22 @@ export function openInLink(
   for (const provider of streaming) {
     const channel = addOnChannel(provider);
     if (channel) {
-      return { service: channel.name, url: channel.host.startPage };
+      return {
+        service: channel.name,
+        via: channel.host.service,
+        url: channel.host.startPage,
+      };
     }
   }
   return null;
+}
+
+// The whole button text in one line, host included, for places without
+// room for a line below the button (the Home hero, CRI-90).
+export function openInFullName(link: ServiceLink): string {
+  return link.via
+    ? `Open in ${link.service} via ${link.via}`
+    : `Open in ${link.service}`;
 }
 
 // When there is no "Open in" button, a quiet text says what TMDB's data
@@ -221,9 +237,12 @@ export function availabilityText(
   providers: StreamingProvider[],
   region: string,
 ): string {
-  const names = providers
-    .filter(isStreaming)
-    .map((provider) => addOnChannel(provider)?.name ?? provider.providerName);
+  const names = providers.filter(isStreaming).map((provider) => {
+    const channel = addOnChannel(provider);
+    return channel
+      ? `${channel.name} via ${channel.host.service}`
+      : provider.providerName;
+  });
   const unique = [...new Set(names)];
   return unique.length > 0
     ? `On ${unique.join(", ")}`

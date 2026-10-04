@@ -87,8 +87,11 @@ operator apps, add-on channels and services the link table did not know.
   give no button and are never named. A real streaming service is picked
   when the show has one; otherwise it reads "Not streaming in [country]".
 - **Add-on channels count** ("Hayu Amazon Channel", "... Apple TV
-  channel", "... Roku Premium Channel"). They are named as the channel via
-  the host ("hayu via Prime Video") and open the host's app.
+  channel", "... Roku Premium Channel") and open the host's app. In Show
+  detail the button names the channel only ("Open in Crunchyroll") with a
+  small line directly below it ("via Prime Video"). The Home hero has no
+  room below its button, so it keeps one line ("Open in Crunchyroll via
+  Prime Video"). In text: "On Crunchyroll via Prime Video".
 - **A button only when it opens the service itself:** a known start page
   or an add-on channel's host. A service without a start page gets no
   button. Instead, the info area below the hero lists every streaming
@@ -101,6 +104,8 @@ operator apps, add-on channels and services the link table did not know.
 - **More start pages,** each checked to load: Hulu, Peacock, Starz, AMC+,
   discovery+, The Roku Channel and Tubi (US); NOW, BBC iPlayer, ITVX,
   Channel 4, 5 and hayu (UK); MUBI; and the extra TMDB IDs for Netflix and
-  Prime Video with ads. Crunchyroll blocks automated checks, so it has no
-  start page and is named in text.
+  Prime Video with ads. Crunchyroll's site sits behind a Cloudflare bot
+  check, so its start page was verified as its own domain rather than by an
+  automated page load. Without it, Frieren in Sweden opened the Crunchyroll
+  Amazon Channel even though TMDB lists Crunchyroll itself.
 

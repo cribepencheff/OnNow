@@ -45,7 +45,11 @@ import {
   type SeasonTab,
 } from "@/logic/show-detail";
 import { showState, showStateLabel } from "@/logic/show-state";
-import { availabilityText, openInLink } from "@/logic/streaming-service";
+import {
+  availabilityText,
+  openInFullName,
+  openInLink,
+} from "@/logic/streaming-service";
 import { accent, withLightness } from "@/theme/color";
 import { OmdbCredit } from "./OmdbCredit";
 import { t, type } from "@/theme/tokens";
@@ -128,17 +132,20 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
             </View>
           )}
           {link && (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={`Open in ${link.service}`}
-              // An https link: iOS opens the service's app at the show when
-              // it is installed, and the website otherwise.
-              onPress={() => Linking.openURL(link.url)}
-              style={[styles.button, styles.buttonAccent, styles.heroButton]}
-              testID="show-detail-open-in"
-            >
-              <Text style={styles.followLabel}>Open in {link.service}</Text>
-            </Pressable>
+            <View style={styles.heroAction}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={openInFullName(link)}
+                // An https link: iOS opens the service's app at the show when
+                // it is installed, and the website otherwise.
+                onPress={() => Linking.openURL(link.url)}
+                style={[styles.button, styles.buttonAccent, styles.heroButton]}
+                testID="show-detail-open-in"
+              >
+                <Text style={styles.followLabel}>Open in {link.service}</Text>
+              </Pressable>
+              {link.via && <Text style={styles.heroVia}>via {link.via}</Text>}
+            </View>
           )}
         </View>
       </View>
@@ -527,6 +534,15 @@ const styles = StyleSheet.create({
   },
   heroButton: {
     marginVertical: 0,
+  },
+  // The add-on's host, directly below the button (CRI-90).
+  heroAction: {
+    alignSelf: "flex-start",
+    gap: 4,
+  },
+  heroVia: {
+    ...type.meta,
+    color: t.inkMuted,
   },
   heroImage: {
     width: "100%",
