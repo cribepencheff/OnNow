@@ -29,6 +29,10 @@ export interface TvMazeClientOptions {
 export interface TvMazeClient {
   searchShows: (query: string) => Promise<TvMazeSearchResult[]>;
   getShowWithEpisodesAndSeasons: (id: number) => Promise<TvMazeShowWithEmbeds>;
+  lookupShowId: (ids: {
+    imdb: string | null;
+    thetvdb: number | null;
+  }) => Promise<number | null>;
 }
 
 export function createTvMazeClient(
@@ -114,7 +118,29 @@ export function createTvMazeClient(
     );
   }
 
-  return { searchShows, getShowWithEpisodesAndSeasons };
+  // A show's TVmaze id from its IMDb or TheTVDB ID, null when TVmaze has
+  // neither (FR-038). TVmaze answers a lookup with a redirect to the show.
+  async function lookupShowId(ids: {
+    imdb: string | null;
+    thetvdb: number | null;
+  }): Promise<number | null> {
+    const lookups = [
+      ids.imdb && `imdb=${encodeURIComponent(ids.imdb)}`,
+      ids.thetvdb && `thetvdb=${ids.thetvdb}`,
+    ].filter((query): query is string => Boolean(query));
+    for (const query of lookups) {
+      try {
+        return (await requestJson<{ id: number }>(`/lookup/shows?${query}`)).id;
+      } catch (error) {
+        if (!(error instanceof TvMazeResponseError && error.status === 404)) {
+          throw error;
+        }
+      }
+    }
+    return null;
+  }
+
+  return { searchShows, getShowWithEpisodesAndSeasons, lookupShowId };
 }
 
 export const tvMazeClient = createTvMazeClient();

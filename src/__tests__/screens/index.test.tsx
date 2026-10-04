@@ -41,6 +41,18 @@ jest.mock("@/hooks/useEpisodeStill", () => ({
     isError: false,
   })),
 }));
+const mockRecommendations = jest.fn(() => [] as unknown[]);
+jest.mock("@/hooks/useRecommendations", () => ({
+  useRecommendations: () => mockRecommendations(),
+}));
+const mockFollow = jest.fn();
+jest.mock("@/hooks/useFollowList", () => ({
+  useFollowList: () => ({
+    isFollowed: () => false,
+    follow: mockFollow,
+    unfollow: jest.fn(),
+  }),
+}));
 jest.mock("@/hooks/useImdbRating", () => ({
   useImdbRating: jest.fn(() => ({ data: undefined })),
 }));
@@ -461,6 +473,56 @@ describe("HomeScreen", () => {
 
       await act(async () => finish());
       expect(control().refreshing).toBe(false);
+    });
+  });
+
+  // FR-038, ADR 0016: one row under the hero.
+  describe("Recommended for you (FR-038)", () => {
+    const show = makeShow({ name: "Slow Horses" });
+    const gangs = {
+      tmdbId: 61886,
+      tvmazeId: 15299,
+      name: "Gangs of London",
+      posterPath: "/gangs.jpg",
+    };
+
+    afterEach(() => mockRecommendations.mockReturnValue([]));
+
+    it("shows the row with its cards; a tap opens Show detail, the circle follows at once", async () => {
+      mockRecommendations.mockReturnValue([gangs]);
+      mockFollowedEpisodes({
+        followedShows: [{ show, episodes: [makeEpisode()] }],
+      });
+      await render(<HomeScreen />);
+
+      expect(screen.getByText("Recommended for you")).toBeTruthy();
+      await fireEvent.press(screen.getByTestId("recommended-follow-15299"));
+      expect(mockFollow).toHaveBeenCalledWith(15299);
+
+      await fireEvent.press(
+        screen.getByRole("button", { name: "Gangs of London" }),
+      );
+      expect(mockPush).toHaveBeenCalledWith({
+        pathname: "/show/[id]",
+        params: { id: 15299 },
+      });
+    });
+
+    it("is hidden when the follow list is empty", async () => {
+      mockRecommendations.mockReturnValue([gangs]);
+      mockFollowedEpisodes({ followedCount: 0 });
+      await render(<HomeScreen />);
+
+      expect(screen.queryByText("Recommended for you")).toBeNull();
+    });
+
+    it("is hidden when there is nothing to recommend", async () => {
+      mockFollowedEpisodes({
+        followedShows: [{ show, episodes: [makeEpisode()] }],
+      });
+      await render(<HomeScreen />);
+
+      expect(screen.queryByTestId("recommended-row")).toBeNull();
     });
   });
 });

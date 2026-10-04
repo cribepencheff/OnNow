@@ -19,6 +19,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useRouter } from "expo-router";
 
 import { HeroPager } from "@/components/Hero/HeroPager";
+import { RecommendedRow } from "@/components/RecommendedRow";
 import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useToday } from "@/hooks/useToday";
@@ -95,6 +96,11 @@ export default function HomeScreen() {
   const heroSlides = useMemo(
     () => findHeroSlides(followedShows, deviceTimeZone(), todayDate),
     [followedShows, todayDate],
+  );
+
+  const followedShowList = useMemo(
+    () => followedShows.map(({ show }) => show),
+    [followedShows],
   );
 
   const openSearch = useCallback(() => router.push("/search"), [router]);
@@ -262,6 +268,11 @@ export default function HomeScreen() {
                 todayDate={todayDate}
                 pullDistance={pullDistance}
               />
+            )}
+
+            {/* FR-038, ADR 0016: hidden with an empty follow list. */}
+            {followedCount > 0 && (
+              <RecommendedRow followedShows={followedShowList} />
             )}
 
             {state.kind === "empty-follow-list" && (
