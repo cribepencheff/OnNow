@@ -103,6 +103,7 @@ function mockShow(fixture: unknown) {
 function mockFollowed(followed: boolean) {
   mockedUseFollowList.mockReturnValue({
     followedIds: new Set(),
+    isLoaded: true,
     isFollowed: () => followed,
     follow,
     unfollow,

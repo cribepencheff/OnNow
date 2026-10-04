@@ -1,24 +1,13 @@
-// "Top picks for you" under the Home hero (FR-038, ADR 0016): poster cards
-// built from the app's existing components and design tokens. A tap opens
-// Show detail; the circle follows at once and the card stays, marked as
-// followed, until Refresh shows the next picks.
+// "Top picks for you" under the Home hero (FR-038, ADR 0016). A card
+// followed from the row stays, marked, until Refresh shows the next picks.
 
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { Image } from "expo-image";
-import { useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
 
-import { IMAGE_BASE } from "@/api/tmdb-types";
 import type { TvMazeShow } from "@/api/tvmaze-types";
-import { useFollowList } from "@/hooks/useFollowList";
 import { useTopPicks } from "@/hooks/useTopPicks";
-import type { TopPick } from "@/logic/top-picks";
 import { t, type } from "@/theme/tokens";
-import { FollowCircle } from "./FollowCircle";
-
-const POSTER_WIDTH = 112;
-// Clears the translucent tab bar (83) under the row.
-const TAB_BAR_CLEARANCE = 83;
+import { ShowCard } from "./ShowCard";
 
 export function TopPicksRow({
   followedShows,
@@ -41,7 +30,7 @@ export function TopPicksRow({
         contentContainerStyle={styles.cards}
       >
         {cards.map((card) => (
-          <TopPickCard key={card.tmdbId} card={card} />
+          <ShowCard key={card.tmdbId} card={card} testID="top-pick" />
         ))}
       </ScrollView>
       <Pressable
@@ -66,50 +55,9 @@ export function TopPicksRow({
   );
 }
 
-function TopPickCard({ card }: { card: TopPick }) {
-  const router = useRouter();
-  const { isFollowed, follow, unfollow } = useFollowList();
-  const followed = isFollowed(card.tvmazeId);
-
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={card.name}
-      accessibilityHint="Opens the show"
-      onPress={() =>
-        router.push({ pathname: "/show/[id]", params: { id: card.tvmazeId } })
-      }
-      style={styles.card}
-      testID="top-pick-card"
-    >
-      <View>
-        <Image
-          source={`${IMAGE_BASE}/w342${card.posterPath}`}
-          style={styles.poster}
-          contentFit="cover"
-          accessibilityIgnoresInvertColors
-        />
-        <View style={styles.follow}>
-          <FollowCircle
-            followed={followed}
-            onPress={() =>
-              followed ? unfollow(card.tvmazeId) : follow(card.tvmazeId)
-            }
-            testID={`top-pick-follow-${card.tvmazeId}`}
-          />
-        </View>
-      </View>
-      <Text style={styles.name} numberOfLines={2}>
-        {card.name}
-      </Text>
-    </Pressable>
-  );
-}
-
 const styles = StyleSheet.create({
   section: {
     marginTop: t.space6,
-    paddingBottom: TAB_BAR_CLEARANCE + t.space4,
     gap: t.space2,
   },
   heading: {
@@ -120,25 +68,6 @@ const styles = StyleSheet.create({
   cards: {
     paddingHorizontal: t.space4,
     gap: t.space2,
-  },
-  card: {
-    width: POSTER_WIDTH,
-    gap: t.space2,
-  },
-  poster: {
-    width: POSTER_WIDTH,
-    height: POSTER_WIDTH * 1.5,
-    borderRadius: t.radiusSm,
-    backgroundColor: t.surface,
-  },
-  follow: {
-    position: "absolute",
-    top: t.space2,
-    right: t.space2,
-  },
-  name: {
-    ...type.meta,
-    color: t.inkMuted,
   },
   // Quiet, like the meta line: a small control, not a primary action.
   refresh: {

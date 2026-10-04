@@ -2,6 +2,7 @@ import { NOT_ON_TMDB } from "@/logic/streaming-service";
 import { createTmdbClient } from "../tmdb-client";
 import externalIdsJayZ from "../fixtures/tmdb-external-ids-jay-z.json";
 import findNeagley from "../fixtures/tmdb-find-neagley.json";
+import onTheAirPage from "../fixtures/tmdb-on-the-air.json";
 import recommendationsMobland from "../fixtures/tmdb-recommendations-mobland.json";
 import providersNeagley from "../fixtures/tmdb-providers-neagley.json";
 
@@ -305,5 +306,37 @@ describe("TmdbClient recommendations (FR-038)", () => {
       thetvdb: 479659,
     });
     expect(fetchFn.mock.calls[0][0]).toContain("/3/tv/326440/external_ids");
+  });
+});
+
+describe("TmdbClient.findOnTheAir (FR-039)", () => {
+  it("reads pages 1 and 2 of the on-the-air list in the user's time zone", async () => {
+    const fetchFn = jest
+      .fn()
+      .mockResolvedValueOnce(jsonResponse(onTheAirPage))
+      .mockResolvedValueOnce(jsonResponse({ results: [] }));
+    const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
+
+    const shows = await client.findOnTheAir("Europe/Stockholm");
+    expect(shows).toHaveLength(onTheAirPage.results.length);
+    expect(fetchFn.mock.calls.map(([url]) => url)).toEqual([
+      expect.stringContaining(
+        "/3/tv/on_the_air?page=1&timezone=Europe%2FStockholm",
+      ),
+      expect.stringContaining(
+        "/3/tv/on_the_air?page=2&timezone=Europe%2FStockholm",
+      ),
+    ]);
+  });
+
+  it("is null without a key", async () => {
+    const fetchFn = jest.fn();
+    const client = createTmdbClient({
+      apiKey: undefined,
+      fetchFn,
+      wait: noWait,
+    });
+    await expect(client.findOnTheAir("UTC")).resolves.toBeNull();
+    expect(fetchFn).not.toHaveBeenCalled();
   });
 });

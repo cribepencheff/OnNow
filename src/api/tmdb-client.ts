@@ -20,6 +20,7 @@ import {
   type ExternalIds,
   type TmdbExternalIdsResponse,
 } from "@/logic/external-ids";
+import type { TmdbOnTheAir } from "@/logic/airing-this-week";
 import type { TmdbRecommendation } from "@/logic/recommendations";
 import { matchTmdbSearch, type TmdbSearchResult } from "@/logic/tmdb-match";
 import type { TvMazeExternals, TvMazeShow } from "./tvmaze-types";
@@ -83,6 +84,9 @@ export interface TmdbClient {
   ) => Promise<TmdbRecommendations | typeof NOT_ON_TMDB | null>;
   // A TMDB show's IMDb and TheTVDB IDs, to find it on TVmaze (FR-038).
   externalIdsById: (tmdbId: number) => Promise<ExternalIds | null>;
+  // Shows with an episode in the next 7 days in the user's time zone,
+  // pages 1 and 2 (FR-039); null without a key.
+  findOnTheAir: (timeZone: string) => Promise<TmdbOnTheAir[] | null>;
 }
 
 export class TmdbResponseError extends Error {
@@ -236,7 +240,25 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     );
   }
 
+  async function findOnTheAir(
+    timeZone: string,
+  ): Promise<TmdbOnTheAir[] | null> {
+    if (!apiKey) {
+      return null;
+    }
+    const pages = await Promise.all(
+      [1, 2].map((page) =>
+        requestJson<{ results?: TmdbOnTheAir[] }>(
+          `/tv/on_the_air?page=${page}&timezone=${encodeURIComponent(timeZone)}`,
+          apiKey,
+        ),
+      ),
+    );
+    return pages.flatMap((page) => page.results ?? []);
+  }
+
   return {
+    findOnTheAir,
     findStreamingProviders,
     findOriginCountries,
     findExternalIds,

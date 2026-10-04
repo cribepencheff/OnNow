@@ -127,6 +127,7 @@ describe("ShowsScreen", () => {
     unfollow.mockClear();
     mockedUseFollowList.mockReturnValue({
       followedIds: new Set(),
+      isLoaded: true,
       isFollowed: () => true,
       follow: jest.fn(),
       unfollow,

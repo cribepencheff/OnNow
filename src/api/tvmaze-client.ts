@@ -33,6 +33,7 @@ export interface TvMazeClient {
     imdb: string | null;
     thetvdb: number | null;
   }) => Promise<number | null>;
+  getNextEpisodeAirstamp: (id: number) => Promise<string | null>;
 }
 
 export function createTvMazeClient(
@@ -140,7 +141,20 @@ export function createTvMazeClient(
     return null;
   }
 
-  return { searchShows, getShowWithEpisodesAndSeasons, lookupShowId };
+  // The show's next episode's airstamp, null when none is announced (FR-039).
+  async function getNextEpisodeAirstamp(id: number): Promise<string | null> {
+    const show = await requestJson<{
+      _embedded?: { nextepisode?: { airstamp?: string | null } };
+    }>(`/shows/${id}?embed=nextepisode`);
+    return show._embedded?.nextepisode?.airstamp ?? null;
+  }
+
+  return {
+    searchShows,
+    getShowWithEpisodesAndSeasons,
+    lookupShowId,
+    getNextEpisodeAirstamp,
+  };
 }
 
 export const tvMazeClient = createTvMazeClient();

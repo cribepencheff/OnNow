@@ -61,3 +61,27 @@ describe("TvMazeClient.lookupShowId (FR-038)", () => {
     ).rejects.toThrow();
   });
 });
+
+describe("TvMazeClient.getNextEpisodeAirstamp (FR-039)", () => {
+  it("reads the next episode's airstamp, or null when none is announced", async () => {
+    const fetchFn = jest
+      .fn()
+      .mockResolvedValueOnce(
+        jsonResponse({
+          id: 75026,
+          _embedded: {
+            nextepisode: { airstamp: "2026-10-09T01:00:00+00:00" },
+          },
+        }),
+      )
+      .mockResolvedValueOnce(jsonResponse({ id: 1 }));
+
+    await expect(client(fetchFn).getNextEpisodeAirstamp(75026)).resolves.toBe(
+      "2026-10-09T01:00:00+00:00",
+    );
+    expect(fetchFn.mock.calls[0][0]).toContain(
+      "/shows/75026?embed=nextepisode",
+    );
+    await expect(client(fetchFn).getNextEpisodeAirstamp(1)).resolves.toBeNull();
+  });
+});
