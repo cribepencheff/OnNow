@@ -78,19 +78,19 @@ describe("relativeDayLabel (PRD 5.5, ADR 0001)", () => {
 });
 
 describe("showDetailMetaLine (FR-028)", () => {
-  it("is year · origin countries · genres, with no network", () => {
+  it("is year · origin country · genres, with no network", () => {
     expect(showDetailMetaLine(slowHorses, ["GB"])).toBe(
       "2022 · United Kingdom · Drama, Thriller, Espionage",
     );
   });
 
-  it("shows at most two countries and three genres", () => {
+  it("shows only the first origin country, and at most three genres", () => {
     const fourGenres = {
       ...killingEve,
       genres: ["Drama", "Crime", "Thriller", "Comedy"],
     };
     expect(showDetailMetaLine(fourGenres, ["GB", "US", "CA"])).toBe(
-      "2018 · United Kingdom, United States · Drama, Crime, Thriller",
+      "2018 · United Kingdom · Drama, Crime, Thriller",
     );
   });
 

@@ -46,20 +46,16 @@ export function relativeDayLabel(
   return formatLabelDate(localDate, todayDate);
 }
 
-// "2026 · Philippines · Drama, Thriller" (FR-028): first year, up to two
-// origin countries (TMDB), up to three genres (TVmaze). Missing parts drop.
+// "2026 · Philippines · Drama, Thriller" (FR-028): first year, the first
+// origin country (TMDB), up to three genres (TVmaze). Missing parts drop.
 export function showDetailMetaLine(
   show: TvMazeShow,
   originCountries: string[],
 ): string {
   const year = show.premiered ? show.premiered.slice(0, 4) : null;
-  const countries = originCountries
-    .slice(0, 2)
-    .map(countryName)
-    .filter(Boolean)
-    .join(", ");
+  const country = originCountries[0] ? countryName(originCountries[0]) : null;
   const genres = (show.genres ?? []).slice(0, 3).join(", ");
-  return [year, countries, genres].filter(Boolean).join(" · ");
+  return [year, country, genres].filter(Boolean).join(" · ");
 }
 
 // FR-037: specials are never shown.
