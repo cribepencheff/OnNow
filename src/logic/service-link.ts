@@ -11,6 +11,8 @@ export interface ServiceLink {
   // (network "HBO" is the service "HBO Max").
   service: string;
   url: string;
+  // The link is TMDB's where-to-watch page, not the service itself (CRI-90).
+  viaTmdb?: boolean;
 }
 
 interface KnownService {

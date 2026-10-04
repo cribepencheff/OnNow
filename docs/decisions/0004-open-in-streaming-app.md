@@ -6,6 +6,7 @@ Amended 2026-09-23: website fallback added when the app is not installed
 Amended 2026-09-23, "PoC version" (CRI-80): see the section below.
 Amended 2026-09-24, TMDB as the source of the Swedish service (CRI-82): see
 the last section.
+Amended 2026-10-04, coverage across regions (CRI-90): see the last section.
 
 ## Context
 The user always ends up in a streaming app. A clear action to get there fits
@@ -76,3 +77,30 @@ show.
   official site.
 - **Without a TMDB key, or if the lookup fails:** the keyless PoC version
   above stands in.
+
+## Coverage across regions (amendment 2026-10-04, CRI-90)
+Checked on Watch What Happens Live in SE, US and GB, where TMDB lists
+operator apps, add-on channels and services the link table did not know.
+- **Pay-TV never counts.** Operator bundles, virtual pay-TV and network
+  apps that need a TV provider login (fuboTV, YouTube TV, Sling TV, Sky Go,
+  Tele2 Play, Telia Play, Allente, Bravo TV and others, listed by TMDB ID)
+  give no button and no "On ..." text. A real streaming service is picked
+  when the show has one; otherwise it reads "Not streaming in [country]".
+- **Add-on channels count** ("Hayu Amazon Channel", "... Apple TV
+  channel", "... Roku Premium Channel"). They are named as the channel via
+  the host ("hayu via Prime Video") and open the host's app.
+- **Fallback:** any other streaming service without a known start page
+  opens TMDB's where-to-watch page for the show and region (TMDB's own
+  `link` in the watch provider response). The button then reads "Where to
+  watch", since it does not open the service itself. A show that streams
+  somewhere always has a button.
+- **Order:** the show's own page, then a known service's start page, then
+  an add-on channel's host, then TMDB's page; TMDB's order within each.
+- **More start pages,** each checked to load: Hulu, Peacock, Starz, AMC+,
+  discovery+, The Roku Channel and Tubi (US); NOW, BBC iPlayer, ITVX,
+  Channel 4, 5 and hayu (UK); MUBI; and the extra TMDB IDs for Netflix and
+  Prime Video with ads. Crunchyroll blocks automated checks and stays on the
+  TMDB fallback.
+- The cached services carry TMDB's link now, so the cache key was bumped;
+  each show is looked up once more.
+

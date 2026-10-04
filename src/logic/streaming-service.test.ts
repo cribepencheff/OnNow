@@ -1,5 +1,6 @@
 import {
   availabilityText,
+  openInLabel,
   openInLink,
   regionProviders,
   tmdbTvId,
@@ -14,6 +15,7 @@ import providersLegends from "@/api/fixtures/tmdb-providers-legends.json";
 import providersThePitt from "@/api/fixtures/tmdb-providers-the-pitt.json";
 import providersHellsKitchen from "@/api/fixtures/tmdb-providers-hell-s-kitchen.json";
 import providersSpecialForces from "@/api/fixtures/tmdb-providers-special-forces-world-s-toughest-test.json";
+import providersWwhl from "@/api/fixtures/tmdb-providers-watch-what-happens-live.json";
 import showSlowHorses from "@/api/fixtures/show-slow-horses.json";
 import showKillingEve from "@/api/fixtures/show-killing-eve.json";
 import showLegends from "@/api/fixtures/show-legends.json";
@@ -36,7 +38,7 @@ describe("tmdbTvId (spike 0002, CRI-82)", () => {
 
 describe("regionProviders (FR-014, CRI-82)", () => {
   it("reads Sweden's subscription services", () => {
-    expect(regionProviders(providersNeagley, "SE")).toEqual([
+    expect(regionProviders(providersNeagley, "SE")).toMatchObject([
       { providerId: 119, providerName: "Amazon Prime Video" },
     ]);
   });
@@ -45,7 +47,7 @@ describe("regionProviders (FR-014, CRI-82)", () => {
     expect(
       regionProviders(providersLudwig, "SE").map((p) => p.providerName),
     ).toEqual(["BritBox", "TV4 Play", "BritBox Amazon Channel", "SVT"]);
-    expect(regionProviders(providersHellsKitchen, "SE")).toEqual([
+    expect(regionProviders(providersHellsKitchen, "SE")).toMatchObject([
       { providerId: 300, providerName: "Pluto TV" },
     ]);
   });
@@ -141,7 +143,7 @@ describe("openInLink (FR-014, ADR 0004, CRI-82)", () => {
     });
   });
 
-  it("skips a service not in the table and takes the next known one", () => {
+  it("skips an operator bundle and takes the next known one", () => {
     const providers = [
       { providerId: 497, providerName: "Tele2 Play" },
       { providerId: 1944, providerName: "TV4 Play" },
@@ -152,7 +154,7 @@ describe("openInLink (FR-014, ADR 0004, CRI-82)", () => {
     });
   });
 
-  it("gives no link when no Swedish service is in the table (Tele2 Play)", () => {
+  it("gives no link for an operator bundle alone (Tele2 Play, CRI-90)", () => {
     expect(
       openInLink([{ providerId: 497, providerName: "Tele2 Play" }], null),
     ).toBeNull();
@@ -240,5 +242,117 @@ describe("streaming services per region (FR-017, CRI-88)", () => {
     expect(availabilityText([], "GB")).toBe(
       "Not streaming in the United Kingdom",
     );
+  });
+});
+
+const WWHL_LINK = (region: string) =>
+  `https://www.themoviedb.org/tv/22980-watch-what-happens-live-with-andy-cohen/watch?locale=${region}`;
+
+// CRI-90: "Open in" across regions, on Watch What Happens Live (Bravo in the
+// US): pay-TV is never a streaming service, add-on channels open their host,
+// and any other streaming service falls back to TMDB's where-to-watch page.
+describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
+  it("keeps TMDB's where-to-watch page for the region with each provider", () => {
+    expect(regionProviders(providersWwhl, "SE")[0].watchLink).toBe(
+      WWHL_LINK("SE"),
+    );
+  });
+
+  it("opens hayu through Prime Video in Sweden (an add-on channel)", () => {
+    expect(openInLink(regionProviders(providersWwhl, "SE"), null)).toEqual({
+      service: "hayu via Prime Video",
+      url: "https://www.primevideo.com",
+    });
+  });
+
+  it("skips fuboTV and opens Peacock in the US", () => {
+    expect(openInLink(regionProviders(providersWwhl, "US"), null)).toEqual({
+      service: "Peacock",
+      url: "https://www.peacocktv.com",
+    });
+  });
+
+  it("skips Sky Go and opens hayu through Prime Video in the UK", () => {
+    expect(openInLink(regionProviders(providersWwhl, "GB"), null)).toEqual({
+      service: "hayu via Prime Video",
+      url: "https://www.primevideo.com",
+    });
+  });
+
+  it("never counts pay-TV or operator bundles, for the link or the text", () => {
+    const payTv = [
+      { providerId: 257, providerName: "fuboTV", watchLink: WWHL_LINK("US") },
+      { providerId: 29, providerName: "Sky Go", watchLink: WWHL_LINK("US") },
+      {
+        providerId: 553,
+        providerName: "Telia Play",
+        watchLink: WWHL_LINK("US"),
+      },
+      { providerId: 365, providerName: "Bravo TV", watchLink: WWHL_LINK("US") },
+    ];
+    expect(openInLink(payTv, null)).toBeNull();
+    expect(availabilityText(payTv, "US")).toBe(
+      "Not streaming in the United States of America",
+    );
+  });
+
+  it("prefers a real service with a start page over an add-on channel", () => {
+    expect(
+      openInLink(
+        [
+          { providerId: 296, providerName: "Hayu Amazon Channel" },
+          { providerId: 1899, providerName: "HBO Max" },
+        ],
+        null,
+      ),
+    ).toEqual({ service: "HBO Max", url: "https://www.hbomax.com" });
+  });
+
+  it("opens Apple TV and Roku add-on channels through their hosts", () => {
+    expect(
+      openInLink(
+        [{ providerId: 1854, providerName: "AMC Plus Apple TV channel" }],
+        null,
+      ),
+    ).toEqual({
+      service: "AMC Plus via Apple TV",
+      url: "https://tv.apple.com",
+    });
+    expect(
+      openInLink(
+        [{ providerId: 633, providerName: "Paramount+ Roku Premium Channel" }],
+        null,
+      ),
+    ).toEqual({
+      service: "Paramount+ via The Roku Channel",
+      url: "https://therokuchannel.roku.com",
+    });
+  });
+
+  it("falls back to TMDB's where-to-watch page for a service without a start page", () => {
+    expect(
+      openInLink(
+        [{ providerId: 79, providerName: "NBC", watchLink: WWHL_LINK("US") }],
+        null,
+      ),
+    ).toEqual({ service: "NBC", url: WWHL_LINK("US"), viaTmdb: true });
+  });
+
+  it("names an add-on channel via its host in the text", () => {
+    expect(
+      availabilityText(
+        [{ providerId: 296, providerName: "Hayu Amazon Channel" }],
+        "SE",
+      ),
+    ).toBe("On hayu via Prime Video");
+  });
+
+  it("labels the button by where it goes", () => {
+    expect(
+      openInLabel({ service: "Peacock", url: "https://www.peacocktv.com" }),
+    ).toBe("Open in Peacock");
+    expect(
+      openInLabel({ service: "NBC", url: WWHL_LINK("US"), viaTmdb: true }),
+    ).toBe("Where to watch");
   });
 });

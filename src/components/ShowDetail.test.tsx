@@ -412,6 +412,37 @@ describe("ShowDetail", () => {
     expect(hero.getByRole("button", { name: "Open in Apple TV" })).toBeTruthy();
   });
 
+  it("CRI-90: opens TMDB's where-to-watch page for a service without a start page", async () => {
+    mockShow(showSlowHorsesFixture);
+    mockStreamingServices([
+      {
+        providerId: 79,
+        providerName: "NBC",
+        watchLink: "https://www.themoviedb.org/tv/1/watch?locale=US",
+      },
+    ]);
+    await render(<ShowDetail showId={45039} />);
+
+    await fireEvent.press(
+      screen.getByRole("button", { name: "Where to watch" }),
+    );
+    expect(Linking.openURL).toHaveBeenCalledWith(
+      "https://www.themoviedb.org/tv/1/watch?locale=US",
+    );
+  });
+
+  it("CRI-90: names an add-on channel via its host on the button", async () => {
+    mockShow(showSlowHorsesFixture);
+    mockStreamingServices([
+      { providerId: 296, providerName: "Hayu Amazon Channel" },
+    ]);
+    await render(<ShowDetail showId={45039} />);
+
+    expect(
+      screen.getByRole("button", { name: "Open in hayu via Prime Video" }),
+    ).toBeTruthy();
+  });
+
   it("CRI-86: shows the TMDB logo instead of the title when there is one, as on Home", async () => {
     mockShow(showSlowHorsesFixture);
     mockShowImages.mockReturnValue({

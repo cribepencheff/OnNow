@@ -45,7 +45,11 @@ import {
   type SeasonTab,
 } from "@/logic/show-detail";
 import { showState, showStateLabel } from "@/logic/show-state";
-import { availabilityText, openInLink } from "@/logic/streaming-service";
+import {
+  availabilityText,
+  openInLabel,
+  openInLink,
+} from "@/logic/streaming-service";
 import { accent, withLightness } from "@/theme/color";
 import { OmdbCredit } from "./OmdbCredit";
 import { t, type } from "@/theme/tokens";
@@ -130,14 +134,14 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
           {link && (
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel={`Open in ${link.service}`}
+              accessibilityLabel={openInLabel(link)}
               // An https link: iOS opens the service's app at the show when
               // it is installed, and the website otherwise.
               onPress={() => Linking.openURL(link.url)}
               style={[styles.button, styles.buttonAccent, styles.heroButton]}
               testID="show-detail-open-in"
             >
-              <Text style={styles.followLabel}>Open in {link.service}</Text>
+              <Text style={styles.followLabel}>{openInLabel(link)}</Text>
             </Pressable>
           )}
         </View>

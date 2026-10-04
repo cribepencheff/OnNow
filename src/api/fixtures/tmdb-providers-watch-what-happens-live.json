@@ -1,0 +1,330 @@
+{
+    "id": 22980,
+    "results": {
+        "AT": {
+            "link": "https://www.themoviedb.org/tv/22980-watch-what-happens-live-with-andy-cohen/watch?locale=AT",
+            "flatrate": [
+                {
+                    "logo_path": "/7j9bf0UmdxxmZtPsLggYLnGqrqS.png",
+                    "provider_id": 296,
+                    "provider_name": "Hayu Amazon Channel",
+                    "display_priority": 121
+                }
+            ]
+        },
+        "AU": {
+            "link": "https://www.themoviedb.org/tv/22980-watch-what-happens-live-with-andy-cohen/watch?locale=AU",
+            "flatrate": [
+                {
+                    "logo_path": "/7j9bf0UmdxxmZtPsLggYLnGqrqS.png",
+                    "provider_id": 296,
+                    "provider_name": "Hayu Amazon Channel",
+                    "display_priority": 73
+                }
+            ]
+        },
+        "BE": {
+            "link": "https://www.themoviedb.org/tv/22980-watch-what-happens-live-with-andy-cohen/watch?locale=BE",
+            "flatrate": [
+                {
+                    "logo_path": "/7j9bf0UmdxxmZtPsLggYLnGqrqS.png",
+                    "provider_id": 296,
+                    "provider_name": "Hayu Amazon Channel",
+                    "display_priority": 47
+                }
+            ]
+        },
+        "CA": {
+            "link": "https://www.themoviedb.org/tv/22980-watch-what-happens-live-with-andy-cohen/watch?locale=CA",
+            "flatrate": [
+                {
+                    "logo_path": "/7j9bf0UmdxxmZtPsLggYLnGqrqS.png",
+                    "provider_id": 296,
+                    "provider_name": "Hayu Amazon Channel",
+                    "display_priority": 24
+                },
+                {
+                    "logo_path": "/iyXO5Abg68XdO00nTzXcC1YD7mf.png",
+                    "provider_id": 2171,
+                    "provider_name": "Citytvplus Amazon Channel",
+                    "display_priority": 112
+                },
+                {
+                    "logo_path": "/cpTEoKdYe8z2exgnhKfHPXa8oPq.png",
+                    "provider_id": 1985,
+                    "provider_name": "Citytvplus",
+                    "display_priority": 120
+                }
+            ]
+        },
+        "CH": {
+            "link": "https://www.themoviedb.org/tv/22980-watch-what-happens-live-with-andy-cohen/watch?locale=CH",
+            "flatrate": [
+                {
+                    "logo_path": "/7j9bf0UmdxxmZtPsLggYLnGqrqS.png",
+                    "provider_id": 296,
+                    "provider_name": "Hayu Amazon Channel",
+                    "display_priority": 82
+                }
+            ]
+        },
+        "CZ": {
+            "link": "https://www.themoviedb.org/tv/22980-watch-what-happens-live-with-andy-cohen/watch?locale=CZ",
+            "flatrate": [
+                {
+                    "logo_path": "/7j9bf0UmdxxmZtPsLggYLnGqrqS.png",
+                    "provider_id": 296,
+                    "provider_name": "Hayu Amazon Channel",
+                    "display_priority": 47
+                }
+            ]
+        },
+        "DE": {
+            "link": "https://www.themoviedb.org/tv/22980-watch-what-happens-live-with-andy-cohen/watch?locale=DE",
+            "flatrate": [
+                {
+                    "logo_path": "/7j9bf0UmdxxmZtPsLggYLnGqrqS.png",
+                    "provider_id": 296,
+                    "provider_name": "Hayu Amazon Channel",
+                    "display_priority": 178
+                }
+            ]
+        },
+        "DK": {
+            "link": "https://www.themoviedb.org/tv/22980-watch-what-happens-live-with-andy-cohen/watch?locale=DK",
+            "flatrate": [
+                {
+                    "logo_path": "/7j9bf0UmdxxmZtPsLggYLnGqrqS.png",
+                    "provider_id": 296,
+                    "provider_name": "Hayu Amazon Channel",
+                    "display_priority": 66
+                }
+            ]
+        },
+        "ES": {
+            "link": "https://www.themoviedb.org/tv/22980-watch-what-happens-live-with-andy-cohen/watch?locale=ES",
+            "flatrate": [
+                {
+                    "logo_path": "/7j9bf0UmdxxmZtPsLggYLnGqrqS.png",
+                    "provider_id": 296,
+                    "provider_name": "Hayu Amazon Channel",
+                    "display_priority": 36
+                }
+            ]
+        },
+        "FI": {
+            "link": "https://www.themoviedb.org/tv/22980-watch-what-happens-live-with-andy-cohen/watch?locale=FI",
+            "flatrate": [
+                {
+                    "logo_path": "/7j9bf0UmdxxmZtPsLggYLnGqrqS.png",
+                    "provider_id": 296,
+                    "provider_name": "Hayu Amazon Channel",
+                    "display_priority": 49
+                }
+            ]
+        },
+        "FR": {
+            "link": "https://www.themoviedb.org/tv/22980-watch-what-happens-live-with-andy-cohen/watch?locale=FR",
+            "flatrate": [
+                {
+                    "logo_path": "/7j9bf0UmdxxmZtPsLggYLnGqrqS.png",
+                    "provider_id": 296,
+                    "provider_name": "Hayu Amazon Channel",
+                    "display_priority": 42
+                }
+            ]
+        },
+        "GB": {
+            "link": "https://www.themoviedb.org/tv/22980-watch-what-happens-live-with-andy-cohen/watch?locale=GB",
+            "flatrate": [
+                {
+                    "logo_path": "/1Yvl9eP3pmktqChitnFhHJHcBtX.png",
+                    "provider_id": 29,
+                    "provider_name": "Sky Go",
+                    "display_priority": 13
+                },
+                {
+                    "logo_path": "/7j9bf0UmdxxmZtPsLggYLnGqrqS.png",
+                    "provider_id": 296,
+                    "provider_name": "Hayu Amazon Channel",
+                    "display_priority": 34
+                }
+            ]
+        },
+        "GR": {
+            "link": "https://www.themoviedb.org/tv/22980-watch-what-happens-live-with-andy-cohen/watch?locale=GR",
+            "flatrate": [
+                {
+                    "logo_path": "/7j9bf0UmdxxmZtPsLggYLnGqrqS.png",
+                    "provider_id": 296,
+                    "provider_name": "Hayu Amazon Channel",
+                    "display_priority": 39
+                }
+            ]
+        },
+        "HR": {
+            "link": "https://www.themoviedb.org/tv/22980-watch-what-happens-live-with-andy-cohen/watch?locale=HR",
+            "flatrate": [
+                {
+                    "logo_path": "/7j9bf0UmdxxmZtPsLggYLnGqrqS.png",
+                    "provider_id": 296,
+                    "provider_name": "Hayu Amazon Channel",
+                    "display_priority": 48
+                }
+            ]
+        },
+        "HU": {
+            "link": "https://www.themoviedb.org/tv/22980-watch-what-happens-live-with-andy-cohen/watch?locale=HU",
+            "flatrate": [
+                {
+                    "logo_path": "/7j9bf0UmdxxmZtPsLggYLnGqrqS.png",
+                    "provider_id": 296,
+                    "provider_name": "Hayu Amazon Channel",
+                    "display_priority": 44
+                }
+            ]
+        },
+        "IE": {
+            "link": "https://www.themoviedb.org/tv/22980-watch-what-happens-live-with-andy-cohen/watch?locale=IE",
+            "flatrate": [
+                {
+                    "logo_path": "/1Yvl9eP3pmktqChitnFhHJHcBtX.png",
+                    "provider_id": 29,
+                    "provider_name": "Sky Go",
+                    "display_priority": 9
+                }
+            ]
+        },
+        "IT": {
+            "link": "https://www.themoviedb.org/tv/22980-watch-what-happens-live-with-andy-cohen/watch?locale=IT",
+            "flatrate": [
+                {
+                    "logo_path": "/7j9bf0UmdxxmZtPsLggYLnGqrqS.png",
+                    "provider_id": 296,
+                    "provider_name": "Hayu Amazon Channel",
+                    "display_priority": 48
+                }
+            ]
+        },
+        "NL": {
+            "link": "https://www.themoviedb.org/tv/22980-watch-what-happens-live-with-andy-cohen/watch?locale=NL",
+            "flatrate": [
+                {
+                    "logo_path": "/7j9bf0UmdxxmZtPsLggYLnGqrqS.png",
+                    "provider_id": 296,
+                    "provider_name": "Hayu Amazon Channel",
+                    "display_priority": 60
+                }
+            ]
+        },
+        "NO": {
+            "link": "https://www.themoviedb.org/tv/22980-watch-what-happens-live-with-andy-cohen/watch?locale=NO",
+            "flatrate": [
+                {
+                    "logo_path": "/7j9bf0UmdxxmZtPsLggYLnGqrqS.png",
+                    "provider_id": 296,
+                    "provider_name": "Hayu Amazon Channel",
+                    "display_priority": 58
+                }
+            ]
+        },
+        "NZ": {
+            "link": "https://www.themoviedb.org/tv/22980-watch-what-happens-live-with-andy-cohen/watch?locale=NZ",
+            "flatrate": [
+                {
+                    "logo_path": "/7j9bf0UmdxxmZtPsLggYLnGqrqS.png",
+                    "provider_id": 296,
+                    "provider_name": "Hayu Amazon Channel",
+                    "display_priority": 46
+                }
+            ]
+        },
+        "PL": {
+            "link": "https://www.themoviedb.org/tv/22980-watch-what-happens-live-with-andy-cohen/watch?locale=PL",
+            "flatrate": [
+                {
+                    "logo_path": "/7j9bf0UmdxxmZtPsLggYLnGqrqS.png",
+                    "provider_id": 296,
+                    "provider_name": "Hayu Amazon Channel",
+                    "display_priority": 53
+                }
+            ]
+        },
+        "RO": {
+            "link": "https://www.themoviedb.org/tv/22980-watch-what-happens-live-with-andy-cohen/watch?locale=RO",
+            "flatrate": [
+                {
+                    "logo_path": "/7j9bf0UmdxxmZtPsLggYLnGqrqS.png",
+                    "provider_id": 296,
+                    "provider_name": "Hayu Amazon Channel",
+                    "display_priority": 39
+                }
+            ]
+        },
+        "SE": {
+            "link": "https://www.themoviedb.org/tv/22980-watch-what-happens-live-with-andy-cohen/watch?locale=SE",
+            "flatrate": [
+                {
+                    "logo_path": "/7j9bf0UmdxxmZtPsLggYLnGqrqS.png",
+                    "provider_id": 296,
+                    "provider_name": "Hayu Amazon Channel",
+                    "display_priority": 51
+                }
+            ]
+        },
+        "SK": {
+            "link": "https://www.themoviedb.org/tv/22980-watch-what-happens-live-with-andy-cohen/watch?locale=SK",
+            "flatrate": [
+                {
+                    "logo_path": "/7j9bf0UmdxxmZtPsLggYLnGqrqS.png",
+                    "provider_id": 296,
+                    "provider_name": "Hayu Amazon Channel",
+                    "display_priority": 53
+                }
+            ]
+        },
+        "US": {
+            "link": "https://www.themoviedb.org/tv/22980-watch-what-happens-live-with-andy-cohen/watch?locale=US",
+            "flatrate": [
+                {
+                    "logo_path": "/3wF8xISfVlcrc8X3jaa3uMUFGAr.png",
+                    "provider_id": 257,
+                    "provider_name": "fuboTV",
+                    "display_priority": 10
+                },
+                {
+                    "logo_path": "/a1UIdq5BrkcAxnxcUhFsNbXnxeu.png",
+                    "provider_id": 386,
+                    "provider_name": "Peacock Premium",
+                    "display_priority": 16
+                },
+                {
+                    "logo_path": "/geRNAmvuPF6hOLExMHLKpt7bGBD.png",
+                    "provider_id": 79,
+                    "provider_name": "NBC",
+                    "display_priority": 48
+                },
+                {
+                    "logo_path": "/8VIyhPVvdnmfpi4XCchb2qbbwwb.png",
+                    "provider_id": 365,
+                    "provider_name": "Bravo TV",
+                    "display_priority": 98
+                },
+                {
+                    "logo_path": "/yrEwyMzEKdqAoGhaWUARtIxByol.png",
+                    "provider_id": 387,
+                    "provider_name": "Peacock Premium Plus",
+                    "display_priority": 213
+                }
+            ],
+            "ads": [
+                {
+                    "logo_path": "/geRNAmvuPF6hOLExMHLKpt7bGBD.png",
+                    "provider_id": 79,
+                    "provider_name": "NBC",
+                    "display_priority": 48
+                }
+            ]
+        }
+    }
+}

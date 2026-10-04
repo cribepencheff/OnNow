@@ -49,7 +49,7 @@ describe("useStreamingService (FR-014, NFR-005, CRI-82)", () => {
     );
     expect(
       JSON.parse(
-        (await AsyncStorage.getItem("onnow.streamingService.SE.82707"))!,
+        (await AsyncStorage.getItem("onnow.streamingService.v2.SE.82707"))!,
       ).providers,
     ).toEqual(PRIME);
 
@@ -85,7 +85,7 @@ describe("useStreamingService (FR-014, NFR-005, CRI-82)", () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data).toBeNull();
     expect(
-      await AsyncStorage.getItem("onnow.streamingService.SE.82707"),
+      await AsyncStorage.getItem("onnow.streamingService.v2.SE.82707"),
     ).toBeNull();
 
     await unmount();
