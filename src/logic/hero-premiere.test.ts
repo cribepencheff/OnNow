@@ -2,7 +2,11 @@
 // which falls back like Show detail when the TMDB lookup fails.
 
 import type { TvMazeEpisode, TvMazeShow } from "@/api/tvmaze-types";
-import { heroAvailability, heroPremiereLine } from "./hero-carousel";
+import {
+  heroAvailability,
+  heroEpisodeLine,
+  heroPremiereLine,
+} from "./hero-carousel";
 
 const paramount = {
   id: 1,
@@ -20,17 +24,17 @@ describe("heroPremiereLine (FR-031, ADR 0015)", () => {
         { show: paramount, episodes: [episode], localDate: "2026-10-04" },
         "2026-10-04",
       ),
-    ).toBe("Premieres today on Paramount+ · S2E3");
+    ).toBe("Premieres today on Paramount+");
   });
 
   it("says tomorrow, then a date further out", () => {
     const slide = { show: paramount, episodes: [episode] };
     expect(
       heroPremiereLine({ ...slide, localDate: "2026-10-05" }, "2026-10-04"),
-    ).toBe("Premieres tomorrow on Paramount+ · S2E3");
+    ).toBe("Premieres tomorrow on Paramount+");
     expect(
       heroPremiereLine({ ...slide, localDate: "2026-10-08" }, "2026-10-04"),
-    ).toBe("Premieres Thu 8 Oct on Paramount+ · S2E3");
+    ).toBe("Premieres Thu 8 Oct on Paramount+");
   });
 
   it("leaves the service out when TVmaze has none", () => {
@@ -40,7 +44,19 @@ describe("heroPremiereLine (FR-031, ADR 0015)", () => {
         { show, episodes: [episode], localDate: "2026-10-04" },
         "2026-10-04",
       ),
-    ).toBe("Premieres today · S2E3");
+    ).toBe("Premieres today");
+  });
+});
+
+describe("heroEpisodeLine", () => {
+  it("shows the code and the title of a single episode", () => {
+    expect(heroEpisodeLine([{ ...episode, name: "Pilot" }])).toBe(
+      "S2E3 · Pilot",
+    );
+  });
+
+  it("shows only the code when the episode has no title", () => {
+    expect(heroEpisodeLine([{ ...episode, name: "" }])).toBe("S2E3");
   });
 });
 

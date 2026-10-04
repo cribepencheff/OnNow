@@ -31,6 +31,7 @@ import {
   HERO_CROSSFADE_FLOOR,
   HERO_PARALLAX_FACTOR,
   heroAvailability,
+  heroEpisodeLine,
   heroPremiereLine,
   type HeroAvailability,
   type HeroSlide,
@@ -388,7 +389,9 @@ export const ContentLayer = memo(function ContentLayer({
 }) {
   const { height } = useWindowDimensions();
   const scale = height / REF_HEIGHT;
-  const contentTop = 452 * scale;
+  // Raised by one meta line so the two-line meta block leaves the button
+  // and dots where they were.
+  const contentTop = 452 * scale - type.meta.lineHeight;
   const isShort = height < SHORT_SCREEN_MAX_HEIGHT;
   const dotsGap = isShort ? DOTS_GAP_SHORT : DOTS_GAP;
   const show = slide.show as TvMazeShowWithEmbeds;
@@ -501,9 +504,15 @@ export const ContentLayer = memo(function ContentLayer({
               </Text>
             </View>
           )}
-          <Text style={styles.meta} numberOfLines={1}>
-            {heroPremiereLine(slide, todayDate)}
-          </Text>
+          {/* Two fixed lines: the premiere in full, then code and title. */}
+          <View>
+            <Text style={styles.meta} numberOfLines={1}>
+              {heroPremiereLine(slide, todayDate)}
+            </Text>
+            <Text style={styles.meta} numberOfLines={1}>
+              {heroEpisodeLine(slide.episodes)}
+            </Text>
+          </View>
         </View>
         <OpenInSlot availability={availability} onLayout={handleButtonLayout} />
       </View>

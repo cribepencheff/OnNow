@@ -272,10 +272,15 @@ export function heroPremiereLine(
         ? "tomorrow"
         : formatLabelDate(slide.localDate, todayDate);
   const network = searchResultNetworkName(slide.show);
-  const premiere = network
-    ? `Premieres ${day} on ${network}`
-    : `Premieres ${day}`;
-  return `${premiere} · ${episodesLabel(slide.episodes)}`;
+  return network ? `Premieres ${day} on ${network}` : `Premieres ${day}`;
+}
+
+// The hero's second meta line: the episode code, and its title when the
+// slide is a single episode.
+export function heroEpisodeLine(episodes: TvMazeEpisode[]): string {
+  const code = episodesLabel(episodes);
+  const title = episodes.length === 1 ? episodes[0]?.name : null;
+  return title ? `${code} · ${title}` : code;
 }
 
 // What goes where the "Open in" button would be, in one of four states, so
