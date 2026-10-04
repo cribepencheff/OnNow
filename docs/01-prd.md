@@ -137,8 +137,16 @@ per season come in the MVP.
   the next announced episode or season with its date if there is one,
   otherwise the show's status as the source states it. The exact states and
   wording are decided from the results of spike 0001 (principle: data first).
-- **Status wording:** TVmaze's fixed status values are shown in plain words,
-  here and in Shows and Search: "To Be Determined" reads "Renewal not
+- **Status line (CRI-86):** under the meta line, one state derived from
+  TVmaze's status, episodes and seasons, dated facts first: "Airing · next
+  ep <date>" (next episode in the season that is airing), "Season <n> ·
+  <date>" (a dated next season), "Season <n> · TBA" (a new season listed
+  without a date), "Between seasons" (Running, nothing listed; no renewal
+  implied), "Future uncertain" (To Be Determined), "Ended". "Open in" is
+  the primary action only while airing. TVmaze and TMDB give season dates
+  as full dates or none, never a year only, so there is no year state.
+- **Status wording:** TVmaze's fixed status values are shown in plain words
+  in Shows and Search: "To Be Determined" reads "Renewal not
   announced", "In Development" reads "In development"; "Running" and
   "Ended" stay as they are. A translation of the source's own vocabulary,
   not a guess (CRI-81).

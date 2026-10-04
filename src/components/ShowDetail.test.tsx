@@ -107,12 +107,15 @@ describe("ShowDetail", () => {
     resolvedOptionsSpy.mockRestore();
   });
 
-  it("FR-028: shows title, year, status, network and summary", async () => {
+  it("FR-028: shows title, year, network, status line and summary", async () => {
     mockShow(showSlowHorsesFixture);
     await render(<ShowDetail showId={45039} />);
 
     expect(screen.getByText("Slow Horses")).toBeTruthy();
-    expect(screen.getByText("2022 · Running · Apple TV")).toBeTruthy();
+    expect(screen.getByText("2022 · Apple TV")).toBeTruthy();
+    expect(screen.getByTestId("show-detail-status")).toHaveTextContent(
+      "Airing · next ep Wed 30 Sep",
+    );
     expect(screen.getByText(/Slow Horses follows the story/)).toBeTruthy();
   });
 
@@ -143,21 +146,22 @@ describe("ShowDetail", () => {
     expect(latest.getByText("Fri 4 Sep")).toBeTruthy();
   });
 
-  it("FR-034: between seasons without a date, the next card shows the status from TVmaze", async () => {
+  it("FR-034: between seasons with an undated new season, the status line says TBA and there is no next card", async () => {
     mockShow(showFoundationFixture);
     await render(<ShowDetail showId={35951} />);
 
-    const next = within(screen.getByTestId("show-detail-next"));
-    expect(next.getByText("Running")).toBeTruthy();
+    expect(screen.getByTestId("show-detail-status")).toHaveTextContent(
+      "Season 4 · TBA",
+    );
+    expect(screen.queryByTestId("show-detail-next")).toBeNull();
   });
 
-  it("FR-034: an ended show's next card shows its status, and the latest card its last episode", async () => {
+  it("FR-034: an ended show says Ended in the status line, and the latest card shows its last episode", async () => {
     mockShow(showKillingEveFixture);
     await render(<ShowDetail showId={22904} />);
 
-    expect(
-      within(screen.getByTestId("show-detail-next")).getByText("Ended"),
-    ).toBeTruthy();
+    expect(screen.getByTestId("show-detail-status")).toHaveTextContent("Ended");
+    expect(screen.queryByTestId("show-detail-next")).toBeNull();
     const latest = within(screen.getByTestId("show-detail-latest"));
     expect(latest.getByText("Hello, Losers")).toBeTruthy();
     expect(latest.getByText("Sun 10 Apr 2022")).toBeTruthy();
@@ -244,7 +248,7 @@ describe("ShowDetail", () => {
     expect(follow).toHaveBeenCalledWith(45039);
   });
 
-  it("FR-029: shows a quiet Following when followed, which unfollows when pressed", async () => {
+  it("FR-029: shows Following as a toggle when followed, which unfollows when pressed", async () => {
     mockShow(showSlowHorsesFixture);
     mockFollowed(true);
     await render(<ShowDetail showId={45039} />);
@@ -260,20 +264,17 @@ describe("ShowDetail", () => {
     mockShow(showNeagleyFixture);
     await render(<ShowDetail showId={82707} />);
 
-    expect(
-      screen.getByText("2026 · Renewal not announced · Prime Video"),
-    ).toBeTruthy();
+    expect(screen.getByText("2026 · Prime Video")).toBeTruthy();
+    expect(screen.getByTestId("show-detail-status")).toHaveTextContent(
+      "Future uncertain",
+    );
     expect(screen.getByText("All episodes available")).toBeTruthy();
     expect(
       within(screen.getByTestId("show-detail-latest")).getByText(
         "Season 1 · all 8 episodes · 7 days ago",
       ),
     ).toBeTruthy();
-    expect(
-      within(screen.getByTestId("show-detail-next")).getByText(
-        "Renewal not announced",
-      ),
-    ).toBeTruthy();
+    expect(screen.queryByTestId("show-detail-next")).toBeNull();
   });
 
   it("CRI-81: shows The Diplomat's season 3 drop as the latest item and its season 4 premiere as next", async () => {
@@ -335,6 +336,20 @@ describe("ShowDetail", () => {
     );
 
     expect(Linking.openURL).toHaveBeenCalledWith("https://www.primevideo.com");
+  });
+
+  it("CRI-86: Open in is primary while airing, secondary otherwise", async () => {
+    mockFollowed(true);
+    mockSwedishServices([APPLE_TV]);
+    mockShow(showSlowHorsesFixture);
+    await render(<ShowDetail showId={45039} />);
+    expect(screen.getByTestId("open-in-primary")).toBeTruthy();
+
+    mockSwedishServices([PRIME_VIDEO]);
+    mockShow(showNeagleyFixture);
+    await render(<ShowDetail showId={82707} />);
+    expect(screen.getByTestId("open-in-secondary")).toBeTruthy();
+    expect(screen.queryByTestId("open-in-primary")).toBeNull();
   });
 
   it("FR-014: uses the Swedish service, not the US network (MobLand: SkyShowtime; Killing Eve: Netflix)", async () => {

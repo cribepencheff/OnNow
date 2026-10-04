@@ -8,6 +8,7 @@
 import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import * as Linking from "expo-linking";
+import { SymbolView } from "expo-symbols";
 import { useRef, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
@@ -39,6 +40,7 @@ import {
   type NextCard,
   type SeasonTab,
 } from "@/logic/show-detail";
+import { showState, showStateLabel, type ShowState } from "@/logic/show-state";
 import { availabilityText, openInLink } from "@/logic/swedish-service";
 import { accent, withLightness } from "@/theme/color";
 import { TmdbCredit } from "./TmdbCredit";
@@ -73,6 +75,7 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
   const latest = latestCard(episodes, seasons, timeZone, todayDate);
   const next = nextCard(show, episodes, seasons, timeZone, todayDate);
   const tabs = seasonTabs(seasons, episodes, todayDate);
+  const state = showState(show, episodes, seasons, timeZone, todayDate);
 
   const [selectedSeason, setSelectedSeason] = useState(
     () => currentSeasonNumber(episodes, timeZone, todayDate) ?? tabs[0]?.number,
@@ -93,22 +96,28 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
       <View style={styles.section}>
         <Text style={styles.title}>{show.name}</Text>
         <Text style={styles.meta}>{showDetailMetaLine(show)}</Text>
+        <Text style={styles.meta} testID="show-detail-status">
+          {showStateLabel(state, todayDate)}
+        </Text>
         {allEpisodesAvailable(episodes, seasons, timeZone, todayDate) && (
           <Text style={styles.meta}>All episodes available</Text>
         )}
-        <FollowAction show={show} />
+        <FollowAction show={show} state={state} />
         {summary && <Text style={styles.summary}>{summary}</Text>}
       </View>
 
-      <View style={styles.section} testID="show-detail-next">
-        <Text style={styles.sectionLabel}>NEXT</Text>
-        <NextCardView
-          card={next}
-          seasons={seasons}
-          timeZone={timeZone}
-          todayDate={todayDate}
-        />
-      </View>
+      {/* With nothing dated next, the status line already says it all. */}
+      {next.kind !== "status" && (
+        <View style={styles.section} testID="show-detail-next">
+          <Text style={styles.sectionLabel}>NEXT</Text>
+          <NextCardView
+            card={next}
+            seasons={seasons}
+            timeZone={timeZone}
+            todayDate={todayDate}
+          />
+        </View>
+      )}
 
       {latest && (
         <View style={styles.section} testID="show-detail-latest">
@@ -152,73 +161,84 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
   );
 }
 
-// FR-029, PoC: a bold "Follow" in the accent colour when not followed.
-// When followed, "Open in [service]" is the primary action for the show's
-// Swedish service from TMDB (FR-014, CRI-82): the show itself when TVmaze's
-// official site is on that service, otherwise the service's start page;
-// no Swedish service gives no button. Without a TMDB key, or when the
-// lookup fails, TVmaze's direct link stands in (CRI-80). A quiet
-// "Following" sits next to it and unfollows when tapped. The service name
-// is text, no logos (ADR 0004).
-function FollowAction({ show }: { show: TvMazeShow }) {
+// FR-029: "Follow" / "Following" is one toggle that stays in place, so an
+// unfollow is undone by tapping again. When followed, "Open in [service]"
+// follows it (FR-014, CRI-82, CRI-84); it is the primary action only while
+// the show is airing, otherwise a quiet secondary one (CRI-86).
+function FollowAction({ show, state }: { show: TvMazeShow; state: ShowState }) {
   const { isFollowed, follow, unfollow } = useFollowList();
   const showId = show.id;
   const followed = isFollowed(showId);
   const { data: providers, isError } = useSwedishService(show, followed);
 
-  if (followed) {
-    const link = providers
+  const link = !followed
+    ? null
+    : providers
       ? openInLink(providers, show.officialSite)
       : providers === null || isError
         ? serviceLink(show.officialSite)
         : null;
-    // Only once TMDB has answered: while loading, without a key or when the
-    // lookup fails, nothing is claimed (CRI-84).
-    const availability =
-      providers && !link ? availabilityText(providers) : null;
-    return (
-      <View style={styles.actionRow}>
-        {link && (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={`Open in ${link.service}`}
-            // An https link: iOS opens the service's app at the show when
-            // it is installed, and the website otherwise.
-            onPress={() => Linking.openURL(link.url)}
-            style={styles.followButton}
-          >
-            <Text style={styles.followLabel}>Open in {link.service}</Text>
-          </Pressable>
-        )}
-        {availability && (
-          <Text style={styles.availability}>{availability}</Text>
-        )}
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Following"
-          accessibilityHint="Unfollows the show"
-          onPress={() => unfollow(showId)}
-          hitSlop={8}
-          style={styles.followingStatus}
-        >
-          <Text style={styles.followingLabel}>✓ Following</Text>
-        </Pressable>
-      </View>
-    );
-  }
+  // Only once TMDB has answered: while loading, without a key or when the
+  // lookup fails, nothing is claimed (CRI-84).
+  const availability =
+    followed && providers && !link ? availabilityText(providers) : null;
+  const openInIsPrimary = state.kind === "airing";
 
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel="Follow"
-      onPress={() => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        follow(showId);
-      }}
-      style={styles.followButton}
-    >
-      <Text style={styles.followLabel}>Follow</Text>
-    </Pressable>
+    <View style={styles.actionRow}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={followed ? "Following" : "Follow"}
+        accessibilityHint={followed ? "Unfollows the show" : undefined}
+        accessibilityState={{ selected: followed }}
+        onPress={() => {
+          if (followed) {
+            unfollow(showId);
+          } else {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            follow(showId);
+          }
+        }}
+        hitSlop={8}
+        style={[
+          followed ? styles.followingStatus : styles.followButton,
+          styles.iconLabel,
+        ]}
+      >
+        {/* The same symbols as the follow circle in Search. */}
+        <SymbolView
+          name={{
+            ios: followed ? "checkmark" : "plus",
+            android: followed ? "check" : "add",
+            web: followed ? "check" : "add",
+          }}
+          tintColor={followed ? QUIET : "#FFFFFF"}
+          size={16}
+        />
+        <Text style={followed ? styles.followingLabel : styles.followLabel}>
+          {followed ? "Following" : "Follow"}
+        </Text>
+      </Pressable>
+      {link && (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Open in ${link.service}`}
+          // An https link: iOS opens the service's app at the show when
+          // it is installed, and the website otherwise.
+          onPress={() => Linking.openURL(link.url)}
+          hitSlop={8}
+          style={openInIsPrimary ? styles.followButton : styles.followingStatus}
+          testID={openInIsPrimary ? "open-in-primary" : "open-in-secondary"}
+        >
+          <Text
+            style={openInIsPrimary ? styles.followLabel : styles.followingLabel}
+          >
+            Open in {link.service}
+          </Text>
+        </Pressable>
+      )}
+      {availability && <Text style={styles.availability}>{availability}</Text>}
+    </View>
   );
 }
 
@@ -402,6 +422,7 @@ function EpisodeList({
 
 const STILL_ASPECT_RATIO = 16 / 9;
 const MUTED = "#999999";
+const QUIET = "#666666";
 
 const styles = StyleSheet.create({
   screen: {
@@ -412,7 +433,7 @@ const styles = StyleSheet.create({
   },
   heroImage: {
     width: "100%",
-    aspectRatio: 4 / 5,
+    aspectRatio: 1,
     backgroundColor: "#E0E0E0",
   },
   section: {
@@ -445,6 +466,11 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 24,
     marginVertical: 8,
+  },
+  iconLabel: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
   },
   followLabel: {
     color: "#FFFFFF",
