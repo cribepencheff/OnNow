@@ -1,6 +1,6 @@
 # 0016. Recommendations from the follow list, no charts on Home
 
-Status: Accepted (CRI-96)
+Status: Accepted (CRI-96), amended (CRI-111)
 
 ## Context
 The vision lists "charts and recommendations" under Not doing. The Home
@@ -28,7 +28,8 @@ and trending are not, on Home.**
   followed shows recommend them. The ranking is a count of TMDB's own
   data, nothing more (data first).
 - The row is hidden when the follow list is empty.
-- No "Airing soon", popular, trending or other chart on Home.
+- No "Airing soon", popular, trending or other chart on Home (amended
+  below: time-bound popularity rows are allowed).
 - A popularity list may appear in Search's empty state, as a way to find a
   first show when the follow list is empty ("Popular", CRI-98). That needs
   its own PRD change.
@@ -42,3 +43,20 @@ and trending are not, on Home.**
   a day; the client's 429 backoff applies (NFR-005).
 - Data stays on the device: the follow list is only used to build TMDB
   requests by show ID (NFR-004).
+
+## Amendment: time-bound popularity rows (CRI-111, 2026-10-05)
+The owner allows one kind of popularity row on Home, replacing "no Airing
+soon on Home" above.
+- **Allowed: popularity tied to a time window.** "Airing this week": TMDB's
+  on-the-air list (`/tv/on_the_air`, shows with an episode within the next
+  7 days), scripted shows only, in TMDB's popularity order, shows the user
+  follows left out. The time link keeps it a radar of what is airing, not
+  a chart.
+- **Not allowed:** all-time top lists, and trending or popular lists
+  without a time link.
+- **Placement:** under "Top picks for you". It is always shown, also with
+  an empty follow list, when it is the first row under the hero.
+- **Consequences:** PRD 5.1 has two rows (FR-038, FR-039), the MVP scope
+  lists both, and the vision's Not doing line names all-time charts and
+  trending without a time link instead of all charts. Search's "Popular"
+  (CRI-98) reuses the same source.
