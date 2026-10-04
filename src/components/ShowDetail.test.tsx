@@ -319,9 +319,7 @@ describe("ShowDetail", () => {
     await render(<ShowDetail showId={82707} />);
 
     expect(
-      screen.getByText(
-        "2026 · United States of America · Drama, Action, Thriller",
-      ),
+      screen.getByText("2026 · United States · Drama, Action, Thriller"),
     ).toBeTruthy();
     expect(screen.getByTestId("show-detail-status")).toHaveTextContent(
       "Future uncertain",

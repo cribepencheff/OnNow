@@ -1,5 +1,6 @@
 // The regions TMDB has watch provider data for, with TMDB's English names
 // (GET /watch/providers/regions, snapshot 2026-10-04, CRI-88, ADR 0014).
+// The names are the fallback when the device has none (countryName).
 // Only these can be a user's region: elsewhere there is nothing to show.
 
 export interface Region {
@@ -149,35 +150,34 @@ export const REGIONS: readonly Region[] = [
   { code: "ZW", name: "Zimbabwe" },
 ];
 
-// Names that read with "the" in a sentence ("in the Netherlands").
+// Names that read with "the" in a sentence ("in the Netherlands"), by name
+// rather than code, since the device's names and TMDB's differ.
 const WITH_ARTICLE = new Set([
-  "AE",
-  "BS",
-  "CD",
-  "CZ",
-  "DO",
-  "GB",
-  "NL",
-  "PH",
-  "PS",
-  "TC",
-  "US",
-  "VA",
+  "Bahamas",
+  "Congo",
+  "Czech Republic",
+  "Dominican Republic",
+  "Holy See",
+  "Netherlands",
+  "Palestinian Territories",
+  "Palestinian Territory",
+  "Philippines",
+  "Turks & Caicos Islands",
+  "Turks and Caicos Islands",
+  "United Arab Emirates",
+  "United Kingdom",
+  "United States",
+  "United States of America",
 ]);
 
 export function isSupportedRegion(code: string): boolean {
   return REGIONS.some((region) => region.code === code);
 }
 
-// A country's English name for any ISO code, not only supported regions;
-// null when unknown, so the caller shows nothing rather than a raw code.
-export function countryName(code: string): string | null {
-  const known = REGIONS.find((region) => region.code === code)?.name;
-  if (known) {
-    return known;
-  }
+// The device's English name for a country code; null when the JS engine
+// has no Intl.DisplayNames or does not know the code.
+function deviceCountryName(code: string): string | null {
   try {
-    // Not every JS engine has DisplayNames; without it, unlisted codes drop.
     const name = new Intl.DisplayNames(["en"], { type: "region" }).of(code);
     return name && name !== code ? name : null;
   } catch {
@@ -185,12 +185,22 @@ export function countryName(code: string): string | null {
   }
 }
 
+// A country's English name: the device's first, TMDB's as the fallback;
+// null when neither knows it, so the caller shows nothing.
+export function countryName(code: string): string | null {
+  return (
+    deviceCountryName(code) ??
+    REGIONS.find((region) => region.code === code)?.name ??
+    null
+  );
+}
+
 export function regionName(code: string): string {
-  return REGIONS.find((region) => region.code === code)?.name ?? code;
+  return countryName(code) ?? code;
 }
 
 // "Sweden", "the United Kingdom": the name as it reads inside a sentence.
 export function regionNameInSentence(code: string): string {
   const name = regionName(code);
-  return WITH_ARTICLE.has(code) ? `the ${name}` : name;
+  return WITH_ARTICLE.has(name) ? `the ${name}` : name;
 }

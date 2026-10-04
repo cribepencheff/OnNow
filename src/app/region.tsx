@@ -24,9 +24,9 @@ export default function RegionScreen() {
     },
     ...REGIONS.map((option) => ({
       key: option.code,
-      label: option.name,
+      label: regionName(option.code),
       selected: isManual && option.code === region,
-    })),
+    })).sort((a, b) => a.label.localeCompare(b.label, "en")),
   ];
 
   return (

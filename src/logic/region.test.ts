@@ -64,19 +64,38 @@ describe("currentRegion (FR-016, CRI-88, ADR 0014)", () => {
 });
 
 describe("regions (CRI-88)", () => {
-  it("names regions with TMDB's English names", () => {
+  it("names regions with the device's English names first", () => {
     expect(regionName("SE")).toBe("Sweden");
-    expect(regionName("US")).toBe("United States of America");
+    expect(regionName("US")).toBe("United States");
+    expect(regionName("TR")).toBe("Türkiye");
+  });
+
+  it("falls back to TMDB's names when the engine has no Intl.DisplayNames", () => {
+    // Hermes may lack it; the region list's TMDB names then stand in.
+    // Calling a missing constructor throws, as this mock does.
+    const spy = jest.spyOn(Intl, "DisplayNames").mockImplementation(() => {
+      throw new TypeError("Intl.DisplayNames is not a constructor");
+    });
+    try {
+      expect(regionName("US")).toBe("United States of America");
+      expect(regionNameInSentence("US")).toBe("the United States of America");
+      expect(countryName("CN")).toBeNull();
+    } finally {
+      spy.mockRestore();
+    }
   });
 
   it("adds the article where a name needs one in a sentence", () => {
     expect(regionNameInSentence("SE")).toBe("Sweden");
     expect(regionNameInSentence("GB")).toBe("the United Kingdom");
     expect(regionNameInSentence("NL")).toBe("the Netherlands");
+    expect(regionNameInSentence("US")).toBe("the United States");
+    // The device's "Czechia" takes no article.
+    expect(regionNameInSentence("CZ")).toBe("Czechia");
   });
 
   it("shows the code itself for an unknown region", () => {
-    expect(regionName("AQ")).toBe("AQ");
+    expect(regionName("XX")).toBe("XX");
   });
 });
 

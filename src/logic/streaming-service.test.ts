@@ -239,7 +239,7 @@ describe("streaming services per region (FR-017, CRI-88)", () => {
   it("names the user's region when nothing streams there", () => {
     expect(availabilityText([], "SE")).toBe("Not streaming in Sweden");
     expect(availabilityText([], "US")).toBe(
-      "Not streaming in the United States of America",
+      "Not streaming in the United States",
     );
     expect(availabilityText([], "GB")).toBe(
       "Not streaming in the United Kingdom",
@@ -283,7 +283,7 @@ describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
     ];
     expect(openInLink(payTv, null)).toBeNull();
     expect(availabilityText(payTv, "US")).toBe(
-      "Not streaming in the United States of America",
+      "Not streaming in the United States",
     );
   });
 

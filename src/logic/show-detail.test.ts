@@ -90,7 +90,7 @@ describe("showDetailMetaLine (FR-028)", () => {
       genres: ["Drama", "Crime", "Thriller", "Comedy"],
     };
     expect(showDetailMetaLine(fourGenres, ["GB", "US", "CA"])).toBe(
-      "2018 · United Kingdom, United States of America · Drama, Crime, Thriller",
+      "2018 · United Kingdom, United States · Drama, Crime, Thriller",
     );
   });
 
