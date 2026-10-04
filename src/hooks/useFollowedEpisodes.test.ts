@@ -1,10 +1,12 @@
-import { renderHook, waitFor } from "@testing-library/react-native";
+import { act, renderHook, waitFor } from "@testing-library/react-native";
 
 import { tvMazeClient } from "@/api/tvmaze-client";
 import { getFollowedIds } from "@/storage/follow-list";
 import showSlowHorsesFixture from "@/api/fixtures/show-slow-horses.json";
 import showTheBearFixture from "@/api/fixtures/show-the-bear.json";
+import { SHOW_STALE_TIME_MS } from "./query-client";
 import { useFollowedEpisodes } from "./useFollowedEpisodes";
+import { showQueryKey } from "./useShow";
 import { createTestQueryClient, wrapperWithQueryClient } from "./test-utils";
 
 jest.mock("@/api/tvmaze-client", () => ({
@@ -211,5 +213,110 @@ describe("useFollowedEpisodes", () => {
 
     await unmount();
     client.unmount();
+  });
+
+  // CRI-95, CRI-85: cache-first launch and a pull that refetches only
+  // stale shows.
+  describe("cache (CRI-95, CRI-85)", () => {
+    const slowHorses = showSlowHorsesFixture.id;
+    const theBear = showTheBearFixture.id;
+
+    function seed(
+      client: ReturnType<typeof createTestQueryClient>,
+      id: number,
+      fixture: unknown,
+      ageMs: number,
+    ) {
+      client.setQueryData(showQueryKey(id), fixture, {
+        updatedAt: Date.now() - ageMs,
+      });
+    }
+
+    beforeEach(() => {
+      mockedGetFollowedIds.mockResolvedValue([slowHorses, theBear]);
+      mockedGetShow.mockImplementation(
+        async (id) =>
+          (id === slowHorses
+            ? showSlowHorsesFixture
+            : showTheBearFixture) as never,
+      );
+    });
+
+    it("fresh cache: ready at once, no fetch on launch or on a pull", async () => {
+      const client = createTestQueryClient();
+      seed(client, slowHorses, showSlowHorsesFixture, 0);
+      seed(client, theBear, showTheBearFixture, 0);
+
+      const { result, unmount } = await renderHook(
+        () => useFollowedEpisodes(),
+        { wrapper: wrapperWithQueryClient(client) },
+      );
+      await waitFor(() => expect(result.current.isReady).toBe(true));
+      expect(result.current.followedShows).toHaveLength(2);
+
+      await act(() => result.current.refetch());
+      expect(mockedGetShow).not.toHaveBeenCalled();
+
+      await unmount();
+      client.unmount();
+    });
+
+    it("stale cache: shown at once, refreshed in the background, and a pull refetches only the stale show", async () => {
+      const client = createTestQueryClient();
+      seed(client, slowHorses, showSlowHorsesFixture, 1000);
+      seed(client, theBear, showTheBearFixture, SHOW_STALE_TIME_MS + 1);
+
+      const { result, unmount } = await renderHook(
+        () => useFollowedEpisodes(),
+        { wrapper: wrapperWithQueryClient(client) },
+      );
+      await waitFor(() => expect(result.current.isReady).toBe(true));
+      // The stale show refreshes on its own on launch; the fresh one does not.
+      await waitFor(() => expect(mockedGetShow).toHaveBeenCalledWith(theBear));
+      expect(mockedGetShow).not.toHaveBeenCalledWith(slowHorses);
+      await waitFor(() => expect(result.current.isRefetching).toBe(false));
+
+      // Time passes with no re-render: Slow Horses goes stale, The Bear
+      // (just refreshed) stays fresh. The pull must judge that now.
+      mockedGetShow.mockClear();
+      jest.setSystemTime(Date.now() + SHOW_STALE_TIME_MS + 1 - 1000);
+      await act(() => result.current.refetch());
+      expect(mockedGetShow).toHaveBeenCalledTimes(1);
+      expect(mockedGetShow).toHaveBeenCalledWith(slowHorses);
+
+      await unmount();
+      client.unmount();
+    });
+
+    it("empty cache: not ready until the first fetch settles", async () => {
+      const pending: (() => void)[] = [];
+      mockedGetShow.mockImplementation(
+        (id) =>
+          new Promise((resolve) => {
+            pending.push(() =>
+              resolve(
+                (id === slowHorses
+                  ? showSlowHorsesFixture
+                  : showTheBearFixture) as never,
+              ),
+            );
+          }),
+      );
+      const client = createTestQueryClient();
+
+      const { result, unmount } = await renderHook(
+        () => useFollowedEpisodes(),
+        { wrapper: wrapperWithQueryClient(client) },
+      );
+      await waitFor(() => expect(pending).toHaveLength(2));
+      expect(result.current.isReady).toBe(false);
+
+      await act(async () => pending.forEach((resolve) => resolve()));
+      await waitFor(() => expect(result.current.isReady).toBe(true));
+      expect(result.current.followedShows).toHaveLength(2);
+
+      await unmount();
+      client.unmount();
+    });
   });
 });

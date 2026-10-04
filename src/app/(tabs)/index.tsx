@@ -15,6 +15,7 @@ import {
   type NativeSyntheticEvent,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import * as SplashScreen from "expo-splash-screen";
 import { useRouter } from "expo-router";
 
 import { HeroPager } from "@/components/Hero/HeroPager";
@@ -23,8 +24,9 @@ import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useToday } from "@/hooks/useToday";
 import { deriveHomeViewState } from "@/logic/home";
 import { findHeroSlides, type HeroSlide } from "@/logic/hero-carousel";
+import { updatedAgoLabel } from "@/logic/launch";
 import { accent } from "@/theme/color";
-import { t as tokens } from "@/theme/tokens";
+import { t as tokens, type } from "@/theme/tokens";
 
 function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -39,35 +41,44 @@ export default function HomeScreen() {
 
   const {
     followedCount,
+    isReady,
     isLoading,
-    isRefetching,
     isError,
+    dataUpdatedAt,
     followedShows,
     showsWithEpisodeToday,
     nextDayEpisodes,
     refetch,
   } = useFollowedEpisodes();
 
-  // Pull-to-refresh visibility is one continuous state: the RefreshControl's
-  // `refreshing` must not flicker false between the release and the work, or
-  // the native control bounces back and the custom indicator (opacity driven
-  // by the resulting pullDistance) fades out and back in, reading as two
-  // spinners. isRefetching alone flickers: refetch() awaits the fast
-  // followedIds query before starting the parallel show refetches, so there
-  // is a window where nothing is refetching yet. refreshingActive stays true
-  // across the whole refetch() call and is OR'd in, so `refreshing` is
-  // continuously true from release until the work resolves.
-  const [refreshingActive, setRefreshingActive] = useState(false);
-  const refreshing = isRefetching || refreshingActive;
+  // The spinner is for a pull only (CRI-95): a background refresh on launch
+  // stays silent, so the hero never moves. Held for the whole refetch call.
+  const [refreshing, setRefreshing] = useState(false);
 
   const handleRefresh = useCallback(async () => {
-    setRefreshingActive(true);
+    setRefreshing(true);
     try {
       await refetch();
     } finally {
-      setRefreshingActive(false);
+      setRefreshing(false);
+      setNow(Date.now());
     }
   }, [refetch]);
+
+  // CRI-95: hide the splash once there is something to show.
+  useEffect(() => {
+    if (isReady) {
+      SplashScreen.hide();
+    }
+  }, [isReady]);
+
+  // NFR-002: "Updated X ago" under the pull spinner, kept current.
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const tick = setInterval(() => setNow(Date.now()), 60 * 1000);
+    return () => clearInterval(tick);
+  }, []);
+  const updatedLabel = updatedAgoLabel(dataUpdatedAt, now);
 
   const state = deriveHomeViewState({
     followedCount,
@@ -224,51 +235,60 @@ export default function HomeScreen() {
           />
         }
       >
-        {heroSlides.length > 0 && (
-          <HeroPager
-            slides={heroSlides}
-            todayDate={todayDate}
-            pullDistance={pullDistance}
-          />
-        )}
-
-        {/* Nothing followed has an episode within the horizon: fall back
-            to the single nearest upcoming day, same as before the 7-day
-            horizon. */}
-        {heroSlides.length === 0 && state.kind === "next-day" && (
-          <HeroPager
-            slides={state.shows.map((show): HeroSlide => ({
-              ...show,
-              localDate: state.localDate,
-              endDate: state.localDate,
-            }))}
-            todayDate={todayDate}
-            pullDistance={pullDistance}
-          />
-        )}
-
-        {state.kind === "empty-follow-list" && (
-          <EmptyFollowList onPress={openSearch} />
-        )}
-
-        {state.kind === "no-upcoming" && (
-          <Text style={styles.quietLine}>Nothing upcoming.</Text>
-        )}
-
-        {state.kind === "error" && (
-          <Text style={styles.quietLine}>
-            Couldn&apos;t load your shows. Pull to refresh.
-          </Text>
-        )}
-
-        {state.kind === "loading" && (
+        {/* CRI-95: until cached shows or the first fetch are in, a quiet
+            placeholder, never a flash of the empty or error state. */}
+        {!isReady ? (
           <Text style={styles.quietLine}>Loading your shows…</Text>
+        ) : (
+          <>
+            {heroSlides.length > 0 && (
+              <HeroPager
+                slides={heroSlides}
+                todayDate={todayDate}
+                pullDistance={pullDistance}
+              />
+            )}
+
+            {/* Nothing followed has an episode within the horizon: fall back
+              to the single nearest upcoming day, same as before the 7-day
+              horizon. */}
+            {heroSlides.length === 0 && state.kind === "next-day" && (
+              <HeroPager
+                slides={state.shows.map((show): HeroSlide => ({
+                  ...show,
+                  localDate: state.localDate,
+                  endDate: state.localDate,
+                }))}
+                todayDate={todayDate}
+                pullDistance={pullDistance}
+              />
+            )}
+
+            {state.kind === "empty-follow-list" && (
+              <EmptyFollowList onPress={openSearch} />
+            )}
+
+            {state.kind === "no-upcoming" && (
+              <Text style={styles.quietLine}>Nothing upcoming.</Text>
+            )}
+
+            {state.kind === "error" && (
+              <Text style={styles.quietLine}>
+                Couldn&apos;t load your shows. Pull to refresh.
+              </Text>
+            )}
+
+            {state.kind === "loading" && (
+              <Text style={styles.quietLine}>Loading your shows…</Text>
+            )}
+          </>
         )}
       </Animated.ScrollView>
 
       <PullToRefreshIndicator
         pullDistance={pullDistance}
         refreshing={refreshing}
+        updatedLabel={updatedLabel}
         reduceMotionEnabled={reduceMotionEnabled}
         topInset={insets.top}
       />
@@ -288,11 +308,13 @@ const PULL_INDICATOR_REVEAL = 56;
 function PullToRefreshIndicator({
   pullDistance,
   refreshing,
+  updatedLabel,
   reduceMotionEnabled,
   topInset,
 }: {
   pullDistance: Animated.AnimatedInterpolation<number>;
   refreshing: boolean;
+  updatedLabel: string | null;
   reduceMotionEnabled: boolean;
   topInset: number;
 }) {
@@ -364,6 +386,14 @@ function PullToRefreshIndicator({
           size="small"
         />
       </View>
+      {/* NFR-002: discreet, only while the pull indicator shows. */}
+      {updatedLabel && (
+        <View style={styles.pullUpdated}>
+          <Text style={styles.pullUpdatedText} testID="home-updated">
+            {updatedLabel}
+          </Text>
+        </View>
+      )}
     </Animated.View>
   );
 }
@@ -433,6 +463,18 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: "center",
+  },
+  // The "Updated X ago" pill, on the same scrim as the spinner circle.
+  pullUpdated: {
+    marginTop: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 12,
+    backgroundColor: "rgba(0,0,0,0.35)",
+  },
+  pullUpdatedText: {
+    ...type.label,
+    color: "#FFFFFF",
   },
   // A small dark circle behind the white spinner so it stays legible over a
   // bright backdrop image, with a soft shadow for the same reason.

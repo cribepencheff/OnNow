@@ -3,7 +3,7 @@
 // list from its own storage, then queries each followed show.
 
 import { useMemo } from "react";
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { tvMazeClient } from "@/api/tvmaze-client";
 import { getFollowedIds } from "@/storage/follow-list";
@@ -12,8 +12,10 @@ import {
   type ShowEpisodesToday,
 } from "@/logic/episodes-today";
 import { findNextDayWithEpisodes, type NextDayEpisodes } from "@/logic/home";
+import { homeIsReady } from "@/logic/launch";
 import { nextForShow, type NextForShow } from "@/logic/next-episode";
 import type { TvMazeEpisode, TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
+import { SHOW_STALE_TIME_MS } from "./query-client";
 import { showQueryKey } from "./useShow";
 import { useToday } from "./useToday";
 
@@ -29,6 +31,8 @@ export interface FollowedShowEpisodes {
 
 export interface FollowedEpisodesResult {
   followedCount: number;
+  // Cached shows are on screen, or the first fetch has settled (CRI-95).
+  isReady: boolean;
   isLoading: boolean;
   isRefetching: boolean;
   isError: boolean;
@@ -45,6 +49,7 @@ function deviceTimeZone(): string {
 }
 
 export function useFollowedEpisodes(): FollowedEpisodesResult {
+  const queryClient = useQueryClient();
   const todayDate = useToday();
   const timeZone = deviceTimeZone();
 
@@ -59,6 +64,7 @@ export function useFollowedEpisodes(): FollowedEpisodesResult {
     queries: followedIds.map((showId) => ({
       queryKey: showQueryKey(showId),
       queryFn: () => tvMazeClient.getShowWithEpisodesAndSeasons(showId),
+      staleTime: SHOW_STALE_TIME_MS,
     })),
   });
 
@@ -138,13 +144,36 @@ export function useFollowedEpisodes(): FollowedEpisodesResult {
     [loadedShows, showsWithEpisodeTodayIds, timeZone, todayDate],
   );
 
+  // CRI-85: a pull refetches only shows older than SHOW_STALE_TIME_MS,
+  // judged now rather than at the last render; a pull right after another
+  // has nothing to fetch. The follow list is local, so it is always reread.
   async function refetch(): Promise<void> {
-    await followedIdsQuery.refetch();
-    await Promise.all(showQueries.map((query) => query.refetch()));
+    const { data: ids = [] } = await followedIdsQuery.refetch();
+    await Promise.all(
+      ids.map((showId) => {
+        const query = queryClient
+          .getQueryCache()
+          .find({ queryKey: showQueryKey(showId), exact: true });
+        return !query || query.isStaleByTime(SHOW_STALE_TIME_MS)
+          ? queryClient.refetchQueries({
+              queryKey: showQueryKey(showId),
+              exact: true,
+            })
+          : undefined;
+      }),
+    );
   }
+
+  const isReady = homeIsReady({
+    followedIdsKnown: followedIdsQuery.isSuccess,
+    followedCount: followedIds.length,
+    loadedCount: loadedShows.length,
+    anyShowLoading: showQueries.some((query) => query.isLoading),
+  });
 
   return {
     followedCount: followedIds.length,
+    isReady,
     isLoading,
     isRefetching,
     isError,

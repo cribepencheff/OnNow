@@ -1,6 +1,11 @@
-import { StyleSheet } from "react-native";
-import { fireEvent, render, screen } from "@testing-library/react-native";
+import {
+  RefreshControl,
+  StyleSheet,
+  type RefreshControlProps,
+} from "react-native";
+import { act, fireEvent, render, screen } from "@testing-library/react-native";
 
+import * as SplashScreen from "expo-splash-screen";
 import HomeScreen from "@/app/(tabs)/index";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useImdbRating } from "@/hooks/useImdbRating";
@@ -12,6 +17,10 @@ jest.mock("expo-router", () => ({
   useRouter: () => ({ push: mockPush }),
 }));
 
+jest.mock("expo-splash-screen", () => ({
+  hide: jest.fn(),
+  preventAutoHideAsync: jest.fn(async () => true),
+}));
 jest.mock("@/hooks/useFollowedEpisodes", () => ({
   useFollowedEpisodes: jest.fn(),
 }));
@@ -96,11 +105,20 @@ function makeEpisode(overrides: Partial<TvMazeEpisode> = {}): TvMazeEpisode {
 
 const refetch = jest.fn();
 
+// React Native's Jest mock renders RefreshControl without its props and
+// keeps the latest mounted instance for tests to read them.
+function refreshControlProps(): RefreshControlProps {
+  return (
+    RefreshControl as unknown as { latestRef: { props: RefreshControlProps } }
+  ).latestRef.props;
+}
+
 function mockFollowedEpisodes(
   overrides: Partial<ReturnType<typeof useFollowedEpisodes>>,
 ) {
   mockedUseFollowedEpisodes.mockReturnValue({
     followedCount: 1,
+    isReady: true,
     isLoading: false,
     isRefetching: false,
     isError: false,
@@ -376,5 +394,73 @@ describe("HomeScreen", () => {
     expect(
       screen.getByText("Couldn't load your shows. Pull to refresh."),
     ).toBeTruthy();
+  });
+
+  // CRI-95: cache-first launch; CRI-85 and NFR-002: pull to refresh.
+  describe("launch and refresh (CRI-95, CRI-85, NFR-002)", () => {
+    const show = makeShow({ name: "Slow Horses" });
+    beforeEach(() => (SplashScreen.hide as jest.Mock).mockClear());
+
+    it("shows no spinner for a background refresh on launch", async () => {
+      mockFollowedEpisodes({
+        isRefetching: true,
+        followedShows: [{ show, episodes: [makeEpisode()] }],
+      });
+      await render(<HomeScreen />);
+
+      expect(refreshControlProps().refreshing).toBe(false);
+      expect(screen.getByText("Slow Horses")).toBeTruthy();
+    });
+
+    it("shows the placeholder, not the empty prompt, until ready, and keeps the splash", async () => {
+      mockFollowedEpisodes({ isReady: false, followedCount: 0 });
+      await render(<HomeScreen />);
+
+      expect(screen.getByText("Loading your shows…")).toBeTruthy();
+      expect(screen.queryByText("Add your first show")).toBeNull();
+      expect(SplashScreen.hide).not.toHaveBeenCalled();
+    });
+
+    it("hides the splash once ready", async () => {
+      mockFollowedEpisodes({
+        followedShows: [{ show, episodes: [makeEpisode()] }],
+      });
+      await render(<HomeScreen />);
+
+      expect(SplashScreen.hide).toHaveBeenCalled();
+    });
+
+    it("says when the data was last updated, under the pull spinner", async () => {
+      mockFollowedEpisodes({
+        dataUpdatedAt: Date.now() - 5 * 60 * 1000,
+        followedShows: [{ show, episodes: [makeEpisode()] }],
+      });
+      await render(<HomeScreen />);
+
+      expect(screen.getByTestId("home-updated")).toHaveTextContent(
+        "Updated 5 min ago",
+      );
+    });
+
+    it("shows the spinner for a pull, for as long as the refetch runs", async () => {
+      let finish: () => void = () => {};
+      refetch.mockImplementationOnce(
+        () => new Promise<void>((resolve) => (finish = resolve)),
+      );
+      mockFollowedEpisodes({
+        followedShows: [{ show, episodes: [makeEpisode()] }],
+      });
+      await render(<HomeScreen />);
+      const control = refreshControlProps;
+
+      await act(async () => {
+        void control().onRefresh?.();
+      });
+      expect(control().refreshing).toBe(true);
+      expect(refetch).toHaveBeenCalled();
+
+      await act(async () => finish());
+      expect(control().refreshing).toBe(false);
+    });
   });
 });

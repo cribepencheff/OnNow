@@ -104,6 +104,7 @@ function mockFollowedEpisodes(
 ) {
   mockedUseFollowedEpisodes.mockReturnValue({
     followedCount: 0,
+    isReady: true,
     isLoading: false,
     isRefetching: false,
     isError: false,
@@ -145,6 +146,7 @@ describe("ShowsScreen", () => {
     });
     mockFollowedEpisodes({
       followedCount: 1,
+      isReady: true,
       followedShows: [{ show, episodes: show._embedded.episodes }],
     });
 
@@ -165,6 +167,7 @@ describe("ShowsScreen", () => {
     });
     mockFollowedEpisodes({
       followedCount: 1,
+      isReady: true,
       followedShows: [{ show, episodes: [] }],
     });
 
@@ -184,6 +187,7 @@ describe("ShowsScreen", () => {
     });
     mockFollowedEpisodes({
       followedCount: 1,
+      isReady: true,
       followedShows: [{ show, episodes: [] }],
     });
 
@@ -200,6 +204,7 @@ describe("ShowsScreen", () => {
     });
     mockFollowedEpisodes({
       followedCount: 1,
+      isReady: true,
       followedShows: [{ show, episodes: [] }],
     });
 
@@ -216,6 +221,7 @@ describe("ShowsScreen", () => {
     ];
     mockFollowedEpisodes({
       followedCount: 3,
+      isReady: true,
       followedShows: shows.map((show) => ({ show, episodes: [] })),
     });
 
@@ -232,6 +238,7 @@ describe("ShowsScreen", () => {
     const show = makeShow({ id: 42, name: "Silo" });
     mockFollowedEpisodes({
       followedCount: 1,
+      isReady: true,
       followedShows: [{ show, episodes: [] }],
     });
 
@@ -246,6 +253,7 @@ describe("ShowsScreen", () => {
     const show = makeShow({ id: 42, name: "Silo" });
     mockFollowedEpisodes({
       followedCount: 1,
+      isReady: true,
       followedShows: [{ show, episodes: [] }],
     });
 
@@ -297,6 +305,7 @@ describe("ShowsScreen", () => {
     const show = makeShow({ name: "Silo" });
     mockFollowedEpisodes({
       followedCount: 1,
+      isReady: true,
       followedShows: [{ show, episodes: [] }],
     });
 
