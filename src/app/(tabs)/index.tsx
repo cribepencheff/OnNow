@@ -240,6 +240,7 @@ export default function HomeScreen() {
             slides={state.shows.map((show): HeroSlide => ({
               ...show,
               localDate: state.localDate,
+              endDate: state.localDate,
             }))}
             todayDate={todayDate}
             pullDistance={pullDistance}

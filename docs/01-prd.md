@@ -25,14 +25,19 @@ first user is the author, who currently uses Next Episode.
 - **Job:** answer "what came out today?" within two seconds.
 - **Needs:** see which followed series have an episode today. Never meet a
   dead screen.
-- **Concept:** a large portrait poster card, nearly edge to edge, one show per
-  card. Horizontal swipe between today's shows, page dots below. A label such
-  as "NEW TODAY · 1/3" carries the count. Two metadata lines: the original
-  air date and episode code ("Fri 9 Oct · S2E4"), then the episode title
-  (FR-031). No network: where to watch is "Open in". Tapping the card
+- **Concept:** a full-width backdrop hero (ADR 0012), one show per slide.
+  Horizontal swipe between slides, page dots below. The hero covers the next
+  7 days, today first. A show with several episodes in that window is one
+  slide (CRI-94). A label such as "TODAY · 1/3" ("TOMORROW", "UPCOMING")
+  carries the slide count. Two metadata lines: the original air date and
+  episode code ("Fri 9 Oct · S2E4"), or a range ("5–7 Oct · S23E156–158",
+  "S1E10–S2E1" across seasons, "Today–Thu" when it starts today, always
+  from today as days pass), then the episode title on a single-episode
+  slide (FR-031). No network: where to watch is "Open in". Tapping the card
   opens Show detail (FR-030). No search entry while shows are followed:
   Search is reached from the Shows tab (FR-007).
-- **Empty day:** the cards show the episodes of the next day with episodes,
+- **Empty week:** when nothing airs within the 7 days, the cards show the
+  episodes of the next day with episodes,
   labelled with that day ("TOMORROW" or a date, with the year when it is
   not in the current year) and the count, in the same pager as today.
 - **Below the card:** nothing, or at most one thin row. Decided in the Design
@@ -230,8 +235,8 @@ Reached from an icon. Territory and notifications.
 | FR-002 | Follow and unfollow a series | PoC |
 | FR-003 | The follow list is stored on the device and survives a restart | PoC |
 | FR-004 | Home shows followed series with an episode released today | PoC |
-| FR-005 | Home shows the count of today's shows (for example "NEW TODAY · 1/3") | PoC |
-| FR-006 | On a day without episodes, Home shows the episodes of the next day with episodes | PoC |
+| FR-005 | Home shows the slide count with a day label ("TODAY · 1/3", "TOMORROW", "UPCOMING") | PoC, MVP |
+| FR-006 | When nothing airs within the hero's 7 days, Home shows the episodes of the next day with episodes | PoC, MVP |
 | FR-007 | Search opens as a sheet from the search field in Shows, and from "Add your first show" on an empty Home (FR-013). With shows followed, Home has no search entry. The close button (X) or swipe down returns to where Search was opened | PoC, MVP |
 | FR-008 | Calendar shows a month grid with days that have episodes marked, today preselected | PoC |
 | FR-009 | Selecting a day in Calendar lists that day's episodes | PoC |
@@ -239,7 +244,7 @@ Reached from an icon. Territory and notifications.
 | FR-037 | Specials are never shown, only regular episodes. No setting | PoC |
 | FR-010 | Shows lists followed series with next episode or status | PoC |
 | FR-011 | Data refreshes on app start when stale, and on pull to refresh | PoC |
-| FR-012 | Several episodes of one show on the same day appear as one item | PoC |
+| FR-012 | Several episodes of one show on the same day appear as one item. On the Home hero, all of a show's episodes within the 7 days are one slide with a date and episode range (CRI-94) | PoC, MVP |
 | FR-013 | An empty follow list shows an empty Home with "Add your first show", which opens Search | PoC |
 | FR-014 | "Open in [service]" opens the show in the service's app when the ID is known, otherwise the service's app, and the service's website when the app is not installed (ADR 0004). PoC: in Show detail when followed, for the show's Swedish service from TMDB: the show itself when TVmaze's official site is on that service (Apple TV, Netflix, HBO Max), otherwise the service's start page; no Swedish service gives no button (ADR 0004, CRI-82). Several services: one is picked, the menu (FR-015) is MVP. MVP: pay-TV and operator apps never count; add-on channels open their host app ("Open in Prime Video") with a bag icon marking the extra subscription ("Requires hayu subscription" below the button in Show detail, the bag inside the button on Home); the button appears only when it opens the service itself, otherwise the info area below the hero lists the services as text ("On Crunchyroll, HIDIVE") or says "Unavailable" when there is no service in the user's region (ADR 0004, CRI-90, CRI-91) | PoC, MVP |
 | FR-015 | When a show is on several services, a menu lets the user choose; the choice is remembered per show | MVP |

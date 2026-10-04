@@ -25,7 +25,12 @@ describe("heroDateLine (FR-031, ADR 0015)", () => {
   it("is the date and the code, with no verb and no network", () => {
     expect(
       heroDateLine(
-        { show: paramount, episodes: [episode], localDate: "2026-10-09" },
+        {
+          show: paramount,
+          episodes: [episode],
+          localDate: "2026-10-09",
+          endDate: "2026-10-09",
+        },
         "2026-10-04",
       ),
     ).toBe("Fri 9 Oct · S2E4");
@@ -34,7 +39,12 @@ describe("heroDateLine (FR-031, ADR 0015)", () => {
   it("uses the date on today's slide too; the badge says TODAY", () => {
     expect(
       heroDateLine(
-        { show: paramount, episodes: [episode], localDate: "2026-10-04" },
+        {
+          show: paramount,
+          episodes: [episode],
+          localDate: "2026-10-04",
+          endDate: "2026-10-04",
+        },
         "2026-10-04",
       ),
     ).toBe("Sun 4 Oct · S2E4");
