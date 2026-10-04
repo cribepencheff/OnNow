@@ -27,8 +27,10 @@ first user is the author, who currently uses Next Episode.
   dead screen.
 - **Concept:** a large portrait poster card, nearly edge to edge, one show per
   card. Horizontal swipe between today's shows, page dots below. A label such
-  as "NEW TODAY · 1/3" carries the count. Metadata line with episode code and
-  service. "+" in the header.
+  as "NEW TODAY · 1/3" carries the count. Metadata line with the original
+  premiere and its service, and the episode code (FR-031). Tapping the card
+  opens Show detail (FR-030). No search entry while shows are followed:
+  Search is reached from the Shows tab (FR-007).
 - **Empty day:** the cards show the episodes of the next day with episodes,
   labelled with that day ("TOMORROW" or a date, with the year when it is
   not in the current year) and the count, in the same pager as today.
@@ -68,8 +70,8 @@ first user is the author, who currently uses Next Episode.
 - **Job:** add series quickly. Without series there is no app.
 - **Needs:** find the right show, even when several share a name, and follow
   several in a row.
-- **Entry points:** "+" on Home, the search field in Shows, and "Add your
-  first show" on an empty Home. All open the same Search.
+- **Entry points:** the search field in Shows, and "Add your first show" on
+  an empty Home. Both open the same Search (FR-007).
 - **Presentation:** a sheet over the current view. Large search field on top
   with the keyboard already open. Results appear while typing.
 - **Leaving:** a round close button (X) at the top right, next to the search
@@ -223,7 +225,7 @@ Reached from an icon. Territory and notifications.
 | FR-004 | Home shows followed series with an episode released today | PoC |
 | FR-005 | Home shows the count of today's shows (for example "NEW TODAY · 1/3") | PoC |
 | FR-006 | On a day without episodes, Home shows the episodes of the next day with episodes | PoC |
-| FR-007 | "+" on Home opens Search as a sheet; the close button (X) or swipe down returns to Home | PoC |
+| FR-007 | Search opens as a sheet from the search field in Shows, and from "Add your first show" on an empty Home (FR-013). With shows followed, Home has no search entry. The close button (X) or swipe down returns to where Search was opened | PoC, MVP |
 | FR-008 | Calendar shows a month grid with days that have episodes marked, today preselected | PoC |
 | FR-009 | Selecting a day in Calendar lists that day's episodes | PoC |
 | FR-036 | Calendar swipes between months and shows a "Today" button when away from today | PoC |

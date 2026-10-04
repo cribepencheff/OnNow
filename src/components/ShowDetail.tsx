@@ -20,12 +20,10 @@ import type {
   TvMazeShowWithEmbeds,
 } from "@/api/tvmaze-types";
 import { useFollowList } from "@/hooks/useFollowList";
-import { useImdbRating } from "@/hooks/useImdbRating";
 import { useShow } from "@/hooks/useShow";
 import { useShowImages } from "@/hooks/useShowImages";
 import { useStreamingService } from "@/hooks/useStreamingService";
 import { useToday } from "@/hooks/useToday";
-import { imdbTitleUrl } from "@/logic/imdb-rating";
 import type { LocalDate } from "@/logic/local-date";
 import { plainTextSummary } from "@/logic/search-results";
 import { serviceLink } from "@/logic/service-link";
@@ -51,6 +49,7 @@ import {
   openInLink,
 } from "@/logic/streaming-service";
 import { accent, withLightness } from "@/theme/color";
+import { ImdbRating } from "./ImdbRating";
 import { OmdbCredit } from "./OmdbCredit";
 import { PaidSubscriptionMarker } from "./PaidSubscriptionMarker";
 import { t, type } from "@/theme/tokens";
@@ -158,7 +157,7 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
       </View>
 
       <View style={styles.section}>
-        <ImdbRating show={show} />
+        <ImdbRating show={show} textStyle={styles.meta} />
         <Text style={styles.meta}>{showDetailMetaLine(show)}</Text>
         <Text style={styles.meta} testID="show-detail-status">
           {showStateLabel(state, todayDate)}
@@ -287,30 +286,6 @@ function FollowToggle({ showId }: { showId: number }) {
       <Text style={followed ? styles.buttonQuietLabel : styles.followLabel}>
         {followed ? "Following" : "Follow"}
       </Text>
-    </Pressable>
-  );
-}
-
-// CRI-87, ADR 0013: the IMDb rating from OMDb, linking to the title on
-// IMDb. Nothing at all without a rating. The mark is text until design.
-function ImdbRating({ show }: { show: TvMazeShow }) {
-  const { data: rating } = useImdbRating(show);
-  const imdbId = show.externals?.imdb;
-  if (!rating || !imdbId) {
-    return null;
-  }
-  return (
-    <Pressable
-      accessibilityRole="link"
-      accessibilityLabel={`IMDb rating ${rating}`}
-      accessibilityHint="Opens the show on IMDb"
-      onPress={() => Linking.openURL(imdbTitleUrl(imdbId))}
-      hitSlop={8}
-      style={styles.ratingRow}
-      testID="imdb-rating"
-    >
-      <Text style={styles.finaleBadge}>IMDb</Text>
-      <Text style={styles.meta}>{rating}</Text>
     </Pressable>
   );
 }
@@ -559,12 +534,6 @@ const styles = StyleSheet.create({
   section: {
     paddingHorizontal: 16,
     paddingTop: 20,
-    gap: 6,
-  },
-  ratingRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    alignSelf: "flex-start",
     gap: 6,
   },
   meta: {

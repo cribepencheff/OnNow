@@ -10,6 +10,8 @@ import {
   localDateFromAirstamp,
   type LocalDate,
 } from "@/logic/local-date";
+import { formatLabelDate } from "@/logic/next-episode-label";
+import { searchResultNetworkName } from "@/logic/search-results";
 import { serviceLink, type ServiceLink } from "@/logic/service-link";
 import {
   availabilityText,
@@ -257,16 +259,23 @@ export function pullStretchTransform(
   };
 }
 
-// The network contradicted the "Open in" button when the two disagreed
-// (Paramount+ in the meta line, "Open in SkyShowtime" below it). The
-// episode itself, not the network, goes here instead; the network stays
-// on Shows and Search, where there is no button to contradict. Exported
-// for the dev images screen, to review every followed show's availability
-// state side by side (Home only ever shows the current one).
-export function heroMetaLine(episodes: TvMazeEpisode[]): string {
-  const code = episodesLabel(episodes);
-  const title = episodes.length === 1 ? episodes[0]?.name : null;
-  return title ? `${code} · ${title}` : code;
+// ADR 0015, FR-031: the date is the original premiere, on the service
+// TVmaze gives, never a claim about the user's region.
+export function heroPremiereLine(
+  slide: HeroSlide,
+  todayDate: LocalDate,
+): string {
+  const day =
+    slide.localDate === todayDate
+      ? "today"
+      : slide.localDate === addDays(todayDate, 1)
+        ? "tomorrow"
+        : formatLabelDate(slide.localDate, todayDate);
+  const network = searchResultNetworkName(slide.show);
+  const premiere = network
+    ? `Premieres ${day} on ${network}`
+    : `Premieres ${day}`;
+  return `${premiere} · ${episodesLabel(slide.episodes)}`;
 }
 
 // What goes where the "Open in" button would be, in one of four states, so
@@ -286,16 +295,13 @@ export function heroAvailability(
   officialSite: string | null,
   region: string | undefined,
 ): HeroAvailability {
-  if (isLoading || providers === undefined || region === undefined) {
-    return { kind: "loading" };
-  }
-  if (isError) {
-    return { kind: "none" };
-  }
-  if (providers === null) {
-    // No TMDB key (CRI-82 fallback): the TVmaze-based link, or nothing.
+  if (isError || providers === null) {
+    // No TMDB key or a failed lookup: the TVmaze-based link, as in Show detail.
     const direct = serviceLink(officialSite);
     return direct ? { kind: "button", link: direct } : { kind: "none" };
+  }
+  if (isLoading || providers === undefined || region === undefined) {
+    return { kind: "loading" };
   }
   const link = openInLink(providers, officialSite);
   if (link) {
