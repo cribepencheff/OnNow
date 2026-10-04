@@ -31,10 +31,11 @@ first user is the author, who currently uses Next Episode.
   slide (CRI-94). A label such as "TODAY · 1/3" ("TOMORROW", "UPCOMING")
   carries the slide count. Two metadata lines: the original air date and
   episode code ("Fri 9 Oct · S2E4"), or a range ("5–7 Oct · S23E156–158",
-  "S1E10–S2E1" across seasons, "Today–Thu" when it starts today, always
+  "S1E10–S2E1" across seasons, "Today–Thu" or "Tomorrow–Fri" when it starts today or tomorrow, always
   from today as days pass), then the first episode's title, or the count
   ("2 episodes") when a range starts with a placeholder title such as
-  "Episode 9" or "TBA" (FR-031). No network: where to watch is "Open in". Tapping the card
+  "Episode 9" or "TBA"; a single episode with a placeholder title reads
+  "Title not announced" (FR-031). No network: where to watch is "Open in". Tapping the card
   opens Show detail (FR-030). No search entry while shows are followed:
   Search is reached from the Shows tab (FR-007).
 - **Empty week:** when nothing airs within the 7 days, the cards show the

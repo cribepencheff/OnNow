@@ -56,8 +56,12 @@ describe("heroEpisodeTitle (CRI-94)", () => {
     expect(heroEpisodeTitle([episode])).toBe("Blank Curtain");
   });
 
-  it("is null for a single episode without a title", () => {
-    expect(heroEpisodeTitle([{ ...episode, name: "" }])).toBeNull();
+  it('is "Title not announced" for a single episode with a placeholder or no title', () => {
+    for (const name of ["Episode 9", "TBA", ""]) {
+      expect(heroEpisodeTitle([{ ...episode, name }])).toBe(
+        "Title not announced",
+      );
+    }
   });
 
   it("is the first episode's title on a slide with several", () => {

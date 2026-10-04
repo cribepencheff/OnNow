@@ -271,7 +271,8 @@ function dateParts(isoDate: LocalDate) {
 }
 
 // "Fri 9 Oct" for one day, "5–7 Oct" or "30 Sep–2 Oct" for several, and
-// "Today–Thu" when the range starts today. The year only when not this year.
+// "Today–Thu" or "Tomorrow–Fri" when the range starts today or tomorrow.
+// The year only when not this year.
 export function heroDateRange(
   startDate: LocalDate,
   endDate: LocalDate,
@@ -284,6 +285,9 @@ export function heroDateRange(
   const end = dateParts(endDate);
   if (startDate === todayDate) {
     return `Today–${end.weekday}`;
+  }
+  if (startDate === addDays(todayDate, 1)) {
+    return `Tomorrow–${end.weekday}`;
   }
   const todayYear = Number(todayDate.slice(0, 4));
   const endLabel =
@@ -314,16 +318,18 @@ export function heroEpisodeRange(episodes: TvMazeEpisode[]): string {
 // TVmaze's stand-ins for a title not announced yet.
 const PLACEHOLDER_TITLE = /^(Episode \d+|TBA)$/i;
 
-// The first episode's title; on a slide with several, the episode count
-// when that title is missing or a placeholder ("2 episodes").
+// The first episode's title. When it is missing or a placeholder: the count
+// on a slide with several ("2 episodes"), else "Title not announced".
 export function heroEpisodeTitle(episodes: TvMazeEpisode[]): string | null {
-  const title = episodes[0]?.name?.trim() || null;
-  if (episodes.length <= 1) {
+  const name = episodes[0]?.name?.trim();
+  const title = name && !PLACEHOLDER_TITLE.test(name) ? name : null;
+  if (title) {
     return title;
   }
-  return title && !PLACEHOLDER_TITLE.test(title)
-    ? title
-    : `${episodes.length} episodes`;
+  // The line above already gives the code ("S1E9").
+  return episodes.length > 1
+    ? `${episodes.length} episodes`
+    : "Title not announced";
 }
 
 // What goes where the "Open in" button would be, in one of four states, so

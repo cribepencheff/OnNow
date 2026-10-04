@@ -55,14 +55,12 @@ describe("findHeroSlides: one slide per show (CRI-94)", () => {
     );
     expect(slides).toHaveLength(1);
     expect(slides[0].episodes).toHaveLength(3);
-    expect(heroDateLine(slides[0], "2026-10-04")).toBe("5–7 Oct · S23E156–158");
+    // Seen from two days before, so the range starts neither today nor tomorrow.
+    expect(heroDateLine(slides[0], "2026-10-03")).toBe("5–7 Oct · S23E156–158");
   });
 
-  it("is still one slide when the first episode is tomorrow", () => {
-    expect(
-      findHeroSlides([{ show: show(1), episodes: daily }], TZ, "2026-10-04")[0]
-        .localDate,
-    ).toBe("2026-10-05");
+  it('is still one slide when the first episode is tomorrow, and reads "Tomorrow–Wed"', () => {
+    expect(lineFor(daily, "2026-10-04")).toBe("Tomorrow–Wed · S23E156–158");
   });
 
   it('reads "Today–Thu" when today is in the range', () => {
@@ -79,7 +77,7 @@ describe("findHeroSlides: one slide per show (CRI-94)", () => {
   it("spans a season boundary", () => {
     expect(
       lineFor([ep("2026-10-05", 1, 10), ep("2026-10-07", 2, 1)], "2026-10-04"),
-    ).toBe("5–7 Oct · S1E10–S2E1");
+    ).toBe("Tomorrow–Wed · S1E10–S2E1");
   });
 
   it("leaves out episodes beyond the 7-day window", () => {
@@ -109,13 +107,13 @@ describe("heroDateRange (CRI-94)", () => {
   });
 
   it("names both months across a month boundary", () => {
-    expect(heroDateRange("2026-09-30", "2026-10-02", "2026-09-29")).toBe(
+    expect(heroDateRange("2026-09-30", "2026-10-02", "2026-09-28")).toBe(
       "30 Sep–2 Oct",
     );
   });
 
   it("adds the year when the range ends in another year", () => {
-    expect(heroDateRange("2026-12-30", "2027-01-02", "2026-12-29")).toBe(
+    expect(heroDateRange("2026-12-30", "2027-01-02", "2026-12-28")).toBe(
       "30 Dec–2 Jan 2027",
     );
   });
