@@ -170,9 +170,11 @@ per season come in the MVP.
   - finale: a small "Finale" badge on the last episode of a season
   An announced season without episodes gets a muted tab with its premiere
   date or "Announced".
-- **Primary action changes with state:** not followed gives a bold "Follow"
-  in the accent colour. Followed gives "Open in [service]" as the primary
-  action, with a quiet "Following" status that can be tapped to unfollow.
+- **Two actions, followed or not (CRI-86):** a "Follow" / "Following"
+  toggle button ("Follow" in the accent colour, "Following" quiet; tap again
+  to undo) and "Open in [service]" as a full button whenever the show has a
+  service in the user's region. Without a service, a quiet text says what
+  the data shows instead.
 - **Search keeps its quick path:** the circle on the row follows without
   opening the detail view. Tapping the row opens the detail view.
 
@@ -236,7 +238,7 @@ Reached from an icon. Territory and notifications.
 | FR-026 | Before the user types, Search shows "New this week": series premieres and new seasons starting this week | MVP |
 | FR-027 | Search results show the services that carry the show in the user's territory | MVP |
 | FR-028 | Show detail view with image, title, year, status, service, summary, next and latest episode. PoC shows the network instead of the service | PoC |
-| FR-029 | Show detail has one primary action: "Follow" when not followed, "Open in [service]" when followed. PoC: "Follow", and a quiet "Following" that unfollows; "Open in [service]" for the show's Swedish service (FR-014); the service list in the user's territory is MVP | PoC, MVP |
+| FR-029 | Show detail has a "Follow" / "Following" toggle button and, followed or not, "Open in [service]" as a full button when the show has a service in the user's territory (CRI-86). PoC: "Follow", and a quiet "Following" that unfollows; "Open in [service]" only when followed, for the show's Swedish service (FR-014); the service list in the user's territory is MVP | PoC, MVP |
 | FR-030 | Show detail opens from Search, Home, Calendar and Shows | PoC |
 | FR-031 | MVP: episode dates are the original premiere and are labelled as such, with the premiere service ("Premieres today on Paramount+"). "Open in" says the series is on a service in the user's region, never that the episode is. No "Not in [country] yet" label (ADR 0015). After MVP: episodes not yet available in the user's region are labelled "Not in [country] yet" and do not count as new today, from per-episode availability behind our own server (spike 0003, ADR 0015) | MVP, After MVP |
 | FR-032 | Show detail has season tabs with the current season preselected and episodes marked aired, today, upcoming (muted), not in territory yet (muted) and finale. PoC and MVP: all but "not in territory yet", which comes after MVP (ADR 0015) | PoC, After MVP |

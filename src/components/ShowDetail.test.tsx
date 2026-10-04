@@ -433,7 +433,7 @@ describe("ShowDetail", () => {
     expect(screen.queryByText("Not streaming in Sweden")).toBeNull();
   });
 
-  it("CRI-84: shows no availability text while loading, when the lookup fails, or when not followed", async () => {
+  it("CRI-84: shows no availability text while loading or when the lookup fails", async () => {
     mockShow(showSlowHorsesFixture);
     mockFollowed(true);
     mockSwedishServices(undefined, true);
@@ -449,11 +449,14 @@ describe("ShowDetail", () => {
     const failed = await render(<ShowDetail showId={45039} />);
     expect(screen.queryByText("Not streaming in Sweden")).toBeNull();
     await failed.unmount();
+  });
 
+  it("FR-029, CRI-86: says what the data shows before following, too", async () => {
+    mockShow(showSlowHorsesFixture);
     mockFollowed(false);
     mockSwedishServices([]);
     await render(<ShowDetail showId={45039} />);
-    expect(screen.queryByText("Not streaming in Sweden")).toBeNull();
+    expect(screen.getByText("Not streaming in Sweden")).toBeTruthy();
   });
 
   it("FR-014: shows no Open in button while the Swedish service is looked up", async () => {
@@ -476,17 +479,19 @@ describe("ShowDetail", () => {
     ).toBeTruthy();
   });
 
-  it("FR-029: keeps Follow as the only action when not followed, and does not look up the service", async () => {
+  it("FR-029, CRI-86: shows Open in before following, next to Follow", async () => {
     mockShow(showSlowHorsesFixture);
     mockFollowed(false);
     mockSwedishServices([APPLE_TV]);
     await render(<ShowDetail showId={45039} />);
 
     expect(screen.getByRole("button", { name: "Follow" })).toBeTruthy();
-    expect(screen.queryByRole("button", { name: /^Open in/ })).toBeNull();
+    expect(
+      screen.getByRole("button", { name: "Open in Apple TV" }),
+    ).toBeTruthy();
     expect(mockedUseSwedishService).toHaveBeenCalledWith(
       expect.objectContaining({ id: 45039 }),
-      false,
+      true,
     );
   });
 

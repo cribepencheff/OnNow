@@ -169,25 +169,22 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
 
 // FR-029: "Follow" / "Following" is one toggle button that stays in place,
 // so an unfollow is undone by tapping again; it updates at once (CRI-86).
-// When followed, "Open in [service]" is a full button in every show state;
+// "Open in [service]" is a full button in every show state, followed or not;
 // the status line says whether anything is airing (FR-014, CRI-84).
 function FollowAction({ show }: { show: TvMazeShow }) {
   const { isFollowed, follow, unfollow } = useFollowList();
   const showId = show.id;
   const followed = isFollowed(showId);
-  const { data: providers, isError } = useSwedishService(show, followed);
+  const { data: providers, isError } = useSwedishService(show, true);
 
-  const link = !followed
-    ? null
-    : providers
-      ? openInLink(providers, show.officialSite)
-      : providers === null || isError
-        ? serviceLink(show.officialSite)
-        : null;
+  const link = providers
+    ? openInLink(providers, show.officialSite)
+    : providers === null || isError
+      ? serviceLink(show.officialSite)
+      : null;
   // Only once TMDB has answered: while loading, without a key or when the
   // lookup fails, nothing is claimed (CRI-84).
-  const availability =
-    followed && providers && !link ? availabilityText(providers) : null;
+  const availability = providers && !link ? availabilityText(providers) : null;
 
   return (
     <View style={styles.actionRow}>
