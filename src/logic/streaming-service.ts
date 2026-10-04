@@ -4,6 +4,7 @@
 // the show. Pay-TV never counts; add-on channels open their host. Services
 // without a start page get no button, only text (CRI-90).
 
+import { regionNameInSentence } from "./regions";
 import { serviceLink, type ServiceLink } from "./service-link";
 
 export interface StreamingProvider {
@@ -236,9 +237,13 @@ export function openInAccessibilityLabel(link: ServiceLink): string {
 // When there is no "Open in" button, a quiet text says what TMDB's data
 // for the region (from JustWatch) shows, and nothing more (data first,
 // CRI-84): every streaming service it lists, in TMDB's order and names
-// ("On Crunchyroll, HIDIVE"), or "Unavailable" for none in the user's
-// region (CRI-90, CRI-91). Pay-TV never counts.
-export function availabilityText(providers: StreamingProvider[]): string {
+// ("On Crunchyroll, HIDIVE"), or for none "Unavailable in Sweden" with a
+// region (hero, Show detail), plain "Unavailable" without (rows, CRI-97).
+// Pay-TV never counts.
+export function availabilityText(
+  providers: StreamingProvider[],
+  region?: string,
+): string {
   const names = providers.filter(isStreaming).map((provider) => {
     const channel = addOnChannel(provider);
     return channel
@@ -246,5 +251,10 @@ export function availabilityText(providers: StreamingProvider[]): string {
       : provider.providerName;
   });
   const unique = [...new Set(names)];
-  return unique.length > 0 ? `On ${unique.join(", ")}` : "Unavailable";
+  if (unique.length > 0) {
+    return `On ${unique.join(", ")}`;
+  }
+  return region
+    ? `Unavailable in ${regionNameInSentence(region)}`
+    : "Unavailable";
 }

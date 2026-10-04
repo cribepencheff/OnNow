@@ -520,13 +520,13 @@ describe("ShowDetail", () => {
   });
 
   // CRI-84: no button, but a quiet text saying what TMDB's data shows.
-  it('CRI-84, CRI-91: says "Unavailable" when TMDB has no Swedish service (Special Forces)', async () => {
+  it('CRI-84, CRI-91: says "Unavailable in Sweden" when TMDB has no Swedish service (Special Forces, CRI-97)', async () => {
     mockShow(showSlowHorsesFixture);
     mockFollowed(true);
     mockStreamingServices([]);
     await render(<ShowDetail showId={45039} />);
 
-    expect(screen.getByText("Unavailable")).toBeTruthy();
+    expect(screen.getByText("Unavailable in Sweden")).toBeTruthy();
     expect(screen.queryByRole("button", { name: /^Open in/ })).toBeNull();
   });
 
@@ -552,7 +552,7 @@ describe("ShowDetail", () => {
       screen.getByRole("button", { name: "Open in Prime Video" }),
     ).toBeTruthy();
     expect(screen.queryByText(/^On /)).toBeNull();
-    expect(screen.queryByText("Unavailable")).toBeNull();
+    expect(screen.queryByText("Unavailable in Sweden")).toBeNull();
   });
 
   it("CRI-84: shows no availability text while loading or when the lookup fails", async () => {
@@ -560,7 +560,7 @@ describe("ShowDetail", () => {
     mockFollowed(true);
     mockStreamingServices(undefined, true);
     const loading = await render(<ShowDetail showId={45039} />);
-    expect(screen.queryByText("Unavailable")).toBeNull();
+    expect(screen.queryByText("Unavailable in Sweden")).toBeNull();
     await loading.unmount();
 
     mockedUseStreamingService.mockReturnValue({
@@ -569,7 +569,7 @@ describe("ShowDetail", () => {
       isError: true,
     } as never);
     const failed = await render(<ShowDetail showId={45039} />);
-    expect(screen.queryByText("Unavailable")).toBeNull();
+    expect(screen.queryByText("Unavailable in Sweden")).toBeNull();
     await failed.unmount();
   });
 
@@ -578,7 +578,7 @@ describe("ShowDetail", () => {
     mockFollowed(false);
     mockStreamingServices([]);
     await render(<ShowDetail showId={45039} />);
-    expect(screen.getByText("Unavailable")).toBeTruthy();
+    expect(screen.getByText("Unavailable in Sweden")).toBeTruthy();
   });
 
   it("FR-014: shows no Open in button while the Swedish service is looked up", async () => {

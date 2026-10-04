@@ -247,7 +247,7 @@ function useOpenIn(show: TvMazeShow) {
       ? serviceLink(show.officialSite)
       : null;
   const availability =
-    providers && region && !link ? availabilityText(providers) : null;
+    providers && region && !link ? availabilityText(providers, region) : null;
   return { link, availability };
 }
 

@@ -85,8 +85,8 @@ operator apps, add-on channels and services the link table did not know.
   apps that need a TV provider login (fuboTV, YouTube TV, Sling TV, Sky Go,
   Tele2 Play, Telia Play, Allente, Bravo TV and others, listed by TMDB ID)
   give no button and are never named. A real streaming service is picked
-  when the show has one; otherwise it reads "Unavailable" (CRI-91; was
-  "Not streaming in [country]").
+  when the show has one; otherwise it reads "Unavailable in [region]"
+  (CRI-91, CRI-97; was "Not streaming in [country]").
 - **Add-on channels count** ("Hayu Amazon Channel", "... Apple TV
   channel", "... Roku Premium Channel"). The button says what actually
   happens: it names the host app that opens ("Open in Prime Video"), and
@@ -102,9 +102,10 @@ operator apps, add-on channels and services the link table did not know.
   or an add-on channel's host. A service without a start page gets no
   button. Instead, the info area below the hero lists every streaming
   service TMDB gives, comma-separated, in TMDB's order and names ("On
-  Crunchyroll, HIDIVE"). "Unavailable" goes in the same place when there is
-  no service in the user's region (CRI-91; was "Not streaming in
-  [country]"). A fallback to TMDB's where-to-watch page was built and dropped
+  Crunchyroll, HIDIVE"). "Unavailable in [region]" goes in the same place
+  when there is no service in the user's region (CRI-91, CRI-97; was "Not
+  streaming in [country]"). Rows in Shows and Search say plain
+  "Unavailable". A fallback to TMDB's where-to-watch page was built and dropped
   (owner, 2026-10-04): the button would not open the service.
 - **Order:** the show's own page, then a known service's start page, then
   an add-on channel's host; TMDB's order within each.

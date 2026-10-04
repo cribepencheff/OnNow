@@ -169,3 +169,23 @@ export function countryName(code: string): string | null {
 export function regionName(code: string): string {
   return countryName(code) ?? code;
 }
+
+// Names that read with "the" in a sentence ("in the Netherlands").
+const WITH_ARTICLE = new Set([
+  "Bahamas",
+  "Czech Republic",
+  "Dominican Republic",
+  "Netherlands",
+  "Palestinian Territories",
+  "Philippines",
+  "Turks & Caicos Islands",
+  "United Arab Emirates",
+  "United Kingdom",
+  "United States",
+]);
+
+// "Sweden", "the United States": the region's name inside a sentence.
+export function regionNameInSentence(code: string): string {
+  const name = regionName(code);
+  return WITH_ARTICLE.has(name) ? `the ${name}` : name;
+}

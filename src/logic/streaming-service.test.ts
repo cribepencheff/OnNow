@@ -233,7 +233,12 @@ describe("streaming services per region (FR-017, CRI-88)", () => {
     });
   });
 
-  it('says "Unavailable", with no country, when nothing streams in the region (CRI-91)', () => {
+  it('says "Unavailable in <region>" with a region, plain "Unavailable" without (CRI-97)', () => {
+    expect(availabilityText([], "SE")).toBe("Unavailable in Sweden");
+    expect(availabilityText([], "US")).toBe("Unavailable in the United States");
+    expect(availabilityText([], "GB")).toBe(
+      "Unavailable in the United Kingdom",
+    );
     expect(availabilityText([])).toBe("Unavailable");
   });
 });

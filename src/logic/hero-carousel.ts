@@ -345,7 +345,7 @@ export function heroAvailability(
   if (link) {
     return { kind: "button", link };
   }
-  return { kind: "text", label: availabilityText(providers) };
+  return { kind: "text", label: availabilityText(providers, region) };
 }
 
 // How far ahead the hero pager looks, in the same airstamp + device time
