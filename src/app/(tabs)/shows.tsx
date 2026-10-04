@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 
+import { RegionLink } from "@/components/RegionLink";
 import { ShowsRow } from "@/components/ShowsRow";
 import { TvMazeCredit } from "@/components/TvMazeCredit";
 import { useFollowList } from "@/hooks/useFollowList";
@@ -56,7 +57,7 @@ export default function ShowsScreen() {
         !isLoading && (
           <>
             <Text style={styles.quietLine}>No shows yet</Text>
-            <TvMazeCredit />
+            <ShowsFooter />
           </>
         )
       ) : isLoading ? (
@@ -79,7 +80,7 @@ export default function ShowsScreen() {
               }
             />
           )}
-          ListFooterComponent={TvMazeCredit}
+          ListFooterComponent={ShowsFooter}
           refreshControl={
             <RefreshControl
               testID="shows-refresh-control"
@@ -90,6 +91,16 @@ export default function ShowsScreen() {
         />
       )}
     </View>
+  );
+}
+
+// The region sits here until there is a settings view (CRI-88).
+function ShowsFooter() {
+  return (
+    <>
+      <RegionLink />
+      <TvMazeCredit />
+    </>
   );
 }
 

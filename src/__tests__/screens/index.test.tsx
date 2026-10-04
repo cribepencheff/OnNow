@@ -29,8 +29,8 @@ jest.mock("@/hooks/useEpisodeStill", () => ({
     isError: false,
   })),
 }));
-jest.mock("@/hooks/useSwedishService", () => ({
-  useSwedishService: jest.fn(() => ({
+jest.mock("@/hooks/useStreamingService", () => ({
+  useStreamingService: jest.fn(() => ({
     data: undefined,
     isLoading: false,
     isError: false,

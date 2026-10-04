@@ -19,7 +19,7 @@ import type {
 } from "@/api/tvmaze-types";
 import { useFollowList } from "@/hooks/useFollowList";
 import { useShow } from "@/hooks/useShow";
-import { useSwedishService } from "@/hooks/useSwedishService";
+import { useStreamingService } from "@/hooks/useStreamingService";
 import { useToday } from "@/hooks/useToday";
 import type { LocalDate } from "@/logic/local-date";
 import { plainTextSummary } from "@/logic/search-results";
@@ -39,7 +39,7 @@ import {
   type NextCard,
   type SeasonTab,
 } from "@/logic/show-detail";
-import { availabilityText, openInLink } from "@/logic/swedish-service";
+import { availabilityText, openInLink } from "@/logic/streaming-service";
 import { accent, withLightness } from "@/theme/color";
 import { TmdbCredit } from "./TmdbCredit";
 import { TvMazeCredit } from "./TvMazeCredit";
@@ -154,9 +154,9 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
 
 // FR-029, PoC: a bold "Follow" in the accent colour when not followed.
 // When followed, "Open in [service]" is the primary action for the show's
-// Swedish service from TMDB (FR-014, CRI-82): the show itself when TVmaze's
-// official site is on that service, otherwise the service's start page;
-// no Swedish service gives no button. Without a TMDB key, or when the
+// service in the user's region from TMDB (FR-014, ADR 0014): the show
+// itself when TVmaze's official site is on that service, otherwise the
+// service's start page; no service in the region gives no button. Without a TMDB key, or when the
 // lookup fails, TVmaze's direct link stands in (CRI-80). A quiet
 // "Following" sits next to it and unfollows when tapped. The service name
 // is text, no logos (ADR 0004).
@@ -164,7 +164,11 @@ function FollowAction({ show }: { show: TvMazeShow }) {
   const { isFollowed, follow, unfollow } = useFollowList();
   const showId = show.id;
   const followed = isFollowed(showId);
-  const { data: providers, isError } = useSwedishService(show, followed);
+  const {
+    data: providers,
+    isError,
+    region,
+  } = useStreamingService(show, followed);
 
   if (followed) {
     const link = providers
@@ -175,7 +179,7 @@ function FollowAction({ show }: { show: TvMazeShow }) {
     // Only once TMDB has answered: while loading, without a key or when the
     // lookup fails, nothing is claimed (CRI-84).
     const availability =
-      providers && !link ? availabilityText(providers) : null;
+      providers && region && !link ? availabilityText(providers, region) : null;
     return (
       <View style={styles.actionRow}>
         {link && (

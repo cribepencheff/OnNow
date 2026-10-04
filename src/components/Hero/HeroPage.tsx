@@ -19,7 +19,7 @@ import * as Linking from "expo-linking";
 
 import { IMAGE_BASE } from "@/api/tmdb-types";
 import type { TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
-import { useSwedishService } from "@/hooks/useSwedishService";
+import { useStreamingService } from "@/hooks/useStreamingService";
 import { useEpisodeStill } from "@/hooks/useEpisodeStill";
 import { useShowImages } from "@/hooks/useShowImages";
 import { addDays } from "@/logic/local-date";
@@ -332,7 +332,7 @@ export const HeroPage = memo(function HeroPage({
 //
 // memo-wrapped for the same reason as HeroPage above: HeroPager re-renders
 // often for reasons unrelated to any one mounted ContentLayer (each of
-// which runs its own useShowImages/useSwedishService), and every prop
+// which runs its own useShowImages/useStreamingService), and every prop
 // here is already stable or stable-by-value across those re-renders
 // (logicalCrossfadePosition and pageCount from HeroPager's own memo;
 // badge is a freshly computed but value-equal string; onIndicatorAnchor
@@ -383,12 +383,14 @@ export const ContentLayer = memo(function ContentLayer({
     data: providers,
     isLoading: providersLoading,
     isError: providersError,
-  } = useSwedishService(show, true);
+    region,
+  } = useStreamingService(show, true);
   const availability = heroAvailability(
     providers,
     providersLoading,
     providersError,
     show.officialSite,
+    region,
   );
   const logo = images?.logo;
 

@@ -26,7 +26,7 @@ describe("TmdbClient (FR-014, NFR-005, CRI-82)", () => {
     const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
 
     await expect(
-      client.findSwedishProviders(NEAGLEY_EXTERNALS),
+      client.findStreamingProviders(NEAGLEY_EXTERNALS, "SE"),
     ).resolves.toEqual([
       { providerId: 119, providerName: "Amazon Prime Video" },
     ]);
@@ -45,7 +45,7 @@ describe("TmdbClient (FR-014, NFR-005, CRI-82)", () => {
       apiKey: V3_KEY,
       fetchFn: v3Fetch,
       wait: noWait,
-    }).findSwedishProviders({ imdb: "tt1", thetvdb: null });
+    }).findStreamingProviders({ imdb: "tt1", thetvdb: null }, "SE");
     expect(v3Fetch.mock.calls[0][0]).toContain(`api_key=${V3_KEY}`);
 
     const v4Fetch = jest
@@ -55,7 +55,7 @@ describe("TmdbClient (FR-014, NFR-005, CRI-82)", () => {
       apiKey: V4_TOKEN,
       fetchFn: v4Fetch,
       wait: noWait,
-    }).findSwedishProviders({ imdb: "tt1", thetvdb: null });
+    }).findStreamingProviders({ imdb: "tt1", thetvdb: null }, "SE");
     expect(v4Fetch.mock.calls[0][0]).not.toContain("api_key");
     expect(v4Fetch.mock.calls[0][1].headers.Authorization).toBe(
       `Bearer ${V4_TOKEN}`,
@@ -70,7 +70,7 @@ describe("TmdbClient (FR-014, NFR-005, CRI-82)", () => {
       .mockResolvedValueOnce(jsonResponse(providersNeagley));
     const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
 
-    await client.findSwedishProviders(NEAGLEY_EXTERNALS);
+    await client.findStreamingProviders(NEAGLEY_EXTERNALS, "SE");
 
     expect(fetchFn.mock.calls[1][0]).toContain(
       "/3/find/455064?external_source=tvdb_id",
@@ -84,10 +84,10 @@ describe("TmdbClient (FR-014, NFR-005, CRI-82)", () => {
     const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
 
     await expect(
-      client.findSwedishProviders(NEAGLEY_EXTERNALS),
+      client.findStreamingProviders(NEAGLEY_EXTERNALS, "SE"),
     ).resolves.toEqual([]);
     await expect(
-      client.findSwedishProviders({ imdb: null, thetvdb: null }),
+      client.findStreamingProviders({ imdb: null, thetvdb: null }, "SE"),
     ).resolves.toEqual([]);
   });
 
@@ -100,7 +100,7 @@ describe("TmdbClient (FR-014, NFR-005, CRI-82)", () => {
     });
 
     await expect(
-      client.findSwedishProviders(NEAGLEY_EXTERNALS),
+      client.findStreamingProviders(NEAGLEY_EXTERNALS, "SE"),
     ).resolves.toBeNull();
     expect(fetchFn).not.toHaveBeenCalled();
   });
@@ -114,7 +114,7 @@ describe("TmdbClient (FR-014, NFR-005, CRI-82)", () => {
       .mockResolvedValueOnce(jsonResponse(providersNeagley));
     const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait });
 
-    await client.findSwedishProviders(NEAGLEY_EXTERNALS);
+    await client.findStreamingProviders(NEAGLEY_EXTERNALS, "SE");
 
     expect(wait).toHaveBeenCalledWith(1_000);
     expect(fetchFn).toHaveBeenCalledTimes(3);
@@ -125,7 +125,7 @@ describe("TmdbClient (FR-014, NFR-005, CRI-82)", () => {
     const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
 
     await expect(
-      client.findSwedishProviders(NEAGLEY_EXTERNALS),
+      client.findStreamingProviders(NEAGLEY_EXTERNALS, "SE"),
     ).rejects.toThrow("TMDB responded with 500");
   });
 });

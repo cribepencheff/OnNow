@@ -17,22 +17,28 @@ describe("streaming service cache (CRI-82, NFR-005)", () => {
   });
 
   it("returns nothing before a lookup", async () => {
-    expect(await getCachedProviders(NEAGLEY, 0)).toBeNull();
+    expect(await getCachedProviders(NEAGLEY, "SE", 0)).toBeNull();
   });
 
   it("returns the saved services while fresh, including an empty result", async () => {
-    await saveProviders(NEAGLEY, PRIME, 1_000);
-    expect(await getCachedProviders(NEAGLEY, 2_000)).toEqual(PRIME);
+    await saveProviders(NEAGLEY, "SE", PRIME, 1_000);
+    expect(await getCachedProviders(NEAGLEY, "SE", 2_000)).toEqual(PRIME);
 
-    await saveProviders(1, [], 1_000);
-    expect(await getCachedProviders(1, 2_000)).toEqual([]);
+    await saveProviders(1, "SE", [], 1_000);
+    expect(await getCachedProviders(1, "SE", 2_000)).toEqual([]);
   });
 
   it("returns nothing once the saved services are older than the maximum age", async () => {
-    await saveProviders(NEAGLEY, PRIME, 0);
+    await saveProviders(NEAGLEY, "SE", PRIME, 0);
     expect(
-      await getCachedProviders(NEAGLEY, SERVICE_CACHE_MAX_AGE_MS + 1),
+      await getCachedProviders(NEAGLEY, "SE", SERVICE_CACHE_MAX_AGE_MS + 1),
     ).toBeNull();
+  });
+
+  it("keeps each region's services apart (CRI-88)", async () => {
+    await saveProviders(NEAGLEY, "SE", PRIME, 1_000);
+    expect(await getCachedProviders(NEAGLEY, "US", 2_000)).toBeNull();
+    expect(await getCachedProviders(NEAGLEY, "SE", 2_000)).toEqual(PRIME);
   });
 
   it("stays within TMDB's 6 month caching limit", () => {

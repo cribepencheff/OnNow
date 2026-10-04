@@ -10,8 +10,8 @@ import * as Linking from "expo-linking";
 import { ShowDetail } from "./ShowDetail";
 import { useShow } from "@/hooks/useShow";
 import { useFollowList } from "@/hooks/useFollowList";
-import { useSwedishService } from "@/hooks/useSwedishService";
-import type { SwedishProvider } from "@/logic/swedish-service";
+import { useStreamingService } from "@/hooks/useStreamingService";
+import type { StreamingProvider } from "@/logic/streaming-service";
 import showMobLandFixture from "@/api/fixtures/show-mobland.json";
 import showSlowHorsesFixture from "@/api/fixtures/show-slow-horses.json";
 import showSiloFixture from "@/api/fixtures/show-silo.json";
@@ -26,8 +26,8 @@ jest.mock("expo-linking", () => ({
 jest.mock("@/hooks/useShow", () => ({
   useShow: jest.fn(),
 }));
-jest.mock("@/hooks/useSwedishService", () => ({
-  useSwedishService: jest.fn(),
+jest.mock("@/hooks/useStreamingService", () => ({
+  useStreamingService: jest.fn(),
 }));
 jest.mock("@/hooks/useFollowList", () => ({
   useFollowList: jest.fn(),
@@ -42,19 +42,20 @@ const mockedUseFollowList = useFollowList as jest.MockedFunction<
   typeof useFollowList
 >;
 
-const mockedUseSwedishService = useSwedishService as jest.MockedFunction<
-  typeof useSwedishService
+const mockedUseStreamingService = useStreamingService as jest.MockedFunction<
+  typeof useStreamingService
 >;
 
 // TMDB's Swedish services for the show (CRI-82): a list once looked up,
 // null without a TMDB key, undefined while loading.
-function mockSwedishServices(
-  providers: SwedishProvider[] | null | undefined,
+function mockStreamingServices(
+  providers: StreamingProvider[] | null | undefined,
   isLoading = false,
 ) {
-  mockedUseSwedishService.mockReturnValue({
+  mockedUseStreamingService.mockReturnValue({
     data: providers,
     isLoading,
+    region: "SE",
   } as never);
 }
 
@@ -92,7 +93,7 @@ describe("ShowDetail", () => {
     follow.mockReset();
     unfollow.mockReset();
     mockFollowed(false);
-    mockSwedishServices(undefined);
+    mockStreamingServices(undefined);
     (Linking.openURL as jest.Mock).mockClear();
     // Episode days are local to the user's time zone (ADR 0001).
     const original = Intl.DateTimeFormat.prototype.resolvedOptions;
@@ -311,7 +312,7 @@ describe("ShowDetail", () => {
   it("FR-014: opens the show directly when its Swedish service has a direct link (Slow Horses, Apple TV)", async () => {
     mockShow(showSlowHorsesFixture);
     mockFollowed(true);
-    mockSwedishServices([APPLE_TV]);
+    mockStreamingServices([APPLE_TV]);
     await render(<ShowDetail showId={45039} />);
 
     expect(screen.getByRole("button", { name: "Following" })).toBeTruthy();
@@ -327,7 +328,7 @@ describe("ShowDetail", () => {
   it("FR-014: opens the service's start page without a direct link (Neagley, Prime Video)", async () => {
     mockShow(showNeagleyFixture);
     mockFollowed(true);
-    mockSwedishServices([PRIME_VIDEO]);
+    mockStreamingServices([PRIME_VIDEO]);
     await render(<ShowDetail showId={82707} />);
 
     await fireEvent.press(
@@ -340,7 +341,7 @@ describe("ShowDetail", () => {
   it("FR-014: uses the Swedish service, not the US network (MobLand: SkyShowtime; Killing Eve: Netflix)", async () => {
     mockShow(showMobLandFixture);
     mockFollowed(true);
-    mockSwedishServices([SKYSHOWTIME]);
+    mockStreamingServices([SKYSHOWTIME]);
     const { unmount } = await render(<ShowDetail showId={75026} />);
     expect(
       screen.getByRole("button", { name: "Open in SkyShowtime" }),
@@ -348,7 +349,7 @@ describe("ShowDetail", () => {
     await unmount();
 
     mockShow(showKillingEveFixture);
-    mockSwedishServices([NETFLIX]);
+    mockStreamingServices([NETFLIX]);
     await render(<ShowDetail showId={22904} />);
     expect(
       screen.getByRole("button", { name: "Open in Netflix" }),
@@ -358,7 +359,7 @@ describe("ShowDetail", () => {
   it("FR-014: shows no Open in button without a Swedish service, even with an official site (data first)", async () => {
     mockShow(showSlowHorsesFixture);
     mockFollowed(true);
-    mockSwedishServices([]);
+    mockStreamingServices([]);
     await render(<ShowDetail showId={45039} />);
 
     expect(screen.getByRole("button", { name: "Following" })).toBeTruthy();
@@ -369,7 +370,7 @@ describe("ShowDetail", () => {
   it('CRI-84: says "Not streaming in Sweden" when TMDB has no Swedish service (Special Forces)', async () => {
     mockShow(showSlowHorsesFixture);
     mockFollowed(true);
-    mockSwedishServices([]);
+    mockStreamingServices([]);
     await render(<ShowDetail showId={45039} />);
 
     expect(screen.getByText("Not streaming in Sweden")).toBeTruthy();
@@ -379,7 +380,7 @@ describe("ShowDetail", () => {
   it("CRI-84: keeps the Open in button for Pluto TV, now that it is in the link table (Hell's Kitchen)", async () => {
     mockShow(showSlowHorsesFixture);
     mockFollowed(true);
-    mockSwedishServices([PLUTO_TV]);
+    mockStreamingServices([PLUTO_TV]);
     await render(<ShowDetail showId={45039} />);
 
     expect(
@@ -391,7 +392,7 @@ describe("ShowDetail", () => {
   it("CRI-84: keeps the Open in button and no text for a linked service (Neagley)", async () => {
     mockShow(showNeagleyFixture);
     mockFollowed(true);
-    mockSwedishServices([PRIME_VIDEO]);
+    mockStreamingServices([PRIME_VIDEO]);
     await render(<ShowDetail showId={82707} />);
 
     expect(
@@ -404,12 +405,12 @@ describe("ShowDetail", () => {
   it("CRI-84: shows no availability text while loading, when the lookup fails, or when not followed", async () => {
     mockShow(showSlowHorsesFixture);
     mockFollowed(true);
-    mockSwedishServices(undefined, true);
+    mockStreamingServices(undefined, true);
     const loading = await render(<ShowDetail showId={45039} />);
     expect(screen.queryByText("Not streaming in Sweden")).toBeNull();
     await loading.unmount();
 
-    mockedUseSwedishService.mockReturnValue({
+    mockedUseStreamingService.mockReturnValue({
       data: undefined,
       isLoading: false,
       isError: true,
@@ -419,7 +420,7 @@ describe("ShowDetail", () => {
     await failed.unmount();
 
     mockFollowed(false);
-    mockSwedishServices([]);
+    mockStreamingServices([]);
     await render(<ShowDetail showId={45039} />);
     expect(screen.queryByText("Not streaming in Sweden")).toBeNull();
   });
@@ -427,7 +428,7 @@ describe("ShowDetail", () => {
   it("FR-014: shows no Open in button while the Swedish service is looked up", async () => {
     mockShow(showNeagleyFixture);
     mockFollowed(true);
-    mockSwedishServices(undefined, true);
+    mockStreamingServices(undefined, true);
     await render(<ShowDetail showId={82707} />);
 
     expect(screen.queryByRole("button", { name: /^Open in/ })).toBeNull();
@@ -436,7 +437,7 @@ describe("ShowDetail", () => {
   it("FR-014: falls back to TVmaze's direct link when there is no TMDB key", async () => {
     mockShow(showSlowHorsesFixture);
     mockFollowed(true);
-    mockSwedishServices(null);
+    mockStreamingServices(null);
     await render(<ShowDetail showId={45039} />);
 
     expect(
@@ -447,12 +448,12 @@ describe("ShowDetail", () => {
   it("FR-029: keeps Follow as the only action when not followed, and does not look up the service", async () => {
     mockShow(showSlowHorsesFixture);
     mockFollowed(false);
-    mockSwedishServices([APPLE_TV]);
+    mockStreamingServices([APPLE_TV]);
     await render(<ShowDetail showId={45039} />);
 
     expect(screen.getByRole("button", { name: "Follow" })).toBeTruthy();
     expect(screen.queryByRole("button", { name: /^Open in/ })).toBeNull();
-    expect(mockedUseSwedishService).toHaveBeenCalledWith(
+    expect(mockedUseStreamingService).toHaveBeenCalledWith(
       expect.objectContaining({ id: 45039 }),
       false,
     );

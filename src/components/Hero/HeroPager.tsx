@@ -236,7 +236,7 @@ export function HeroPager({
   // HeroPage is memo-wrapped specifically so that HeroPager's frequent,
   // largely unrelated re-renders (touching, loadedPages, pageIndex) don't
   // cascade into re-rendering every mounted pager cell (and, inside each,
-  // re-running useShowImages/useSwedishService) each time, but that only
+  // re-running useShowImages/useStreamingService) each time, but that only
   // works if every prop it receives is actually stable across those
   // re-renders; a fresh closure here on every render would defeat it by
   // itself, regardless of what HeroPage does internally. Takes the

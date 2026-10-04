@@ -14,8 +14,8 @@ import { serviceLink, type ServiceLink } from "@/logic/service-link";
 import {
   availabilityText,
   openInLink,
-  type SwedishProvider,
-} from "@/logic/swedish-service";
+  type StreamingProvider,
+} from "@/logic/streaming-service";
 import type { TvMazeEpisode, TvMazeShow } from "@/api/tvmaze-types";
 
 // How far the backdrop trails the slide's own horizontal scroll (Apple TV+
@@ -280,12 +280,13 @@ export type HeroAvailability =
   | { kind: "text"; label: string };
 
 export function heroAvailability(
-  providers: SwedishProvider[] | null | undefined,
+  providers: StreamingProvider[] | null | undefined,
   isLoading: boolean,
   isError: boolean,
   officialSite: string | null,
+  region: string | undefined,
 ): HeroAvailability {
-  if (isLoading || providers === undefined) {
+  if (isLoading || providers === undefined || region === undefined) {
     return { kind: "loading" };
   }
   if (isError) {
@@ -300,7 +301,7 @@ export function heroAvailability(
   if (link) {
     return { kind: "button", link };
   }
-  return { kind: "text", label: availabilityText(providers) };
+  return { kind: "text", label: availabilityText(providers, region) };
 }
 
 // How far ahead the hero pager looks, in the same airstamp + device time
