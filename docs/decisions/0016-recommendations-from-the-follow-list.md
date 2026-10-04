@@ -6,7 +6,7 @@ Status: Accepted (CRI-96)
 The vision lists "charts and recommendations" under Not doing. The Home
 round planned two rows under the hero: "Airing soon" (TMDB's airing today
 and on the air lists, scripted shows sorted by popularity, followed and not
-followed mixed) and "Recommended for you" (TMDB recommendations for each
+followed mixed) and "Top picks for you" (TMDB recommendations for each
 followed show). Both conflict with that line, and PRD 5.1 allowed at most
 one thin row under the card.
 
@@ -22,7 +22,7 @@ one thin row under the card.
 ## Decision
 **Recommendations derived from the user's follow list are allowed. Charts
 and trending are not, on Home.**
-- Home gets one row under the hero: "Recommended for you". For each
+- Home gets one row under the hero: "Top picks for you". For each
   followed show, TMDB's recommendations (`/tv/{id}/recommendations`);
   shows already followed are removed; titles are ranked by how many
   followed shows recommend them. The ranking is a count of TMDB's own

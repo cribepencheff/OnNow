@@ -1,19 +1,18 @@
-// "Recommended for you" under the Home hero (FR-038, ADR 0016): poster
-// cards built from the app's tokens and the Search follow circle. A tap
-// opens Show detail; the circle follows at once, no confirmation.
+// "Top picks for you" under the Home hero (FR-038, ADR 0016): poster cards
+// built from the app's existing components and design tokens. A tap opens
+// Show detail; the circle follows at once and the card stays, marked as
+// followed, until Refresh shows the next picks.
 
-import { useCallback, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
+import { SymbolView } from "expo-symbols";
 
 import { IMAGE_BASE } from "@/api/tmdb-types";
 import type { TvMazeShow } from "@/api/tvmaze-types";
 import { useFollowList } from "@/hooks/useFollowList";
-import {
-  useRecommendations,
-  type RecommendedShow,
-} from "@/hooks/useRecommendations";
+import { useTopPicks } from "@/hooks/useTopPicks";
+import type { TopPick } from "@/logic/top-picks";
 import { t, type } from "@/theme/tokens";
 import { FollowCircle } from "./FollowCircle";
 
@@ -21,65 +20,71 @@ const POSTER_WIDTH = 112;
 // Clears the translucent tab bar (83) under the row.
 const TAB_BAR_CLEARANCE = 83;
 
-export function RecommendedRow({
+export function TopPicksRow({
   followedShows,
 }: {
   followedShows: TvMazeShow[];
 }) {
-  // Followed from the row this session: kept in it, shown as followed.
-  const [kept, setKept] = useState<ReadonlySet<number>>(() => new Set());
-  const shows = useRecommendations(followedShows, kept);
-  const keep = useCallback(
-    (tmdbId: number) => setKept((current) => new Set(current).add(tmdbId)),
-    [],
-  );
+  const { cards, refresh, isRefreshing } = useTopPicks(followedShows);
 
-  if (shows.length === 0) {
+  if (cards.length === 0) {
     return null;
   }
   return (
-    <View style={styles.section} testID="recommended-row">
+    <View style={styles.section} testID="top-picks-row">
       <Text style={styles.heading} accessibilityRole="header">
-        Recommended for you
+        Top picks for you
       </Text>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.cards}
       >
-        {shows.map((show) => (
-          <RecommendedCard key={show.tmdbId} show={show} onFollow={keep} />
+        {cards.map((card) => (
+          <TopPickCard key={card.tmdbId} card={card} />
         ))}
       </ScrollView>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Refresh"
+        accessibilityHint="Shows the next top picks"
+        accessibilityState={{ busy: isRefreshing }}
+        disabled={isRefreshing}
+        onPress={refresh}
+        hitSlop={8}
+        style={styles.refresh}
+        testID="top-picks-refresh"
+      >
+        <SymbolView
+          name={{ ios: "arrow.clockwise", android: "refresh", web: "refresh" }}
+          tintColor={t.inkMuted}
+          size={14}
+        />
+        <Text style={styles.refreshLabel}>Refresh</Text>
+      </Pressable>
     </View>
   );
 }
 
-function RecommendedCard({
-  show,
-  onFollow,
-}: {
-  show: RecommendedShow;
-  onFollow: (tmdbId: number) => void;
-}) {
+function TopPickCard({ card }: { card: TopPick }) {
   const router = useRouter();
   const { isFollowed, follow, unfollow } = useFollowList();
-  const followed = isFollowed(show.tvmazeId);
+  const followed = isFollowed(card.tvmazeId);
 
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={show.name}
+      accessibilityLabel={card.name}
       accessibilityHint="Opens the show"
       onPress={() =>
-        router.push({ pathname: "/show/[id]", params: { id: show.tvmazeId } })
+        router.push({ pathname: "/show/[id]", params: { id: card.tvmazeId } })
       }
       style={styles.card}
-      testID="recommended-card"
+      testID="top-pick-card"
     >
       <View>
         <Image
-          source={`${IMAGE_BASE}/w342${show.posterPath}`}
+          source={`${IMAGE_BASE}/w342${card.posterPath}`}
           style={styles.poster}
           contentFit="cover"
           accessibilityIgnoresInvertColors
@@ -87,20 +92,15 @@ function RecommendedCard({
         <View style={styles.follow}>
           <FollowCircle
             followed={followed}
-            onPress={() => {
-              if (followed) {
-                unfollow(show.tvmazeId);
-              } else {
-                onFollow(show.tmdbId);
-                follow(show.tvmazeId);
-              }
-            }}
-            testID={`recommended-follow-${show.tvmazeId}`}
+            onPress={() =>
+              followed ? unfollow(card.tvmazeId) : follow(card.tvmazeId)
+            }
+            testID={`top-pick-follow-${card.tvmazeId}`}
           />
         </View>
       </View>
       <Text style={styles.name} numberOfLines={2}>
-        {show.name}
+        {card.name}
       </Text>
     </Pressable>
   );
@@ -137,6 +137,19 @@ const styles = StyleSheet.create({
     right: t.space2,
   },
   name: {
+    ...type.meta,
+    color: t.inkMuted,
+  },
+  // Quiet, like the meta line: a small control, not a primary action.
+  refresh: {
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "flex-start",
+    gap: t.space2,
+    marginHorizontal: t.space4,
+    paddingVertical: t.space2,
+  },
+  refreshLabel: {
     ...type.meta,
     color: t.inkMuted,
   },

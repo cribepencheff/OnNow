@@ -19,7 +19,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useRouter } from "expo-router";
 
 import { HeroPager } from "@/components/Hero/HeroPager";
-import { RecommendedRow } from "@/components/RecommendedRow";
+import { TopPicksRow } from "@/components/TopPicksRow";
 import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useToday } from "@/hooks/useToday";
@@ -272,7 +272,7 @@ export default function HomeScreen() {
 
             {/* FR-038, ADR 0016: hidden with an empty follow list. */}
             {followedCount > 0 && (
-              <RecommendedRow followedShows={followedShowList} />
+              <TopPicksRow followedShows={followedShowList} />
             )}
 
             {state.kind === "empty-follow-list" && (

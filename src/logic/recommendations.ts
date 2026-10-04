@@ -1,4 +1,4 @@
-// "Recommended for you" (FR-038, ADR 0016): TMDB's recommendations for each
+// "Top picks for you" (FR-038, ADR 0016): TMDB's recommendations for each
 // followed show, followed shows removed, ranked by how many followed shows
 // recommend the same title. A count of TMDB's own data, nothing more.
 

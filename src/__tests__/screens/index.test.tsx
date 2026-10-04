@@ -41,9 +41,14 @@ jest.mock("@/hooks/useEpisodeStill", () => ({
     isError: false,
   })),
 }));
-const mockRecommendations = jest.fn(() => [] as unknown[]);
-jest.mock("@/hooks/useRecommendations", () => ({
-  useRecommendations: () => mockRecommendations(),
+const mockTopPicks = jest.fn(() => [] as unknown[]);
+const mockRefreshTopPicks = jest.fn();
+jest.mock("@/hooks/useTopPicks", () => ({
+  useTopPicks: () => ({
+    cards: mockTopPicks(),
+    refresh: mockRefreshTopPicks,
+    isRefreshing: false,
+  }),
 }));
 const mockFollow = jest.fn();
 jest.mock("@/hooks/useFollowList", () => ({
@@ -477,7 +482,7 @@ describe("HomeScreen", () => {
   });
 
   // FR-038, ADR 0016: one row under the hero.
-  describe("Recommended for you (FR-038)", () => {
+  describe("Top picks for you (FR-038)", () => {
     const show = makeShow({ name: "Slow Horses" });
     const gangs = {
       tmdbId: 61886,
@@ -486,17 +491,17 @@ describe("HomeScreen", () => {
       posterPath: "/gangs.jpg",
     };
 
-    afterEach(() => mockRecommendations.mockReturnValue([]));
+    afterEach(() => mockTopPicks.mockReturnValue([]));
 
     it("shows the row with its cards; a tap opens Show detail, the circle follows at once", async () => {
-      mockRecommendations.mockReturnValue([gangs]);
+      mockTopPicks.mockReturnValue([gangs]);
       mockFollowedEpisodes({
         followedShows: [{ show, episodes: [makeEpisode()] }],
       });
       await render(<HomeScreen />);
 
-      expect(screen.getByText("Recommended for you")).toBeTruthy();
-      await fireEvent.press(screen.getByTestId("recommended-follow-15299"));
+      expect(screen.getByText("Top picks for you")).toBeTruthy();
+      await fireEvent.press(screen.getByTestId("top-pick-follow-15299"));
       expect(mockFollow).toHaveBeenCalledWith(15299);
 
       await fireEvent.press(
@@ -508,12 +513,23 @@ describe("HomeScreen", () => {
       });
     });
 
+    it("has a Refresh control under the row for the next picks", async () => {
+      mockTopPicks.mockReturnValue([gangs]);
+      mockFollowedEpisodes({
+        followedShows: [{ show, episodes: [makeEpisode()] }],
+      });
+      await render(<HomeScreen />);
+
+      await fireEvent.press(screen.getByRole("button", { name: "Refresh" }));
+      expect(mockRefreshTopPicks).toHaveBeenCalled();
+    });
+
     it("is hidden when the follow list is empty", async () => {
-      mockRecommendations.mockReturnValue([gangs]);
+      mockTopPicks.mockReturnValue([gangs]);
       mockFollowedEpisodes({ followedCount: 0 });
       await render(<HomeScreen />);
 
-      expect(screen.queryByText("Recommended for you")).toBeNull();
+      expect(screen.queryByText("Top picks for you")).toBeNull();
     });
 
     it("is hidden when there is nothing to recommend", async () => {
@@ -522,7 +538,7 @@ describe("HomeScreen", () => {
       });
       await render(<HomeScreen />);
 
-      expect(screen.queryByTestId("recommended-row")).toBeNull();
+      expect(screen.queryByTestId("top-picks-row")).toBeNull();
     });
   });
 });
