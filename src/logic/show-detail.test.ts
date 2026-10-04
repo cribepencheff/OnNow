@@ -78,9 +78,38 @@ describe("relativeDayLabel (PRD 5.5, ADR 0001)", () => {
 });
 
 describe("showDetailMetaLine (FR-028)", () => {
-  it("shows year and network, leaving the status to the status line", () => {
-    expect(showDetailMetaLine(slowHorses)).toBe("2022 · Apple TV");
-    expect(showDetailMetaLine(killingEve)).toBe("2018 · AMC+");
+  it("is year · origin country · genres, with no network", () => {
+    expect(showDetailMetaLine(slowHorses, ["GB"])).toBe(
+      "2022 · United Kingdom · Drama, Thriller, Espionage",
+    );
+  });
+
+  it("shows only the first origin country, and at most three genres", () => {
+    const fourGenres = {
+      ...killingEve,
+      genres: ["Drama", "Crime", "Thriller", "Comedy"],
+    };
+    expect(showDetailMetaLine(fourGenres, ["GB", "US", "CA"])).toBe(
+      "2018 · United Kingdom · Drama, Crime, Thriller",
+    );
+  });
+
+  it("drops a missing part without an empty separator", () => {
+    expect(showDetailMetaLine(slowHorses, [])).toBe(
+      "2022 · Drama, Thriller, Espionage",
+    );
+    expect(showDetailMetaLine({ ...slowHorses, genres: [] }, ["GB"])).toBe(
+      "2022 · United Kingdom",
+    );
+    expect(
+      showDetailMetaLine({ ...slowHorses, premiered: null, genres: [] }, []),
+    ).toBe("");
+  });
+
+  it("drops a country code it cannot name", () => {
+    expect(showDetailMetaLine({ ...slowHorses, genres: [] }, ["XX"])).toBe(
+      "2022",
+    );
   });
 });
 

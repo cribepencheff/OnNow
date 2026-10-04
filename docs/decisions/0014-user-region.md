@@ -33,7 +33,9 @@ automatically and let the user change it in their settings.
   - TMDB watch providers (`regionProviders(response, region)`)
   - the provider cache, keyed per show and region
   - "Open in"
-  - the availability copy ("Not streaming in the United Kingdom")
+  - the availability copy: which services are named ("On Crunchyroll"),
+    or "Unavailable" when there are none (CRI-91; it no longer names the
+    country)
 
 ## What the region does not change
 - **Episode dates** stay the original release dates from TVmaze. They are

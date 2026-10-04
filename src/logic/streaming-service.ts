@@ -4,7 +4,6 @@
 // the show. Pay-TV never counts; add-on channels open their host. Services
 // without a start page get no button, only text (CRI-90).
 
-import { regionNameInSentence } from "./regions";
 import { serviceLink, type ServiceLink } from "./service-link";
 
 export interface StreamingProvider {
@@ -13,8 +12,8 @@ export interface StreamingProvider {
 }
 
 // The parts of TMDB's responses this app reads, as returned.
-interface TmdbFindResponse {
-  tv_results?: { id: number }[];
+export interface TmdbFindResponse {
+  tv_results?: { id: number; origin_country?: string[] }[];
 }
 
 interface TmdbProvider {
@@ -37,6 +36,11 @@ interface TmdbProvidersResponse {
 
 export function tmdbTvId(find: TmdbFindResponse): number | null {
   return find.tv_results?.[0]?.id ?? null;
+}
+
+// The show's origin countries as ISO codes, as TMDB gives them.
+export function tmdbOriginCountries(find: TmdbFindResponse): string[] {
+  return find.tv_results?.[0]?.origin_country ?? [];
 }
 
 // A region's services for a show: subscription ("flatrate") first, then
@@ -232,11 +236,9 @@ export function openInAccessibilityLabel(link: ServiceLink): string {
 // When there is no "Open in" button, a quiet text says what TMDB's data
 // for the region (from JustWatch) shows, and nothing more (data first,
 // CRI-84): every streaming service it lists, in TMDB's order and names
-// ("On Crunchyroll, HIDIVE"), or none at all (CRI-90). Pay-TV never counts.
-export function availabilityText(
-  providers: StreamingProvider[],
-  region: string,
-): string {
+// ("On Crunchyroll, HIDIVE"), or "Unavailable" for none in the user's
+// region (CRI-90, CRI-91). Pay-TV never counts.
+export function availabilityText(providers: StreamingProvider[]): string {
   const names = providers.filter(isStreaming).map((provider) => {
     const channel = addOnChannel(provider);
     return channel
@@ -244,7 +246,5 @@ export function availabilityText(
       : provider.providerName;
   });
   const unique = [...new Set(names)];
-  return unique.length > 0
-    ? `On ${unique.join(", ")}`
-    : `Not streaming in ${regionNameInSentence(region)}`;
+  return unique.length > 0 ? `On ${unique.join(", ")}` : "Unavailable";
 }

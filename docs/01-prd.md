@@ -27,8 +27,11 @@ first user is the author, who currently uses Next Episode.
   dead screen.
 - **Concept:** a large portrait poster card, nearly edge to edge, one show per
   card. Horizontal swipe between today's shows, page dots below. A label such
-  as "NEW TODAY · 1/3" carries the count. Metadata line with episode code and
-  service. "+" in the header.
+  as "NEW TODAY · 1/3" carries the count. Two metadata lines: the original
+  air date and episode code ("Fri 9 Oct · S2E4"), then the episode title
+  (FR-031). No network: where to watch is "Open in". Tapping the card
+  opens Show detail (FR-030). No search entry while shows are followed:
+  Search is reached from the Shows tab (FR-007).
 - **Empty day:** the cards show the episodes of the next day with episodes,
   labelled with that day ("TOMORROW" or a date, with the year when it is
   not in the current year) and the count, in the same pager as today.
@@ -68,8 +71,8 @@ first user is the author, who currently uses Next Episode.
 - **Job:** add series quickly. Without series there is no app.
 - **Needs:** find the right show, even when several share a name, and follow
   several in a row.
-- **Entry points:** "+" on Home, the search field in Shows, and "Add your
-  first show" on an empty Home. All open the same Search.
+- **Entry points:** the search field in Shows, and "Add your first show" on
+  an empty Home. Both open the same Search (FR-007).
 - **Presentation:** a sheet over the current view. Large search field on top
   with the keyboard already open. Results appear while typing.
 - **Leaving:** a round close button (X) at the top right, next to the search
@@ -85,8 +88,9 @@ first user is the author, who currently uses Next Episode.
 - **Result row (references: PlayPilot, Spotify "Add to playlist"):** large
   portrait poster on the left. Next to it: title in bold, a meta line with
   year and status ("2026 · Returning", "Ended"), a two line summary, and the
-  services in the user's region on their own line (MVP; PoC shows the
-  network).
+  services in the user's region on their own line (MVP, FR-027), or
+  "Unavailable" when there is none, as in Show detail. The original
+  network is not shown.
 - **Follow control:** a circle at the right edge of each row, aligned in one
   column. Not followed: hollow circle with a "+" at lower opacity. Followed:
   filled with the accent colour and a check, with light haptic feedback. The
@@ -111,9 +115,10 @@ The PoC has a slice of this view with TVmaze data only: the network instead
 of services, "Follow" and "Following" as the actions, and no "Not in Sweden
 yet" state (CRI-79). "Open in [service]" is part of the PoC too, for the
 show's Swedish service from TMDB (CRI-80, CRI-82, FR-014). Without a
-button, a quiet text says what TMDB's Swedish data shows: "Not streaming in
-Sweden" when there is no service, or "On [service]" for a service the app
-cannot link to (CRI-84). This is availability per show, since TMDB cannot
+button, a quiet text says what TMDB's data shows: "Unavailable" when there
+is no service in the user's region (MVP; the PoC said "Not streaming in
+Sweden"), or "On [service]" for a service the app cannot link to (CRI-84,
+CRI-91). This is availability per show, since TMDB cannot
 give it per season (spike 0002). The list of services in the user's
 territory, the menu for several services (FR-015) and the territory state
 per season come in the MVP.
@@ -123,7 +128,8 @@ per season come in the MVP.
 - **Entry points:** tapping a row in Search, the card on Home, an episode in
   Calendar, or a show in Shows. The same view everywhere.
 - **Content (stripped):** large image on top in the same cinematic feel as
-  Home, title, year, status, network or service, and the summary. Then two
+  Home, title, a meta line ("2026 · Philippines · Drama, Thriller": year,
+  first origin country, genres), status, service, and the summary. Then two
   episode cards, next and latest, each with a landscape still, episode title,
   a short summary, "Episode 2 of 10" and relative time ("In 3 days",
   "Tomorrow", "2 days ago", no time of day). Then the services in the user's
@@ -131,7 +137,7 @@ per season come in the MVP.
   "Apple TV · Seasons 1–2").
   References: Next Episode (episode blocks, "of 10"), PlayPilot (primary
   button by the image, services with season, episode cards with stills).
-  The IMDb rating sits just below the backdrop, above year and network,
+  The IMDb rating sits just below the backdrop, above the meta line,
   linked to the show on IMDb, and is left out when there is none (CRI-87,
   ADR 0013).
   Not included: cast, other ratings, reviews, trailers, similar shows, FAQ,
@@ -145,7 +151,9 @@ per season come in the MVP.
 - **Hero (CRI-86):** a square crop of a textless TMDB backdrop (ADR 0012).
   On the backdrop, as on Home: the show's TMDB logo (the title as text when
   there is none) and "Open in [service]" as a full button in every state,
-  followed or not. Below the backdrop: year and network, the status line,
+  followed or not. Below the backdrop: the meta line (year · first origin country · genres; the
+  country is the show's origin, kept on purpose, while the original network
+  stays out of the UI), the status line,
   then a "Follow" / "Following" toggle button that updates at once.
 - **Status line (CRI-86):** one state derived from TVmaze's status,
   episodes and seasons, dated facts first: "Airing · next ep <date>" (next
@@ -206,7 +214,8 @@ Next Episode. A setting is added only if real use shows it is needed.
 | Manual day offset | None | ADR 0006 |
 | Specials | Hidden | FR-037 |
 | First day of the week | From the phone's locale (Monday in Sweden) | 5.2 |
-| Channel or service on episode rows | Shown | 5.2, 5.4 |
+| Service on rows | Shown: the services in the user's region (FR-027, planned) | 5.4 |
+| Original network on rows and in the hero | Not shown; where to watch is "Open in" | 5.1, 5.4, ADR 0015 |
 | Time of day | Not shown | ADR 0001 |
 | Theme | Dark only, no light mode and no system setting | ADR 0011 |
 
@@ -223,7 +232,7 @@ Reached from an icon. Territory and notifications.
 | FR-004 | Home shows followed series with an episode released today | PoC |
 | FR-005 | Home shows the count of today's shows (for example "NEW TODAY · 1/3") | PoC |
 | FR-006 | On a day without episodes, Home shows the episodes of the next day with episodes | PoC |
-| FR-007 | "+" on Home opens Search as a sheet; the close button (X) or swipe down returns to Home | PoC |
+| FR-007 | Search opens as a sheet from the search field in Shows, and from "Add your first show" on an empty Home (FR-013). With shows followed, Home has no search entry. The close button (X) or swipe down returns to where Search was opened | PoC, MVP |
 | FR-008 | Calendar shows a month grid with days that have episodes marked, today preselected | PoC |
 | FR-009 | Selecting a day in Calendar lists that day's episodes | PoC |
 | FR-036 | Calendar swipes between months and shows a "Today" button when away from today | PoC |
@@ -232,7 +241,7 @@ Reached from an icon. Territory and notifications.
 | FR-011 | Data refreshes on app start when stale, and on pull to refresh | PoC |
 | FR-012 | Several episodes of one show on the same day appear as one item | PoC |
 | FR-013 | An empty follow list shows an empty Home with "Add your first show", which opens Search | PoC |
-| FR-014 | "Open in [service]" opens the show in the service's app when the ID is known, otherwise the service's app, and the service's website when the app is not installed (ADR 0004). PoC: in Show detail when followed, for the show's Swedish service from TMDB: the show itself when TVmaze's official site is on that service (Apple TV, Netflix, HBO Max), otherwise the service's start page; no Swedish service gives no button (ADR 0004, CRI-82). Several services: one is picked, the menu (FR-015) is MVP. MVP: pay-TV and operator apps never count; add-on channels open their host app ("Open in Prime Video") with a bag icon marking the extra subscription ("Requires hayu subscription" below the button in Show detail, the bag inside the button on Home); the button appears only when it opens the service itself, otherwise the info area below the hero lists the services as text ("On Crunchyroll, HIDIVE") or says "Not streaming in [country]" (ADR 0004, CRI-90) | PoC, MVP |
+| FR-014 | "Open in [service]" opens the show in the service's app when the ID is known, otherwise the service's app, and the service's website when the app is not installed (ADR 0004). PoC: in Show detail when followed, for the show's Swedish service from TMDB: the show itself when TVmaze's official site is on that service (Apple TV, Netflix, HBO Max), otherwise the service's start page; no Swedish service gives no button (ADR 0004, CRI-82). Several services: one is picked, the menu (FR-015) is MVP. MVP: pay-TV and operator apps never count; add-on channels open their host app ("Open in Prime Video") with a bag icon marking the extra subscription ("Requires hayu subscription" below the button in Show detail, the bag inside the button on Home); the button appears only when it opens the service itself, otherwise the info area below the hero lists the services as text ("On Crunchyroll, HIDIVE") or says "Unavailable" when there is no service in the user's region (ADR 0004, CRI-90, CRI-91) | PoC, MVP |
 | FR-015 | When a show is on several services, a menu lets the user choose; the choice is remembered per show | MVP |
 | FR-016 | Territory setting, defaulting to the phone's region (ADR 0014). Until a settings view exists, a "Streaming region" line in the Shows footer opens the picker (CRI-88) | MVP |
 | FR-017 | Service availability per territory decides which services are offered | MVP |
@@ -245,11 +254,11 @@ Reached from an icon. Territory and notifications.
 | FR-024 | Search results show poster, title, year, status, a two line summary and a follow circle at the right edge | PoC |
 | FR-025 | After following, the result row shows the next episode or "No date yet" | PoC |
 | FR-026 | Before the user types, Search shows "New this week": series premieres and new seasons starting this week | MVP |
-| FR-027 | Search results show the services that carry the show in the user's territory | MVP |
-| FR-028 | Show detail view with image, title, year, status, service, summary, next and latest episode. PoC shows the network instead of the service. MVP adds the IMDb rating from OMDb (ADR 0013) | PoC, MVP |
+| FR-027 | Search results show the services that carry the show in the user's territory, or "Unavailable" when there is none (same wording as Show detail, CRI-91) | MVP |
+| FR-028 | Show detail view with image, title, year, status, service, summary, next and latest episode. PoC shows the network instead of the service. MVP: a meta line with the premiere year, the first origin country from TMDB and up to three genres from TVmaze ("2026 · Philippines · Drama, Thriller"), any missing part left out; the country is the show's origin, kept on purpose, and the original network stays out of the UI. MVP adds the IMDb rating from OMDb (ADR 0013) | PoC, MVP |
 | FR-029 | Show detail has a "Follow" / "Following" toggle button and, followed or not, "Open in [service]" as a full button when the show has a service in the user's territory (CRI-86). PoC: "Follow", and a quiet "Following" that unfollows; "Open in [service]" only when followed, for the show's Swedish service (FR-014); the service list in the user's territory is MVP | PoC, MVP |
 | FR-030 | Show detail opens from Search, Home, Calendar and Shows | PoC |
-| FR-031 | MVP: episode dates are the original premiere and are labelled as such, with the premiere service ("Premieres today on Paramount+"). "Open in" says the series is on a service in the user's region, never that the episode is. No "Not in [country] yet" label (ADR 0015). After MVP: episodes not yet available in the user's region are labelled "Not in [country] yet" and do not count as new today, from per-episode availability behind our own server (spike 0003, ADR 0015) | MVP, After MVP |
+| FR-031 | MVP: episode dates are the original air date, shown as a date with no verb and no network ("Fri 9 Oct · S2E4", with the episode title on the line below). "Open in" says the series is on a service in the user's region, never that the episode is. No "Not in [country] yet" label (ADR 0015). After MVP: episodes not yet available in the user's region are labelled "Not in [country] yet" and do not count as new today, from per-episode availability behind our own server (spike 0003, ADR 0015) | MVP, After MVP |
 | FR-032 | Show detail has season tabs with the current season preselected and episodes marked aired, today, upcoming (muted), not in territory yet (muted) and finale. PoC and MVP: all but "not in territory yet", which comes after MVP (ADR 0015) | PoC, After MVP |
 | FR-033 | Announced future seasons appear as muted tabs with premiere date or "Announced" | PoC |
 | FR-034 | Between seasons, the next episode card shows the next announced episode or season with its date, otherwise the show status from the data source | PoC |

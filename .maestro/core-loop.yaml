@@ -35,7 +35,7 @@ appId: host.exp.Exponent
       id: "home-empty-state"
     timeout: 60000
 
-# Expo Go's floating "Tools button" sits on top of Home's "+". Turn it off
+# Expo Go's floating "Tools button" can cover Home's button. Turn it off
 # in Expo Go's developer menu (this only changes Expo Go, not the app).
 # On a first launch Expo Go sometimes opens that menu by itself, so give it
 # a moment, and open it from the floating button only if it is not open.
@@ -63,7 +63,7 @@ appId: host.exp.Exponent
 - assertNotVisible:
     id: "gearshape.fill"
 
-# 3. FR-007: "+" in Home's header opens Search.
+# 3. FR-007, FR-013: "Add your first show" on the empty Home opens Search.
 - tapOn:
     id: "home-add-show"
 - assertVisible:
