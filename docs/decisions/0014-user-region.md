@@ -56,5 +56,6 @@ automatically and let the user change it in their settings.
 - **Cache migration.** Cached services from the PoC (`onnow.swedishService.*`)
   are no longer read. Each followed show is looked up again once, under
   its region.
-- **Season availability.** FR-031 still needs a per-season source (spike
-  0003). When it comes, it takes the same region.
+- **Season availability.** The MVP has no "Not in [country] yet" label
+  (ADR 0015). When per-episode availability comes after the MVP (spike
+  0003), it takes the same region.
