@@ -11,6 +11,7 @@ import { ShowDetail } from "./ShowDetail";
 import { useShow } from "@/hooks/useShow";
 import { useFollowList } from "@/hooks/useFollowList";
 import { useSwedishService } from "@/hooks/useSwedishService";
+import { useImdbRating } from "@/hooks/useImdbRating";
 import type { SwedishProvider } from "@/logic/swedish-service";
 import showMobLandFixture from "@/api/fixtures/show-mobland.json";
 import showSlowHorsesFixture from "@/api/fixtures/show-slow-horses.json";
@@ -28,6 +29,9 @@ jest.mock("@/hooks/useShow", () => ({
 }));
 jest.mock("@/hooks/useSwedishService", () => ({
   useSwedishService: jest.fn(),
+}));
+jest.mock("@/hooks/useImdbRating", () => ({
+  useImdbRating: jest.fn(),
 }));
 jest.mock("@/hooks/useFollowList", () => ({
   useFollowList: jest.fn(),
@@ -56,6 +60,14 @@ function mockSwedishServices(
     data: providers,
     isLoading,
   } as never);
+}
+
+const mockedUseImdbRating = useImdbRating as jest.MockedFunction<
+  typeof useImdbRating
+>;
+
+function mockImdbRating(rating: string | null | undefined) {
+  mockedUseImdbRating.mockReturnValue({ data: rating } as never);
 }
 
 const APPLE_TV = { providerId: 350, providerName: "Apple TV" };
@@ -93,6 +105,7 @@ describe("ShowDetail", () => {
     unfollow.mockReset();
     mockFollowed(false);
     mockSwedishServices(undefined);
+    mockImdbRating(undefined);
     (Linking.openURL as jest.Mock).mockClear();
     // Episode days are local to the user's time zone (ADR 0001).
     const original = Intl.DateTimeFormat.prototype.resolvedOptions;
@@ -232,6 +245,27 @@ describe("ShowDetail", () => {
         "No episodes yet.",
       ),
     ).toBeTruthy();
+  });
+
+  it("CRI-87: shows the IMDb rating, linking to the show on IMDb", async () => {
+    mockShow(showMobLandFixture);
+    mockImdbRating("8.3");
+    await render(<ShowDetail showId={75026} />);
+
+    const rating = screen.getByTestId("imdb-rating");
+    expect(rating).toHaveTextContent("IMDb8.3");
+    await fireEvent.press(rating);
+    expect(Linking.openURL).toHaveBeenCalledWith(
+      "https://www.imdb.com/title/tt31510819/",
+    );
+  });
+
+  it("CRI-87: shows nothing without a rating, while loading or without a key", async () => {
+    mockShow(showMobLandFixture);
+    mockImdbRating(null);
+    await render(<ShowDetail showId={75026} />);
+    expect(screen.queryByTestId("imdb-rating")).toBeNull();
+    expect(screen.queryByText("IMDb")).toBeNull();
   });
 
   it("FR-029: follows the show from Follow", async () => {

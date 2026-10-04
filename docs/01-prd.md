@@ -130,7 +130,10 @@ per season come in the MVP.
   "Apple TV · Seasons 1–2").
   References: Next Episode (episode blocks, "of 10"), PlayPilot (primary
   button by the image, services with season, episode cards with stills).
-  Not included: cast, ratings, reviews, trailers, similar shows, FAQ, lists.
+  The IMDb rating sits in the hero, linked to the show on IMDb, and is
+  left out when there is none (CRI-87, ADR 0013).
+  Not included: cast, other ratings, reviews, trailers, similar shows, FAQ,
+  lists.
 - **Between seasons:** when the current season has ended, the "next"
   episode card becomes a next season card, so it is clear when new episodes
   can be expected. It shows what the data source provides and nothing more:
@@ -225,7 +228,7 @@ Reached from an icon. Territory and notifications.
 | FR-025 | After following, the result row shows the next episode or "No date yet" | PoC |
 | FR-026 | Before the user types, Search shows "New this week": series premieres and new seasons starting this week | MVP |
 | FR-027 | Search results show the services that carry the show in the user's territory | MVP |
-| FR-028 | Show detail view with image, title, year, status, service, summary, next and latest episode. PoC shows the network instead of the service | PoC |
+| FR-028 | Show detail view with image, title, year, status, service, summary, next and latest episode. PoC shows the network instead of the service. MVP adds the IMDb rating from OMDb (ADR 0013) | PoC, MVP |
 | FR-029 | Show detail has one primary action: "Follow" when not followed, "Open in [service]" when followed. PoC: "Follow", and a quiet "Following" that unfollows; "Open in [service]" for the show's Swedish service (FR-014); the service list in the user's territory is MVP | PoC, MVP |
 | FR-030 | Show detail opens from Search, Home, Calendar and Shows | PoC |
 | FR-031 | Episodes whose season is not available in the user's territory are labelled "Not in [country] yet" and do not count as new today. PoC: availability per show only ("Not streaming in Sweden", "On [service]" in Show detail, CRI-84), since TMDB cannot give it per season (spike 0002) | MVP |
