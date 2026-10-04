@@ -10,10 +10,7 @@ import {
 } from "./local-date";
 import { nextForShow } from "./next-episode";
 import { formatLabelDate, nextDateLabel } from "./next-episode-label";
-import {
-  searchResultMetaLine,
-  searchResultNetworkName,
-} from "./search-results";
+import { searchResultNetworkName } from "./search-results";
 import { statusLabel } from "./show-status";
 import type {
   TvMazeEpisode,
@@ -49,12 +46,11 @@ export function relativeDayLabel(
   return formatLabelDate(localDate, todayDate);
 }
 
-// "2022 · Running · Apple TV": year, status and network (FR-028; the PoC
-// shows the network, services are MVP).
+// "2022 · Apple TV": year and network (FR-028). The status has its own
+// line (show-state.ts).
 export function showDetailMetaLine(show: TvMazeShow): string {
-  const network = searchResultNetworkName(show);
-  const meta = searchResultMetaLine(show);
-  return network ? `${meta} · ${network}` : meta;
+  const year = show.premiered ? show.premiered.slice(0, 4) : null;
+  return [year, searchResultNetworkName(show)].filter(Boolean).join(" · ");
 }
 
 // FR-037: specials are never shown.

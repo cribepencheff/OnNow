@@ -78,9 +78,9 @@ describe("relativeDayLabel (PRD 5.5, ADR 0001)", () => {
 });
 
 describe("showDetailMetaLine (FR-028)", () => {
-  it("shows year, status and network", () => {
-    expect(showDetailMetaLine(slowHorses)).toBe("2022 · Running · Apple TV");
-    expect(showDetailMetaLine(killingEve)).toBe("2018 · Ended · AMC+");
+  it("shows year and network, leaving the status to the status line", () => {
+    expect(showDetailMetaLine(slowHorses)).toBe("2022 · Apple TV");
+    expect(showDetailMetaLine(killingEve)).toBe("2018 · AMC+");
   });
 });
 
@@ -338,12 +338,6 @@ describe("season drops (FR-012, FR-028, FR-034, CRI-81)", () => {
       kind: "status",
       status: "Renewal not announced",
     });
-  });
-
-  it("uses plain status words in the meta line", () => {
-    expect(showDetailMetaLine(neagley)).toBe(
-      "2026 · Renewal not announced · Prime Video",
-    );
   });
 });
 

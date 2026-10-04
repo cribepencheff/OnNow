@@ -1,8 +1,8 @@
-// A followed show's streaming services in the user's region (FR-014,
-// FR-017, ADR 0014), looked up once through TMDB and kept per show and
-// region in plain storage for 30 days (NFR-005). Only followed shows are
-// looked up. The result is null when there is no TMDB key, and is then not
-// cached.
+// A show's streaming services in the user's region (FR-014, FR-017,
+// ADR 0014), looked up once through TMDB and kept per show and region in
+// plain storage for 30 days (NFR-005). Show detail looks them up for any
+// show, followed or not. The result is null when there is no TMDB key, and
+// is then not cached.
 
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 

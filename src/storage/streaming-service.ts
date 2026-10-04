@@ -1,5 +1,5 @@
-// Each followed show's streaming services in a region, looked up once
-// through TMDB and kept per show and region (FR-014, NFR-005, ADR 0014). Plain AsyncStorage,
+// Each show's streaming services in a region, looked up once through
+// TMDB and kept per show and region (FR-014, NFR-005, ADR 0014). Plain AsyncStorage,
 // one key per show, like the follow list (NFR-006), not the query cache,
 // which is only kept for a day.
 
