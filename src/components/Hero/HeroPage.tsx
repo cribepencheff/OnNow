@@ -57,6 +57,9 @@ const BUTTON_HEIGHT = 52;
 const BUTTON_HEIGHT_SHORT = 44;
 const DOTS_GAP = 16;
 const DOTS_GAP_SHORT = 8;
+// One note line under the button, reserved on every slide so the dots stay
+// put: an add-on's "Requires hayu subscription" (CRI-101).
+const NOTE_LINE = 4 + type.meta.lineHeight;
 
 function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -80,7 +83,10 @@ export function OpenInSlot({
   // button/placeholder shrink to BUTTON_HEIGHT_SHORT (still >= 44); taller
   // screens keep styles.openInSlot's own regular values.
   const slotStyle = isShort
-    ? { marginTop: OPEN_IN_MARGIN_SHORT, height: BUTTON_HEIGHT_SHORT }
+    ? {
+        marginTop: OPEN_IN_MARGIN_SHORT,
+        height: BUTTON_HEIGHT_SHORT + NOTE_LINE,
+      }
     : null;
   const buttonHeightStyle = isShort ? { height: BUTTON_HEIGHT_SHORT } : null;
 
@@ -95,27 +101,37 @@ export function OpenInSlot({
         </Text>
       )}
       {availability.kind === "button" && (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={openInAccessibilityLabel(availability.link)}
-          onPress={() => Linking.openURL(availability.link.url)}
-          style={[styles.button, buttonHeightStyle]}
-        >
-          {/* Same height for every slide: an add-on's extra subscription is
-              only the bag inside the button (CRI-90). */}
-          <View style={styles.buttonContent}>
-            <Text style={styles.buttonLabel}>
-              Open in {availability.link.service}
-            </Text>
-            {availability.link.requires && (
+        <>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={openInAccessibilityLabel(availability.link)}
+            onPress={() => Linking.openURL(availability.link.url)}
+            style={[styles.button, buttonHeightStyle]}
+          >
+            <View style={styles.buttonContent}>
+              <Text style={styles.buttonLabel}>
+                Open in {availability.link.service}
+              </Text>
+              {availability.link.requires && (
+                <PaidSubscriptionMarker
+                  channel={availability.link.requires}
+                  iconOnly
+                  color={t.bg}
+                />
+              )}
+            </View>
+          </Pressable>
+          {/* As in Show detail, under the button (CRI-90, CRI-101). */}
+          {availability.link.requires && (
+            <View style={styles.requires}>
               <PaidSubscriptionMarker
                 channel={availability.link.requires}
-                iconOnly
-                color={t.bg}
+                color={t.inkMuted}
+                textStyle={styles.availabilityNote}
               />
-            )}
-          </View>
-        </Pressable>
+            </View>
+          )}
+        </>
       )}
       {/* kind === "none": nothing to show, height still reserved above. */}
     </View>
@@ -389,9 +405,9 @@ export const ContentLayer = memo(function ContentLayer({
 }) {
   const { height } = useWindowDimensions();
   const scale = height / REF_HEIGHT;
-  // Raised by one meta line so the two-line meta block leaves the button
-  // and dots where they were.
-  const contentTop = 452 * scale - type.meta.lineHeight;
+  // Raised by the second meta line and the note line under the button, so
+  // the page dots stay where they were.
+  const contentTop = 452 * scale - type.meta.lineHeight - NOTE_LINE;
   const isShort = height < SHORT_SCREEN_MAX_HEIGHT;
   const dotsGap = isShort ? DOTS_GAP_SHORT : DOTS_GAP;
   const show = slide.show as TvMazeShowWithEmbeds;
@@ -425,8 +441,8 @@ export const ContentLayer = memo(function ContentLayer({
   const handleButtonLayout = useCallback(
     (event: LayoutChangeEvent) => {
       const { y, height: buttonHeight } = event.nativeEvent.layout;
-      // Page dots sit DOTS_GAP below the button (design system, tighter on
-      // short screens). The button's own y and
+      // Page dots sit DOTS_GAP below the slot, note line included (design
+      // system, tighter on short screens). The button's own y and
       // measured height already reflect the tightened slot on short screens,
       // and y is relative to `content`, itself offset from the slide's top
       // by contentTop.
@@ -577,7 +593,10 @@ const styles = StyleSheet.create({
     // OPEN_IN_MARGIN on top of content's own 8 row gap = 16 below the meta
     // line on regular screens (tightened on short, see OpenInSlot).
     marginTop: OPEN_IN_MARGIN,
-    height: BUTTON_HEIGHT,
+    height: BUTTON_HEIGHT + NOTE_LINE,
+  },
+  requires: {
+    marginTop: 4,
   },
   button: {
     height: BUTTON_HEIGHT,
