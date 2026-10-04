@@ -46,6 +46,21 @@ describe("useImdbRating (CRI-87, ADR 0013)", () => {
     client.unmount();
   });
 
+  it("CRI-92: caches OMDb's N/A as no rating, by IMDb ID", async () => {
+    mockedFind.mockResolvedValue({ rating: null });
+    const { result, unmount, client } = await renderFor(mobland);
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data).toBeNull();
+    expect(mockedFind).toHaveBeenCalledWith("tt31510819");
+    expect(
+      JSON.parse((await AsyncStorage.getItem(STORAGE_KEY))!).rating,
+    ).toBeNull();
+
+    await unmount();
+    client.unmount();
+  });
+
   it("reads a cached rating, including a cached no rating, without calling OMDb", async () => {
     await saveRating(mobland.id, null, Date.now());
     const { result, unmount, client } = await renderFor(mobland);

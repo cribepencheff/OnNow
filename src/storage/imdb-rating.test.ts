@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import {
   getCachedRating,
+  NO_RATING_CACHE_MAX_AGE_MS,
   RATING_CACHE_MAX_AGE_MS,
   saveRating,
 } from "./imdb-rating";
@@ -23,6 +24,23 @@ describe("IMDb rating cache (CRI-87, ADR 0013)", () => {
 
     await saveRating(1, null, 1_000);
     expect(await getCachedRating(1, 2_000)).toBeNull();
+  });
+
+  it("CRI-92: keeps a no rating (OMDb N/A) for a day only, so a new show picks up its rating", async () => {
+    await saveRating(MOBLAND, null, 0);
+    expect(
+      await getCachedRating(MOBLAND, NO_RATING_CACHE_MAX_AGE_MS),
+    ).toBeNull();
+    expect(
+      await getCachedRating(MOBLAND, NO_RATING_CACHE_MAX_AGE_MS + 1),
+    ).toBeUndefined();
+  });
+
+  it("CRI-92: a real rating outlives a no rating, and still expires", async () => {
+    await saveRating(MOBLAND, "8.2", 0);
+    expect(await getCachedRating(MOBLAND, NO_RATING_CACHE_MAX_AGE_MS + 1)).toBe(
+      "8.2",
+    );
   });
 
   it("expires after a week", async () => {

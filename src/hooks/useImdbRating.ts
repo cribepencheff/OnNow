@@ -1,6 +1,7 @@
 // A show's IMDb rating through OMDb (CRI-87, ADR 0013), looked up when
-// Show detail opens and kept per show for a week. null means no rating to
-// show: no IMDb ID, no key, or OMDb has none.
+// the rating is shown, kept per show for a week, or a day when OMDb has
+// none yet (CRI-92). null means no rating to show: no IMDb ID, no key, or
+// OMDb has none.
 
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 
@@ -13,8 +14,9 @@ export function useImdbRating(show: TvMazeShow): UseQueryResult<string | null> {
   return useQuery({
     queryKey: ["imdbRating", show.id],
     enabled: imdbId !== null,
-    // The week of freshness is decided by the storage, not the query cache.
-    staleTime: Infinity,
+    // Freshness is decided by the storage; an hour re-reads it so a long
+    // running app still picks up a rating once the day's "no rating" expires.
+    staleTime: 60 * 60 * 1000,
     queryFn: async () => {
       const now = Date.now();
       const cached = await getCachedRating(show.id, now);
