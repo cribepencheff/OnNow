@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { renderHook, waitFor } from "@testing-library/react-native";
 
 import { omdbClient } from "@/api/omdb-client";
-import { saveRating } from "@/storage/imdb-rating";
+import { NO_RATING_CACHE_MAX_AGE_MS, saveRating } from "@/storage/imdb-rating";
 import type { TvMazeShow } from "@/api/tvmaze-types";
 import showMoblandFixture from "@/api/fixtures/show-mobland.json";
 import { useImdbRating } from "./useImdbRating";
@@ -69,6 +69,45 @@ describe("useImdbRating (CRI-87, ADR 0013)", () => {
     expect(result.current.data).toBeNull();
     expect(mockedFind).not.toHaveBeenCalled();
 
+    await unmount();
+    client.unmount();
+  });
+
+  // CRI-92: the hourly re-check (staleTime) only reads the stored expiry;
+  // OMDb is called for an expired entry only.
+  it("CRI-92: a re-check of unexpired entries never calls OMDb", async () => {
+    await saveRating(mobland.id, "8.3", Date.now() - 6 * 24 * 60 * 60 * 1000);
+    const { result, unmount, client } = await renderFor(mobland);
+    await waitFor(() => expect(result.current.data).toBe("8.3"));
+
+    await result.current.refetch();
+
+    expect(result.current.data).toBe("8.3");
+    expect(mockedFind).not.toHaveBeenCalled();
+
+    await unmount();
+    client.unmount();
+  });
+
+  it("CRI-92: a re-check after a no rating expires asks OMDb again, once", async () => {
+    const start = Date.now();
+    await saveRating(mobland.id, null, start);
+    const { result, unmount, client } = await renderFor(mobland);
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(mockedFind).not.toHaveBeenCalled();
+
+    const later = jest
+      .spyOn(Date, "now")
+      .mockReturnValue(start + NO_RATING_CACHE_MAX_AGE_MS + 1);
+    mockedFind.mockResolvedValue({ rating: "8.2" });
+    // Asserted on the refetch result: a frozen Date.now also stalls waitFor.
+    const refetched = await result.current.refetch();
+
+    expect(refetched.data).toBe("8.2");
+    expect(mockedFind).toHaveBeenCalledTimes(1);
+    expect(mockedFind).toHaveBeenCalledWith("tt31510819");
+
+    later.mockRestore();
     await unmount();
     client.unmount();
   });
