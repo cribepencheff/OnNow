@@ -4,7 +4,7 @@
 // (contentMountFrames, logic/hero-carousel.ts). Measurements are for a
 // 390 × 844 screen and scale with the screen height here.
 
-import { memo, useCallback, useMemo } from "react";
+import { memo, useCallback, useEffect, useMemo } from "react";
 import {
   Animated,
   Pressable,
@@ -25,7 +25,7 @@ import { useEpisodeStill } from "@/hooks/useEpisodeStill";
 import { useShowImages } from "@/hooks/useShowImages";
 import { addDays } from "@/logic/local-date";
 import { openInAccessibilityLabel } from "@/logic/streaming-service";
-import { ImdbRating } from "../ImdbRating";
+import { IMDB_CHIP_HEIGHT, ImdbRating } from "../ImdbRating";
 import { PaidSubscriptionMarker } from "../PaidSubscriptionMarker";
 import {
   HERO_CROSSFADE_FLOOR,
@@ -57,6 +57,9 @@ const BUTTON_HEIGHT = 52;
 const BUTTON_HEIGHT_SHORT = 44;
 const DOTS_GAP = 16;
 const DOTS_GAP_SHORT = 8;
+// One note line under the button, reserved on every slide so the dots stay
+// put: an add-on's "Requires hayu subscription" (CRI-101).
+const NOTE_LINE = 4 + type.meta.lineHeight;
 
 function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -80,7 +83,10 @@ export function OpenInSlot({
   // button/placeholder shrink to BUTTON_HEIGHT_SHORT (still >= 44); taller
   // screens keep styles.openInSlot's own regular values.
   const slotStyle = isShort
-    ? { marginTop: OPEN_IN_MARGIN_SHORT, height: BUTTON_HEIGHT_SHORT }
+    ? {
+        marginTop: OPEN_IN_MARGIN_SHORT,
+        height: BUTTON_HEIGHT_SHORT + NOTE_LINE,
+      }
     : null;
   const buttonHeightStyle = isShort ? { height: BUTTON_HEIGHT_SHORT } : null;
 
@@ -95,27 +101,28 @@ export function OpenInSlot({
         </Text>
       )}
       {availability.kind === "button" && (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={openInAccessibilityLabel(availability.link)}
-          onPress={() => Linking.openURL(availability.link.url)}
-          style={[styles.button, buttonHeightStyle]}
-        >
-          {/* Same height for every slide: an add-on's extra subscription is
-              only the bag inside the button (CRI-90). */}
-          <View style={styles.buttonContent}>
+        <>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={openInAccessibilityLabel(availability.link)}
+            onPress={() => Linking.openURL(availability.link.url)}
+            style={[styles.button, buttonHeightStyle]}
+          >
             <Text style={styles.buttonLabel}>
               Open in {availability.link.service}
             </Text>
-            {availability.link.requires && (
+          </Pressable>
+          {/* As in Show detail, under the button (CRI-90, CRI-101). */}
+          {availability.link.requires && (
+            <View style={styles.requires}>
               <PaidSubscriptionMarker
                 channel={availability.link.requires}
-                iconOnly
-                color={t.bg}
+                color={t.inkMuted}
+                textStyle={styles.availabilityNote}
               />
-            )}
-          </View>
-        </Pressable>
+            </View>
+          )}
+        </>
       )}
       {/* kind === "none": nothing to show, height still reserved above. */}
     </View>
@@ -165,13 +172,17 @@ export const HeroPage = memo(function HeroPage({
   const scale = height / REF_HEIGHT;
   const router = useRouter();
   const show = item.show as TvMazeShowWithEmbeds;
-  const { data: images } = useShowImages(show, deviceTimeZone(), todayDate);
+  const { data: images, isLoading: imagesLoading } = useShowImages(
+    show,
+    deviceTimeZone(),
+    todayDate,
+  );
   // The show's highest-rated backdrop (chooseHighestRatedBackdrop), used
   // when the episode has no TMDB still of its own (displayPath below prefers
   // the still). Nothing below this line (parallax, crossfade, pull-zoom,
   // scrim) knows or cares which of the two it's showing.
   const fallbackBackdropPath = images?.highestRatedBackdrop?.file_path;
-  const { data: episodeStill } = useEpisodeStill(
+  const { data: episodeStill, isLoading: stillLoading } = useEpisodeStill(
     show,
     item.episodes[0],
     deviceTimeZone(),
@@ -179,10 +190,18 @@ export const HeroPage = memo(function HeroPage({
   );
   const displayPath = episodeStill?.filePath ?? fallbackBackdropPath;
   const backdropHeight = 580 * scale;
+  // Ready for auto-advance once the image loads, fails, or turns out not to
+  // exist; a slide without an image must never hold the pager.
   const handleLoad = useCallback(
     () => onBackdropLoad(index),
     [onBackdropLoad, index],
   );
+  const noImage = !displayPath && !imagesLoading && !stillLoading;
+  useEffect(() => {
+    if (noImage) {
+      onBackdropLoad(index);
+    }
+  }, [noImage, onBackdropLoad, index]);
 
   // Overscanned wider than the screen and centered, so the parallax shift
   // below never reveals the page background at either edge. Only needed
@@ -327,6 +346,8 @@ export const HeroPage = memo(function HeroPage({
                 contentPosition="center"
                 accessibilityIgnoresInvertColors
                 onLoad={handleLoad}
+                onError={handleLoad}
+                testID="hero-backdrop-image"
               />
             </Animated.View>
           </Animated.View>
@@ -389,9 +410,9 @@ export const ContentLayer = memo(function ContentLayer({
 }) {
   const { height } = useWindowDimensions();
   const scale = height / REF_HEIGHT;
-  // Raised by one meta line so the two-line meta block leaves the button
-  // and dots where they were.
-  const contentTop = 452 * scale - type.meta.lineHeight;
+  // Raised by the second meta line and the note line under the button, so
+  // the page dots stay where they were.
+  const contentTop = 452 * scale - type.meta.lineHeight - NOTE_LINE;
   const isShort = height < SHORT_SCREEN_MAX_HEIGHT;
   const dotsGap = isShort ? DOTS_GAP_SHORT : DOTS_GAP;
   const show = slide.show as TvMazeShowWithEmbeds;
@@ -425,8 +446,8 @@ export const ContentLayer = memo(function ContentLayer({
   const handleButtonLayout = useCallback(
     (event: LayoutChangeEvent) => {
       const { y, height: buttonHeight } = event.nativeEvent.layout;
-      // Page dots sit DOTS_GAP below the button (design system, tighter on
-      // short screens). The button's own y and
+      // Page dots sit DOTS_GAP below the slot, note line included (design
+      // system, tighter on short screens). The button's own y and
       // measured height already reflect the tightened slot on short screens,
       // and y is relative to `content`, itself offset from the slide's top
       // by contentTop.
@@ -477,7 +498,11 @@ export const ContentLayer = memo(function ContentLayer({
         style={[styles.content, { top: contentTop }]}
         pointerEvents="box-none"
       >
-        <View style={styles.badgeRow} pointerEvents="box-none">
+        <View
+          style={styles.badgeRow}
+          pointerEvents="box-none"
+          testID="hero-label-row"
+        >
           <View pointerEvents="none">
             <Text style={styles.badge}>
               <Text style={isToday ? styles.badgeToday : undefined}>
@@ -489,21 +514,21 @@ export const ContentLayer = memo(function ContentLayer({
           <ImdbRating show={show} textStyle={styles.badge} />
         </View>
         <View pointerEvents="none" style={styles.passThrough}>
-          {logo ? (
-            <Image
-              source={`${IMAGE_BASE}/w500${logo.file_path}`}
-              style={styles.logo}
-              contentFit="contain"
-              contentPosition="left"
-              accessibilityLabel={show.name}
-            />
-          ) : (
-            <View style={styles.titleBand}>
+          <View style={styles.titleBlock} testID="hero-title-block">
+            {logo ? (
+              <Image
+                source={`${IMAGE_BASE}/w500${logo.file_path}`}
+                style={styles.logo}
+                contentFit="contain"
+                contentPosition="left"
+                accessibilityLabel={show.name}
+              />
+            ) : (
               <Text style={styles.displayTitle} numberOfLines={2}>
                 {show.name}
               </Text>
-            </View>
-          )}
+            )}
+          </View>
           {/* Two fixed lines: date and code, then the episode title. */}
           <View>
             <Text style={styles.meta} numberOfLines={1}>
@@ -527,7 +552,9 @@ const styles = StyleSheet.create({
     right: 24,
     gap: 8,
   },
+  // As tall as the IMDb chip, chip or not, so nothing below shifts per slide.
   badgeRow: {
+    height: IMDB_CHIP_HEIGHT,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -546,15 +573,14 @@ const styles = StyleSheet.create({
   badgeToday: {
     color: t.ink,
   },
+  // One height for a logo and a text title, so nothing below shifts.
+  titleBlock: {
+    height: 88,
+    justifyContent: "center",
+  },
   logo: {
     width: 240,
     height: 88,
-  },
-  // Same 88px height as the logo box, so a plain-title slide takes exactly
-  // as much vertical space as a logo slide and nothing below it shifts.
-  titleBand: {
-    height: 88,
-    justifyContent: "center",
   },
   displayTitle: {
     ...type.display,
@@ -577,7 +603,10 @@ const styles = StyleSheet.create({
     // OPEN_IN_MARGIN on top of content's own 8 row gap = 16 below the meta
     // line on regular screens (tightened on short, see OpenInSlot).
     marginTop: OPEN_IN_MARGIN,
-    height: BUTTON_HEIGHT,
+    height: BUTTON_HEIGHT + NOTE_LINE,
+  },
+  requires: {
+    marginTop: 4,
   },
   button: {
     height: BUTTON_HEIGHT,
@@ -585,11 +614,6 @@ const styles = StyleSheet.create({
     backgroundColor: t.ink,
     alignItems: "center",
     justifyContent: "center",
-  },
-  buttonContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
   },
   buttonLabel: {
     color: t.bg,

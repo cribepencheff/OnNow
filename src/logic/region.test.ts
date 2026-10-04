@@ -4,7 +4,12 @@ import {
   FALLBACK_REGION,
   type StoredRegion,
 } from "./region";
-import { countryName, isSupportedRegion, regionName } from "./regions";
+import {
+  countryName,
+  isSupportedRegion,
+  regionName,
+  regionNameInSentence,
+} from "./regions";
 
 describe("detectRegion (FR-016, CRI-88, ADR 0014)", () => {
   it("takes the region of the phone's first locale", () => {
@@ -86,5 +91,14 @@ describe("countryName (FR-028)", () => {
 
   it("is null for a code it cannot name", () => {
     expect(countryName("XX")).toBeNull();
+  });
+});
+
+describe("regionNameInSentence (CRI-97)", () => {
+  it("adds the article where a name needs one", () => {
+    expect(regionNameInSentence("SE")).toBe("Sweden");
+    expect(regionNameInSentence("US")).toBe("the United States");
+    expect(regionNameInSentence("NL")).toBe("the Netherlands");
+    expect(regionNameInSentence("CZ")).toBe("Czechia");
   });
 });

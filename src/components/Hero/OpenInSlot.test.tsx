@@ -4,10 +4,10 @@ import { OpenInSlot } from "./HeroPage";
 
 jest.mock("expo-linking", () => ({ openURL: jest.fn() }));
 
-// CRI-90, ADR 0004: the Home hero's button keeps one fixed height, so an
-// add-on's extra subscription is only a bag inside the button.
+// CRI-90, CRI-101, ADR 0004: an add-on's extra subscription is the
+// "Requires" line under the hero's button, as in Show detail.
 describe("OpenInSlot (FR-014, CRI-90)", () => {
-  it("names the host app and shows the bag inside the button for an add-on", async () => {
+  it("names the host app, and says what it requires below the button (CRI-101)", async () => {
     await render(
       <OpenInSlot
         availability={{
@@ -25,7 +25,9 @@ describe("OpenInSlot (FR-014, CRI-90)", () => {
       name: "Open in Prime Video, requires hayu subscription",
     });
     expect(button).toHaveTextContent("Open in Prime Video");
-    expect(screen.queryByText(/Requires hayu/)).toBeNull();
+    // The line sits under the button, not inside it, as in Show detail.
+    expect(screen.getByText("Requires hayu subscription")).toBeTruthy();
+    expect(button).not.toHaveTextContent(/Requires/);
   });
 
   it("is a plain button for a service of its own", async () => {

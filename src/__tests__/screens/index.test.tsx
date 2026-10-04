@@ -1,7 +1,10 @@
+import { StyleSheet } from "react-native";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
 import HomeScreen from "@/app/(tabs)/index";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
+import { useImdbRating } from "@/hooks/useImdbRating";
+import { useShowImages } from "@/hooks/useShowImages";
 import type { TvMazeEpisode, TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 
 const mockPush = jest.fn();
@@ -166,18 +169,58 @@ describe("HomeScreen", () => {
     expect(screen.getByText("Silo")).toBeTruthy();
   });
 
-  // The hero's 7-day horizon deliberately does not group same-day episodes
-  // of one show into one slide the way the Home card's meta line used to
-  // (logic/hero-carousel.ts's findHeroSlides: "never a same-show/same-day
-  // range... a show with two episodes on one day within the horizon gets
-  // two slides, not one grouped slide", from the original horizon commit).
-  // This replaces the old grouped-card scenario with the hero's actual,
-  // deliberately different behaviour for this same input; it is not a
-  // regression. FR-012 grouping still applies where it always did outside
-  // the hero: the next-day fallback pager (see the next-day version of
-  // this test below, still grouped) and Show detail's season-drop
-  // handling (logic/show-detail.ts, untouched by this branch).
-  it("shows one slide per episode, not a grouped card, for several same-day episodes of one show on the hero (FR-012 does not apply to the 7-day horizon)", async () => {
+  // CRI-94: every slide's rows have one height whatever they hold, so the
+  // label, title and date line never jump between slides.
+  it("gives the label row and title block one height with or without an IMDb chip and logo (CRI-94)", async () => {
+    const withChip = makeShow({
+      id: 1,
+      name: "MobLand",
+      externals: { tvrage: null, thetvdb: null, imdb: "tt31510819" },
+    });
+    const plain = makeShow({ id: 2, name: "Outside" });
+    (useShowImages as jest.Mock).mockImplementation((show) => ({
+      data: show.id === 1 ? { logo: { file_path: "/logo.png" } } : undefined,
+      isLoading: false,
+    }));
+    (useImdbRating as jest.Mock).mockImplementation((show) => ({
+      data: show.id === 1 ? "8.1" : undefined,
+    }));
+    mockFollowedEpisodes({
+      followedShows: [
+        { show: withChip, episodes: [makeEpisode()] },
+        { show: plain, episodes: [makeEpisode()] },
+      ],
+    });
+
+    try {
+      await render(<HomeScreen />);
+
+      // Both slides are mounted: one with chip and logo, one without either.
+      expect(screen.getAllByTestId("imdb-rating")).toHaveLength(1);
+      // A logo replaces the text title.
+      expect(screen.queryByText("MobLand")).toBeNull();
+      expect(screen.getByText("Outside")).toBeTruthy();
+
+      const heights = (testID: string) =>
+        screen
+          .getAllByTestId(testID)
+          .map((view) => StyleSheet.flatten(view.props.style).height);
+      expect(heights("hero-label-row")).toEqual([20, 20]);
+      expect(heights("hero-title-block")).toEqual([88, 88]);
+    } finally {
+      (useShowImages as jest.Mock).mockImplementation(() => ({
+        data: undefined,
+        isLoading: false,
+        isError: false,
+      }));
+      (useImdbRating as jest.Mock).mockImplementation(() => ({
+        data: undefined,
+      }));
+    }
+  });
+
+  // CRI-94: one slide per show, so the counter counts slides, not episodes.
+  it("shows several same-day episodes of one show as one slide with a range (FR-012, CRI-94)", async () => {
     const show = makeShow({ name: "The Bear" });
     const episodes = [1, 2, 3].map((number) => makeEpisode({ number }));
     mockFollowedEpisodes({
@@ -186,20 +229,8 @@ describe("HomeScreen", () => {
 
     await render(<HomeScreen />);
 
-    expect(screen.getByText("TODAY · 1/3")).toBeTruthy();
-    expect(screen.getByText("Mon 21 Sep · S1E1")).toBeTruthy();
-    expect(screen.getAllByText("Episode").length).toBeGreaterThan(0);
-
-    await fireEvent(screen.getByTestId("home-pager"), "momentumScrollEnd", {
-      nativeEvent: {
-        contentOffset: { x: 800 },
-        layoutMeasurement: { width: 400 },
-      },
-    });
-
-    expect(screen.getByText("TODAY · 2/3")).toBeTruthy();
-    expect(screen.getByText("Mon 21 Sep · S1E2")).toBeTruthy();
-    expect(screen.getAllByText("Episode").length).toBeGreaterThan(0);
+    expect(screen.getByText("TODAY · 1/1")).toBeTruthy();
+    expect(screen.getByText("Mon 21 Sep · S1E1–3")).toBeTruthy();
   });
 
   it("shows one card labelled TOMORROW · 1/1 when one show releases on the next day with episodes (FR-006)", async () => {
@@ -300,7 +331,7 @@ describe("HomeScreen", () => {
     await render(<HomeScreen />);
 
     expect(screen.getByText("TOMORROW · 1/1")).toBeTruthy();
-    expect(screen.getByText("Tue 22 Sep · Episodes 1–3")).toBeTruthy();
+    expect(screen.getByText("Tue 22 Sep · S1E1–3")).toBeTruthy();
   });
 
   it("shows Add your first show when the follow list is empty and opens Search (backlog CRI-66, PRD FR-013)", async () => {

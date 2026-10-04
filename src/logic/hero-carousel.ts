@@ -4,13 +4,13 @@
 // target, the pull-to-refresh backdrop stretch, and which slides the pager
 // shows at all. No React in this file.
 
-import { episodesLabel, upcomingDayLabel } from "@/logic/home";
+import { episodeCode, upcomingDayLabel } from "@/logic/home";
 import {
   addDays,
   localDateFromAirstamp,
   type LocalDate,
 } from "@/logic/local-date";
-import { formatLabelDate } from "@/logic/next-episode-label";
+import { formatLabelDate, MONTHS, WEEKDAYS } from "@/logic/next-episode-label";
 import { serviceLink, type ServiceLink } from "@/logic/service-link";
 import {
   availabilityText,
@@ -258,15 +258,78 @@ export function pullStretchTransform(
   };
 }
 
-// "Fri 9 Oct · S2E4": the original air date (FR-031, ADR 0015), no verb and
-// no network; where to watch is the "Open in" button.
+// "Fri 9 Oct · S2E4", "5–7 Oct · S23E156–158": the original air dates
+// (FR-031, ADR 0015), no verb and no network (CRI-94).
 export function heroDateLine(slide: HeroSlide, todayDate: LocalDate): string {
-  return `${formatLabelDate(slide.localDate, todayDate)} · ${episodesLabel(slide.episodes)}`;
+  return `${heroDateRange(slide.localDate, slide.endDate, todayDate)} · ${heroEpisodeRange(slide.episodes)}`;
 }
 
-// The episode title, for a single-episode slide only.
+function dateParts(isoDate: LocalDate) {
+  const [year, month, day] = isoDate.split("-").map(Number);
+  const weekday = new Date(Date.UTC(year, month - 1, day)).getUTCDay();
+  return { year, month: MONTHS[month - 1], day, weekday: WEEKDAYS[weekday] };
+}
+
+// "Fri 9 Oct" for one day, "5–7 Oct" or "30 Sep–2 Oct" for several, and
+// "Today–Thu" or "Tomorrow–Fri" when the range starts today or tomorrow.
+// The year only when not this year.
+export function heroDateRange(
+  startDate: LocalDate,
+  endDate: LocalDate,
+  todayDate: LocalDate,
+): string {
+  if (startDate === endDate) {
+    return formatLabelDate(startDate, todayDate);
+  }
+  const start = dateParts(startDate);
+  const end = dateParts(endDate);
+  if (startDate === todayDate) {
+    return `Today–${end.weekday}`;
+  }
+  if (startDate === addDays(todayDate, 1)) {
+    return `Tomorrow–${end.weekday}`;
+  }
+  const todayYear = Number(todayDate.slice(0, 4));
+  const endLabel =
+    end.year === todayYear
+      ? `${end.day} ${end.month}`
+      : `${end.day} ${end.month} ${end.year}`;
+  const sameMonth = start.month === end.month && start.year === end.year;
+  return `${sameMonth ? start.day : `${start.day} ${start.month}`}–${endLabel}`;
+}
+
+// "S2E4", "S23E156–158" within a season, "S1E10–S2E1" across seasons.
+// Episodes are in air order.
+export function heroEpisodeRange(episodes: TvMazeEpisode[]): string {
+  const first = episodes[0];
+  const last = episodes[episodes.length - 1];
+  if (!first || !last) {
+    return "";
+  }
+  if (first === last) {
+    return episodeCode(first);
+  }
+  if (first.season === last.season && last.number !== null) {
+    return `${episodeCode(first)}–${last.number}`;
+  }
+  return `${episodeCode(first)}–${episodeCode(last)}`;
+}
+
+// TVmaze's stand-ins for a title not announced yet.
+const PLACEHOLDER_TITLE = /^(Episode \d+|TBA)$/i;
+
+// The first episode's title. When it is missing or a placeholder: the count
+// on a slide with several ("2 episodes"), else "Title not announced".
 export function heroEpisodeTitle(episodes: TvMazeEpisode[]): string | null {
-  return episodes.length === 1 ? episodes[0]?.name || null : null;
+  const name = episodes[0]?.name?.trim();
+  const title = name && !PLACEHOLDER_TITLE.test(name) ? name : null;
+  if (title) {
+    return title;
+  }
+  // The line above already gives the code ("S1E9").
+  return episodes.length > 1
+    ? `${episodes.length} episodes`
+    : "Title not announced";
 }
 
 // What goes where the "Open in" button would be, in one of four states, so
@@ -298,7 +361,7 @@ export function heroAvailability(
   if (link) {
     return { kind: "button", link };
   }
-  return { kind: "text", label: availabilityText(providers) };
+  return { kind: "text", label: availabilityText(providers, region) };
 }
 
 // How far ahead the hero pager looks, in the same airstamp + device time
@@ -306,22 +369,17 @@ export function heroAvailability(
 // inclusive). One place to change while tuning during PoC week.
 export const HOME_HERO_HORIZON_DAYS = 7;
 
-// One hero slide per episode within the horizon, never a same-show/same-day
-// range (unlike the Home card's meta line): a show with two episodes on one
-// day within the horizon gets two slides, not one grouped slide.
-// `episodes` is non-empty by construction (findHeroSlides below always
-// pushes one, and the existing single-day fallback in index.tsx keeps its
-// own prior grouping); shaped as an array, not a tuple, so it stays
-// interchangeable with ShowEpisodesToday for that fallback.
+// One hero slide per show (CRI-94): its episodes within the horizon, in air
+// order, from localDate (the first, never before today) to endDate.
 export interface HeroSlide {
   show: TvMazeShow;
   episodes: TvMazeEpisode[];
   localDate: LocalDate;
+  endDate: LocalDate;
 }
 
-// Every followed show's episode airing from today through
-// HOME_HERO_HORIZON_DAYS - 1 days out, one slide each, in chronological
-// order. Airstamp + device time zone decide "today" and the horizon
+// One slide per followed show with an episode from today through
+// HOME_HERO_HORIZON_DAYS - 1 days out, in order of each show's first one. Airstamp + device time zone decide "today" and the horizon
 // boundary (episodes-today.ts, local-date.ts), not airdate: a show with an
 // episode today still starts the pager on today, not tomorrow.
 export function findHeroSlides(
@@ -333,11 +391,21 @@ export function findHeroSlides(
   const slides: HeroSlide[] = [];
 
   for (const { show, episodes } of followedShows) {
-    for (const episode of episodes) {
-      const localDate = localDateFromAirstamp(episode.airstamp, timeZone);
-      if (localDate >= todayDate && localDate <= horizonEnd) {
-        slides.push({ show, episodes: [episode], localDate });
-      }
+    const inWindow = episodes
+      .filter((episode) => {
+        const localDate = localDateFromAirstamp(episode.airstamp, timeZone);
+        return localDate >= todayDate && localDate <= horizonEnd;
+      })
+      .sort((a, b) => a.airstamp.localeCompare(b.airstamp));
+    const first = inWindow[0];
+    const last = inWindow[inWindow.length - 1];
+    if (first && last) {
+      slides.push({
+        show,
+        episodes: inWindow,
+        localDate: localDateFromAirstamp(first.airstamp, timeZone),
+        endDate: localDateFromAirstamp(last.airstamp, timeZone),
+      });
     }
   }
 

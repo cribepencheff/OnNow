@@ -34,8 +34,8 @@ automatically and let the user change it in their settings.
   - the provider cache, keyed per show and region
   - "Open in"
   - the availability copy: which services are named ("On Crunchyroll"),
-    or "Unavailable" when there are none (CRI-91; it no longer names the
-    country)
+    or "Unavailable in Sweden" when there are none (Home hero and Show
+    detail; rows say plain "Unavailable", CRI-91, CRI-97)
 
 ## What the region does not change
 - **Episode dates** stay the original release dates from TVmaze. They are

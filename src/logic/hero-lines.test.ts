@@ -25,7 +25,12 @@ describe("heroDateLine (FR-031, ADR 0015)", () => {
   it("is the date and the code, with no verb and no network", () => {
     expect(
       heroDateLine(
-        { show: paramount, episodes: [episode], localDate: "2026-10-09" },
+        {
+          show: paramount,
+          episodes: [episode],
+          localDate: "2026-10-09",
+          endDate: "2026-10-09",
+        },
         "2026-10-04",
       ),
     ).toBe("Fri 9 Oct · S2E4");
@@ -34,21 +39,48 @@ describe("heroDateLine (FR-031, ADR 0015)", () => {
   it("uses the date on today's slide too; the badge says TODAY", () => {
     expect(
       heroDateLine(
-        { show: paramount, episodes: [episode], localDate: "2026-10-04" },
+        {
+          show: paramount,
+          episodes: [episode],
+          localDate: "2026-10-04",
+          endDate: "2026-10-04",
+        },
         "2026-10-04",
       ),
     ).toBe("Sun 4 Oct · S2E4");
   });
 });
 
-describe("heroEpisodeTitle", () => {
+describe("heroEpisodeTitle (CRI-94)", () => {
   it("is the title of a single episode", () => {
     expect(heroEpisodeTitle([episode])).toBe("Blank Curtain");
   });
 
-  it("is null without a title, or for several episodes", () => {
-    expect(heroEpisodeTitle([{ ...episode, name: "" }])).toBeNull();
-    expect(heroEpisodeTitle([episode, { ...episode, number: 5 }])).toBeNull();
+  it('is "Title not announced" for a single episode with a placeholder or no title', () => {
+    for (const name of ["Episode 9", "TBA", ""]) {
+      expect(heroEpisodeTitle([{ ...episode, name }])).toBe(
+        "Title not announced",
+      );
+    }
+  });
+
+  it("is the first episode's title on a slide with several", () => {
+    expect(
+      heroEpisodeTitle([episode, { ...episode, number: 5, name: "Next" }]),
+    ).toBe("Blank Curtain");
+  });
+
+  it('is the episode count when the first title is a placeholder ("Episode 9", "TBA")', () => {
+    const second = { ...episode, number: 10, name: "Episode 10" };
+    expect(heroEpisodeTitle([{ ...episode, name: "Episode 9" }, second])).toBe(
+      "2 episodes",
+    );
+    expect(heroEpisodeTitle([{ ...episode, name: "TBA" }, second])).toBe(
+      "2 episodes",
+    );
+    expect(heroEpisodeTitle([{ ...episode, name: "" }, second])).toBe(
+      "2 episodes",
+    );
   });
 });
 
