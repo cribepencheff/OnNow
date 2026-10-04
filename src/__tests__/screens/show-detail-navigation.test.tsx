@@ -45,6 +45,7 @@ beforeEach(() => {
   follow.mockReset();
   (useFollowedEpisodes as jest.Mock).mockReturnValue({
     followedCount: 1,
+    isReady: true,
     isLoading: false,
     isRefetching: false,
     isError: false,

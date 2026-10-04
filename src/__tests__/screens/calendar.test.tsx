@@ -78,6 +78,7 @@ function mockFollowedEpisodes(
 ) {
   mockedUseFollowedEpisodes.mockReturnValue({
     followedCount: 0,
+    isReady: true,
     isLoading: false,
     isRefetching: false,
     isError: false,

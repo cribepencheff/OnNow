@@ -1,13 +1,23 @@
 import { useEffect } from "react";
 import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { setUpAppStateFocus } from "@/hooks/app-state-focus";
 import { asyncStoragePersister, queryClient } from "@/hooks/query-client";
 
+// CRI-95: Home hides the splash once its data is ready (at once from the
+// cache); without a cache it waits for the first fetch, at most this long.
+SplashScreen.preventAutoHideAsync().catch(() => {});
+const SPLASH_MAX_MS = 2000;
+
 export default function RootLayout() {
   useEffect(() => setUpAppStateFocus(), []);
+  useEffect(() => {
+    const cap = setTimeout(() => SplashScreen.hide(), SPLASH_MAX_MS);
+    return () => clearTimeout(cap);
+  }, []);
 
   return (
     // Required by react-native-gesture-handler (Shows list's swipe to
