@@ -10,7 +10,29 @@ function jsonResponse(body: unknown, status = 200): Response {
   } as Response;
 }
 
-const NEAGLEY_EXTERNALS = { imdb: "tt33539520", thetvdb: 455064 };
+const NEAGLEY_EXTERNALS = {
+  imdb: "tt33539520",
+  thetvdb: 455064,
+  name: "Neagley",
+  premiered: "2026-09-16",
+};
+// CRI-99: TVmaze has no IMDb or TheTVDB ID for this show.
+const JAY_Z = {
+  imdb: null,
+  thetvdb: null,
+  name: "JAŸ-Z IN 8",
+  premiered: "2026-09-18",
+};
+const JAY_Z_SEARCH = {
+  results: [
+    {
+      id: 326440,
+      name: "JAŸ-Z in 8",
+      first_air_date: "2026-09-18",
+      origin_country: ["US"],
+    },
+  ],
+};
 const V3_KEY = "0123456789abcdef0123456789abcdef";
 const V4_TOKEN = `eyJ${"a".repeat(200)}`;
 const noWait = async () => {};
@@ -45,7 +67,10 @@ describe("TmdbClient (FR-014, NFR-005, CRI-82)", () => {
       apiKey: V3_KEY,
       fetchFn: v3Fetch,
       wait: noWait,
-    }).findStreamingProviders({ imdb: "tt1", thetvdb: null }, "SE");
+    }).findStreamingProviders(
+      { imdb: "tt1", thetvdb: null, name: "X", premiered: null },
+      "SE",
+    );
     expect(v3Fetch.mock.calls[0][0]).toContain(`api_key=${V3_KEY}`);
 
     const v4Fetch = jest
@@ -55,7 +80,10 @@ describe("TmdbClient (FR-014, NFR-005, CRI-82)", () => {
       apiKey: V4_TOKEN,
       fetchFn: v4Fetch,
       wait: noWait,
-    }).findStreamingProviders({ imdb: "tt1", thetvdb: null }, "SE");
+    }).findStreamingProviders(
+      { imdb: "tt1", thetvdb: null, name: "X", premiered: null },
+      "SE",
+    );
     expect(v4Fetch.mock.calls[0][0]).not.toContain("api_key");
     expect(v4Fetch.mock.calls[0][1].headers.Authorization).toBe(
       `Bearer ${V4_TOKEN}`,
@@ -77,7 +105,7 @@ describe("TmdbClient (FR-014, NFR-005, CRI-82)", () => {
     );
   });
 
-  it("returns no services when the show is not on TMDB or has no external IDs", async () => {
+  it('CRI-99: is null, not "no services", when TMDB does not know the show', async () => {
     const fetchFn = jest
       .fn()
       .mockResolvedValue(jsonResponse({ tv_results: [] }));
@@ -85,10 +113,37 @@ describe("TmdbClient (FR-014, NFR-005, CRI-82)", () => {
 
     await expect(
       client.findStreamingProviders(NEAGLEY_EXTERNALS, "SE"),
-    ).resolves.toEqual([]);
+    ).resolves.toBeNull();
+  });
+
+  it("CRI-99: searches by name when TVmaze has no IMDb or TheTVDB ID (JAŸ-Z IN 8)", async () => {
+    const fetchFn = jest
+      .fn()
+      .mockResolvedValueOnce(jsonResponse(JAY_Z_SEARCH))
+      .mockResolvedValueOnce(jsonResponse(providersNeagley));
+    const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
+
+    await expect(client.findStreamingProviders(JAY_Z, "SE")).resolves.toEqual([
+      { providerId: 119, providerName: "Amazon Prime Video" },
+    ]);
+    expect(fetchFn.mock.calls[0][0]).toContain(
+      "/3/search/tv?query=JA%C5%B8-Z%20IN%208",
+    );
+    expect(fetchFn.mock.calls[1][0]).toContain("/3/tv/326440/watch/providers");
+  });
+
+  it("CRI-99: does not take a search result that is not a safe match", async () => {
+    const fetchFn = jest.fn().mockResolvedValueOnce(
+      jsonResponse({
+        results: [{ ...JAY_Z_SEARCH.results[0], first_air_date: "2026-09-10" }],
+      }),
+    );
+    const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
+
     await expect(
-      client.findStreamingProviders({ imdb: null, thetvdb: null }, "SE"),
-    ).resolves.toEqual([]);
+      client.findStreamingProviders(JAY_Z, "SE"),
+    ).resolves.toBeNull();
+    expect(fetchFn).toHaveBeenCalledTimes(1);
   });
 
   it("returns null without an API key, so the app can fall back", async () => {
@@ -139,6 +194,13 @@ describe("TmdbClient.findOriginCountries (FR-028)", () => {
       client.findOriginCountries(NEAGLEY_EXTERNALS),
     ).resolves.toEqual(["US"]);
     expect(fetchFn).toHaveBeenCalledTimes(1);
+  });
+
+  it("finds the origin countries through the name search too (CRI-99)", async () => {
+    const fetchFn = jest.fn().mockResolvedValueOnce(jsonResponse(JAY_Z_SEARCH));
+    const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
+
+    await expect(client.findOriginCountries(JAY_Z)).resolves.toEqual(["US"]);
   });
 
   it("falls back to TheTVDB, and is empty when TMDB does not know the show", async () => {

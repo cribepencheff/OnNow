@@ -1,12 +1,12 @@
 // A show's streaming services in the user's region (FR-014, FR-017,
 // ADR 0014), looked up once through TMDB and kept per show and region in
 // plain storage for 30 days (NFR-005). Show detail looks them up for any
-// show, followed or not. The result is null when there is no TMDB key, and
-// is then not cached.
+// show, followed or not. The result is null when there is no TMDB key or
+// TMDB does not know the show, and is then not cached (CRI-99).
 
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 
-import { tmdbClient } from "@/api/tmdb-client";
+import { tmdbClient, tmdbShowRef } from "@/api/tmdb-client";
 import { getCachedProviders, saveProviders } from "@/storage/streaming-service";
 import type { StreamingProvider } from "@/logic/streaming-service";
 import type { TvMazeShow } from "@/api/tvmaze-types";
@@ -29,10 +29,7 @@ export function useStreamingService(
         return cached;
       }
       const providers = await tmdbClient.findStreamingProviders(
-        {
-          imdb: show.externals?.imdb ?? null,
-          thetvdb: show.externals?.thetvdb ?? null,
-        },
+        tmdbShowRef(show),
         region!,
       );
       if (providers !== null) {
