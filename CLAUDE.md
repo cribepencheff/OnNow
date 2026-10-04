@@ -184,6 +184,10 @@ transition rather than assuming they carry over unchanged:
 - **Release**: not yet defined. New categories of risk appear here (a
   public App Store submission, store data). Stop and ask the owner to
   define gates before treating any release work as gate-free.
+- **One folder only:** all work happens in this one repository folder. No
+  extra folders or worktrees, not even for docs. If a branch is checked out
+  for the owner's testing, do not switch away from it: wait, and do the
+  other work between the owner's tests.
 
 ## When to check in with the owner
 - A decision is not resolvable from the PRD, ADRs or spikes: ask rather
