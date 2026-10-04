@@ -185,9 +185,13 @@ transition rather than assuming they carry over unchanged:
   public App Store submission, store data). Stop and ask the owner to
   define gates before treating any release work as gate-free.
 - **One folder only:** all work happens in this one repository folder. No
-  extra folders or worktrees, not even for docs. If a branch is checked out
-  for the owner's testing, do not switch away from it: wait, and do the
-  other work between the owner's tests.
+  extra folders or worktrees, not even for docs.
+- **No branch switching during the owner's test:** while a UI branch is
+  waiting for the owner's Expo Go test, do not switch branches in the repo
+  folder, not even briefly (the phone reloads from whatever is checked
+  out). Either keep working on that branch, wait until it is merged, or ask
+  the owner first. Work that needs another branch waits, and the report
+  says so.
 
 ## When to check in with the owner
 - A decision is not resolvable from the PRD, ADRs or spikes: ask rather
