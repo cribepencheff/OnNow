@@ -64,24 +64,16 @@ describe("currentRegion (FR-016, CRI-88, ADR 0014)", () => {
 });
 
 describe("regions (CRI-88)", () => {
-  it("names regions with the device's English names first", () => {
+  it("names regions with CLDR's English names, as Intl.DisplayNames would", () => {
     expect(regionName("SE")).toBe("Sweden");
     expect(regionName("US")).toBe("United States");
     expect(regionName("TR")).toBe("Türkiye");
   });
 
-  it("falls back to TMDB's names when the engine has no Intl.DisplayNames", () => {
-    // Hermes may lack it; the region list's TMDB names then stand in.
-    // Calling a missing constructor throws, as this mock does.
-    const spy = jest.spyOn(Intl, "DisplayNames").mockImplementation(() => {
-      throw new TypeError("Intl.DisplayNames is not a constructor");
-    });
-    try {
-      expect(regionName("US")).toBe("United States of America");
-      expect(regionNameInSentence("US")).toBe("the United States of America");
-      expect(countryName("CN")).toBeNull();
-    } finally {
-      spy.mockRestore();
+  it("matches Intl.DisplayNames where the engine has it (Node, not Hermes)", () => {
+    const names = new Intl.DisplayNames(["en"], { type: "region" });
+    for (const code of ["US", "GB", "CZ", "PH", "CN", "KR"]) {
+      expect(countryName(code)).toBe(names.of(code));
     }
   });
 

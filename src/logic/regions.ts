@@ -1,7 +1,9 @@
 // The regions TMDB has watch provider data for, with TMDB's English names
 // (GET /watch/providers/regions, snapshot 2026-10-04, CRI-88, ADR 0014).
-// The names are the fallback when the device has none (countryName).
+// The names are the fallback for codes CLDR does not name (countryName).
 // Only these can be a user's region: elsewhere there is nothing to show.
+
+import { COUNTRY_NAMES } from "./country-names";
 
 export interface Region {
   code: string;
@@ -174,22 +176,11 @@ export function isSupportedRegion(code: string): boolean {
   return REGIONS.some((region) => region.code === code);
 }
 
-// The device's English name for a country code; null when the JS engine
-// has no Intl.DisplayNames or does not know the code.
-function deviceCountryName(code: string): string | null {
-  try {
-    const name = new Intl.DisplayNames(["en"], { type: "region" }).of(code);
-    return name && name !== code ? name : null;
-  } catch {
-    return null;
-  }
-}
-
-// A country's English name: the device's first, TMDB's as the fallback;
-// null when neither knows it, so the caller shows nothing.
+// A country's English name: CLDR's (the names Intl.DisplayNames gives),
+// TMDB's as the fallback; null when neither knows it.
 export function countryName(code: string): string | null {
   return (
-    deviceCountryName(code) ??
+    COUNTRY_NAMES[code] ??
     REGIONS.find((region) => region.code === code)?.name ??
     null
   );
