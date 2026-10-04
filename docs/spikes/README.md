@@ -7,7 +7,8 @@ ADRs.
 | Spike | Question | Needed before | Status |
 | ----- | -------- | ------------- | ------ |
 | `0001-tvmaze-data-quality.md` | Is TVmaze good enough for the PoC? | PoC | Done |
-| `0002-territory-availability.md` | Can we get availability per season in Sweden for free? | MVP | Planned |
+| `0002-territory-availability.md` | Can we get availability per season in Sweden for free? | MVP | Done |
+| `0003-season-availability.md` | Which free source gives availability per season and region? | MVP (FR-031) | Done |
 
 The framework choice (Expo or Flutter) is a decision, not a spike. It is
 recorded as an ADR in `decisions/`.

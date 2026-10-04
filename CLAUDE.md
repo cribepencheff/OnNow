@@ -8,7 +8,7 @@ that shows which followed TV series have a new episode today, with a
 calendar for past and upcoming episodes. Free to run: no backend, no
 accounts, free data sources only.
 
-Current phase: **Proof of Concept**.
+Current phase: **MVP**.
 
 ## Read first
 - `docs/00-vision.md`: core promise and principles
@@ -169,11 +169,21 @@ transition rather than assuming they carry over unchanged:
   review by the owner, not just a merge click. This is where the PoC proves
   whether it delivers on the core promise, not just where the code is
   correct.
-- **MVP and Release**: not yet defined. New categories of risk appear here
-  (notifications, opening other apps, territory and store data, a public
-  App Store submission). Do not assume the PoC gates carry over: stop and
-  ask the owner to define gates for the new phase before treating any of
-  its issues as gate-free.
+- **MVP, screens and views** (anything the owner would see in Expo Go,
+  including the UI part of a PR that also changes logic or data): PR
+  opened but not merged by Claude Code. Merging requires the owner to test
+  it in Expo Go and approve it explicitly in chat, as in the PoC.
+- **MVP, logic/data/storage/hooks** (no visible UI): no gate once
+  verification passes, as in the PoC, unless the PR adds an external
+  service, an API key or a new ADR. Then the owner reviews it before merge.
+- **MVP, decisions and docs** (ADRs, PRD, CLAUDE.md): PR opened, merged
+  only after the owner approves it in chat. Decisions are the owner's.
+- **MVP, spikes:** throwaway code in `spikes-scratch/`, no PR to `main`
+  for the code. Findings go into `docs/spikes/` through a docs PR, under
+  the rule above.
+- **Release**: not yet defined. New categories of risk appear here (a
+  public App Store submission, store data). Stop and ask the owner to
+  define gates before treating any release work as gate-free.
 
 ## When to check in with the owner
 - A decision is not resolvable from the PRD, ADRs or spikes: ask rather
