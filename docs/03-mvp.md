@@ -8,8 +8,11 @@ use, and so do a few friends.
 
 ## Scope
 - The visual design from the Design phase applied to all views
-- An excellent add flow, including the first run experience and "New this
-  week" in Search (FR-026)
+- An excellent add flow, including the first run experience and, in
+  Search before typing, Home's "Top picks for you" and "Airing this week"
+  rows (FR-026)
+- Shows in two segments, Active and Inactive, with Show detail's status
+  line and the service on each row (FR-010, FR-035)
 - Show detail view (FR-028 to FR-030)
 - "Top picks for you" under the Home hero, derived from the follow list
   (FR-038, ADR 0016)
