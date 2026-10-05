@@ -1,8 +1,21 @@
 // Calendar (PRD 5.2, FR-008, FR-009, FR-012, FR-036, FR-037): a month grid
 // for followed series, and the selected day's episodes below, on the dark
 // design system (ADR 0011, CRI-119).
+//
+// The pager (CRI-120) is one fixed list of months, from the first to the
+// last month with an episode, so a fast swipe never runs out of pages and
+// nothing is re-centred. The month on screen lives in a small store, not
+// in this screen's state: only the header (month title and Today button)
+// listens to it, so scrolling never redraws the screen or the pager.
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import {
   FlatList,
   Pressable,
@@ -16,21 +29,24 @@ import {
   type NativeSyntheticEvent,
 } from "react-native";
 
+import {
+  CalendarMonthPage,
+  GRID_HORIZONTAL_PADDING,
+} from "@/components/CalendarMonthPage";
 import { ShowRow, ShowRowLine } from "@/components/ShowRow";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import { useToday } from "@/hooks/useToday";
 import { useWeekStart } from "@/hooks/useWeekStart";
 import {
-  addMonths,
-  calendarDayCell,
+  calendarMonths,
   calendarRowLine,
   datesWithEpisodes,
-  fullDateLabel,
-  monthGridWeeks,
+  isTodayButtonShown,
+  monthIndexAtOffset,
   monthOf,
   monthTitle,
-  type CalendarDayCell,
+  sameMonth,
   type YearMonth,
 } from "@/logic/calendar";
 import {
@@ -42,20 +58,41 @@ import { t, type } from "@/theme/tokens";
 
 const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-// Shared between the weekday header row and the grid itself, so the two
-// stay aligned.
-const GRID_HORIZONTAL_PADDING = t.space4;
-
-// The translucent tab bar's height: the day list and the Today button
-// clear it (as in Shows).
+// The translucent tab bar's height: the day list clears it (as in Shows).
 const TAB_BAR_HEIGHT = 83;
 
 function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
 }
 
-function sameMonth(a: YearMonth, b: YearMonth): boolean {
-  return a.year === b.year && a.month === b.month;
+// The month on screen, for the header only (see the top of this file).
+interface VisibleMonthStore {
+  get: () => YearMonth;
+  set: (month: YearMonth) => void;
+  subscribe: (listener: () => void) => () => void;
+}
+
+function createVisibleMonthStore(initial: YearMonth): VisibleMonthStore {
+  let month = initial;
+  const listeners = new Set<() => void>();
+  return {
+    get: () => month,
+    set: (next) => {
+      if (sameMonth(next, month)) {
+        return;
+      }
+      month = next;
+      listeners.forEach((listener) => listener());
+    },
+    subscribe: (listener) => {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
+    },
+  };
+}
+
+function indexOfMonth(months: YearMonth[], month: YearMonth): number {
+  return months.findIndex((candidate) => sameMonth(candidate, month));
 }
 
 export default function CalendarScreen() {
@@ -68,8 +105,8 @@ export default function CalendarScreen() {
     useFollowedEpisodes();
 
   const todayMonth = useMemo(() => monthOf(todayDate), [todayDate]);
-  const [visibleMonth, setVisibleMonth] = useState<YearMonth>(todayMonth);
   const [selectedDate, setSelectedDate] = useState<LocalDate>(todayDate);
+  const [visibleMonth] = useState(() => createVisibleMonthStore(todayMonth));
 
   const episodeDates = useMemo(
     () => datesWithEpisodes(followedShows, timeZone),
@@ -81,45 +118,81 @@ export default function CalendarScreen() {
     [followedShows, timeZone, selectedDate],
   );
 
-  const awayFromToday =
-    !sameMonth(visibleMonth, todayMonth) || selectedDate !== todayDate;
+  const months = useMemo(
+    () => calendarMonths(episodeDates, todayDate),
+    [episodeDates, todayDate],
+  );
+  const todayIndex = indexOfMonth(months, todayMonth);
+
+  const pagerRef = useRef<FlatList<YearMonth>>(null);
+  // The scroll handler reads the months from here, so it never changes
+  // and never redraws the pager.
+  const monthsRef = useRef(months);
+
+  // When the range grows (episodes arriving, a show followed), the month
+  // on screen moves to a new index: keep it on screen.
+  useLayoutEffect(() => {
+    if (monthsRef.current === months) {
+      return;
+    }
+    monthsRef.current = months;
+    const index = indexOfMonth(months, visibleMonth.get());
+    if (index < 0) {
+      visibleMonth.set(todayMonth);
+    }
+    pagerRef.current?.scrollToIndex({
+      index: index < 0 ? todayIndex : index,
+      animated: false,
+    });
+  }, [months, todayIndex, todayMonth, visibleMonth]);
+
+  // The title switches as soon as a page passes halfway (CRI-120).
+  const handleScroll = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const { contentOffset, layoutMeasurement } = event.nativeEvent;
+      const current = monthsRef.current;
+      const index = monthIndexAtOffset(
+        contentOffset.x,
+        layoutMeasurement.width,
+        current.length,
+      );
+      visibleMonth.set(current[index]);
+    },
+    [visibleMonth],
+  );
 
   const goToToday = useCallback(() => {
-    setVisibleMonth(todayMonth);
     setSelectedDate(todayDate);
-  }, [todayMonth, todayDate]);
+    visibleMonth.set(todayMonth);
+    pagerRef.current?.scrollToIndex({ index: todayIndex, animated: true });
+  }, [todayDate, todayMonth, todayIndex, visibleMonth]);
 
   const selectDate = useCallback((date: LocalDate) => {
     setSelectedDate(date);
   }, []);
 
-  const pagerRef = useRef<FlatList<YearMonth>>(null);
-  const months = useMemo(
-    () => [
-      addMonths(visibleMonth, -1),
-      visibleMonth,
-      addMonths(visibleMonth, 1),
-    ],
-    [visibleMonth],
+  const getItemLayout = useCallback(
+    (_: unknown, index: number) => ({
+      length: width,
+      offset: width * index,
+      index,
+    }),
+    [width],
   );
 
-  useEffect(() => {
-    pagerRef.current?.scrollToIndex({ index: 1, animated: false });
-  }, [visibleMonth]);
-
-  const handleMomentumScrollEnd = useCallback(
-    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const { contentOffset, layoutMeasurement } = event.nativeEvent;
-      if (layoutMeasurement.width === 0) {
-        return;
-      }
-      const index = Math.round(contentOffset.x / layoutMeasurement.width);
-      if (index === 1) {
-        return;
-      }
-      setVisibleMonth((month) => addMonths(month, index - 1));
-    },
-    [],
+  const renderMonth = useCallback(
+    ({ item }: { item: YearMonth }) => (
+      <CalendarMonthPage
+        yearMonth={item}
+        weekStart={weekStart}
+        todayDate={todayDate}
+        selectedDate={selectedDate}
+        episodeDates={episodeDates}
+        width={width}
+        onSelectDate={selectDate}
+      />
+    ),
+    [weekStart, todayDate, selectedDate, episodeDates, width, selectDate],
   );
 
   return (
@@ -127,6 +200,9 @@ export default function CalendarScreen() {
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         alwaysBounceVertical
+        // The month title and Today stay at the top while the day list
+        // scrolls (CRI-120).
+        stickyHeaderIndices={[0]}
         refreshControl={
           <RefreshControl
             testID="calendar-refresh-control"
@@ -136,9 +212,12 @@ export default function CalendarScreen() {
           />
         }
       >
-        <Text style={styles.monthTitle}>
-          {monthTitle(visibleMonth.year, visibleMonth.month)}
-        </Text>
+        <MonthHeader
+          visibleMonth={visibleMonth}
+          selectedDate={selectedDate}
+          todayDate={todayDate}
+          onToday={goToToday}
+        />
 
         <View style={styles.weekdayRow}>
           {Array.from({ length: 7 }, (_, index) => (
@@ -155,25 +234,17 @@ export default function CalendarScreen() {
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
-          initialScrollIndex={1}
-          getItemLayout={(_, index) => ({
-            length: width,
-            offset: width * index,
-            index,
-          })}
+          initialScrollIndex={todayIndex}
+          getItemLayout={getItemLayout}
           keyExtractor={(item) => `${item.year}-${item.month}`}
-          onMomentumScrollEnd={handleMomentumScrollEnd}
-          renderItem={({ item }) => (
-            <MonthPage
-              yearMonth={item}
-              weekStart={weekStart}
-              todayDate={todayDate}
-              selectedDate={selectedDate}
-              episodeDates={episodeDates}
-              width={width}
-              onSelectDate={selectDate}
-            />
-          )}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
+          // A month and its neighbours on each side; the rest are drawn as
+          // a swipe gets near them.
+          initialNumToRender={1}
+          maxToRenderPerBatch={2}
+          windowSize={3}
+          renderItem={renderMonth}
         />
 
         <View style={styles.dayList}>
@@ -191,129 +262,42 @@ export default function CalendarScreen() {
           )}
         </View>
       </ScrollView>
+    </View>
+  );
+}
 
-      {awayFromToday && (
+// The month title and, on the same row, right-aligned, the Today button
+// (FR-036, CRI-120). The only part of the screen that follows the scroll.
+function MonthHeader({
+  visibleMonth,
+  selectedDate,
+  todayDate,
+  onToday,
+}: {
+  visibleMonth: VisibleMonthStore;
+  selectedDate: LocalDate;
+  todayDate: LocalDate;
+  onToday: () => void;
+}) {
+  const month = useSyncExternalStore(visibleMonth.subscribe, visibleMonth.get);
+
+  return (
+    <View style={styles.header}>
+      <Text style={styles.monthTitle} testID="calendar-month-title">
+        {monthTitle(month.year, month.month)}
+      </Text>
+      {isTodayButtonShown(selectedDate, todayDate, month) && (
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Today"
-          onPress={goToToday}
+          onPress={onToday}
           style={styles.todayButton}
+          hitSlop={8}
         >
           <Text style={styles.todayLabel}>Today</Text>
         </Pressable>
       )}
     </View>
-  );
-}
-
-interface MonthPageProps {
-  yearMonth: YearMonth;
-  weekStart: number;
-  todayDate: LocalDate;
-  selectedDate: LocalDate;
-  episodeDates: Set<LocalDate>;
-  width: number;
-  onSelectDate: (date: LocalDate) => void;
-}
-
-function MonthPage({
-  yearMonth,
-  weekStart,
-  todayDate,
-  selectedDate,
-  episodeDates,
-  width,
-  onSelectDate,
-}: MonthPageProps) {
-  // Each week is its own non-wrapping row of exactly seven flex cells, so
-  // cell width or rounding can never push a day into the wrong weekday
-  // column, or wrap a row to six cells instead of seven (regression: a
-  // single 42-cell flexWrap list did exactly that).
-  const weeks = useMemo(
-    () => monthGridWeeks(yearMonth, weekStart),
-    [yearMonth, weekStart],
-  );
-
-  return (
-    <View
-      testID={`calendar-month-page-${yearMonth.year}-${yearMonth.month}`}
-      style={[styles.monthPage, { width }]}
-    >
-      {weeks.map((week, weekIndex) => (
-        <View key={weekIndex} testID="calendar-week-row" style={styles.weekRow}>
-          {week.map((date, dayIndex) => {
-            if (!date) {
-              return (
-                <View
-                  key={dayIndex}
-                  testID="calendar-cell"
-                  style={styles.dayCellSlot}
-                />
-              );
-            }
-            const cell = calendarDayCell(
-              date,
-              todayDate,
-              selectedDate,
-              episodeDates,
-            );
-            return <DayCell key={date} cell={cell} onPress={onSelectDate} />;
-          })}
-        </View>
-      ))}
-    </View>
-  );
-}
-
-function DayCell({
-  cell,
-  onPress,
-}: {
-  cell: CalendarDayCell;
-  onPress: (date: LocalDate) => void;
-}) {
-  const day = Number(cell.date.split("-")[2]);
-  const label = [
-    fullDateLabel(cell.date),
-    cell.isToday ? "today" : null,
-    cell.hasEpisodes ? "has episodes" : null,
-    cell.isSelected ? "selected" : null,
-  ]
-    .filter(Boolean)
-    .join(", ");
-
-  return (
-    <Pressable
-      testID="calendar-cell"
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      accessibilityState={{ selected: cell.isSelected }}
-      onPress={() => onPress(cell.date)}
-      style={styles.dayCellSlot}
-    >
-      <View
-        style={[
-          styles.dayCircle,
-          cell.isSelected && styles.dayCircleSelected,
-          cell.isToday && !cell.isSelected && styles.dayCircleToday,
-        ]}
-      >
-        <Text
-          style={[
-            styles.dayNumber,
-            cell.isSelected && styles.dayNumberSelected,
-          ]}
-        >
-          {day}
-        </Text>
-        {cell.hasEpisodes && (
-          <View
-            testID="calendar-day-mark"
-            style={[styles.dayMark, cell.isSelected && styles.dayMarkSelected]}
-          />
-        )}
-      </View>
-    </Pressable>
   );
 }
 
@@ -348,14 +332,37 @@ const styles = StyleSheet.create({
     backgroundColor: t.bg,
   },
   scrollContent: {
-    paddingTop: t.space2,
     paddingBottom: TAB_BAR_HEIGHT + t.space4,
+  },
+  // Opaque, so the day list scrolls under it.
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: t.space2,
+    paddingTop: t.space2,
+    paddingBottom: t.space2,
+    paddingHorizontal: t.space4,
+    backgroundColor: t.bg,
   },
   monthTitle: {
     ...type.title,
+    flexShrink: 1,
     color: t.ink,
+  },
+  // A quiet pill (design system: "every control is a pill"; quiet round
+  // controls on surface-raised), so the selected day stays the only
+  // accent fill on the screen.
+  todayButton: {
     paddingHorizontal: t.space4,
-    marginBottom: t.space2,
+    paddingVertical: 6,
+    borderRadius: t.radiusPill,
+    backgroundColor: t.surfaceRaised,
+  },
+  todayLabel: {
+    ...type.meta,
+    fontWeight: "600",
+    color: t.ink,
   },
   weekdayRow: {
     flexDirection: "row",
@@ -366,53 +373,6 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: "center",
     color: t.inkSubtle,
-  },
-  monthPage: {
-    flexDirection: "column",
-  },
-  weekRow: {
-    flexDirection: "row",
-    paddingHorizontal: GRID_HORIZONTAL_PADDING,
-  },
-  dayCellSlot: {
-    flex: 1,
-    aspectRatio: 1,
-  },
-  dayCircle: {
-    flex: 1,
-    margin: 2,
-    borderRadius: t.radiusPill,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "transparent",
-  },
-  dayCircleSelected: {
-    backgroundColor: t.accent,
-  },
-  dayCircleToday: {
-    borderColor: t.accent,
-  },
-  dayNumber: {
-    ...type.body,
-    color: t.ink,
-  },
-  dayNumberSelected: {
-    color: t.onAccent,
-    fontWeight: "700",
-  },
-  // PRD 5.2: a short line under the date, in the accent colour, like the
-  // follow check.
-  dayMark: {
-    position: "absolute",
-    bottom: 6,
-    width: 14,
-    height: 3,
-    borderRadius: t.radiusPill,
-    backgroundColor: t.accent,
-  },
-  dayMarkSelected: {
-    backgroundColor: t.onAccent,
   },
   dayList: {
     paddingTop: t.space4,
@@ -433,19 +393,5 @@ const styles = StyleSheet.create({
     height: StyleSheet.hairlineWidth,
     marginLeft: t.space4 + 60 + t.space2 + 4,
     backgroundColor: t.hairline,
-  },
-  todayButton: {
-    position: "absolute",
-    bottom: TAB_BAR_HEIGHT + t.space4,
-    alignSelf: "center",
-    backgroundColor: t.accent,
-    paddingHorizontal: 32,
-    paddingVertical: 14,
-    borderRadius: t.radiusPill,
-  },
-  todayLabel: {
-    ...type.body,
-    color: t.onAccent,
-    fontWeight: "700",
   },
 });
