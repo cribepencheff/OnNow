@@ -5,7 +5,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Animated,
-  Pressable,
   RefreshControl,
   StyleSheet,
   Text,
@@ -19,6 +18,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useRouter } from "expo-router";
 
 import { HeroPager } from "@/components/Hero/HeroPager";
+import { AddFirstShow } from "@/components/AddFirstShow";
 import { AiringThisWeekRow } from "@/components/AiringThisWeekRow";
 import { TopPicksRow } from "@/components/TopPicksRow";
 import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
@@ -27,7 +27,6 @@ import { useToday } from "@/hooks/useToday";
 import { deriveHomeViewState } from "@/logic/home";
 import { findHeroSlides, type HeroSlide } from "@/logic/hero-carousel";
 import { updatedAgoLabel } from "@/logic/launch";
-import { accent } from "@/theme/color";
 import { t as tokens, type } from "@/theme/tokens";
 
 function deviceTimeZone(): string {
@@ -272,7 +271,11 @@ export default function HomeScreen() {
             )}
 
             {state.kind === "empty-follow-list" && (
-              <EmptyFollowList onPress={openSearch} />
+              <AddFirstShow
+                onPress={openSearch}
+                testID="home-empty-state"
+                buttonTestID="home-add-show"
+              />
             )}
 
             {state.kind === "no-upcoming" && (
@@ -413,27 +416,6 @@ function PullToRefreshIndicator({
   );
 }
 
-// FR-007, FR-013: Home's only way into Search; with shows followed, Search
-// is reached from the Shows tab.
-function EmptyFollowList({ onPress }: { onPress: () => void }) {
-  return (
-    <View style={styles.emptyState} testID="home-empty-state">
-      <Text style={styles.emptyStatePrompt}>
-        Follow your shows to see what comes out today.
-      </Text>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Add your first show"
-        onPress={onPress}
-        style={styles.emptyStateButton}
-        testID="home-add-show"
-      >
-        <Text style={styles.emptyStateButtonLabel}>Add your first show</Text>
-      </Pressable>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -441,35 +423,11 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
   },
-  emptyState: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 16,
-    paddingHorizontal: 32,
-  },
-  emptyStatePrompt: {
-    color: "#666666",
-    fontSize: 15,
-    textAlign: "center",
-  },
-  // Show detail's accent action button.
-  emptyStateButton: {
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 24,
-    backgroundColor: accent,
-  },
-  emptyStateButtonLabel: {
-    color: "#FFFFFF",
-    fontWeight: "700",
-    fontSize: 16,
-  },
   quietLine: {
     flex: 1,
     textAlign: "center",
     textAlignVertical: "center",
-    color: "#666666",
+    color: tokens.inkMuted,
     fontSize: 15,
     paddingHorizontal: 32,
   },

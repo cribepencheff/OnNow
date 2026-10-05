@@ -1,148 +1,37 @@
-import { showsRowLine, sortShowsByTitle } from "./shows-list";
-import type { TvMazeEpisode, TvMazeSeason } from "@/api/tvmaze-types";
+import { showsSegment, sortShowsByTitle, splitBySegment } from "./shows-list";
+import type { ShowState } from "./show-state";
 
-// A regular episode by default (S1E5); pass `number: 1` for a season
-// premiere (CRI-78).
-function episode(
-  airdate: string,
-  { season = 1, number = 5 }: { season?: number; number?: number } = {},
-): TvMazeEpisode {
-  return {
-    id: 1,
-    url: "",
-    name: "Episode",
-    season,
-    number,
-    type: "regular",
-    airdate,
-    airtime: "20:00",
-    airstamp: `${airdate}T20:00:00+00:00`,
-    runtime: 30,
-    image: null,
-    summary: null,
-  };
-}
-
-function season(
-  premiereDate: string | null,
-  episodeOrder: number | null = null,
-): TvMazeSeason {
-  return {
-    id: 1,
-    url: "",
-    number: 2,
-    name: "",
-    episodeOrder,
-    premiereDate,
-    endDate: null,
-    network: null,
-    webChannel: null,
-    image: null,
-    summary: null,
-  };
-}
-
-describe("showsRowLine (PRD 5.3, FR-010, FR-035)", () => {
-  it('shows "New today" for a show releasing an episode on its own row', () => {
-    expect(
-      showsRowLine(
-        { kind: "episode", episode: episode("2026-09-21") },
-        "Running",
-        "UTC",
-        "2026-09-21",
-      ),
-    ).toBe("New today");
+describe("showsSegment (PRD 5.3, FR-010)", () => {
+  it.each<[ShowState, "active" | "inactive"]>([
+    [{ kind: "airing", nextDate: "2026-10-11" }, "active"],
+    [{ kind: "airing-today" }, "active"],
+    [{ kind: "airing-tba" }, "active"],
+    [{ kind: "season-dated", season: 3, date: "2027-07-09" }, "active"],
+    [{ kind: "season-tba", season: 3 }, "active"],
+    [{ kind: "between-seasons" }, "inactive"],
+    [{ kind: "future-uncertain" }, "inactive"],
+    [{ kind: "ended" }, "inactive"],
+    [{ kind: "other", status: "In development" }, "inactive"],
+  ])("puts %j in %s", (state, segment) => {
+    expect(showsSegment(state)).toBe(segment);
   });
+});
 
-  it('shows "Next: Tomorrow" for an episode airing the day after today', () => {
-    expect(
-      showsRowLine(
-        { kind: "episode", episode: episode("2026-09-22") },
-        "Running",
-        "UTC",
-        "2026-09-21",
-      ),
-    ).toBe("Next: Tomorrow");
-  });
+describe("splitBySegment (PRD 5.3, FR-010)", () => {
+  it("splits shows into Active and Inactive, each alphabetical by title", () => {
+    const item = (name: string, state: ShowState) => ({
+      show: { name },
+      state,
+    });
+    const { active, inactive } = splitBySegment([
+      item("Silo", { kind: "ended" }),
+      item("The Bear", { kind: "airing-today" }),
+      item("Andor", { kind: "between-seasons" }),
+      item("Foundation", { kind: "season-tba", season: 4 }),
+    ]);
 
-  it("formats a running show's upcoming episode date further away", () => {
-    expect(
-      showsRowLine(
-        { kind: "episode", episode: episode("2026-09-24") },
-        "Running",
-        "UTC",
-        "2026-09-21",
-      ),
-    ).toBe("Next: Thu 24 Sep");
-  });
-
-  it("labels an announced season's premiere date for a show between seasons as a season premiere (CRI-78)", () => {
-    expect(
-      showsRowLine(
-        { kind: "announced-season", season: season("2026-12-01") },
-        "Running",
-        "UTC",
-        "2026-09-21",
-      ),
-    ).toBe("Season 2 premiere · Tue 1 Dec");
-  });
-
-  it("labels episode 1 of a season next year as a season premiere with the year (CRI-78)", () => {
-    expect(
-      showsRowLine(
-        {
-          kind: "episode",
-          episode: episode("2027-07-09", { season: 4, number: 1 }),
-        },
-        "Running",
-        "UTC",
-        "2026-09-24",
-      ),
-    ).toBe("Season 4 premiere · Fri 9 Jul 2027");
-  });
-
-  it("shows a regular episode next year with the year (CRI-78)", () => {
-    expect(
-      showsRowLine(
-        { kind: "episode", episode: episode("2027-07-09") },
-        "Running",
-        "UTC",
-        "2026-09-24",
-      ),
-    ).toBe("Next: Fri 9 Jul 2027");
-  });
-
-  it("falls back to the show's status when between seasons with no announced date", () => {
-    expect(
-      showsRowLine(
-        { kind: "announced-season", season: season(null, 8) },
-        "Running",
-        "UTC",
-        "2026-09-21",
-      ),
-    ).toBe("Running");
-  });
-
-  it("shows TVmaze's status in plain words when nothing is announced (CRI-81)", () => {
-    expect(
-      showsRowLine(
-        { kind: "status", status: "To Be Determined" },
-        "To Be Determined",
-        "UTC",
-        "2026-09-23",
-      ),
-    ).toBe("Renewal not announced");
-  });
-
-  it("shows the status verbatim for an ended show", () => {
-    expect(
-      showsRowLine(
-        { kind: "status", status: "Ended" },
-        "Ended",
-        "UTC",
-        "2026-09-21",
-      ),
-    ).toBe("Ended");
+    expect(active.map((i) => i.show.name)).toEqual(["Foundation", "The Bear"]);
+    expect(inactive.map((i) => i.show.name)).toEqual(["Andor", "Silo"]);
   });
 });
 

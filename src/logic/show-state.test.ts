@@ -63,6 +63,59 @@ describe("showState (FR-028, FR-034)", () => {
     });
   });
 
+  it('is "new ep today" when the latest episode is out today and nothing is dated after it (PRD 5.5)', () => {
+    const episodes = [episode(2, 1, "2026-09-27"), episode(2, 2, "2026-10-04")];
+    expect(stateOf("Running", episodes, [])).toEqual({ kind: "airing-today" });
+  });
+
+  it('prefers "new ep today" over a next episode listed without a date (PRD 5.5)', () => {
+    const episodes = [episode(2, 1, "2026-10-04"), episode(2, 2, null)];
+    expect(stateOf("Running", episodes, [])).toEqual({ kind: "airing-today" });
+  });
+
+  it('is "new ep today" for an Ended show whose last episode is out today (PRD 5.5)', () => {
+    const episodes = [episode(3, 8, "2026-10-04")];
+    expect(stateOf("Ended", episodes, [])).toEqual({ kind: "airing-today" });
+  });
+
+  it("lets a dated next season win over an episode out today", () => {
+    const episodes = [episode(2, 8, "2026-10-04")];
+    expect(
+      stateOf("Running", episodes, [
+        season(2, "2026-08-01"),
+        season(3, "2027-03-01"),
+      ]),
+    ).toEqual({ kind: "season-dated", season: 3, date: "2027-03-01" });
+  });
+
+  it('is "next ep TBA" when the airing season\'s next episode is listed without a date (PRD 5.5)', () => {
+    const episodes = [
+      episode(2, 1, "2026-09-20"),
+      episode(2, 2, "2026-09-27"),
+      episode(2, 3, null),
+    ];
+    expect(stateOf("Running", episodes, [])).toEqual({ kind: "airing-tba" });
+  });
+
+  it('prefers "next ep TBA" over a new season listed without a date', () => {
+    const episodes = [episode(2, 1, "2026-09-27"), episode(2, 2, null)];
+    expect(
+      stateOf("Running", episodes, [season(2, "2026-09-27"), season(3, null)]),
+    ).toEqual({ kind: "airing-tba" });
+  });
+
+  it("does not read an undated episode of an Ended show as airing", () => {
+    const episodes = [episode(2, 1, "2026-09-27"), episode(2, 2, null)];
+    expect(stateOf("Ended", episodes, [])).toEqual({ kind: "ended" });
+  });
+
+  it("does not read an undated episode of an earlier season as airing", () => {
+    const episodes = [episode(1, 9, null), episode(2, 1, "2026-09-27")];
+    expect(stateOf("Running", episodes, [])).toEqual({
+      kind: "between-seasons",
+    });
+  });
+
   it("is a dated next season when the next episode starts a new season", () => {
     const episodes = [...season1Aired, episode(2, 1, "2027-03-05")];
     expect(stateOf("Running", episodes, [])).toEqual({
@@ -142,11 +195,13 @@ describe("showState (FR-028, FR-034)", () => {
     });
   });
 
-  it("ignores specials and episodes without a date (FR-037)", () => {
+  // An undated regular episode in the airing season is "next ep TBA" (PRD
+  // 5.5), tested above.
+  it("ignores specials (FR-037)", () => {
     const episodes = [
       ...season1Aired,
       episode(1, 0, "2026-12-24", "significant_special"),
-      episode(1, 3, null),
+      episode(1, 0, null, "significant_special"),
     ];
     expect(stateOf("Running", episodes, [])).toEqual({
       kind: "between-seasons",
@@ -166,7 +221,7 @@ describe("showState (FR-028, FR-034)", () => {
     });
     expect(
       showState({ status: "Running" }, episodes, [], "America/New_York", TODAY),
-    ).toEqual({ kind: "between-seasons" });
+    ).toEqual({ kind: "airing-today" });
   });
 
   it("reads MobLand season 2 as airing (real TVmaze fixture)", () => {
@@ -198,6 +253,8 @@ describe("showState (FR-028, FR-034)", () => {
 describe("showStateLabel (FR-028)", () => {
   it.each<[ShowState, string]>([
     [{ kind: "airing", nextDate: "2026-10-11" }, "Airing · next ep Sun 11 Oct"],
+    [{ kind: "airing-today" }, "Airing · new ep today"],
+    [{ kind: "airing-tba" }, "Airing · next ep TBA"],
     [
       { kind: "season-dated", season: 3, date: "2027-07-09" },
       "Season 3 · Fri 9 Jul 2027",

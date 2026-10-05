@@ -6,6 +6,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { setUpAppStateFocus } from "@/hooks/app-state-focus";
 import { asyncStoragePersister, queryClient } from "@/hooks/query-client";
+import { t } from "@/theme/tokens";
 
 // CRI-95: Home hides the splash once its data is ready (at once from the
 // cache); without a cache it waits for the first fetch, at most this long.
@@ -29,7 +30,16 @@ export default function RootLayout() {
         client={queryClient}
         persistOptions={{ persister: asyncStoragePersister }}
       >
-        <Stack>
+        <Stack
+          // Pushed views (Show detail, Region) get a header on bg with an
+          // ink back arrow and title, like the screens under them (ADR 0011).
+          screenOptions={{
+            headerStyle: { backgroundColor: t.bg },
+            headerTintColor: t.ink,
+            headerShadowVisible: false,
+            contentStyle: { backgroundColor: t.bg },
+          }}
+        >
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen
             name="show/[id]"
