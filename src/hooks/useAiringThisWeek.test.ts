@@ -217,12 +217,12 @@ describe("useAiringThisWeek (FR-039, CRI-110)", () => {
     client.unmount();
   });
 
-  // CRI-123: Refresh, as on "Top picks for you".
-  describe("Refresh (CRI-123)", () => {
+  // CRI-123: Refresh and Start over, as on "Top picks for you".
+  describe("Refresh and Start over (CRI-123)", () => {
     it("shows the next most popular shows, without followed ones", async () => {
       const { result, rerender, unmount, client } = await renderRow();
       await waitFor(() => expect(result.current.cards).toHaveLength(10));
-      expect(result.current.canRefresh).toBe(true);
+      expect(result.current.control).toBe("refresh");
 
       // 203 followed from the row, 212 from elsewhere.
       mockFollowed = { ids: new Set([1203, 1212]), isLoaded: true };
@@ -237,18 +237,43 @@ describe("useAiringThisWeek (FR-039, CRI-110)", () => {
       client.unmount();
     });
 
-    it("is hidden once no shows are left for the week", async () => {
-      const { result, unmount, client } = await renderRow();
+    it('reads "Start over" at the end, and starts over at the top minus followed shows', async () => {
+      const { result, rerender, unmount, client } = await renderRow();
       await waitFor(() => expect(result.current.cards).toHaveLength(10));
 
       await act(() => result.current.refresh());
       await waitFor(() => expect(result.current.cards).toHaveLength(4));
-      expect(result.current.canRefresh).toBe(false);
+      expect(result.current.control).toBe("startOver");
+      expect(result.current.batch).toBe(1);
+
+      mockFollowed = { ids: new Set([1201, 1202]), isLoaded: true };
+      await rerender({});
+      await act(() => result.current.refresh());
+      await waitFor(() => expect(result.current.batch).toBe(2));
+      expect(ids(result.current.cards)).toEqual([
+        203, 204, 205, 206, 207, 208, 209, 210, 211, 212,
+      ]);
+      expect(result.current.control).toBe("refresh");
       await unmount();
       client.unmount();
     });
 
-    it("keeps the row and hides when the shows left are all left out", async () => {
+    it('says "all followed" only when every show is followed', async () => {
+      mockFollowed = {
+        ids: new Set(onTheAir.map((show) => show.id + 1000)),
+        isLoaded: true,
+      };
+      const { result, unmount, client } = await renderRow();
+
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+      expect(result.current.cards).toEqual([]);
+      expect(result.current.allFollowed).toBe(true);
+      expect(result.current.control).toBe("startOver");
+      await unmount();
+      client.unmount();
+    });
+
+    it('keeps the row and reads "Start over" when the shows left are all left out', async () => {
       getWeekInfo.mockImplementation(async (tvmazeId: number) =>
         tvmazeId > 1210 ? null : airsFriday,
       );
@@ -256,7 +281,8 @@ describe("useAiringThisWeek (FR-039, CRI-110)", () => {
       await waitFor(() => expect(result.current.cards).toHaveLength(10));
 
       await act(() => result.current.refresh());
-      await waitFor(() => expect(result.current.canRefresh).toBe(false));
+      await waitFor(() => expect(result.current.control).toBe("startOver"));
+      expect(result.current.batch).toBe(0);
       expect(ids(result.current.cards)).toEqual([
         201, 202, 203, 204, 205, 206, 207, 208, 209, 210,
       ]);

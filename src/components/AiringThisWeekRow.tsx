@@ -1,8 +1,9 @@
 // "Airing this week" on Home (FR-039, ADR 0016): shows on a service in the
 // region that would be in the hero if followed, by popularity, followed
 // shows left out, each with its day. Always shown; a card followed from
-// the row stays, marked, until Refresh shows the next shows. Refresh is
-// there only while shows are left for the week (CRI-123).
+// the row stays, marked, until Refresh shows the next shows. At the end of
+// the week's shows the control reads "Start over"; the row is empty, with
+// a line saying so, only when every show is followed (CRI-123).
 
 import { useAiringThisWeek } from "@/hooks/useAiringThisWeek";
 import { PosterRow } from "./PosterRow";
@@ -14,24 +15,32 @@ export function AiringThisWeekRow({
 }: {
   detailPathname?: DetailPathname;
 } = {}) {
-  const { cards, isLoading, refresh, isRefreshing, canRefresh } =
-    useAiringThisWeek();
+  const {
+    cards,
+    isLoading,
+    refresh,
+    isRefreshing,
+    control,
+    allFollowed,
+    batch,
+  } = useAiringThisWeek();
 
   return (
     <PosterRow
       title="Airing this week"
       isLoading={isLoading}
       hasCards={cards.length > 0}
+      emptyText={allFollowed ? "That's all this week" : null}
+      batch={batch}
       testID="airing-this-week-row"
       footer={
-        canRefresh ? (
-          <RowRefresh
-            onPress={refresh}
-            isRefreshing={isRefreshing}
-            accessibilityHint="Shows the next shows airing this week"
-            testID="airing-refresh"
-          />
-        ) : null
+        <RowRefresh
+          control={control}
+          onPress={refresh}
+          isRefreshing={isRefreshing}
+          refreshHint="Shows the next shows airing this week"
+          testID="airing-refresh"
+        />
       }
     >
       {cards.map((card) => (

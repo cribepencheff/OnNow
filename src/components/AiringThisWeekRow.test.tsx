@@ -3,7 +3,12 @@ import { fireEvent, render, screen } from "@testing-library/react-native";
 import { AiringThisWeekRow } from "./AiringThisWeekRow";
 
 const mockRefresh = jest.fn();
-let mockRow = { canRefresh: true, isRefreshing: false };
+let mockRow: {
+  cards?: unknown[];
+  control: "refresh" | "startOver";
+  isRefreshing: boolean;
+  allFollowed?: boolean;
+} = { control: "refresh", isRefreshing: false };
 jest.mock("@/hooks/useAiringThisWeek", () => ({
   useAiringThisWeek: () => ({
     cards: [
@@ -18,6 +23,8 @@ jest.mock("@/hooks/useAiringThisWeek", () => ({
     ],
     isLoading: false,
     refresh: mockRefresh,
+    allFollowed: false,
+    batch: 0,
     ...mockRow,
   }),
 }));
@@ -26,12 +33,12 @@ jest.mock("@/hooks/useFollowList", () => ({
 }));
 jest.mock("expo-router", () => ({ useRouter: () => ({ push: jest.fn() }) }));
 
-// CRI-123: the same Refresh as "Top picks for you", only while shows are
-// left for the week.
+// CRI-123: the same control as "Top picks for you": Refresh while shows
+// are left, Start over at the end, never gone.
 describe("AiringThisWeekRow Refresh (FR-039, CRI-123)", () => {
   beforeEach(() => {
     mockRefresh.mockClear();
-    mockRow = { canRefresh: true, isRefreshing: false };
+    mockRow = { control: "refresh", isRefreshing: false };
   });
 
   it("shows Refresh while shows are left, and asks for the next ones", async () => {
@@ -41,16 +48,31 @@ describe("AiringThisWeekRow Refresh (FR-039, CRI-123)", () => {
     expect(mockRefresh).toHaveBeenCalledTimes(1);
   });
 
-  it("hides Refresh when no shows are left for the week", async () => {
-    mockRow = { canRefresh: false, isRefreshing: false };
+  it('reads "Start over" at the end of the week\'s shows, in the same slot', async () => {
+    mockRow = { control: "startOver", isRefreshing: false };
     await render(<AiringThisWeekRow />);
 
     expect(screen.getByText("Lanterns")).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Refresh" })).toBeNull();
+    await fireEvent.press(screen.getByRole("button", { name: "Start over" }));
+    expect(mockRefresh).toHaveBeenCalledTimes(1);
+  });
+
+  it('says "That\'s all this week" only when every show is followed, keeping Start over', async () => {
+    mockRow = {
+      cards: [],
+      control: "startOver",
+      isRefreshing: false,
+      allFollowed: true,
+    };
+    await render(<AiringThisWeekRow />);
+
+    expect(screen.getByText("That's all this week")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Start over" })).toBeTruthy();
   });
 
   it("is busy, not pressable, while the next shows load", async () => {
-    mockRow = { canRefresh: true, isRefreshing: true };
+    mockRow = { control: "refresh", isRefreshing: true };
     await render(<AiringThisWeekRow />);
 
     await fireEvent.press(screen.getByRole("button", { name: "Refresh" }));

@@ -2,7 +2,9 @@
 // followed show are kept a day; a page of cards is filled once from their
 // ranking (fillTopPicks), only titles with a service in the region, and
 // then left alone, so following from the row never reshuffles it. Refresh
-// fills the next page, without followed shows. The page number is shared
+// fills the next page, without followed shows; at the end of the ranking
+// the control reads "Start over" and goes back to the top, minus followed
+// shows (logic/poster-batches.ts, CRI-123). The page number is shared
 // by every row on screen, so Refresh in Search also moves Home's row
 // (FR-026).
 
@@ -23,10 +25,11 @@ import { resolveTvMazeId } from "@/api/tvmaze-id";
 import type { TvMazeShow } from "@/api/tvmaze-types";
 import { rankRecommendations } from "@/logic/recommendations";
 import {
-  fillTopPicks,
-  type FilledPage,
-  type PosterItem,
-} from "@/logic/top-picks";
+  nextBatch,
+  type Batch,
+  type BatchControl,
+} from "@/logic/poster-batches";
+import { fillTopPicks, type PosterItem } from "@/logic/top-picks";
 import { useFollowList } from "./useFollowList";
 import { useRegion } from "./useRegion";
 
@@ -49,6 +52,12 @@ export function useTopPicks(followedShows: TvMazeShow[]): {
   isLoading: boolean;
   refresh: () => Promise<void>;
   isRefreshing: boolean;
+  // "Refresh" or "Start over" (CRI-123).
+  control: BatchControl;
+  // Empty because every pick is followed.
+  allFollowed: boolean;
+  // Which batch is on screen; a new one crossfades in.
+  batch: number;
 } {
   const queryClient = useQueryClient();
   const { followedIds } = useFollowList();
@@ -72,31 +81,34 @@ export function useTopPicks(followedShows: TvMazeShow[]): {
     staleTime: Infinity,
   });
   const page = useQuery({
-    queryKey: ["topPicksPage", LAUNCH, region, pageIndex],
+    queryKey: ["topPicksPage", "v2", LAUNCH, region, pageIndex],
     enabled: settled,
     staleTime: Infinity,
     placeholderData: keepPreviousData,
-    queryFn: async (): Promise<FilledPage> => {
+    queryFn: async (): Promise<Batch> => {
       const found = answers.map((query) => query.data).filter(isFound);
       const ranking = rankRecommendations(
         found.map(({ results }) => results),
         new Set(found.map(({ tvId }) => tvId)),
         Infinity,
       );
-      const previous = queryClient.getQueryData<FilledPage>([
+      const previous = queryClient.getQueryData<Batch>([
         "topPicksPage",
+        "v2",
         LAUNCH,
         region,
         pageIndex - 1,
       ]);
-      return fillTopPicks(
-        ranking,
-        previous?.nextStart ?? 0,
-        ROW_SIZE,
-        resolveTvMazeId,
-        (tvmazeId) => followedIds.has(tvmazeId),
-        async (tvmazeId, tmdbId) =>
-          (await hasServiceInRegion(tvmazeId, tmdbId, region!)) ? {} : null,
+      return nextBatch(previous, (start) =>
+        fillTopPicks(
+          ranking,
+          start,
+          ROW_SIZE,
+          resolveTvMazeId,
+          (tvmazeId) => followedIds.has(tvmazeId),
+          async (tvmazeId, tmdbId) =>
+            (await hasServiceInRegion(tvmazeId, tmdbId, region!)) ? {} : null,
+        ),
       );
     },
   });
@@ -116,5 +128,8 @@ export function useTopPicks(followedShows: TvMazeShow[]): {
     isLoading: page.data === undefined && !page.isError,
     refresh,
     isRefreshing: page.isFetching,
+    control: page.data?.control ?? "refresh",
+    allFollowed: page.data?.allFollowed ?? false,
+    batch: page.data?.index ?? 0,
   };
 }

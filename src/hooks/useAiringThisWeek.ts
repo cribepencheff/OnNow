@@ -5,8 +5,9 @@
 // its day on the card (CRI-110). The ten are shown by air date, Today
 // first (CRI-122). A page is filled once and left alone, so following from
 // the row keeps the card. Refresh fills the next page from where the last
-// one stopped, without followed shows and without wrapping around; it is
-// offered only while shows are left for the week (CRI-123). The page
+// one stopped, without followed shows; at the end of the week's shows the
+// control reads "Start over" and goes back to the first batch, minus
+// followed shows (logic/poster-batches.ts, CRI-123). The page
 // number is shared by every row on screen, so Refresh in Search also moves
 // Home's row (FR-026), as for "Top picks for you".
 
@@ -30,10 +31,11 @@ import {
 import { HOME_HERO_HORIZON_DAYS } from "@/logic/hero-carousel";
 import { addDays, type LocalDate } from "@/logic/local-date";
 import {
-  fillTopPicks,
-  type FilledPage,
-  type PosterItem,
-} from "@/logic/top-picks";
+  nextBatch,
+  type Batch,
+  type BatchControl,
+} from "@/logic/poster-batches";
+import { fillTopPicks, type PosterItem } from "@/logic/top-picks";
 import { useFollowList } from "./useFollowList";
 import { useRegion } from "./useRegion";
 import { useToday } from "./useToday";
@@ -48,7 +50,8 @@ const CANDIDATES_KEY = ["airingThisWeek", "v1"];
 const PAGE_INDEX_KEY = ["airingThisWeekPageIndex", LAUNCH];
 
 // The day word on the card ("Today", "Fri") and the date it orders by.
-export type AiringPick = PosterItem & { day: string; date: LocalDate };
+type AiringExtra = { day: string; date: LocalDate };
+export type AiringPick = PosterItem & AiringExtra;
 
 function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -60,8 +63,12 @@ export function useAiringThisWeek(): {
   isLoading: boolean;
   refresh: () => Promise<void>;
   isRefreshing: boolean;
-  // Shows are left for the week after this page (CRI-123).
-  canRefresh: boolean;
+  // "Refresh" or "Start over" (CRI-123).
+  control: BatchControl;
+  // Empty because every show this week is followed.
+  allFollowed: boolean;
+  // Which batch is on screen; a new one crossfades in.
+  batch: number;
 } {
   const queryClient = useQueryClient();
   const { followedIds, isLoaded } = useFollowList();
@@ -88,7 +95,7 @@ export function useAiringThisWeek(): {
   });
   const pageKey = (index: number) => [
     "airingThisWeekPage",
-    "v5",
+    "v6",
     LAUNCH,
     region,
     todayDate,
@@ -99,51 +106,45 @@ export function useAiringThisWeek(): {
     enabled: isLoaded && region !== undefined && candidates.data !== undefined,
     staleTime: Infinity,
     placeholderData: keepPreviousData,
-    queryFn: async (): Promise<FilledPage<AiringPick>> => {
-      const previous = queryClient.getQueryData<FilledPage<AiringPick>>(
-        pageKey(pageIndex - 1),
-      );
-      const filled = await fillTopPicks(
-        airingThisWeek(candidates.data ?? []),
-        previous?.nextStart ?? 0,
-        ROW_SIZE,
-        resolveTvMazeId,
-        (tvmazeId) => followedIds.has(tvmazeId),
-        async (tvmazeId, tmdbId) => {
-          if (!(await hasServiceInRegion(tvmazeId, tmdbId, region!))) {
-            return null;
-          }
-          const info = await queryClient
-            .fetchQuery({
-              queryKey: ["tvmazeWeekInfo", "v1", tvmazeId],
-              staleTime: WEEK_INFO_STALE_MS,
-              queryFn: () => tvMazeClient.getWeekInfo(tvmazeId),
-            })
-            .catch(() => null);
-          if (!info || !isAiringType(info.type)) {
-            return null;
-          }
-          const day = firstEpisodeDayThisWeek(
-            info.episodes,
-            timeZone,
-            todayDate,
-          );
-          const word = day && weekDayWord(day, todayDate);
-          return word ? { day: word, date: day } : null;
-        },
-        { wrap: false },
-      );
-      // Every show left was left out: keep the row as it was, with nothing
-      // more to refresh to.
-      if (filled.cards.length === 0 && previous) {
-        return { ...previous, nextStart: filled.nextStart, hasMore: false };
-      }
-      return { ...filled, cards: byAiringDate(filled.cards) };
-    },
+    queryFn: (): Promise<Batch<AiringExtra>> =>
+      nextBatch(
+        queryClient.getQueryData<Batch<AiringExtra>>(pageKey(pageIndex - 1)),
+        (start) => fillAiring(start),
+      ),
   });
 
-  // The week's candidates are fetched again only when a day old, judged
-  // now rather than at the last render; then the next page.
+  async function fillAiring(start: number) {
+    const filled = await fillTopPicks(
+      airingThisWeek(candidates.data ?? []),
+      start,
+      ROW_SIZE,
+      resolveTvMazeId,
+      (tvmazeId) => followedIds.has(tvmazeId),
+      async (tvmazeId, tmdbId) => {
+        if (!(await hasServiceInRegion(tvmazeId, tmdbId, region!))) {
+          return null;
+        }
+        const info = await queryClient
+          .fetchQuery({
+            queryKey: ["tvmazeWeekInfo", "v1", tvmazeId],
+            staleTime: WEEK_INFO_STALE_MS,
+            queryFn: () => tvMazeClient.getWeekInfo(tvmazeId),
+          })
+          .catch(() => null);
+        if (!info || !isAiringType(info.type)) {
+          return null;
+        }
+        const day = firstEpisodeDayThisWeek(info.episodes, timeZone, todayDate);
+        const word = day && weekDayWord(day, todayDate);
+        return word ? { day: word, date: day } : null;
+      },
+    );
+    return { ...filled, cards: byAiringDate(filled.cards) };
+  }
+
+  // Refresh and Start over alike. The week's candidates are fetched again
+  // only when a day old, judged now rather than at the last render; then
+  // the next batch.
   async function refresh(): Promise<void> {
     await queryClient.refetchQueries({
       queryKey: CANDIDATES_KEY,
@@ -157,6 +158,8 @@ export function useAiringThisWeek(): {
     isLoading: page.data === undefined && !page.isError,
     refresh,
     isRefreshing: page.isFetching,
-    canRefresh: page.data?.hasMore ?? false,
+    control: page.data?.control ?? "refresh",
+    allFollowed: page.data?.allFollowed ?? false,
+    batch: page.data?.index ?? 0,
   };
 }

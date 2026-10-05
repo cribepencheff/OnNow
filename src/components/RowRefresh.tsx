@@ -1,59 +1,73 @@
-// The quiet "Refresh" control under a poster row (FR-038, FR-039,
-// CRI-123): the next page of the row. Busy while that page loads.
+// The control under a poster row (FR-038, FR-039, CRI-123): "Refresh"
+// while shows are left, "Start over" at the end of the row's pool. Always
+// a button, always there, in a slot of one fixed height. Busy while the
+// next batch loads.
 
 import { Pressable, StyleSheet, Text } from "react-native";
 import { SymbolView } from "expo-symbols";
 
+import type { BatchControl } from "@/logic/poster-batches";
 import { t, type } from "@/theme/tokens";
 
+// The slot's height in every state, so the page never moves.
+export const ROW_CONTROL_HEIGHT = 36;
+
 export function RowRefresh({
+  control,
   onPress,
   isRefreshing,
-  accessibilityHint,
+  refreshHint,
   testID,
 }: {
+  control: BatchControl;
   onPress: () => void;
   isRefreshing: boolean;
-  accessibilityHint: string;
+  // What Refresh brings, for screen readers ("Shows the next top picks").
+  refreshHint: string;
   testID: string;
 }) {
+  const startOver = control === "startOver";
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel="Refresh"
-      accessibilityHint={accessibilityHint}
+      accessibilityLabel={startOver ? "Start over" : "Refresh"}
+      accessibilityHint={startOver ? "Shows the first ones again" : refreshHint}
       accessibilityState={{ busy: isRefreshing }}
       disabled={isRefreshing}
       onPress={onPress}
       hitSlop={8}
-      style={styles.refresh}
+      style={styles.control}
       testID={testID}
     >
       <SymbolView
-        name={{
-          ios: "arrow.clockwise",
-          android: "refresh",
-          web: "refresh",
-        }}
+        name={
+          startOver
+            ? {
+                ios: "arrow.counterclockwise",
+                android: "restart_alt",
+                web: "restart_alt",
+              }
+            : { ios: "arrow.clockwise", android: "refresh", web: "refresh" }
+        }
         tintColor={t.inkMuted}
         size={14}
       />
-      <Text style={styles.refreshLabel}>Refresh</Text>
+      <Text style={styles.label}>{startOver ? "Start over" : "Refresh"}</Text>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   // Quiet, like the meta line: a small control, not a primary action.
-  refresh: {
+  control: {
     flexDirection: "row",
     alignItems: "center",
     alignSelf: "flex-start",
     gap: t.space2,
+    height: ROW_CONTROL_HEIGHT,
     marginHorizontal: t.space4,
-    paddingVertical: t.space2,
   },
-  refreshLabel: {
+  label: {
     ...type.meta,
     color: t.inkMuted,
   },

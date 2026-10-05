@@ -52,7 +52,7 @@ describe("fillTopPicks (FR-038)", () => {
     expect(resolve.mock.calls.map(([id]) => id)).toEqual([1, 2, 3, 5, 6]);
   });
 
-  it("continues from the start it is given, and wraps around", async () => {
+  it("continues from the start it is given, to the end, never wrapping (CRI-123)", async () => {
     const page = await fillTopPicks(
       ranking([1, 2, 3, 4, 5]),
       3,
@@ -60,8 +60,21 @@ describe("fillTopPicks (FR-038)", () => {
       resolver(),
       notFollowed,
     );
-    expect(page.cards.map((card) => card.tmdbId)).toEqual([4, 5, 1, 2]);
-    expect(page.nextStart).toBe(2);
+    expect(page.cards.map((card) => card.tmdbId)).toEqual([4, 5]);
+    expect(page.nextStart).toBe(5);
+    expect(page.hasMore).toBe(false);
+  });
+
+  it("counts the followed titles it skipped, so an empty row can say why (CRI-123)", async () => {
+    const page = await fillTopPicks(
+      ranking([1, 2, 3]),
+      0,
+      10,
+      resolver(),
+      (tvmazeId) => tvmazeId !== 1002,
+    );
+    expect(page.cards.map((card) => card.tmdbId)).toEqual([2]);
+    expect(page.followedSkipped).toBe(2);
   });
 
   it("looks at each title at most once, even when the row cannot be filled", async () => {
@@ -80,7 +93,12 @@ describe("fillTopPicks (FR-038)", () => {
   it("is empty for an empty ranking, with nothing left", async () => {
     await expect(
       fillTopPicks([], 0, 10, resolver(), notFollowed),
-    ).resolves.toEqual({ cards: [], nextStart: 0, hasMore: false });
+    ).resolves.toEqual({
+      cards: [],
+      nextStart: 0,
+      hasMore: false,
+      followedSkipped: 0,
+    });
   });
 
   it("runs an optional check after the TVmaze id, which can reject or add to a card", async () => {
@@ -118,11 +136,9 @@ describe("fillTopPicks (FR-038)", () => {
   });
 });
 
-// CRI-123: "Airing this week" walks its ranking once, without wrapping,
-// and says whether any titles are left for a next page.
-describe("fillTopPicks without wrapping (FR-039, CRI-123)", () => {
-  const once = { wrap: false };
-
+// CRI-123: both rows walk their ranking once, without wrapping, and say
+// whether any titles are left for a next page.
+describe("fillTopPicks to the end of the ranking (FR-038, FR-039, CRI-123)", () => {
   it("fills from the start to the end of the ranking, never wrapping", async () => {
     const page = await fillTopPicks(
       ranking([1, 2, 3, 4, 5]),
@@ -130,8 +146,6 @@ describe("fillTopPicks without wrapping (FR-039, CRI-123)", () => {
       3,
       resolver(),
       notFollowed,
-      undefined,
-      once,
     );
     expect(page.cards.map((card) => card.tmdbId)).toEqual([4, 5]);
     expect(page.nextStart).toBe(5);
@@ -145,8 +159,6 @@ describe("fillTopPicks without wrapping (FR-039, CRI-123)", () => {
       3,
       resolver(),
       notFollowed,
-      undefined,
-      once,
     );
     expect(page.cards.map((card) => card.tmdbId)).toEqual([1, 2, 3]);
     expect(page.nextStart).toBe(3);
@@ -160,8 +172,6 @@ describe("fillTopPicks without wrapping (FR-039, CRI-123)", () => {
       3,
       resolver(),
       notFollowed,
-      undefined,
-      once,
     );
     expect(page.hasMore).toBe(false);
   });
@@ -174,8 +184,6 @@ describe("fillTopPicks without wrapping (FR-039, CRI-123)", () => {
       3,
       resolve,
       notFollowed,
-      undefined,
-      once,
     );
     expect(page.cards).toEqual([]);
     expect(page.hasMore).toBe(false);
