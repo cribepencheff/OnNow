@@ -196,6 +196,12 @@ function isStreaming(provider: StreamingProvider): boolean {
   return !PAY_TV.has(provider.providerId);
 }
 
+// At least one streaming service, add-on channels included; pay-TV never
+// counts (the same rule as "Open in", FR-038, FR-039).
+export function hasStreamingService(providers: StreamingProvider[]): boolean {
+  return providers.some(isStreaming);
+}
+
 // One service per show for now (ADR 0004); the menu for several services
 // (FR-015) is MVP. In order: the show's own page when TVmaze's official
 // site is on a known service, then a known service's start page, then an

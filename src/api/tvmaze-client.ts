@@ -2,6 +2,11 @@ import { TVMAZE_CREDIT } from "./tvmaze-credit";
 import { TvMazeNetworkError, TvMazeResponseError } from "./tvmaze-errors";
 import type { TvMazeSearchResult, TvMazeShowWithEmbeds } from "./tvmaze-types";
 
+export interface TvMazeWeekInfo {
+  type: string | null;
+  episodes: { airstamp: string | null; number: number | null }[];
+}
+
 const BASE_URL = "https://api.tvmaze.com";
 
 // TVmaze allows at least 20 requests per 10 seconds per IP (spike 0001,
@@ -33,6 +38,7 @@ export interface TvMazeClient {
     imdb: string | null;
     thetvdb: number | null;
   }) => Promise<number | null>;
+  getWeekInfo: (id: number) => Promise<TvMazeWeekInfo>;
 }
 
 export function createTvMazeClient(
@@ -140,7 +146,32 @@ export function createTvMazeClient(
     return null;
   }
 
-  return { searchShows, getShowWithEpisodesAndSeasons, lookupShowId };
+  // The show's type and its previous and next episodes, in one request:
+  // enough to tell whether it airs this week (FR-039, CRI-110).
+  async function getWeekInfo(id: number): Promise<TvMazeWeekInfo> {
+    type Episode = { airstamp?: string | null; number?: number | null };
+    const show = await requestJson<{
+      type?: string | null;
+      _embedded?: { previousepisode?: Episode; nextepisode?: Episode };
+    }>(`/shows/${id}?embed[]=previousepisode&embed[]=nextepisode`);
+    const episodes = [
+      show._embedded?.previousepisode,
+      show._embedded?.nextepisode,
+    ]
+      .filter((episode): episode is Episode => Boolean(episode))
+      .map((episode) => ({
+        airstamp: episode.airstamp ?? null,
+        number: episode.number ?? null,
+      }));
+    return { type: show.type ?? null, episodes };
+  }
+
+  return {
+    searchShows,
+    getShowWithEpisodesAndSeasons,
+    lookupShowId,
+    getWeekInfo,
+  };
 }
 
 export const tvMazeClient = createTvMazeClient();

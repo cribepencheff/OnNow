@@ -64,6 +64,7 @@ export function useFollowList() {
 
   return {
     followedIds,
+    isLoaded: followedIdsQuery.isSuccess,
     isFollowed: (showId: ShowId) => followedIds.has(showId),
     follow: (showId: ShowId) => followMutation.mutateAsync(showId),
     unfollow: (showId: ShowId) => unfollowMutation.mutateAsync(showId),

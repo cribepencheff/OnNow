@@ -2,6 +2,7 @@ import { NOT_ON_TMDB } from "@/logic/streaming-service";
 import { createTmdbClient } from "../tmdb-client";
 import externalIdsJayZ from "../fixtures/tmdb-external-ids-jay-z.json";
 import findNeagley from "../fixtures/tmdb-find-neagley.json";
+import onTheAirPage from "../fixtures/tmdb-on-the-air.json";
 import recommendationsMobland from "../fixtures/tmdb-recommendations-mobland.json";
 import providersNeagley from "../fixtures/tmdb-providers-neagley.json";
 
@@ -305,5 +306,72 @@ describe("TmdbClient recommendations (FR-038)", () => {
       thetvdb: 479659,
     });
     expect(fetchFn.mock.calls[0][0]).toContain("/3/tv/326440/external_ids");
+  });
+});
+
+describe("TmdbClient.findAiringThisWeek (FR-039)", () => {
+  it("asks discover for the region and the week, streaming only, no soaps, pages 1 and 2", async () => {
+    const fetchFn = jest
+      .fn()
+      .mockResolvedValueOnce(jsonResponse(onTheAirPage))
+      .mockResolvedValueOnce(jsonResponse({ results: [] }));
+    const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
+
+    const shows = await client.findAiringThisWeek({
+      region: "SE",
+      timeZone: "Europe/Stockholm",
+      from: "2026-10-05",
+      to: "2026-10-11",
+    });
+    expect(shows).toHaveLength(onTheAirPage.results.length);
+    const [url] = fetchFn.mock.calls[0];
+    for (const part of [
+      "/3/discover/tv?",
+      "watch_region=SE",
+      "with_watch_monetization_types=flatrate%7Cfree%7Cads",
+      "air_date.gte=2026-10-05",
+      "air_date.lte=2026-10-11",
+      "with_type=0%7C2%7C4",
+      "without_genres=10766",
+      "sort_by=popularity.desc",
+      "timezone=Europe%2FStockholm",
+      "page=1",
+    ]) {
+      expect(url).toContain(part);
+    }
+    expect(fetchFn.mock.calls[1][0]).toContain("page=2");
+  });
+
+  it("is null without a key", async () => {
+    const fetchFn = jest.fn();
+    const client = createTmdbClient({
+      apiKey: undefined,
+      fetchFn,
+      wait: noWait,
+    });
+    await expect(
+      client.findAiringThisWeek({
+        region: "SE",
+        timeZone: "UTC",
+        from: "2026-10-05",
+        to: "2026-10-11",
+      }),
+    ).resolves.toBeNull();
+    expect(fetchFn).not.toHaveBeenCalled();
+  });
+});
+
+describe("TmdbClient.providersById (FR-038, FR-039)", () => {
+  it("reads a show's services in a region by its TMDB id, with no find step", async () => {
+    const fetchFn = jest
+      .fn()
+      .mockResolvedValueOnce(jsonResponse(providersNeagley));
+    const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
+
+    await expect(client.providersById(273207, "SE")).resolves.toEqual([
+      { providerId: 119, providerName: "Amazon Prime Video" },
+    ]);
+    expect(fetchFn).toHaveBeenCalledTimes(1);
+    expect(fetchFn.mock.calls[0][0]).toContain("/3/tv/273207/watch/providers");
   });
 });

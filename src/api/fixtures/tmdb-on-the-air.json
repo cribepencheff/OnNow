@@ -1,0 +1,253 @@
+{
+ "page": 1,
+ "total_pages": 82,
+ "results": [
+  {
+   "id": 22980,
+   "name": "Watch What Happens Live with Andy Cohen",
+   "original_name": "Watch What Happens Live with Andy Cohen",
+   "poster_path": "/onSD9UXfJwrMXWhq7UY7hGF2S1h.jpg",
+   "popularity": 615.2583,
+   "genre_ids": [
+    10767,
+    35
+   ],
+   "first_air_date": "2009-07-16"
+  },
+  {
+   "id": 59941,
+   "name": "The Tonight Show Starring Jimmy Fallon",
+   "original_name": "The Tonight Show Starring Jimmy Fallon",
+   "poster_path": "/1N4o5PmmqhlVDrcdJ2RlCFWbLGX.jpg",
+   "popularity": 591.4209,
+   "genre_ids": [
+    35,
+    10767
+   ],
+   "first_air_date": "2014-02-17"
+  },
+  {
+   "id": 2734,
+   "name": "Law & Order: Special Victims Unit",
+   "original_name": "Law & Order: Special Victims Unit",
+   "poster_path": "/iofokHZoUB4Qhik4PflvJl8TT6a.jpg",
+   "popularity": 530.8975,
+   "genre_ids": [
+    80,
+    18,
+    9648
+   ],
+   "first_air_date": "1999-09-20"
+  },
+  {
+   "id": 33238,
+   "name": "Running Man",
+   "original_name": "런닝맨",
+   "poster_path": "/2Wmmu1MkqxJ48J7aySET9EKEjXz.jpg",
+   "popularity": 493.4989,
+   "genre_ids": [
+    35,
+    10764
+   ],
+   "first_air_date": "2010-07-11"
+  },
+  {
+   "id": 456,
+   "name": "The Simpsons",
+   "original_name": "The Simpsons",
+   "poster_path": "/tf0CUEynk6GfmrlHIQKQ5mfFP5P.jpg",
+   "popularity": 412.5483,
+   "genre_ids": [
+    16,
+    35
+   ],
+   "first_air_date": "1989-12-17"
+  },
+  {
+   "id": 549,
+   "name": "Law & Order",
+   "original_name": "Law & Order",
+   "poster_path": "/haJ9eHytVO3H3JooMJG1DiWwDNm.jpg",
+   "popularity": 390.1178,
+   "genre_ids": [
+    80,
+    18
+   ],
+   "first_air_date": "1990-09-13"
+  },
+  {
+   "id": 2224,
+   "name": "The Daily Show",
+   "original_name": "The Daily Show",
+   "poster_path": "/ixcfyK7it6FjRM36Te4OdblAq4X.jpg",
+   "popularity": 343.8889,
+   "genre_ids": [
+    10763,
+    35
+   ],
+   "first_air_date": "1996-07-22"
+  },
+  {
+   "id": 1434,
+   "name": "Family Guy",
+   "original_name": "Family Guy",
+   "poster_path": "/3PFsEuAiyLkWsP4GG6dIV37Q6gu.jpg",
+   "popularity": 317.6615,
+   "genre_ids": [
+    16,
+    35
+   ],
+   "first_air_date": "1999-01-31"
+  },
+  {
+   "id": 247718,
+   "name": "MobLand",
+   "original_name": "MobLand",
+   "poster_path": "/5Xc7WpWsgflfgEMoBlf9TmWhfbH.jpg",
+   "popularity": 293.0284,
+   "genre_ids": [
+    80,
+    18
+   ],
+   "first_air_date": "2025-03-30"
+  },
+  {
+   "id": 4614,
+   "name": "NCIS",
+   "original_name": "NCIS",
+   "poster_path": "/y4fGncqELtnvRQuwSpuH8LncZqU.jpg",
+   "popularity": 268.3777,
+   "genre_ids": [
+    80,
+    18,
+    10759
+   ],
+   "first_air_date": "2003-09-23"
+  },
+  {
+   "id": 65733,
+   "name": "Doraemon",
+   "original_name": "ドラえもん",
+   "poster_path": "/9ZN1P32SHviL3SV51qLivxycvcx.jpg",
+   "popularity": 260.8487,
+   "genre_ids": [
+    10759,
+    16,
+    35,
+    10765,
+    10762,
+    10751
+   ],
+   "first_air_date": "2005-04-22"
+  },
+  {
+   "id": 95350,
+   "name": "Lanterns",
+   "original_name": "Lanterns",
+   "poster_path": "/gpC7h43xPMEV3goYMQShfJbTtLq.jpg",
+   "popularity": 251.603,
+   "genre_ids": [
+    18,
+    9648,
+    10765
+   ],
+   "first_air_date": "2026-08-16"
+  },
+  {
+   "id": 4656,
+   "name": "Raw",
+   "original_name": "Raw",
+   "poster_path": "/fstEe6RsyNyPUnMwNcL20iNl0nE.jpg",
+   "popularity": 251.0689,
+   "genre_ids": [
+    10764
+   ],
+   "first_air_date": "1993-01-11"
+  },
+  {
+   "id": 97546,
+   "name": "Ted Lasso",
+   "original_name": "Ted Lasso",
+   "poster_path": "/uRHsiw1wLxPHFXkkv4Ix1s0O6f4.jpg",
+   "popularity": 249.4324,
+   "genre_ids": [
+    18,
+    35
+   ],
+   "first_air_date": "2020-08-14"
+  },
+  {
+   "id": 11890,
+   "name": "Goede Tijden, Slechte Tijden",
+   "original_name": "Goede Tijden, Slechte Tijden",
+   "poster_path": "/p1oXgtJ0q0wAcEp3tHA5DpiynxL.jpg",
+   "popularity": 243.0346,
+   "genre_ids": [
+    10766
+   ],
+   "first_air_date": "1990-10-01"
+  },
+  {
+   "id": 206559,
+   "name": "Binnelanders",
+   "original_name": "Binnelanders",
+   "poster_path": "/3bzECfllho8PphdYujLUIuhncJD.jpg",
+   "popularity": 232.7054,
+   "genre_ids": [
+    10766
+   ],
+   "first_air_date": "2005-10-13"
+  },
+  {
+   "id": 2661,
+   "name": "Kamen Rider",
+   "original_name": "仮面ライダー",
+   "poster_path": "/2DIBDFHiKQawz4WPsYekl9DHwyA.jpg",
+   "popularity": 228.5797,
+   "genre_ids": [
+    10759,
+    10765,
+    18
+   ],
+   "first_air_date": "1971-04-03"
+  },
+  {
+   "id": 95480,
+   "name": "Slow Horses",
+   "original_name": "Slow Horses",
+   "poster_path": "/AdYr4DjOgXvDUMwu6vEhZy1Rnxk.jpg",
+   "popularity": 222.4465,
+   "genre_ids": [
+    80,
+    18,
+    9648
+   ],
+   "first_air_date": "2022-04-01"
+  },
+  {
+   "id": 1413,
+   "name": "American Horror Story",
+   "original_name": "American Horror Story",
+   "poster_path": "/yCkPLQ10qKIUgRBXmQVVMF1h96d.jpg",
+   "popularity": 217.5028,
+   "genre_ids": [
+    18,
+    9648,
+    10765
+   ],
+   "first_air_date": "2011-10-05"
+  },
+  {
+   "id": 1667,
+   "name": "Saturday Night Live",
+   "original_name": "Saturday Night Live",
+   "poster_path": "/s1cZBqbMwAF3w8S3Yo0j5nr2Yuo.jpg",
+   "popularity": 217.193,
+   "genre_ids": [
+    35,
+    10763
+   ],
+   "first_air_date": "1975-10-11"
+  }
+ ]
+}

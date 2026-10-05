@@ -13,6 +13,7 @@ import {
   tmdbOriginCountries,
   tmdbTvId,
   type ProviderAnswer,
+  type StreamingProvider,
   type TmdbFindResponse,
 } from "@/logic/streaming-service";
 import {
@@ -20,6 +21,7 @@ import {
   type ExternalIds,
   type TmdbExternalIdsResponse,
 } from "@/logic/external-ids";
+import type { TmdbOnTheAir } from "@/logic/airing-this-week";
 import type { TmdbRecommendation } from "@/logic/recommendations";
 import { matchTmdbSearch, type TmdbSearchResult } from "@/logic/tmdb-match";
 import type { TvMazeExternals, TvMazeShow } from "./tvmaze-types";
@@ -83,6 +85,20 @@ export interface TmdbClient {
   ) => Promise<TmdbRecommendations | typeof NOT_ON_TMDB | null>;
   // A TMDB show's IMDb and TheTVDB IDs, to find it on TVmaze (FR-038).
   externalIdsById: (tmdbId: number) => Promise<ExternalIds | null>;
+  // Shows on a streaming service in the region with an episode in the
+  // week (TMDB discover), soaps excluded, by popularity, pages 1 and 2
+  // (FR-039); null without a key.
+  findAiringThisWeek: (week: {
+    region: string;
+    timeZone: string;
+    from: string;
+    to: string;
+  }) => Promise<TmdbOnTheAir[] | null>;
+  // A show's services in a region by its TMDB id (FR-038, FR-039).
+  providersById: (
+    tmdbId: number,
+    region: string,
+  ) => Promise<StreamingProvider[] | null>;
 }
 
 export class TmdbResponseError extends Error {
@@ -236,7 +252,54 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     );
   }
 
+  async function findAiringThisWeek(week: {
+    region: string;
+    timeZone: string;
+    from: string;
+    to: string;
+  }): Promise<TmdbOnTheAir[] | null> {
+    if (!apiKey) {
+      return null;
+    }
+    // Subscription, free and ads (channels included); documentary,
+    // miniseries and scripted types (0, 2, 4); no soaps (10766).
+    const query = [
+      `watch_region=${week.region}`,
+      "with_watch_monetization_types=flatrate%7Cfree%7Cads",
+      `air_date.gte=${week.from}`,
+      `air_date.lte=${week.to}`,
+      "with_type=0%7C2%7C4",
+      "without_genres=10766",
+      "sort_by=popularity.desc",
+      `timezone=${encodeURIComponent(week.timeZone)}`,
+    ].join("&");
+    const pages = await Promise.all(
+      [1, 2].map((page) =>
+        requestJson<{ results?: TmdbOnTheAir[] }>(
+          `/discover/tv?${query}&page=${page}`,
+          apiKey,
+        ),
+      ),
+    );
+    return pages.flatMap((page) => page.results ?? []);
+  }
+
+  async function providersById(
+    tmdbId: number,
+    region: string,
+  ): Promise<StreamingProvider[] | null> {
+    if (!apiKey) {
+      return null;
+    }
+    return regionProviders(
+      await requestJson(`/tv/${tmdbId}/watch/providers`, apiKey),
+      region,
+    );
+  }
+
   return {
+    findAiringThisWeek,
+    providersById,
     findStreamingProviders,
     findOriginCountries,
     findExternalIds,

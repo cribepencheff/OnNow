@@ -19,6 +19,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useRouter } from "expo-router";
 
 import { HeroPager } from "@/components/Hero/HeroPager";
+import { AiringThisWeekRow } from "@/components/AiringThisWeekRow";
 import { TopPicksRow } from "@/components/TopPicksRow";
 import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
@@ -270,11 +271,6 @@ export default function HomeScreen() {
               />
             )}
 
-            {/* FR-038, ADR 0016: hidden with an empty follow list. */}
-            {followedCount > 0 && (
-              <TopPicksRow followedShows={followedShowList} />
-            )}
-
             {state.kind === "empty-follow-list" && (
               <EmptyFollowList onPress={openSearch} />
             )}
@@ -292,6 +288,14 @@ export default function HomeScreen() {
             {state.kind === "loading" && (
               <Text style={styles.quietLine}>Loading your shows…</Text>
             )}
+
+            {/* FR-038, ADR 0016: hidden with an empty follow list. */}
+            {followedCount > 0 && (
+              <TopPicksRow followedShows={followedShowList} />
+            )}
+            {/* FR-039: always shown, also with an empty follow list. */}
+            <AiringThisWeekRow />
+            <View style={styles.tabBarClearance} />
           </>
         )}
       </Animated.ScrollView>
@@ -469,6 +473,10 @@ const styles = StyleSheet.create({
     fontSize: 15,
     paddingHorizontal: 32,
   },
+  // The rows clear the translucent tab bar (83) at the end of the page.
+  tabBarClearance: {
+    height: 83 + tokens.space4,
+  },
   pullIndicator: {
     position: "absolute",
     left: 0,
@@ -481,21 +489,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 3,
     borderRadius: 12,
-    backgroundColor: "rgba(0,0,0,0.35)",
+    backgroundColor: tokens.imageControlBackdrop,
   },
   pullUpdatedText: {
     ...type.label,
     color: "#FFFFFF",
   },
-  // A small dark circle behind the white spinner so it stays legible over a
-  // bright backdrop image, with a soft shadow for the same reason.
+  // A small circle on the image-control backdrop behind the white spinner,
+  // with a soft shadow, so it stays legible over a bright backdrop image.
   pullIndicatorScrim: {
     width: 36,
     height: 36,
     borderRadius: 18,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(0,0,0,0.35)",
+    backgroundColor: tokens.imageControlBackdrop,
     shadowColor: "#000000",
     shadowOpacity: 0.4,
     shadowRadius: 6,

@@ -82,4 +82,38 @@ describe("fillTopPicks (FR-038)", () => {
       fillTopPicks([], 0, 10, resolver(), notFollowed),
     ).resolves.toEqual({ cards: [], nextStart: 0 });
   });
+
+  it("runs an optional check after the TVmaze id, which can reject or add to a card", async () => {
+    const check = jest.fn(async (tvmazeId: number, _tmdbId: number) =>
+      tvmazeId === 1002 ? null : { day: "Fri" },
+    );
+    const page = await fillTopPicks(
+      ranking([1, 2, 3]),
+      0,
+      2,
+      resolver(),
+      notFollowed,
+      check,
+    );
+    expect(page.cards.map((card) => [card.tmdbId, card.day])).toEqual([
+      [1, "Fri"],
+      [3, "Fri"],
+    ]);
+    expect(check).toHaveBeenCalledTimes(3);
+  });
+
+  it("checks three at a time, and the next page starts right after the last card used", async () => {
+    const resolve = resolver();
+    const page = await fillTopPicks(
+      ranking([1, 2, 3, 4, 5]),
+      0,
+      1,
+      resolve,
+      notFollowed,
+    );
+    expect(page.cards.map((card) => card.tmdbId)).toEqual([1]);
+    // One batch of three was checked, but titles 2 and 3 come next.
+    expect(resolve).toHaveBeenCalledTimes(3);
+    expect(page.nextStart).toBe(1);
+  });
 });

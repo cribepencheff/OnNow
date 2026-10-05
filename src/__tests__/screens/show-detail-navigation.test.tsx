@@ -60,6 +60,7 @@ beforeEach(() => {
   });
   (useFollowList as jest.Mock).mockReturnValue({
     followedIds: new Set(),
+    isLoaded: true,
     isFollowed: () => false,
     follow,
     unfollow: jest.fn(),

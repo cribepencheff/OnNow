@@ -8,6 +8,7 @@ export const t = {
   surface: "#16181d",
   surfaceRaised: "#22252c",
   hairline: "#2c2f37",
+  imageControlBackdrop: "rgba(11, 12, 15, 0.55)",
   ink: "#f4f4f6",
   inkMuted: "#a3a6ae",
   inkSubtle: "#8b8e97",

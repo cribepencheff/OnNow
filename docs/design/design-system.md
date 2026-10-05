@@ -15,6 +15,7 @@ On Now is a stripped, cinematic iOS app that answers one question in two seconds
 - Put `on-accent` on accent fills, never white.
 - Draw the focus ring as a solid 2px `accent` ring; it holds 3:1 on every surface.
 - Use `hairline` for dividers only, never as the only edge of a control.
+- Put `image-control-backdrop` behind a small control drawn on an image (the follow circle on a poster card, the pull-to-refresh spinner over the hero), with a soft shadow, so it reads on light and busy images.
 
 ## Type
 

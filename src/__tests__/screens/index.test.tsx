@@ -41,11 +41,16 @@ jest.mock("@/hooks/useEpisodeStill", () => ({
     isError: false,
   })),
 }));
+const mockAiring = jest.fn(() => [] as unknown[]);
+jest.mock("@/hooks/useAiringThisWeek", () => ({
+  useAiringThisWeek: () => ({ cards: mockAiring(), isLoading: false }),
+}));
 const mockTopPicks = jest.fn(() => [] as unknown[]);
 const mockRefreshTopPicks = jest.fn();
 jest.mock("@/hooks/useTopPicks", () => ({
   useTopPicks: () => ({
     cards: mockTopPicks(),
+    isLoading: false,
     refresh: mockRefreshTopPicks,
     isRefreshing: false,
   }),
@@ -539,6 +544,40 @@ describe("HomeScreen", () => {
       await render(<HomeScreen />);
 
       expect(screen.queryByTestId("top-picks-row")).toBeNull();
+    });
+  });
+
+  // FR-039: always shown, also with an empty follow list.
+  describe("Airing this week (FR-039)", () => {
+    const lanterns = {
+      tmdbId: 211,
+      tvmazeId: 1211,
+      name: "Lanterns",
+      posterPath: "/lanterns.jpg",
+      day: "Fri",
+    };
+
+    afterEach(() => mockAiring.mockReturnValue([]));
+
+    it("is shown with an empty follow list, each card with its day", async () => {
+      mockAiring.mockReturnValue([lanterns]);
+      mockFollowedEpisodes({ followedCount: 0 });
+      await render(<HomeScreen />);
+
+      expect(screen.getByText("Airing this week")).toBeTruthy();
+      expect(screen.queryByText("Top picks for you")).toBeNull();
+      expect(
+        screen.getByRole("button", { name: "Lanterns, Fri" }),
+      ).toBeTruthy();
+    });
+
+    it("follows at once from the circle", async () => {
+      mockAiring.mockReturnValue([lanterns]);
+      mockFollowedEpisodes({ followedCount: 0 });
+      await render(<HomeScreen />);
+
+      await fireEvent.press(screen.getByTestId("airing-follow-1211"));
+      expect(mockFollow).toHaveBeenCalledWith(1211);
     });
   });
 });
