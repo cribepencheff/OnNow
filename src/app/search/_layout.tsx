@@ -7,6 +7,7 @@
 import { Stack } from "expo-router";
 
 import { SheetBackHeader } from "@/components/SheetBackHeader";
+import { releaseNavigation } from "@/hooks/navigation-lock";
 import { t } from "@/theme/tokens";
 
 export default function SearchLayout() {
@@ -19,6 +20,9 @@ export default function SearchLayout() {
         headerShadowVisible: false,
         contentStyle: { backgroundColor: t.bg },
       }}
+      // Same as the root Stack: the transition's end frees the navigation
+      // guard (CRI-117).
+      screenListeners={{ transitionEnd: releaseNavigation }}
     >
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen

@@ -1,7 +1,8 @@
 import { Pressable, type GestureResponderEvent } from "react-native";
 import { SymbolView } from "expo-symbols";
-import { Tabs, useRouter } from "expo-router";
+import { Tabs } from "expo-router";
 
+import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import { t } from "@/theme/tokens";
 
 // The hidden image review screen is reached by a long press on the Shows
@@ -13,7 +14,7 @@ function ShowsTabButton(props: {
   onPress?: (event: GestureResponderEvent) => void;
   [key: string]: unknown;
 }) {
-  const router = useRouter();
+  const router = useGuardedRouter();
   return (
     <Pressable
       {...props}

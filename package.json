@@ -66,6 +66,9 @@
     "preset": "jest-expo",
     "setupFiles": [
       "./jest/setup.ts"
+    ],
+    "setupFilesAfterEnv": [
+      "./jest/setup-after-env.ts"
     ]
   },
   "private": true

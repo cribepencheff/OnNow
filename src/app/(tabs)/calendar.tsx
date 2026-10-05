@@ -16,9 +16,9 @@ import {
   type NativeSyntheticEvent,
 } from "react-native";
 import { Image } from "expo-image";
-import { useRouter } from "expo-router";
 
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
+import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import { useToday } from "@/hooks/useToday";
 import { useWeekStart } from "@/hooks/useWeekStart";
 import {
@@ -310,7 +310,7 @@ function DayCell({
 
 // Tapping a row opens Show detail (FR-030, CRI-79).
 function CalendarRow({ show, episodes }: ShowEpisodesToday) {
-  const router = useRouter();
+  const router = useGuardedRouter();
   const line = calendarRowLine(episodes);
 
   return (

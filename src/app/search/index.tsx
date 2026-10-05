@@ -16,7 +16,6 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
 
 import { AiringThisWeekRow } from "@/components/AiringThisWeekRow";
@@ -25,6 +24,7 @@ import { SearchResultRow } from "@/components/SearchResultRow";
 import { TopPicksRow } from "@/components/TopPicksRow";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
+import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import { useSearchShows } from "@/hooks/useSearchShows";
 import { t, type } from "@/theme/tokens";
 
@@ -32,7 +32,7 @@ import { t, type } from "@/theme/tokens";
 const SEARCH_DELAY_MS = 250;
 
 export default function SearchScreen() {
-  const router = useRouter();
+  const router = useGuardedRouter();
   const [query, setQuery] = useState("");
 
   const searchedQuery = useDebouncedValue(query, SEARCH_DELAY_MS);

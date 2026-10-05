@@ -2,10 +2,11 @@
 // to the TVmaze credit wherever the Swedish streaming service is used.
 // TMDB's terms also ask for its logo; that comes with the Design phase.
 
-import { Linking, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { t } from "@/theme/tokens";
 
 import { JUSTWATCH_CREDIT, TMDB_CREDIT } from "@/api/tmdb-credit";
+import { openExternalUrl } from "@/hooks/useGuardedRouter";
 
 export function TmdbCredit() {
   return (
@@ -13,14 +14,14 @@ export function TmdbCredit() {
       <Text
         style={styles.credit}
         accessibilityRole="link"
-        onPress={() => Linking.openURL(JUSTWATCH_CREDIT.url)}
+        onPress={() => openExternalUrl(JUSTWATCH_CREDIT.url)}
       >
         {JUSTWATCH_CREDIT.text}
       </Text>
       <Text
         style={styles.credit}
         accessibilityRole="link"
-        onPress={() => Linking.openURL(TMDB_CREDIT.url)}
+        onPress={() => openExternalUrl(TMDB_CREDIT.url)}
       >
         {TMDB_CREDIT.notice}
       </Text>

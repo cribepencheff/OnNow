@@ -15,11 +15,10 @@ import {
   type LayoutChangeEvent,
 } from "react-native";
 import { Image } from "expo-image";
-import * as Linking from "expo-linking";
-import { useRouter } from "expo-router";
 
 import { IMAGE_BASE } from "@/api/tmdb-types";
 import type { TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
+import { openExternalUrl, useGuardedRouter } from "@/hooks/useGuardedRouter";
 import { useStreamingService } from "@/hooks/useStreamingService";
 import { useEpisodeStill } from "@/hooks/useEpisodeStill";
 import { useShowImages } from "@/hooks/useShowImages";
@@ -105,7 +104,7 @@ export function OpenInSlot({
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={openInAccessibilityLabel(availability.link)}
-            onPress={() => Linking.openURL(availability.link.url)}
+            onPress={() => openExternalUrl(availability.link.url)}
             style={[styles.button, buttonHeightStyle]}
           >
             <Text style={styles.buttonLabel}>
@@ -170,7 +169,7 @@ export const HeroPage = memo(function HeroPage({
 }) {
   const { height } = useWindowDimensions();
   const scale = height / REF_HEIGHT;
-  const router = useRouter();
+  const router = useGuardedRouter();
   const show = item.show as TvMazeShowWithEmbeds;
   const { data: images, isLoading: imagesLoading } = useShowImages(
     show,
