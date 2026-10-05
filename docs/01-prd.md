@@ -239,6 +239,8 @@ per season come in the MVP.
   year only, so there is no year state.
   The same line is used on the Shows row (5.3) and on a followed Search
   row (5.4), and its state decides the Shows segment.
+  When it falls back to TVmaze's raw status, "In Development" reads "In
+  development" (CRI-81).
 - **Season drops:** when several episodes of a season come out on the same
   day, the latest or next card shows them as one item, for example "Season
   1 · all 8 episodes · Wed 16 Sep" (same grouping as FR-012). "all" only
