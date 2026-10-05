@@ -43,13 +43,14 @@ jest.mock("@/hooks/useEpisodeStill", () => ({
 }));
 const mockAiring = jest.fn(() => [] as unknown[]);
 jest.mock("@/hooks/useAiringThisWeek", () => ({
-  useAiringThisWeek: () => mockAiring(),
+  useAiringThisWeek: () => ({ cards: mockAiring(), isLoading: false }),
 }));
 const mockTopPicks = jest.fn(() => [] as unknown[]);
 const mockRefreshTopPicks = jest.fn();
 jest.mock("@/hooks/useTopPicks", () => ({
   useTopPicks: () => ({
     cards: mockTopPicks(),
+    isLoading: false,
     refresh: mockRefreshTopPicks,
     isRefreshing: false,
   }),

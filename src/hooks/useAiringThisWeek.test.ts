@@ -1,5 +1,6 @@
 import { renderHook, waitFor } from "@testing-library/react-native";
 
+import { hasServiceInRegion } from "@/api/region-service";
 import { tmdbClient } from "@/api/tmdb-client";
 import { tvMazeClient } from "@/api/tvmaze-client";
 import { resolveTvMazeId } from "@/api/tvmaze-id";
@@ -7,8 +8,10 @@ import { useAiringThisWeek } from "./useAiringThisWeek";
 import { createTestQueryClient, wrapperWithQueryClient } from "./test-utils";
 
 jest.mock("@/api/tmdb-client", () => ({
-  tmdbClient: { findOnTheAir: jest.fn() },
+  tmdbClient: { findAiringThisWeek: jest.fn() },
 }));
+jest.mock("@/api/region-service", () => ({ hasServiceInRegion: jest.fn() }));
+jest.mock("./useRegion", () => ({ useRegion: () => ({ region: "SE" }) }));
 jest.mock("@/api/tvmaze-client", () => ({
   tvMazeClient: { getWeekInfo: jest.fn() },
 }));
@@ -23,7 +26,8 @@ jest.mock("./useFollowList", () => ({
 // 2026-10-05 is a Monday.
 jest.mock("./useToday", () => ({ useToday: () => "2026-10-05" }));
 
-const findOnTheAir = tmdbClient.findOnTheAir as jest.Mock;
+const findAiringThisWeek = tmdbClient.findAiringThisWeek as jest.Mock;
+const hasService = hasServiceInRegion as jest.Mock;
 const getWeekInfo = tvMazeClient.getWeekInfo as jest.Mock;
 const resolve = resolveTvMazeId as jest.Mock;
 
@@ -46,7 +50,7 @@ const ids = (cards: { tmdbId: number }[]) => cards.map((card) => card.tmdbId);
 
 async function render() {
   const client = createTestQueryClient();
-  const rendered = await renderHook(() => useAiringThisWeek(), {
+  const rendered = await renderHook(() => useAiringThisWeek().cards, {
     wrapper: wrapperWithQueryClient(client),
   });
   return { ...rendered, client };
@@ -55,18 +59,49 @@ async function render() {
 describe("useAiringThisWeek (FR-039, CRI-110)", () => {
   beforeEach(() => {
     mockFollowed = { ids: new Set(), isLoaded: true };
-    findOnTheAir.mockReset().mockResolvedValue(onTheAir);
+    findAiringThisWeek.mockReset().mockResolvedValue(onTheAir);
+    hasService.mockReset().mockResolvedValue(true);
     resolve.mockReset().mockImplementation(async (id: number) => id + 1000);
     getWeekInfo.mockReset().mockResolvedValue(airsFriday);
   });
 
-  it("fills ten in popularity order, each with its day, with only ten lookups", async () => {
+  it("fills ten in popularity order, each with its day, checking three at a time", async () => {
     const { result, unmount, client } = await render();
 
     await waitFor(() => expect(result.current).toHaveLength(10));
     expect(result.current[0]).toMatchObject({ tmdbId: 201, day: "Fri" });
-    expect(resolve).toHaveBeenCalledTimes(10);
-    expect(getWeekInfo).toHaveBeenCalledTimes(10);
+    // Three at a time: at most two checks beyond the ten cards.
+    expect(resolve.mock.calls.length).toBeLessThanOrEqual(12);
+    expect(resolve.mock.calls.map(([id]) => id).slice(0, 10)).toEqual([
+      201, 202, 203, 204, 205, 206, 207, 208, 209, 210,
+    ]);
+    await unmount();
+    client.unmount();
+  });
+
+  it("asks discover for the region and the week (today and six days)", async () => {
+    const { result, unmount, client } = await render();
+    await waitFor(() => expect(result.current).toHaveLength(10));
+    expect(findAiringThisWeek).toHaveBeenCalledWith(
+      expect.objectContaining({
+        region: "SE",
+        from: "2026-10-05",
+        to: "2026-10-11",
+      }),
+    );
+    await unmount();
+    client.unmount();
+  });
+
+  it("leaves out a show with no streaming service in the region", async () => {
+    hasService.mockImplementation(
+      async (tvmazeId: number) => tvmazeId !== 1201,
+    );
+    const { result, unmount, client } = await render();
+
+    await waitFor(() => expect(result.current).toHaveLength(10));
+    expect(ids(result.current)).not.toContain(201);
+    expect(hasService).toHaveBeenCalledWith(1201, 201, "SE");
     await unmount();
     client.unmount();
   });

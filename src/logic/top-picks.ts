@@ -1,6 +1,7 @@
-// "Top picks for you" cards (FR-038): walk the ranking in order from a start
-// position, wrapping once, and resolve titles one at a time until the row is
-// full. Resolution is the only network cost, so it stops as soon as it can.
+// Home's poster rows (FR-038, FR-039): walk a ranking in order from a start
+// position, wrapping once, and check titles a few at a time until the row
+// is full. Checking is the only network cost, so it stops as soon as it
+// can; the TVmaze client's rate limit holds whatever the batch size.
 
 import type { RankedRecommendation } from "./recommendations";
 
@@ -17,6 +18,10 @@ export interface FilledPage<Extra = object> {
   nextStart: number;
 }
 
+// Titles checked at once: quicker than one by one, and at most two wasted
+// checks when the row fills mid-batch.
+export const CHECK_BATCH = 3;
+
 export async function fillTopPicks<Extra = object>(
   ranking: RankedRecommendation[],
   start: number,
@@ -24,34 +29,60 @@ export async function fillTopPicks<Extra = object>(
   // A title's TVmaze id, or null when TVmaze has none.
   resolveTvMazeId: (tmdbId: number) => Promise<number | null>,
   isFollowed: (tvmazeId: number) => boolean,
-  // Optional: a further check on TVmaze, which can reject a title (null)
-  // or add to its card (Airing this week, CRI-110).
-  check?: (tvmazeId: number) => Promise<Extra | null>,
+  // Optional further checks (a service in the region, airing this week),
+  // which can reject a title (null) or add to its card.
+  check?: (tvmazeId: number, tmdbId: number) => Promise<Extra | null>,
 ): Promise<FilledPage<Extra>> {
-  const cards: (TopPick & Extra)[] = [];
   const total = ranking.length;
-  let examined = 0;
-  while (cards.length < size && examined < total) {
-    const index = (start + examined) % total;
-    examined += 1;
+  if (total === 0) {
+    return { cards: [], nextStart: 0 };
+  }
+  // Every position once, in rank order from `start`, titles without a
+  // poster left out (no request for them).
+  const positions = Array.from(
+    { length: total },
+    (_, i) => (start + i) % total,
+  ).filter((index) => ranking[index].recommendation.poster_path);
+
+  async function evaluate(index: number): Promise<(TopPick & Extra) | null> {
     const { recommendation } = ranking[index];
-    if (!recommendation.poster_path) {
-      continue;
-    }
     const tvmazeId = await resolveTvMazeId(recommendation.id);
     if (tvmazeId === null || isFollowed(tvmazeId)) {
-      continue;
+      return null;
     }
-    const extra = check ? await check(tvmazeId) : ({} as Extra);
-    if (extra !== null) {
-      cards.push({
-        tmdbId: recommendation.id,
-        tvmazeId,
-        name: recommendation.name,
-        posterPath: recommendation.poster_path,
-        ...extra,
-      });
+    const extra = check
+      ? await check(tvmazeId, recommendation.id)
+      : ({} as Extra);
+    return extra === null
+      ? null
+      : {
+          tmdbId: recommendation.id,
+          tvmazeId,
+          name: recommendation.name,
+          posterPath: recommendation.poster_path as string,
+          ...extra,
+        };
+  }
+
+  const cards: (TopPick & Extra)[] = [];
+  let nextStart = (start + total) % total;
+  for (
+    let b = 0;
+    b < positions.length && cards.length < size;
+    b += CHECK_BATCH
+  ) {
+    const batch = positions.slice(b, b + CHECK_BATCH);
+    const results = await Promise.all(batch.map(evaluate));
+    for (let i = 0; i < batch.length; i += 1) {
+      nextStart = (batch[i] + 1) % total;
+      const card = results[i];
+      if (card) {
+        cards.push(card);
+        if (cards.length === size) {
+          break;
+        }
+      }
     }
   }
-  return { cards, nextStart: total === 0 ? 0 : (start + examined) % total };
+  return { cards, nextStart };
 }

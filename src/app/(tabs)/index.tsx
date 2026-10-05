@@ -489,21 +489,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 3,
     borderRadius: 12,
-    backgroundColor: "rgba(0,0,0,0.35)",
+    backgroundColor: tokens.imageControlBackdrop,
   },
   pullUpdatedText: {
     ...type.label,
     color: "#FFFFFF",
   },
-  // A small dark circle behind the white spinner so it stays legible over a
-  // bright backdrop image, with a soft shadow for the same reason.
+  // A small circle on the image-control backdrop behind the white spinner,
+  // with a soft shadow, so it stays legible over a bright backdrop image.
   pullIndicatorScrim: {
     width: 36,
     height: 36,
     borderRadius: 18,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(0,0,0,0.35)",
+    backgroundColor: tokens.imageControlBackdrop,
     shadowColor: "#000000",
     shadowOpacity: 0.4,
     shadowRadius: 6,

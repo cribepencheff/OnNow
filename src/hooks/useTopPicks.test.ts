@@ -1,5 +1,6 @@
 import { act, renderHook, waitFor } from "@testing-library/react-native";
 
+import { hasServiceInRegion } from "@/api/region-service";
 import { tmdbClient } from "@/api/tmdb-client";
 import { resolveTvMazeId } from "@/api/tvmaze-id";
 import type { TvMazeShow } from "@/api/tvmaze-types";
@@ -11,6 +12,8 @@ jest.mock("@/api/tmdb-client", () => ({
   tmdbClient: { findRecommendations: jest.fn() },
 }));
 jest.mock("@/api/tvmaze-id", () => ({ resolveTvMazeId: jest.fn() }));
+jest.mock("@/api/region-service", () => ({ hasServiceInRegion: jest.fn() }));
+jest.mock("./useRegion", () => ({ useRegion: () => ({ region: "SE" }) }));
 let mockFollowed = new Set<number>();
 jest.mock("./useFollowList", () => ({
   useFollowList: () => ({ followedIds: mockFollowed }),
@@ -18,6 +21,7 @@ jest.mock("./useFollowList", () => ({
 
 const findRecommendations = tmdbClient.findRecommendations as jest.Mock;
 const resolve = resolveTvMazeId as jest.Mock;
+const hasService = hasServiceInRegion as jest.Mock;
 
 const followedShow = {
   id: 1,
@@ -45,6 +49,7 @@ describe("useTopPicks (FR-038)", () => {
     resolve
       .mockReset()
       .mockImplementation(async (tmdbId: number) => tmdbId + 1000);
+    hasService.mockReset().mockResolvedValue(true);
     jest.useFakeTimers().setSystemTime(new Date("2026-10-05T08:00:00Z"));
   });
   afterEach(() => jest.useRealTimers());
@@ -57,14 +62,28 @@ describe("useTopPicks (FR-038)", () => {
     return { ...rendered, client };
   }
 
-  it("fills the first ten in rank order, looking up only those ten", async () => {
+  it("fills the first ten in rank order, checking three at a time", async () => {
     const { result, unmount, client } = await renderRow();
 
     await waitFor(() => expect(result.current.cards).toHaveLength(10));
     expect(ids(result.current.cards)).toEqual([
       101, 102, 103, 104, 105, 106, 107, 108, 109, 110,
     ]);
-    expect(resolve).toHaveBeenCalledTimes(10);
+    // Three at a time: at most two checks beyond the ten cards.
+    expect(resolve.mock.calls.length).toBeLessThanOrEqual(12);
+    await unmount();
+    client.unmount();
+  });
+
+  it("leaves out a title with no streaming service in the region", async () => {
+    hasService.mockImplementation(
+      async (tvmazeId: number) => tvmazeId !== 1102,
+    );
+    const { result, unmount, client } = await renderRow();
+
+    await waitFor(() => expect(result.current.cards).toHaveLength(10));
+    expect(ids(result.current.cards)).not.toContain(102);
+    expect(hasService).toHaveBeenCalledWith(1102, 102, "SE");
     await unmount();
     client.unmount();
   });

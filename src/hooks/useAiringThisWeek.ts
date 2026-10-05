@@ -1,11 +1,13 @@
-// "Airing this week" (FR-039, ADR 0016). TMDB's on-the-air list (kept a
-// day) gives the candidates in popularity order; TVmaze decides: a show is
-// kept only if it would be in the hero if followed, with its day on the
-// card (CRI-110). A page is filled once per launch and left alone, so
-// following from the row keeps the card.
+// "Airing this week" (FR-039, ADR 0016). TMDB discover gives the candidates
+// for the region and the week in popularity order (kept a day); each must
+// have a service in the region, the same rule as "Open in", and TVmaze
+// decides: a show is kept only if it would be in the hero if followed, with
+// its day on the card (CRI-110). A page is filled once per launch and left
+// alone, so following from the row keeps the card.
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { hasServiceInRegion } from "@/api/region-service";
 import { tmdbClient } from "@/api/tmdb-client";
 import { tvMazeClient } from "@/api/tvmaze-client";
 import { resolveTvMazeId } from "@/api/tvmaze-id";
@@ -15,8 +17,11 @@ import {
   isAiringType,
   weekDayWord,
 } from "@/logic/airing-this-week";
+import { HOME_HERO_HORIZON_DAYS } from "@/logic/hero-carousel";
+import { addDays } from "@/logic/local-date";
 import { fillTopPicks, type TopPick } from "@/logic/top-picks";
 import { useFollowList } from "./useFollowList";
+import { useRegion } from "./useRegion";
 import { useToday } from "./useToday";
 import { ROW_SIZE } from "./useTopPicks";
 
@@ -31,29 +36,43 @@ function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
 }
 
-export function useAiringThisWeek(): AiringPick[] {
+export function useAiringThisWeek(): {
+  cards: AiringPick[];
+  // No page yet: the row keeps its space (CRI-110).
+  isLoading: boolean;
+} {
   const queryClient = useQueryClient();
   const { followedIds, isLoaded } = useFollowList();
+  const { region } = useRegion();
   const todayDate = useToday();
   const timeZone = deviceTimeZone();
-  const onTheAir = useQuery({
-    queryKey: ["onTheAir", "v1", timeZone],
+  const week = {
+    region: region ?? "",
+    timeZone,
+    from: todayDate,
+    to: addDays(todayDate, HOME_HERO_HORIZON_DAYS - 1),
+  };
+  const candidates = useQuery({
+    queryKey: ["airingThisWeek", "v1", region, todayDate, timeZone],
+    enabled: region !== undefined,
     staleTime: DAY_MS,
-    queryFn: () => tmdbClient.findOnTheAir(timeZone),
+    queryFn: () => tmdbClient.findAiringThisWeek(week),
   });
   const page = useQuery({
-    // v2: TVmaze decides membership and the day (CRI-110).
-    queryKey: ["airingThisWeekPage", "v2", LAUNCH, todayDate],
-    enabled: isLoaded && onTheAir.data !== undefined,
+    queryKey: ["airingThisWeekPage", "v3", LAUNCH, region, todayDate],
+    enabled: isLoaded && region !== undefined && candidates.data !== undefined,
     staleTime: Infinity,
     queryFn: () =>
       fillTopPicks(
-        airingThisWeek(onTheAir.data ?? []),
+        airingThisWeek(candidates.data ?? []),
         0,
         ROW_SIZE,
         resolveTvMazeId,
         (tvmazeId) => followedIds.has(tvmazeId),
-        async (tvmazeId) => {
+        async (tvmazeId, tmdbId) => {
+          if (!(await hasServiceInRegion(tvmazeId, tmdbId, region!))) {
+            return null;
+          }
           const info = await queryClient
             .fetchQuery({
               queryKey: ["tvmazeWeekInfo", "v1", tvmazeId],
@@ -74,5 +93,8 @@ export function useAiringThisWeek(): AiringPick[] {
         },
       ),
   });
-  return page.data?.cards ?? [];
+  return {
+    cards: page.data?.cards ?? [],
+    isLoading: page.data === undefined && !page.isError,
+  };
 }

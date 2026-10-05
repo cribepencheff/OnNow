@@ -13,6 +13,11 @@ import { t, type } from "@/theme/tokens";
 import { FollowCircle } from "./FollowCircle";
 
 const POSTER_WIDTH = 112;
+const POSTER_HEIGHT = POSTER_WIDTH * 1.5;
+// A card at its tallest: poster, two name lines and the caption line. A
+// row reserves this while it loads, so nothing moves when it appears.
+export const CARD_HEIGHT =
+  POSTER_HEIGHT + t.space2 + 2 * type.meta.lineHeight + type.label.lineHeight;
 
 export function ShowCard({
   card,
@@ -73,19 +78,18 @@ const styles = StyleSheet.create({
   },
   poster: {
     width: POSTER_WIDTH,
-    height: POSTER_WIDTH * 1.5,
+    height: POSTER_HEIGHT,
     borderRadius: t.radiusSm,
     backgroundColor: t.surface,
   },
-  // A dark translucent disc and soft shadow behind the circle, so it reads
-  // on light posters too (the pull spinner's scrim, a little darker).
+  // On the image-control backdrop, so it reads on light posters too.
   follow: {
     position: "absolute",
     top: t.space2,
     right: t.space2,
-    borderRadius: 999,
+    borderRadius: t.radiusPill,
     padding: 2,
-    backgroundColor: "rgba(0,0,0,0.45)",
+    backgroundColor: t.imageControlBackdrop,
     shadowColor: "#000000",
     shadowOpacity: 0.4,
     shadowRadius: 6,

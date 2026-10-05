@@ -1,5 +1,5 @@
-// "Airing this week" (FR-039, ADR 0016): TMDB's on-the-air list is the
-// candidate source, in its popularity order; TVmaze decides. A show is in
+// "Airing this week" (FR-039, ADR 0016): TMDB discover (the region, the
+// week) is the candidate source, in its popularity order; TVmaze decides. A show is in
 // the row only if it would be in the hero if followed (CRI-110).
 
 import { HOME_HERO_HORIZON_DAYS } from "./hero-carousel";
@@ -15,10 +15,11 @@ export interface TmdbOnTheAir {
   genre_ids?: number[];
 }
 
-// TMDB genres that are never kept (talk, news, reality): left out before
-// any TVmaze request. TMDB has no game show or sports genre; TVmaze's
-// type decides those (isAiringType).
-const NEVER_KEPT_GENRES = new Set([10767, 10763, 10764]);
+// TMDB genres that are never kept (talk, news, reality, soap): left out
+// before any TVmaze request, also when discover already left them out.
+// TMDB has no game show or sports genre; TVmaze's type decides those
+// (isAiringType).
+const NEVER_KEPT_GENRES = new Set([10767, 10763, 10764, 10766]);
 
 // Candidates in TMDB's popularity order, each once, as a ranking that
 // fillTopPicks can walk.

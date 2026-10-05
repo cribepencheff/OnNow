@@ -44,8 +44,11 @@ first user is the author, who currently uses Next Episode.
   not in the current year) and the count, in the same pager as today.
 - **Below the hero:** one row, "Top picks for you" (FR-038, ADR 0016):
   TMDB's recommendations for each followed show, already followed shows
-  removed, ranked by how many followed shows recommend the same title. The
-  cards are built from the app's existing components and design system
+  removed, ranked by how many followed shows recommend the same title, and
+  only shows with at least one streaming service in the user's region
+  (subscription, free or ads, add-on channels included; pay-TV never
+  counts, the same rule as "Open in"). Not filtered by origin country or
+  language. The cards are built from the app's existing components and design system
   tokens: a poster, the show's name, and the Search follow circle, which
   follows at once; tapping a card opens Show detail. A show followed from
   the row stays in it, marked as followed. A "Refresh" control under the
@@ -54,11 +57,14 @@ first user is the author, who currently uses Next Episode.
   fetch unless the day's data is stale. Hidden when the follow list is
   empty.
 - **Second row:** "Airing this week" (FR-039, ADR 0016): candidates from
-  TMDB's on-the-air list in TMDB's popularity order; TVmaze decides. A show
-  is in the row only if it would be in the hero if followed (a TVmaze
-  episode within the 7 days), and only scripted shows and documentaries,
-  no reality, talk shows, news, game shows or sports. Shows the user
-  follows are left out. The same cards as
+  TMDB discover for the user's region and the week (on a streaming service
+  there, an episode within the 7 days), in TMDB's popularity order, soaps
+  excluded; each must have a streaming service in the region by the same
+  rule as "Open in", and TVmaze decides: a show is in the row only if it
+  would be in the hero if followed (a TVmaze episode within the 7 days),
+  and only scripted shows and documentaries, no reality, talk shows, news,
+  game shows, sports or soaps. Not filtered by origin country or language.
+  Shows the user follows are left out. The same cards as
   "Top picks for you", plus the next episode's air date in the window in
   the hero's words ("Today", "Tomorrow", then the weekday, "Fri"). A show
   followed from the row stays in it, marked as followed; no Refresh.
@@ -267,8 +273,8 @@ Reached from an icon. Territory and notifications.
 | FR-009 | Selecting a day in Calendar lists that day's episodes | PoC |
 | FR-036 | Calendar swipes between months and shows a "Today" button when away from today | PoC |
 | FR-037 | Specials are never shown, only regular episodes. No setting | PoC |
-| FR-038 | Under the hero, Home shows one row, "Top picks for you": TMDB recommendations for each followed show, followed shows removed, ranked by how many followed shows recommend the same title, cached for a day. The cards are built from the app's existing components and design system tokens; each follows at once from its circle and opens Show detail on a tap, and a show followed from the row stays in it, marked as followed. A "Refresh" control under the row drops followed shows and shows the next ones in rank order (11–20, then 21–30, wrapping around), with no new TMDB fetch unless the day's data is stale. Hidden when the follow list is empty (ADR 0016) | MVP |
-| FR-039 | Under "Top picks for you", Home shows "Airing this week": candidates from TMDB's on-the-air list in TMDB's popularity order, kept only when TVmaze has an episode within the hero's 7 days (it would be in the hero if followed) and TVmaze's type is scripted, animation or documentary (no reality, talk, news, game shows or sports), followed shows left out, each card with the next episode's air date ("Today", "Tomorrow", "Fri"), following at once from its circle and opening Show detail; a show followed from the row stays in it, marked as followed. Always shown, also with an empty follow list (ADR 0016) | MVP |
+| FR-038 | Under the hero, Home shows one row, "Top picks for you": TMDB recommendations for each followed show, followed shows removed, ranked by how many followed shows recommend the same title, cached for a day, only shows with at least one streaming service in the user's region (subscription, free or ads, add-on channels included; pay-TV never counts, the same rule as "Open in"), not filtered by origin country or language. The cards are built from the app's existing components and design system tokens; each follows at once from its circle and opens Show detail on a tap, and a show followed from the row stays in it, marked as followed. A "Refresh" control under the row drops followed shows and shows the next ones in rank order (11–20, then 21–30, wrapping around), with no new TMDB fetch unless the day's data is stale. Hidden when the follow list is empty (ADR 0016) | MVP |
+| FR-039 | Under "Top picks for you", Home shows "Airing this week": candidates from TMDB discover for the user's region and the week (on a streaming service there, an episode within the 7 days, soaps excluded) in TMDB's popularity order, kept only when the show has a streaming service in the region by the same rule as "Open in", TVmaze has an episode within the hero's 7 days (it would be in the hero if followed) and TVmaze's type is scripted, animation or documentary (no reality, talk, news, game shows, sports or soaps), not filtered by origin country or language, followed shows left out, each card with the next episode's air date ("Today", "Tomorrow", "Fri"), following at once from its circle and opening Show detail; a show followed from the row stays in it, marked as followed. Always shown, also with an empty follow list (ADR 0016) | MVP |
 | FR-010 | Shows lists followed series with next episode or status | PoC |
 | FR-011 | Data refreshes on app start when stale, and on pull to refresh | PoC |
 | FR-012 | Several episodes of one show on the same day appear as one item. On the Home hero, all of a show's episodes within the 7 days are one slide with a date and episode range (CRI-94) | PoC, MVP |
