@@ -55,7 +55,8 @@ first user is the author, who currently uses Next Episode.
   row drops followed shows and shows the next ones in rank order (11–20,
   then 21–30, wrapping around when the list runs out), with no new TMDB
   fetch unless the day's data is stale. Hidden when the follow list is
-  empty.
+  empty. The same row appears in Search before typing (FR-026), and
+  Refresh there moves this row too.
 - **Second row:** "Airing this week" (FR-039, ADR 0016): candidates from
   TMDB discover for the user's region and the week (on a streaming service
   there, an episode within the 7 days), in TMDB's popularity order, soaps
@@ -69,8 +70,8 @@ first user is the author, who currently uses Next Episode.
   the hero's words ("Today", "Tomorrow", then the weekday, "Fri"). A show
   followed from the row stays in it, marked as followed; no Refresh.
   Always shown, also with an empty follow list, when it is the first row
-  under the hero. No all-time charts, and no trending without a time link,
-  on Home.
+  under the hero. The same row appears in Search before typing (FR-026).
+  No all-time charts, and no trending without a time link, on Home.
 
 ### 5.2 Calendar
 - **Job:** give an overview backwards and forwards in time.
@@ -98,17 +99,48 @@ first user is the author, who currently uses Next Episode.
 ### 5.3 Shows
 - **Job:** manage what I follow.
 - **Needs:** see that the list is right, unfollow, and reach search.
-- **Concept:** the list of followed series with next episode or status, and
-  swipe to unfollow. A search field on top opens Search (5.4).
+- **Concept:** the list of followed series with their status, and swipe to
+  unfollow. A search field on top opens Search (5.4).
+- **Search field:** always visible at the top. Tapping it opens the Search
+  sheet with the keyboard open (FR-007). It does not filter the list.
+- **Two segments (FR-010):** "Active" and "Inactive", each header with its
+  count. Alphabetical by title within each. Inactive is collapsed by
+  default; tapping its header expands it.
+  - **Active:** something is airing now, or a new season is confirmed:
+    airing (including a show whose latest episode is out today with
+    nothing dated after it, and a show mid-season whose next episode is
+    listed without an airstamp yet), a dated next season, or a new season
+    listed without a date (TBA).
+  - **Inactive:** between seasons, future uncertain, ended.
+- **Row (FR-010, FR-035):** poster, title, the status line from Show detail
+  in its wording ("Airing · next ep Fri 9 Oct", "Season 3 · TBA", "Ended",
+  5.5), and the service slot: "On [service]" or plain "Unavailable", without
+  the region name (FR-027, CRI-97). Nothing when TMDB does not know the
+  show (CRI-102). Tapping the row opens Show detail (FR-030).
+- **Unfollow (FR-002):** swiping a row left reveals an "Unfollow" button;
+  tapping it unfollows. A full swipe never unfollows on its own. Screen
+  reader users get "Unfollow" as an accessibility action on the row
+  (NFR-008).
+- **Empty state:** with no followed shows, a short line and a button that
+  opens Search, in the same pattern as Home's "Add your first show"
+  (FR-013).
+- **Refresh and footer:** pull to refresh (FR-011). The footer keeps the
+  "Streaming region" line (FR-016) and the TVmaze credit (NFR-007).
 
 ### 5.4 Search
 - **Job:** add series quickly. Without series there is no app.
 - **Needs:** find the right show, even when several share a name, and follow
   several in a row.
-- **Entry points:** the search field in Shows, and "Add your first show" on
-  an empty Home. Both open the same Search (FR-007).
+- **Entry points:** the search field in Shows, the button on an empty
+  Shows list, and "Add your first show" on an empty Home. All open the same
+  Search (FR-007).
 - **Presentation:** a sheet over the current view. Large search field on top
-  with the keyboard already open. Results appear while typing.
+  with the keyboard already open. Results appear while typing, after a
+  short pause (about 250 ms) so each keystroke is not a request. A clear
+  button (X) inside the field empties it, the same on iOS and Android.
+- **Scope:** Search finds every show in TVmaze. It is not filtered by
+  region or by show type: talk shows, reality and shows unavailable in the
+  user's region are all found. Each show appears once.
 - **Leaving:** a round close button (X) at the top right, next to the search
   field, or swipe the sheet down. The close button is always visible, also
   while the keyboard is open (references: Next Episode's search, current iOS
@@ -121,26 +153,27 @@ first user is the author, who currently uses Next Episode.
   original titles are not rewritten.
 - **Result row (references: PlayPilot, Spotify "Add to playlist"):** large
   portrait poster on the left. Next to it: title in bold, a meta line with
-  year and status ("2026 · Returning", "Ended"), a two line summary, and the
-  services in the user's region on their own line (MVP, FR-027), or
-  plain "Unavailable" when there is none (Show detail and the Home hero
-  name the region, rows do not). The original
+  year and genres ("2026 · Drama, Thriller"), and the service slot on its
+  own line, by the same rules as the Shows row: "On [service]", or plain
+  "Unavailable" when there is none (Show detail and the Home hero name the
+  region, rows do not), and nothing when TMDB does not know the show
+  (FR-027, CRI-97, CRI-102). No summary and no IMDb rating: the rating is
+  shown only in Show detail, to save OMDb calls (ADR 0013). The original
   network is not shown.
 - **Follow control:** a circle at the right edge of each row, aligned in one
   column. Not followed: hollow circle with a "+" at lower opacity. Followed:
   filled with the accent colour and a check, with light haptic feedback. The
   filled state is a status, not a competing action.
-- **After following:** the row shows the next episode ("New today",
-  "Next: Tomorrow", "Next: Tue 24 Sep", or "No date yet"), confirming the
-  app knows the show. A date in another year than the current one shows
-  its year ("Next: Fri 9 Jul 2027"), so a date far ahead does not read like
-  one that has passed. When the next episode is episode 1 of a season, or
-  an announced season's premiere date, it reads as a premiere instead of
-  "Next:" ("Season 4 premiere · Fri 9 Jul 2027"). Data first: episode 1
-  means a premiere, nothing is guessed. The Shows list uses the same labels.
-- **Before typing:** "New this week": shows with a series premiere or a new
-  season starting this week, each with a Follow button. "Trending" is a
-  possible secondary list, added only if "New this week" proves too thin.
+- **After following (FR-025):** the row shows the status line from Show
+  detail, the same as the Shows row ("Airing · next ep Fri 9 Oct",
+  "Season 3 · TBA", "Ended", 5.5), confirming the app knows the show.
+- **Before typing (FR-026):** Home's two poster rows, reused as they are:
+  the same component, titles and data (5.1, FR-038, FR-039).
+  "Top picks for you" with its "Refresh" control, then "Airing this week".
+  With an empty follow list, only "Airing this week", as on Home. Both are
+  region filtered as on Home. Refresh is shared with Home: refreshing in
+  Search also moves Home's row to the next picks. The poster rows
+  deliberately look different from search results.
 - **Edge cases:** no results gives a short hint to try the original title.
   Shows without an image get a neutral placeholder with the title. Running
   shows rank above ended ones.
@@ -199,8 +232,11 @@ per season come in the MVP.
   uncertain" (To Be Determined), "Ended". It alone says whether anything is
   airing. TVmaze and TMDB give season dates as full dates or none, never a
   year only, so there is no year state.
-- **Status wording:** TVmaze's fixed status values are shown in plain words
-  in Shows and Search: "To Be Determined" reads "Renewal not
+  The same line is used on the Shows row (5.3) and on a followed Search
+  row (5.4), and its state decides the Shows segment.
+- **Status wording:** wherever TVmaze's own status value is shown as is
+  (the status line's fallback for any other value), it reads in plain
+  words: "To Be Determined" reads "Renewal not
   announced", "In Development" reads "In development"; "Running" and
   "Ended" stay as they are. A translation of the source's own vocabulary,
   not a guess (CRI-81).
@@ -250,7 +286,7 @@ Next Episode. A setting is added only if real use shows it is needed.
 | Manual day offset | None | ADR 0006 |
 | Specials | Hidden | FR-037 |
 | First day of the week | From the phone's locale (Monday in Sweden) | 5.2 |
-| Service on rows | Shown: the services in the user's region (FR-027, planned) | 5.4 |
+| Service on rows | Shown on Search and Shows rows: the services in the user's region, or "Unavailable" (FR-010, FR-027) | 5.3, 5.4 |
 | Original network on rows and in the hero | Not shown; where to watch is "Open in" | 5.1, 5.4, ADR 0015 |
 | Time of day | Not shown | ADR 0001 |
 | Theme | Dark only, no light mode and no system setting | ADR 0011 |
@@ -268,14 +304,14 @@ Reached from an icon. Territory and notifications.
 | FR-004 | Home shows followed series with an episode released today | PoC |
 | FR-005 | Home shows the slide count with a day label ("TODAY · 1/3", "TOMORROW", "UPCOMING") | PoC, MVP |
 | FR-006 | When nothing airs within the hero's 7 days, Home shows the episodes of the next day with episodes | PoC, MVP |
-| FR-007 | Search opens as a sheet from the search field in Shows, and from "Add your first show" on an empty Home (FR-013). With shows followed, Home has no search entry. The close button (X) or swipe down returns to where Search was opened | PoC, MVP |
+| FR-007 | Search opens as a sheet from the search field in Shows, from the button on an empty Shows list, and from "Add your first show" on an empty Home (FR-013). With shows followed, Home has no search entry. The close button (X) or swipe down returns to where Search was opened | PoC, MVP |
 | FR-008 | Calendar shows a month grid with days that have episodes marked, today preselected | PoC |
 | FR-009 | Selecting a day in Calendar lists that day's episodes | PoC |
 | FR-036 | Calendar swipes between months and shows a "Today" button when away from today | PoC |
 | FR-037 | Specials are never shown, only regular episodes. No setting | PoC |
 | FR-038 | Under the hero, Home shows one row, "Top picks for you": TMDB recommendations for each followed show, followed shows removed, ranked by how many followed shows recommend the same title, cached for a day, only shows with at least one streaming service in the user's region (subscription, free or ads, add-on channels included; pay-TV never counts, the same rule as "Open in"), not filtered by origin country or language. The cards are built from the app's existing components and design system tokens; each follows at once from its circle and opens Show detail on a tap, and a show followed from the row stays in it, marked as followed. A "Refresh" control under the row drops followed shows and shows the next ones in rank order (11–20, then 21–30, wrapping around), with no new TMDB fetch unless the day's data is stale. Hidden when the follow list is empty (ADR 0016) | MVP |
 | FR-039 | Under "Top picks for you", Home shows "Airing this week": candidates from TMDB discover for the user's region and the week (on a streaming service there, an episode within the 7 days, soaps excluded) in TMDB's popularity order, kept only when the show has a streaming service in the region by the same rule as "Open in", TVmaze has an episode within the hero's 7 days (it would be in the hero if followed) and TVmaze's type is scripted, animation or documentary (no reality, talk, news, game shows, sports or soaps), not filtered by origin country or language, followed shows left out, each card with the next episode's air date ("Today", "Tomorrow", "Fri"), following at once from its circle and opening Show detail; a show followed from the row stays in it, marked as followed. Always shown, also with an empty follow list (ADR 0016) | MVP |
-| FR-010 | Shows lists followed series with next episode or status | PoC |
+| FR-010 | Shows lists followed series in two segments with counts, "Active" (airing, including an episode out today with nothing dated after it and a next episode listed without an airstamp; a dated next season; a next season listed without a date) and "Inactive" (between seasons, future uncertain, ended), alphabetical within each, Inactive collapsed by default and expanded by tapping its header. Each row: poster, title, Show detail's status line (FR-035) and the service slot, "On [service]" or plain "Unavailable", nothing when TMDB does not know the show (CRI-97, CRI-102). With no followed shows, a button opens Search | PoC, MVP |
 | FR-011 | Data refreshes on app start when stale, and on pull to refresh | PoC |
 | FR-012 | Several episodes of one show on the same day appear as one item. On the Home hero, all of a show's episodes within the 7 days are one slide with a date and episode range (CRI-94) | PoC, MVP |
 | FR-013 | An empty follow list shows an empty Home with "Add your first show", which opens Search | PoC |
@@ -289,10 +325,10 @@ Reached from an icon. Territory and notifications.
 | FR-021 | Direct links to the show for more services | After MVP |
 | FR-022 | Explore: "what is releasing" feed with filters, starting with streaming service | After MVP |
 | FR-023 | Android widget | After MVP |
-| FR-024 | Search results show poster, title, year, status, a two line summary and a follow circle at the right edge | PoC |
-| FR-025 | After following, the result row shows the next episode or "No date yet" | PoC |
-| FR-026 | Before the user types, Search shows "New this week": series premieres and new seasons starting this week | MVP |
-| FR-027 | Search results show the services that carry the show in the user's territory, or plain "Unavailable" when there is none; the row does not name the region, unlike Show detail (CRI-91, CRI-97) | MVP |
+| FR-024 | Search results show poster, title, a meta line with year and genres, the service slot (FR-027) and a follow circle at the right edge. PoC: year and status, and a two line summary. MVP: no summary, no status and no IMDb rating (the rating is in Show detail only). Results appear after a short pause in typing (about 250 ms), each show once, and are not filtered by region or show type. A clear button (X) inside the field on iOS and Android | PoC, MVP |
+| FR-025 | After following, the result row shows the next episode or "No date yet" (PoC). MVP: it shows Show detail's status line instead, the same as the Shows row (FR-035) | PoC, MVP |
+| FR-026 | Before the user types, Search shows Home's rows as they are: "Top picks for you" with its shared Refresh (FR-038), then "Airing this week" (FR-039); only "Airing this week" when the follow list is empty. Region filtered as on Home (CRI-98) | MVP |
+| FR-027 | Search results and Shows rows show the services that carry the show in the user's territory, or plain "Unavailable" when there is none, and nothing when TMDB does not know the show; the row does not name the region, unlike Show detail (CRI-91, CRI-97, CRI-102) | MVP |
 | FR-028 | Show detail view with image, title, year, status, service, summary, next and latest episode. PoC shows the network instead of the service. MVP: a meta line with the premiere year, the first origin country from TMDB and up to three genres from TVmaze ("2026 · Philippines · Drama, Thriller"), any missing part left out; the country is the show's origin, kept on purpose, and the original network stays out of the UI. MVP adds the IMDb rating from OMDb (ADR 0013) | PoC, MVP |
 | FR-029 | Show detail has a "Follow" / "Following" toggle button and, followed or not, "Open in [service]" as a full button when the show has a service in the user's territory (CRI-86). PoC: "Follow", and a quiet "Following" that unfollows; "Open in [service]" only when followed, for the show's Swedish service (FR-014); the service list in the user's territory is MVP | PoC, MVP |
 | FR-030 | Show detail opens from Search, Home, Calendar and Shows | PoC |
@@ -300,7 +336,7 @@ Reached from an icon. Territory and notifications.
 | FR-032 | Show detail has season tabs with the current season preselected and episodes marked aired, today, upcoming (muted), not in territory yet (muted) and finale. PoC and MVP: all but "not in territory yet", which comes after MVP (ADR 0015) | PoC, After MVP |
 | FR-033 | Announced future seasons appear as muted tabs with premiere date or "Announced" | PoC |
 | FR-034 | Between seasons, the next episode card shows the next announced episode or season with its date, otherwise the show status from the data source | PoC |
-| FR-035 | In Shows, a show between seasons shows its next announced date or its status from the data source instead of a next episode | PoC |
+| FR-035 | In Shows, a show between seasons shows its next announced date or its status from the data source instead of a next episode (PoC). MVP: every Shows row uses Show detail's status line in its wording ("Airing · next ep Fri 9 Oct", "Season 3 · TBA", "Ended") | PoC, MVP |
 
 ## 7. Non-functional requirements
 
@@ -327,6 +363,11 @@ later. See `decisions/0005-data-sources.md`.
   claim regional availability. A "Not in [country] yet" label needs
   per-episode availability behind our own server, for a public release
   (spike 0003).
+- **Status line for two Active cases (5.3, FR-010):** a show whose latest
+  episode is out today with nothing dated after it, and a show mid-season
+  whose next episode has no airstamp yet, are Active, but Show detail's
+  status line has no airing wording for them today: they read "Between
+  seasons" (or "Ended"). Their wording is to be decided.
 - Name (working name: On Now)
 - Notifications: morning summary, per episode, or both
 - Menu for several services: anchored to the button or centred overlay
