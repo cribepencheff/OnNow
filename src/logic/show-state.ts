@@ -1,5 +1,6 @@
-// The status line in Show detail (FR-028, FR-034): one state derived from
-// TVmaze's status, episodes and seasons. Dated facts win over the status.
+// The status line in Show detail, on Shows rows and on followed Search rows
+// (FR-028, FR-034, FR-035, PRD 5.5): one state derived from TVmaze's status,
+// episodes and seasons. Dated facts win over the status.
 
 import { localDateFromAirstamp, type LocalDate } from "./local-date";
 import { formatLabelDate } from "./next-episode-label";
@@ -13,6 +14,10 @@ import type {
 
 export type ShowState =
   | { kind: "airing"; nextDate: LocalDate }
+  // The latest episode is out today and nothing is dated after it.
+  | { kind: "airing-today" }
+  // The airing season's next episode is listed without a date.
+  | { kind: "airing-tba" }
   | { kind: "season-dated"; season: number; date: LocalDate }
   | { kind: "season-tba"; season: number }
   | { kind: "between-seasons" }
@@ -27,10 +32,12 @@ export function showState(
   timeZone: string,
   todayDate: LocalDate,
 ): ShowState {
-  const dated = regularEpisodes(episodes)
+  const regular = regularEpisodes(episodes);
+  const dated = regular
     .filter((episode) => episode.airstamp)
     .map((episode) => ({
       season: episode.season,
+      number: episode.number ?? 0,
       localDate: localDateFromAirstamp(episode.airstamp, timeZone),
     }))
     .sort((a, b) => a.localDate.localeCompare(b.localDate));
@@ -61,8 +68,29 @@ export function showState(
     };
   }
 
+  if (aired.at(-1)?.localDate === todayDate) {
+    return { kind: "airing-today" };
+  }
+
   if (show.status === "Ended") {
     return { kind: "ended" };
+  }
+
+  // An episode of the airing season after the last one out, not dated yet.
+  const lastAiredNumber = Math.max(
+    0,
+    ...aired
+      .filter(({ season }) => season === lastAiredSeason)
+      .map(({ number }) => number),
+  );
+  const undatedNext = regular.some(
+    (episode) =>
+      !episode.airstamp &&
+      episode.season === lastAiredSeason &&
+      (episode.number ?? 0) > lastAiredNumber,
+  );
+  if (undatedNext) {
+    return { kind: "airing-tba" };
   }
 
   const undatedSeason = newSeasons.find(
@@ -87,6 +115,10 @@ export function showStateLabel(state: ShowState, todayDate: LocalDate): string {
   switch (state.kind) {
     case "airing":
       return `Airing · next ep ${formatLabelDate(state.nextDate, todayDate)}`;
+    case "airing-today":
+      return "Airing · new ep today";
+    case "airing-tba":
+      return "Airing · next ep TBA";
     case "season-dated":
       return `Season ${state.season} · ${formatLabelDate(state.date, todayDate)}`;
     case "season-tba":

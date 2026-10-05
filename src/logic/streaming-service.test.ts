@@ -1,8 +1,10 @@
 import {
   availabilityText,
+  NOT_ON_TMDB,
   openInAccessibilityLabel,
   openInLink,
   regionProviders,
+  rowServiceText,
   tmdbOriginCountries,
   tmdbTvId,
 } from "./streaming-service";
@@ -172,6 +174,23 @@ describe("openInLink (FR-014, ADR 0004, CRI-82)", () => {
 
 // CRI-84: when there is no button, a quiet text says what TMDB's Swedish
 // data (from JustWatch) shows, and nothing more (data first).
+describe("rowServiceText (FR-027, CRI-97, CRI-102)", () => {
+  it('names the services, or plain "Unavailable" without the region', () => {
+    expect(rowServiceText(regionProviders(providersSpecialForces, "SE"))).toBe(
+      "Unavailable",
+    );
+    expect(rowServiceText([{ providerId: 8, providerName: "Netflix" }])).toBe(
+      "On Netflix",
+    );
+  });
+
+  it("is nothing when TMDB does not know the show, has no key or has not answered", () => {
+    expect(rowServiceText(NOT_ON_TMDB)).toBeNull();
+    expect(rowServiceText(null)).toBeNull();
+    expect(rowServiceText(undefined)).toBeNull();
+  });
+});
+
 describe("availabilityText (FR-014, CRI-84)", () => {
   it('is "Unavailable" without a Swedish service (Special Forces)', () => {
     expect(

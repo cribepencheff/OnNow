@@ -14,7 +14,9 @@ describe("Shows tab (real navigation)", () => {
     const rendered = renderRouter("src/app", { initialUrl: "/shows" });
     await rendered;
 
-    await waitFor(() => expect(screen.getByText("No shows yet")).toBeTruthy());
+    await waitFor(() =>
+      expect(screen.getByTestId("shows-empty-state")).toBeTruthy(),
+    );
 
     await fireEvent.press(screen.getByLabelText("Search shows"));
 

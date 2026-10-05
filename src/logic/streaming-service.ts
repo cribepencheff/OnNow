@@ -269,3 +269,12 @@ export function availabilityText(
     ? `Unavailable in ${regionNameInSentence(region)}`
     : "Unavailable";
 }
+
+// The service slot on Shows and Search rows (FR-027): the services, or plain
+// "Unavailable" without the region (CRI-97). Nothing when TMDB does not know
+// the show (CRI-102), without a TMDB key, or before it answers.
+export function rowServiceText(
+  answer: ProviderAnswer | null | undefined,
+): string | null {
+  return Array.isArray(answer) ? availabilityText(answer) : null;
+}

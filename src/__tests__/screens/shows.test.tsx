@@ -4,6 +4,8 @@ import ShowsScreen from "@/app/(tabs)/shows";
 import { TVMAZE_CREDIT } from "@/api/tvmaze-credit";
 import { useFollowList } from "@/hooks/useFollowList";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
+import { useStreamingService } from "@/hooks/useStreamingService";
+import { NOT_ON_TMDB } from "@/logic/streaming-service";
 import type {
   TvMazeEpisode,
   TvMazeSeason,
@@ -21,6 +23,9 @@ jest.mock("@/hooks/useFollowedEpisodes", () => ({
 jest.mock("@/hooks/useFollowList", () => ({
   useFollowList: jest.fn(),
 }));
+jest.mock("@/hooks/useStreamingService", () => ({
+  useStreamingService: jest.fn(),
+}));
 jest.mock("@/hooks/useRegion", () => ({
   useRegion: () => ({ region: "SE" }),
 }));
@@ -34,6 +39,15 @@ const mockedUseFollowedEpisodes = useFollowedEpisodes as jest.MockedFunction<
 const mockedUseFollowList = useFollowList as jest.MockedFunction<
   typeof useFollowList
 >;
+const mockedUseStreamingService = useStreamingService as jest.MockedFunction<
+  typeof useStreamingService
+>;
+
+function mockProviders(data: unknown) {
+  mockedUseStreamingService.mockReturnValue({
+    data,
+  } as unknown as ReturnType<typeof useStreamingService>);
+}
 
 function makeShow(
   overrides: Partial<TvMazeShowWithEmbeds> = {},
@@ -96,6 +110,36 @@ function makeSeason(overrides: Partial<TvMazeSeason> = {}): TvMazeSeason {
   };
 }
 
+// Airing: an episode out before today (21 Sep) and the next on 24 Sep.
+function airingShow(id: number, name: string): TvMazeShowWithEmbeds {
+  return makeShow({
+    id,
+    name,
+    _embedded: {
+      episodes: [
+        makeEpisode({
+          number: 1,
+          airdate: "2026-09-17",
+          airstamp: "2026-09-17T18:00:00+00:00",
+        }),
+        makeEpisode({ number: 2 }),
+      ],
+      seasons: [],
+    },
+  });
+}
+
+function mockShows(shows: TvMazeShowWithEmbeds[]) {
+  mockFollowedEpisodes({
+    followedCount: shows.length,
+    isReady: true,
+    followedShows: shows.map((show) => ({
+      show,
+      episodes: show._embedded.episodes,
+    })),
+  });
+}
+
 const refetch = jest.fn();
 const unfollow = jest.fn();
 
@@ -133,98 +177,70 @@ describe("ShowsScreen", () => {
       unfollow,
     });
     mockFollowedEpisodes({});
+    mockProviders(undefined);
   });
 
-  it("shows a running show's next episode date (FR-010)", async () => {
-    const show = makeShow({
-      name: "Silo",
-      status: "Running",
-      _embedded: {
-        // A regular episode, not a season premiere (CRI-78).
-        episodes: [makeEpisode({ airdate: "2026-09-24", number: 2 })],
-        seasons: [],
-      },
-    });
-    mockFollowedEpisodes({
-      followedCount: 1,
-      isReady: true,
-      followedShows: [{ show, episodes: show._embedded.episodes }],
-    });
+  it("shows Show detail's status line for an airing show (FR-010, FR-035)", async () => {
+    const show = airingShow(1, "Silo");
+    mockShows([show]);
 
     await render(<ShowsScreen />);
 
     expect(screen.getByText("Silo")).toBeTruthy();
-    expect(screen.getByText("Next: Thu 24 Sep")).toBeTruthy();
+    expect(screen.getByText("Airing · next ep Thu 24 Sep")).toBeTruthy();
   });
 
-  it("shows the next announced date for a show between seasons (FR-035)", async () => {
-    const show = makeShow({
-      name: "Foundation",
-      status: "Running",
-      _embedded: {
-        episodes: [],
-        seasons: [makeSeason({ premiereDate: "2026-12-01" })],
-      },
-    });
-    mockFollowedEpisodes({
-      followedCount: 1,
-      isReady: true,
-      followedShows: [{ show, episodes: [] }],
-    });
+  it("puts airing shows and confirmed seasons in Active, the rest in Inactive, with counts (PRD 5.3)", async () => {
+    mockShows([
+      airingShow(1, "Silo"),
+      makeShow({
+        id: 2,
+        name: "Foundation",
+        _embedded: { episodes: [], seasons: [makeSeason({ number: 4 })] },
+      }),
+      makeShow({ id: 3, name: "The Bear", status: "Ended" }),
+    ]);
 
     await render(<ShowsScreen />);
 
-    expect(screen.getByText("Season 2 premiere · Tue 1 Dec")).toBeTruthy();
+    expect(screen.getByLabelText("Active, 2")).toBeTruthy();
+    expect(screen.getByLabelText("Inactive, 1")).toBeTruthy();
+    expect(screen.getByText("Season 4 · TBA")).toBeTruthy();
   });
 
-  it("shows the status for a show between seasons with no announced date (FR-035)", async () => {
-    const show = makeShow({
-      name: "Foundation",
-      status: "Running",
-      _embedded: {
-        episodes: [],
-        seasons: [makeSeason({ premiereDate: null, episodeOrder: 10 })],
-      },
-    });
-    mockFollowedEpisodes({
-      followedCount: 1,
-      isReady: true,
-      followedShows: [{ show, episodes: [] }],
-    });
+  it("keeps Inactive collapsed until its header is pressed (PRD 5.3)", async () => {
+    mockShows([
+      airingShow(1, "Silo"),
+      makeShow({ id: 2, name: "The Bear", status: "Ended" }),
+    ]);
 
     await render(<ShowsScreen />);
 
-    expect(screen.getByText("Running")).toBeTruthy();
-  });
+    expect(screen.queryByText("The Bear")).toBeNull();
+    const header = screen.getByTestId("shows-segment-inactive");
+    expect(header.props.accessibilityState).toEqual({ expanded: false });
 
-  it("shows the status for an ended show", async () => {
-    const show = makeShow({
-      name: "The Bear",
-      status: "Ended",
-      _embedded: { episodes: [], seasons: [] },
-    });
-    mockFollowedEpisodes({
-      followedCount: 1,
-      isReady: true,
-      followedShows: [{ show, episodes: [] }],
-    });
+    await fireEvent.press(header);
 
-    await render(<ShowsScreen />);
-
+    expect(screen.getByText("The Bear")).toBeTruthy();
     expect(screen.getByText("Ended")).toBeTruthy();
   });
 
-  it("lists followed shows alphabetically by title (PRD 5.3)", async () => {
-    const shows = [
-      makeShow({ id: 1, name: "Silo" }),
-      makeShow({ id: 2, name: "Foundation" }),
-      makeShow({ id: 3, name: "The Bear" }),
-    ];
-    mockFollowedEpisodes({
-      followedCount: 3,
-      isReady: true,
-      followedShows: shows.map((show) => ({ show, episodes: [] })),
-    });
+  it("leaves out a segment without shows", async () => {
+    mockShows([airingShow(1, "Silo")]);
+
+    await render(<ShowsScreen />);
+
+    expect(screen.getByTestId("shows-segment-active")).toBeTruthy();
+    expect(screen.queryByTestId("shows-segment-inactive")).toBeNull();
+  });
+
+  it("lists each segment alphabetically by title (PRD 5.3)", async () => {
+    mockShows([
+      airingShow(1, "Silo"),
+      airingShow(2, "Foundation"),
+      airingShow(3, "The Bear"),
+    ]);
 
     await render(<ShowsScreen />);
 
@@ -235,28 +251,40 @@ describe("ShowsScreen", () => {
     expect(titles).toEqual(["Foundation", "Silo", "The Bear"]);
   });
 
-  it('reveals "Unfollow" on swipe and removes the show on press (FR-002)', async () => {
-    const show = makeShow({ id: 42, name: "Silo" });
-    mockFollowedEpisodes({
-      followedCount: 1,
-      isReady: true,
-      followedShows: [{ show, episodes: [] }],
-    });
+  it('shows the service, or plain "Unavailable" (FR-027, CRI-97)', async () => {
+    mockShows([airingShow(1, "Silo")]);
+    mockProviders([{ providerId: 350, providerName: "Apple TV" }]);
+
+    const { rerender } = await render(<ShowsScreen />);
+    expect(screen.getByText("On Apple TV")).toBeTruthy();
+
+    mockProviders([]);
+    await rerender(<ShowsScreen />);
+    expect(screen.getByText("Unavailable")).toBeTruthy();
+  });
+
+  it("shows no service when TMDB does not know the show (CRI-102)", async () => {
+    mockShows([airingShow(1, "Silo")]);
+    mockProviders(NOT_ON_TMDB);
 
     await render(<ShowsScreen />);
 
+    expect(screen.getByTestId("shows-row-service").props.children).toBe("");
+  });
+
+  it('reveals "Unfollow" on swipe and removes the show only on press (FR-002)', async () => {
+    mockShows([airingShow(42, "Silo")]);
+
+    await render(<ShowsScreen />);
+
+    expect(unfollow).not.toHaveBeenCalled();
     await fireEvent.press(screen.getByLabelText("Unfollow Silo"));
 
     expect(unfollow).toHaveBeenCalledWith(42);
   });
 
   it("unfollows through the accessibility action, for screen readers that cannot swipe (NFR-008)", async () => {
-    const show = makeShow({ id: 42, name: "Silo" });
-    mockFollowedEpisodes({
-      followedCount: 1,
-      isReady: true,
-      followedShows: [{ show, episodes: [] }],
-    });
+    mockShows([airingShow(42, "Silo")]);
 
     await render(<ShowsScreen />);
 
@@ -268,12 +296,14 @@ describe("ShowsScreen", () => {
     expect(unfollow).toHaveBeenCalledWith(42);
   });
 
-  it("shows a short empty line when the follow list is empty", async () => {
+  it("offers a button that opens Search when the follow list is empty (PRD 5.3, FR-007)", async () => {
     mockFollowedEpisodes({ followedCount: 0 });
 
     await render(<ShowsScreen />);
 
-    expect(screen.getByText("No shows yet")).toBeTruthy();
+    await fireEvent.press(screen.getByTestId("shows-add-show"));
+
+    expect(mockPush).toHaveBeenCalledWith("/search");
   });
 
   it("shows a quiet placeholder instead of a status while loading", async () => {
@@ -282,8 +312,8 @@ describe("ShowsScreen", () => {
     await render(<ShowsScreen />);
 
     expect(screen.getByText("Loading your shows…")).toBeTruthy();
-    expect(screen.queryByText("Running")).toBeNull();
-    expect(screen.queryByText("No shows yet")).toBeNull();
+    expect(screen.queryByTestId("shows-row")).toBeNull();
+    expect(screen.queryByTestId("shows-empty-state")).toBeNull();
   });
 
   it("opens Search when the search field is pressed", async () => {
@@ -303,12 +333,7 @@ describe("ShowsScreen", () => {
   });
 
   it("shows the TVmaze credit (NFR-007)", async () => {
-    const show = makeShow({ name: "Silo" });
-    mockFollowedEpisodes({
-      followedCount: 1,
-      isReady: true,
-      followedShows: [{ show, episodes: [] }],
-    });
+    mockShows([airingShow(1, "Silo")]);
 
     await render(<ShowsScreen />);
 

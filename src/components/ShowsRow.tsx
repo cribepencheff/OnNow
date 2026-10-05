@@ -1,6 +1,6 @@
 // A followed show row in the Shows list (PRD 5.3, FR-002, FR-010, FR-035),
 // in the same visual language as Search's result row: poster, title,
-// and a line with the next episode or status. Tapping the row
+// Show detail's status line, and the service slot (FR-027). Tapping the row
 // opens Show detail (FR-030, CRI-79). Swipe left reveals
 // "Unfollow" (react-native-gesture-handler's Swipeable, Expo Go
 // compatible, no dev build needed); a full swipe alone does not unfollow,
@@ -12,16 +12,15 @@ import { Image } from "expo-image";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 
-import { nextForShow } from "@/logic/next-episode";
-import { showsRowLine } from "@/logic/shows-list";
-import type { LocalDate } from "@/logic/local-date";
+import { useStreamingService } from "@/hooks/useStreamingService";
+import { rowServiceText } from "@/logic/streaming-service";
 import type { TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 import { t, type } from "@/theme/tokens";
 
 interface ShowsRowProps {
   show: TvMazeShowWithEmbeds;
-  timeZone: string;
-  todayDate: LocalDate;
+  // Show detail's status line ("Airing · next ep Fri 9 Oct").
+  statusLine: string;
   onUnfollow: () => void;
   onPress?: () => void;
 }
@@ -30,20 +29,13 @@ const ACCESSIBILITY_ACTIONS = [{ name: "unfollow", label: "Unfollow" }];
 
 export function ShowsRow({
   show,
-  timeZone,
-  todayDate,
+  statusLine,
   onUnfollow,
   onPress,
 }: ShowsRowProps) {
-  const next = nextForShow(
-    show,
-    show._embedded.episodes,
-    show._embedded.seasons,
-    timeZone,
-    todayDate,
-  );
-  const line = showsRowLine(next, show.status, timeZone, todayDate);
-  const label = [show.name, line].filter(Boolean).join(", ");
+  const { data: providers } = useStreamingService(show, true);
+  const service = rowServiceText(providers);
+  const label = [show.name, statusLine, service].filter(Boolean).join(", ");
 
   return (
     <Swipeable
@@ -75,7 +67,15 @@ export function ShowsRow({
             {show.name}
           </Text>
           <Text style={styles.line} numberOfLines={1}>
-            {line}
+            {statusLine}
+          </Text>
+          {/* Its line is kept while TMDB answers, so the row does not grow. */}
+          <Text
+            style={styles.line}
+            numberOfLines={1}
+            testID="shows-row-service"
+          >
+            {service ?? ""}
           </Text>
         </View>
       </Pressable>
@@ -133,6 +133,7 @@ const styles = StyleSheet.create({
   },
   line: {
     ...type.meta,
+    minHeight: type.meta.lineHeight,
     color: t.inkMuted,
   },
   actionContainer: {

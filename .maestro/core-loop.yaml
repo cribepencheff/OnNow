@@ -94,14 +94,15 @@ appId: host.exp.Exponent
 - assertNotVisible:
     id: "home-empty-state"
 
-# 6. FR-010: Shows lists the show with "New today", "Next: ..." or
-# "Season N premiere · ..." (CRI-78).
+# 6. FR-010, FR-035: Shows lists the show in Active (it has an upcoming
+# episode) with Show detail's status line, "Airing · ..." or
+# "Season N · ..." (PRD 5.3, 5.5).
 - tapOn:
     id: "tab-shows"
 - extendedWaitUntil:
     visible:
       id: "shows-row"
-      text: "${output.show.name}, .*(New today|Next: .+|Season \\d+ premiere · .+)"
+      text: "${output.show.name}, (Airing · .+|Season \\d+ · .+)"
     timeout: 20000
 
 # 7. FR-030, PRD 5.6 (CRI-79): a Shows row opens Show detail with the show's

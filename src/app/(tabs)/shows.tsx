@@ -1,13 +1,13 @@
-// Shows (PRD 5.3, FR-002, FR-010, FR-035): the followed shows list, each
-// with its next episode or status, swipe to unfollow, and a search field
-// that opens Search (the same sheet as Home's "+"), in the design
-// system's dark tokens.
+// Shows (PRD 5.3, FR-002, FR-010, FR-035): the followed shows in two
+// segments, Active and Inactive, each row with Show detail's status line
+// and its service, swipe to unfollow, and a search field that opens Search
+// (the same sheet as Home's "+"), in the design system's dark tokens.
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
-  FlatList,
   Pressable,
   RefreshControl,
+  SectionList,
   StyleSheet,
   Text,
   View,
@@ -15,17 +15,24 @@ import {
 import { useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
 
+import { AddFirstShow } from "@/components/AddFirstShow";
 import { RegionLink } from "@/components/RegionLink";
 import { ShowsRow } from "@/components/ShowsRow";
 import { TvMazeCredit } from "@/components/TvMazeCredit";
 import { useFollowList } from "@/hooks/useFollowList";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useToday } from "@/hooks/useToday";
-import { sortShowsByTitle } from "@/logic/shows-list";
+import { splitBySegment, type ShowsSegment } from "@/logic/shows-list";
+import { showState, showStateLabel } from "@/logic/show-state";
 import { t, type } from "@/theme/tokens";
 
 // The translucent tab bar's height (tabs layout): the list ends above it.
 const TAB_BAR_HEIGHT = 83;
+
+const SEGMENT_TITLES: Record<ShowsSegment, string> = {
+  active: "Active",
+  inactive: "Inactive",
+};
 
 function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -40,10 +47,34 @@ export default function ShowsScreen() {
   const { followedShows, followedCount, isLoading, isRefetching, refetch } =
     useFollowedEpisodes();
 
-  const sortedShows = useMemo(
-    () => sortShowsByTitle(followedShows),
-    [followedShows],
+  // Inactive starts collapsed; its header expands it (PRD 5.3).
+  const [inactiveExpanded, setInactiveExpanded] = useState(false);
+
+  const segments = useMemo(
+    () =>
+      splitBySegment(
+        followedShows.map(({ show }) => ({
+          show,
+          state: showState(
+            show,
+            show._embedded.episodes,
+            show._embedded.seasons,
+            timeZone,
+            todayDate,
+          ),
+        })),
+      ),
+    [followedShows, timeZone, todayDate],
   );
+
+  // A segment without shows is left out.
+  const sections = (["active", "inactive"] as const)
+    .filter((key) => segments[key].length > 0)
+    .map((key) => ({
+      key,
+      count: segments[key].length,
+      data: key === "inactive" && !inactiveExpanded ? [] : segments[key],
+    }));
 
   const openSearch = useCallback(() => router.push("/search"), [router]);
 
@@ -66,21 +97,39 @@ export default function ShowsScreen() {
       {followedCount === 0 ? (
         !isLoading && (
           <>
-            <Text style={styles.quietLine}>No shows yet</Text>
-            <ShowsFooter />
+            <AddFirstShow
+              onPress={openSearch}
+              testID="shows-empty-state"
+              buttonTestID="shows-add-show"
+            />
+            <View style={styles.emptyFooter}>
+              <ShowsFooter />
+            </View>
           </>
         )
       ) : isLoading ? (
         <Text style={styles.quietLine}>Loading your shows…</Text>
       ) : (
-        <FlatList
-          data={sortedShows}
+        <SectionList
+          sections={sections}
           keyExtractor={({ show }) => String(show.id)}
+          stickySectionHeadersEnabled={false}
+          renderSectionHeader={({ section }) => (
+            <SegmentHeader
+              segment={section.key}
+              count={section.count}
+              expanded={section.key === "active" || inactiveExpanded}
+              onToggle={
+                section.key === "inactive"
+                  ? () => setInactiveExpanded((expanded) => !expanded)
+                  : undefined
+              }
+            />
+          )}
           renderItem={({ item }) => (
             <ShowsRow
               show={item.show}
-              timeZone={timeZone}
-              todayDate={todayDate}
+              statusLine={showStateLabel(item.state, todayDate)}
               onUnfollow={() => unfollow(item.show.id)}
               onPress={() =>
                 router.push({
@@ -104,6 +153,68 @@ export default function ShowsScreen() {
         />
       )}
     </View>
+  );
+}
+
+// "Active · 4"; the Inactive header is a button that expands or collapses
+// its segment.
+function SegmentHeader({
+  segment,
+  count,
+  expanded,
+  onToggle,
+}: {
+  segment: ShowsSegment;
+  count: number;
+  expanded: boolean;
+  onToggle?: () => void;
+}) {
+  const title = SEGMENT_TITLES[segment];
+  const content = (
+    <>
+      <Text style={styles.segmentTitle}>
+        {title}
+        <Text style={styles.segmentCount}> · {count}</Text>
+      </Text>
+      {onToggle && (
+        <SymbolView
+          name={{
+            ios: expanded ? "chevron.down" : "chevron.right",
+            android: expanded ? "expand_more" : "chevron_right",
+            web: expanded ? "expand_more" : "chevron_right",
+          }}
+          tintColor={t.inkMuted}
+          size={14}
+          weight="semibold"
+        />
+      )}
+    </>
+  );
+
+  if (!onToggle) {
+    return (
+      <View
+        style={styles.segmentHeader}
+        accessibilityRole="header"
+        accessible
+        accessibilityLabel={`${title}, ${count}`}
+        testID={`shows-segment-${segment}`}
+      >
+        {content}
+      </View>
+    );
+  }
+  return (
+    <Pressable
+      style={styles.segmentHeader}
+      accessibilityRole="button"
+      accessibilityLabel={`${title}, ${count}`}
+      accessibilityState={{ expanded }}
+      onPress={onToggle}
+      testID={`shows-segment-${segment}`}
+    >
+      {content}
+    </Pressable>
   );
 }
 
@@ -144,6 +255,24 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingBottom: TAB_BAR_HEIGHT + t.space4,
+  },
+  emptyFooter: {
+    paddingBottom: TAB_BAR_HEIGHT,
+  },
+  segmentHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: t.space2,
+    paddingHorizontal: t.space4,
+    paddingTop: t.space6,
+    paddingBottom: t.space2,
+  },
+  segmentTitle: {
+    ...type.headline,
+    color: t.ink,
+  },
+  segmentCount: {
+    color: t.inkMuted,
   },
   // Inset to the text column, as on iOS lists.
   separator: {

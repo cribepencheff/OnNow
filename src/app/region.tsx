@@ -8,6 +8,7 @@ import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { useRegion } from "@/hooks/useRegion";
 import { REGIONS, regionName } from "@/logic/regions";
 import { accent } from "@/theme/color";
+import { t, type } from "@/theme/tokens";
 
 const DEVICE = "device";
 
@@ -31,6 +32,7 @@ export default function RegionScreen() {
 
   return (
     <FlatList
+      style={styles.list}
       data={options}
       keyExtractor={(option) => option.key}
       renderItem={({ item }) => (
@@ -65,14 +67,18 @@ export default function RegionScreen() {
 }
 
 const styles = StyleSheet.create({
+  list: {
+    backgroundColor: t.bg,
+  },
   row: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 16,
+    paddingHorizontal: t.space4,
     paddingVertical: 12,
   },
   label: {
-    fontSize: 15,
+    ...type.body,
+    color: t.ink,
   },
 });
