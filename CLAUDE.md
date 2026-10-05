@@ -149,17 +149,14 @@ Avoid running the same checks twice.
 - After merging any PR: move its Linear issue to Done, pull `main` in the
   main folder (so a reload on the owner's phone picks up the change), and
   merge `main` into any other open branch that was created before it.
-- Keep the full report shape below for PR-opening and PR-merging moments.
-  For intermediate steps within a batched PR (finishing one of several
-  issues it covers, a retry after a fix), a short status line is enough;
-  save the full report for when there's something to actually review or
-  act on. Even a short status line starts with ROUTINE or REVIEW: the rule
-  applies to every report, not just the full shape.
+- For intermediate steps within a batched PR (finishing one of several
+  issues it covers, a retry after a fix), a short status line is enough.
+  It still starts with ROUTINE or REVIEW, see "Reports" below.
 
 - **Merging:** `gh pr merge <number> --merge --delete-branch`.
 
 ## Owner review gates
-This is separate from "When to check in with the owner" below. That section
+This is separate from "When to involve Cribe" below. That section
 is Claude Code's own judgment call when something is uncertain. This section
 is the owner's fixed control points, and they apply whether or not Claude
 Code itself would think to ask.
@@ -207,33 +204,21 @@ transition rather than assuming they carry over unchanged:
   the owner first. Work that needs another branch waits, and the report
   says so.
 
-## When to check in with the owner
-- A decision is not resolvable from the PRD, ADRs or spikes: ask rather
-  than assume.
-- The work would deviate from an existing ADR or from the stack and
-  principles above.
-- A test failure repeats after reasonable troubleshooting and cannot be
-  resolved.
-- Scope is expanding beyond the current Linear issue or the current phase
-  (Discovery / PoC).
+## When to involve Cribe
+Needs Cribe (REVIEW): UI to test in Expo Go; ADR, PRD or CLAUDE.md changes;
+new external service or API key; product or design decisions (behaviour,
+user-facing wording, scope, new design tokens).
+Everything else Code decides: consistency fixes (outdated examples, wording
+drift from PRD/design system, rules dropped by mistake), naming, refactors,
+test details. Do them in the same PR and list them under FYI.
 
-Otherwise, complete the issue and report without waiting for a check-in
-first. Keep reports in this shape:
-- **ROUTINE or REVIEW**, one word, first line of the report: ROUTINE means
-  you did exactly what was asked, nothing unexpected, nothing for the owner
-  to weigh in on before it's forwarded anywhere. REVIEW means the report
-  contains a decision you made, a deviation from what was asked or from an
-  existing ADR/PRD, or something you're uncertain about. This tells the
-  owner whether the report is worth reading closely, not just whether the
-  work is done.
-- **Done**: what was built, file by file, with the relevant `FR-xxx` and
-  ADR references
-- **Bundled fixes**: anything unrelated included per an earlier decision,
-  and why
-- **Decisions made**: anything decided along the way and the reasoning,
-  even small things, so it can be reviewed after the fact
-- **Verification**: the pre-push hook's result (typecheck, lint, test
-  counts), the Maestro result when it was run, and any other tooling checks
-  (for example `expo-doctor`)
-- **Suggested commit message**: matching the format in "Git and planning"
-  above (issue ID first, no attribution trailers)
+## Reports
+- Start every report with ROUTINE or REVIEW. REVIEW means Cribe must act
+  before work continues, including any PR waiting for his approval.
+  ROUTINE means nothing is waiting on him.
+- REVIEW reports begin with one checklist covering everything Cribe needs
+  to do for that PR: Expo Go test points, decisions, approvals.
+- Don't stop to ask mid-task. Pick the most reasonable, easily reversible
+  option, add it to the checklist as "decided X, change?", and keep going.
+  Stop only when the work can't proceed without an answer.
+- After the checklist: a short FYI section. Nothing else.
