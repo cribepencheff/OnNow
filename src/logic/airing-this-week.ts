@@ -1,7 +1,9 @@
-// "Airing this week" (FR-039, ADR 0016): TMDB's on-the-air list (an episode
-// within the next 7 days), scripted shows only, by TMDB's popularity.
+// "Airing this week" (FR-039, ADR 0016): TMDB's on-the-air list is the
+// candidate source, in its popularity order; TVmaze decides. A show is in
+// the row only if it would be in the hero if followed (CRI-110).
 
-import { addDays, type LocalDate } from "./local-date";
+import { HOME_HERO_HORIZON_DAYS } from "./hero-carousel";
+import { addDays, localDateFromAirstamp, type LocalDate } from "./local-date";
 import { WEEKDAYS } from "./next-episode-label";
 import type { RankedRecommendation } from "./recommendations";
 
@@ -13,10 +15,12 @@ export interface TmdbOnTheAir {
   genre_ids?: number[];
 }
 
-// Not scripted: talk, news, reality, soap (owner's list) and documentary.
-const NOT_SCRIPTED = new Set([10767, 10763, 10764, 10766, 99]);
+// TMDB genres that are never kept (talk, news, reality): left out before
+// any TVmaze request. TMDB has no game show or sports genre; TVmaze's
+// type decides those (isAiringType).
+const NEVER_KEPT_GENRES = new Set([10767, 10763, 10764]);
 
-// Scripted shows in TMDB's popularity order, each once, as a ranking that
+// Candidates in TMDB's popularity order, each once, as a ranking that
 // fillTopPicks can walk.
 export function airingThisWeek(
   results: TmdbOnTheAir[],
@@ -24,7 +28,7 @@ export function airingThisWeek(
   const seen = new Set<number>();
   return results
     .filter(
-      (show) => !(show.genre_ids ?? []).some((id) => NOT_SCRIPTED.has(id)),
+      (show) => !(show.genre_ids ?? []).some((id) => NEVER_KEPT_GENRES.has(id)),
     )
     .filter((show) => !seen.has(show.id) && seen.add(show.id))
     .sort((a, b) => (b.popularity ?? 0) - (a.popularity ?? 0))
@@ -55,4 +59,38 @@ export function weekDayWord(
   }
   const [year, month, day] = localDate.split("-").map(Number);
   return WEEKDAYS[new Date(Date.UTC(year, month - 1, day)).getUTCDay()];
+}
+
+// TVmaze show types kept: scripted shows (animation included) and
+// documentaries. Reality, talk, news, game shows, sports, variety, award
+// and panel shows are not.
+const KEPT_TYPES = new Set(["Scripted", "Animation", "Documentary"]);
+
+export function isAiringType(tvmazeType: string | null | undefined): boolean {
+  return Boolean(tvmazeType && KEPT_TYPES.has(tvmazeType));
+}
+
+export interface WeekEpisode {
+  airstamp: string | null;
+  // null for a special, which the hero never shows (FR-037).
+  number: number | null;
+}
+
+// The first day this week with a regular episode, in the user's time zone,
+// over the same window as the hero (today and the next 6 days); null when
+// none, so the show would not be in the hero if followed.
+export function firstEpisodeDayThisWeek(
+  episodes: WeekEpisode[],
+  timeZone: string,
+  todayDate: LocalDate,
+): LocalDate | null {
+  const horizonEnd = addDays(todayDate, HOME_HERO_HORIZON_DAYS - 1);
+  const days = episodes
+    .filter((episode) => episode.number !== null && episode.airstamp)
+    .map((episode) =>
+      localDateFromAirstamp(episode.airstamp as string, timeZone),
+    )
+    .filter((day) => day >= todayDate && day <= horizonEnd)
+    .sort();
+  return days[0] ?? null;
 }

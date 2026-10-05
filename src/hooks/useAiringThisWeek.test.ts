@@ -3,14 +3,14 @@ import { renderHook, waitFor } from "@testing-library/react-native";
 import { tmdbClient } from "@/api/tmdb-client";
 import { tvMazeClient } from "@/api/tvmaze-client";
 import { resolveTvMazeId } from "@/api/tvmaze-id";
-import { useAiringThisWeek, useNextEpisodeWord } from "./useAiringThisWeek";
+import { useAiringThisWeek } from "./useAiringThisWeek";
 import { createTestQueryClient, wrapperWithQueryClient } from "./test-utils";
 
 jest.mock("@/api/tmdb-client", () => ({
   tmdbClient: { findOnTheAir: jest.fn() },
 }));
 jest.mock("@/api/tvmaze-client", () => ({
-  tvMazeClient: { getNextEpisodeAirstamp: jest.fn() },
+  tvMazeClient: { getWeekInfo: jest.fn() },
 }));
 jest.mock("@/api/tvmaze-id", () => ({ resolveTvMazeId: jest.fn() }));
 let mockFollowed = { ids: new Set<number>(), isLoaded: true };
@@ -24,10 +24,10 @@ jest.mock("./useFollowList", () => ({
 jest.mock("./useToday", () => ({ useToday: () => "2026-10-05" }));
 
 const findOnTheAir = tmdbClient.findOnTheAir as jest.Mock;
-const getNextEpisodeAirstamp = tvMazeClient.getNextEpisodeAirstamp as jest.Mock;
+const getWeekInfo = tvMazeClient.getWeekInfo as jest.Mock;
 const resolve = resolveTvMazeId as jest.Mock;
 
-// 14 scripted shows, popularity 100 down to 87; TVmaze id = TMDB id + 1000.
+// 14 candidates, popularity 100 down to 87; TVmaze id = TMDB id + 1000.
 const onTheAir = Array.from({ length: 14 }, (_, i) => ({
   id: 201 + i,
   name: `Show ${201 + i}`,
@@ -36,106 +36,115 @@ const onTheAir = Array.from({ length: 14 }, (_, i) => ({
   genre_ids: [18],
 }));
 
-function render<T>(hook: () => T) {
+// A scripted show with an episode on Friday 9 Oct (UTC noon).
+const airsFriday = {
+  type: "Scripted",
+  episodes: [{ airstamp: "2026-10-09T12:00:00+00:00", number: 3 }],
+};
+
+const ids = (cards: { tmdbId: number }[]) => cards.map((card) => card.tmdbId);
+
+async function render() {
   const client = createTestQueryClient();
-  return renderHook(hook, { wrapper: wrapperWithQueryClient(client) }).then(
-    (rendered) => ({ ...rendered, client }),
-  );
+  const rendered = await renderHook(() => useAiringThisWeek(), {
+    wrapper: wrapperWithQueryClient(client),
+  });
+  return { ...rendered, client };
 }
 
-describe("useAiringThisWeek (FR-039)", () => {
+describe("useAiringThisWeek (FR-039, CRI-110)", () => {
   beforeEach(() => {
     mockFollowed = { ids: new Set(), isLoaded: true };
     findOnTheAir.mockReset().mockResolvedValue(onTheAir);
     resolve.mockReset().mockImplementation(async (id: number) => id + 1000);
+    getWeekInfo.mockReset().mockResolvedValue(airsFriday);
   });
 
-  it("fills ten in popularity order, with only ten lookups", async () => {
-    const { result, unmount, client } = await render(() => useAiringThisWeek());
+  it("fills ten in popularity order, each with its day, with only ten lookups", async () => {
+    const { result, unmount, client } = await render();
 
     await waitFor(() => expect(result.current).toHaveLength(10));
-    expect(result.current[0].tmdbId).toBe(201);
+    expect(result.current[0]).toMatchObject({ tmdbId: 201, day: "Fri" });
     expect(resolve).toHaveBeenCalledTimes(10);
+    expect(getWeekInfo).toHaveBeenCalledTimes(10);
+    await unmount();
+    client.unmount();
+  });
+
+  it("leaves out a show TVmaze has nothing for this week (Family Guy)", async () => {
+    getWeekInfo.mockImplementation(async (tvmazeId: number) =>
+      tvmazeId === 1201
+        ? {
+            type: "Animation",
+            episodes: [{ airstamp: "2027-02-22T01:00:00+00:00", number: 1 }],
+          }
+        : airsFriday,
+    );
+    const { result, unmount, client } = await render();
+
+    await waitFor(() => expect(result.current).toHaveLength(10));
+    expect(ids(result.current)).not.toContain(201);
+    await unmount();
+    client.unmount();
+  });
+
+  it("keeps documentaries, leaves out reality, game shows and sports by TVmaze type", async () => {
+    const types: Record<number, string> = {
+      1201: "Documentary",
+      1202: "Reality",
+      1203: "Game Show",
+      1204: "Sports",
+    };
+    getWeekInfo.mockImplementation(async (tvmazeId: number) => ({
+      ...airsFriday,
+      type: types[tvmazeId] ?? "Scripted",
+    }));
+    const { result, unmount, client } = await render();
+
+    await waitFor(() => expect(result.current).toHaveLength(10));
+    expect(ids(result.current)).toContain(201);
+    for (const left of [202, 203, 204]) {
+      expect(ids(result.current)).not.toContain(left);
+    }
     await unmount();
     client.unmount();
   });
 
   it("leaves out followed shows, and waits for the follow list first", async () => {
     mockFollowed = { ids: new Set([1201]), isLoaded: false };
-    const { result, rerender, unmount, client } = await render(() =>
-      useAiringThisWeek(),
-    );
+    const { result, rerender, unmount, client } = await render();
     expect(resolve).not.toHaveBeenCalled();
 
     mockFollowed = { ids: new Set([1201]), isLoaded: true };
     await rerender({});
     await waitFor(() => expect(result.current).toHaveLength(10));
-    expect(result.current.map((card) => card.tmdbId)).not.toContain(201);
+    expect(ids(result.current)).not.toContain(201);
     await unmount();
     client.unmount();
   });
 
   it("keeps a show followed from the row on its card", async () => {
-    const { result, rerender, unmount, client } = await render(() =>
-      useAiringThisWeek(),
-    );
+    const { result, rerender, unmount, client } = await render();
     await waitFor(() => expect(result.current).toHaveLength(10));
 
     mockFollowed = { ids: new Set([1203]), isLoaded: true };
     await rerender({});
-    expect(result.current.map((card) => card.tmdbId)).toContain(203);
+    expect(ids(result.current)).toContain(203);
     await unmount();
     client.unmount();
   });
 
-  it("is always available, also with an empty follow list", async () => {
-    mockFollowed = { ids: new Set(), isLoaded: true };
-    const { result, unmount, client } = await render(() => useAiringThisWeek());
-    await waitFor(() => expect(result.current.length).toBeGreaterThan(0));
-    await unmount();
-    client.unmount();
-  });
-});
+  it("skips a title when TVmaze cannot be reached, without failing the row", async () => {
+    getWeekInfo.mockImplementation(async (tvmazeId: number) => {
+      if (tvmazeId === 1201) {
+        throw new Error("TVmaze 500");
+      }
+      return airsFriday;
+    });
+    const { result, unmount, client } = await render();
 
-describe("useNextEpisodeWord (FR-039)", () => {
-  const originalDateTimeFormat = Intl.DateTimeFormat;
-  beforeEach(() => {
-    getNextEpisodeAirstamp.mockReset();
-    Intl.DateTimeFormat = ((...args: unknown[]) => {
-      const format = new originalDateTimeFormat(
-        ...(args as ConstructorParameters<typeof Intl.DateTimeFormat>),
-      );
-      return {
-        ...format,
-        resolvedOptions: () => ({
-          ...format.resolvedOptions(),
-          timeZone: "Europe/Stockholm",
-        }),
-      };
-    }) as typeof Intl.DateTimeFormat;
-  });
-  afterEach(() => {
-    Intl.DateTimeFormat = originalDateTimeFormat;
-  });
-
-  it("gives the next episode's day in the user's time zone", async () => {
-    // 01:00 UTC on Friday is Friday in Stockholm.
-    getNextEpisodeAirstamp.mockResolvedValue("2026-10-09T01:00:00+00:00");
-    const { result, unmount, client } = await render(() =>
-      useNextEpisodeWord(1201),
-    );
-    await waitFor(() => expect(result.current).toBe("Fri"));
-    await unmount();
-    client.unmount();
-  });
-
-  it("is nothing without a next episode or outside the week", async () => {
-    getNextEpisodeAirstamp.mockResolvedValue("2026-10-20T01:00:00+00:00");
-    const { result, unmount, client } = await render(() =>
-      useNextEpisodeWord(1202),
-    );
-    await waitFor(() => expect(getNextEpisodeAirstamp).toHaveBeenCalled());
-    expect(result.current).toBeNull();
+    await waitFor(() => expect(result.current).toHaveLength(10));
+    expect(ids(result.current)).not.toContain(201);
     await unmount();
     client.unmount();
   });

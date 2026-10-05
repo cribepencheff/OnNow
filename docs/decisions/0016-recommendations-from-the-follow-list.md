@@ -48,10 +48,12 @@ and trending are not, on Home.**
 The owner allows one kind of popularity row on Home, replacing "no Airing
 soon on Home" above.
 - **Allowed: popularity tied to a time window.** "Airing this week": TMDB's
-  on-the-air list (`/tv/on_the_air`, shows with an episode within the next
-  7 days), scripted shows only, in TMDB's popularity order, shows the user
-  follows left out. The time link keeps it a radar of what is airing, not
-  a chart.
+  on-the-air list (`/tv/on_the_air`) gives the candidates in TMDB's
+  popularity order; TVmaze decides. A show is kept only if it would be in
+  the hero if followed (a regular TVmaze episode within the hero's 7 days),
+  and only if TVmaze's type is scripted, animation or documentary, never
+  reality, talk, news, game shows or sports. Shows the user follows are
+  left out. The time link keeps it a radar of what is airing, not a chart.
 - **Not allowed:** all-time top lists, and trending or popular lists
   without a time link.
 - **Placement:** under "Top picks for you". It is always shown, also with

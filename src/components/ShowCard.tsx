@@ -77,10 +77,19 @@ const styles = StyleSheet.create({
     borderRadius: t.radiusSm,
     backgroundColor: t.surface,
   },
+  // A dark translucent disc and soft shadow behind the circle, so it reads
+  // on light posters too (the pull spinner's scrim, a little darker).
   follow: {
     position: "absolute",
     top: t.space2,
     right: t.space2,
+    borderRadius: 999,
+    padding: 2,
+    backgroundColor: "rgba(0,0,0,0.45)",
+    shadowColor: "#000000",
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
   },
   name: {
     ...type.meta,

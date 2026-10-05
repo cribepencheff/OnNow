@@ -44,7 +44,6 @@ jest.mock("@/hooks/useEpisodeStill", () => ({
 const mockAiring = jest.fn(() => [] as unknown[]);
 jest.mock("@/hooks/useAiringThisWeek", () => ({
   useAiringThisWeek: () => mockAiring(),
-  useNextEpisodeWord: () => "Fri",
 }));
 const mockTopPicks = jest.fn(() => [] as unknown[]);
 const mockRefreshTopPicks = jest.fn();
@@ -554,6 +553,7 @@ describe("HomeScreen", () => {
       tvmazeId: 1211,
       name: "Lanterns",
       posterPath: "/lanterns.jpg",
+      day: "Fri",
     };
 
     afterEach(() => mockAiring.mockReturnValue([]));

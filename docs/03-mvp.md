@@ -13,8 +13,9 @@ use, and so do a few friends.
 - Show detail view (FR-028 to FR-030)
 - "Top picks for you" under the Home hero, derived from the follow list
   (FR-038, ADR 0016)
-- "Airing this week" under it: TMDB's on-the-air list by popularity,
-  followed shows left out, always shown (FR-039, ADR 0016)
+- "Airing this week" under it: shows that would be in the hero if followed,
+  by TMDB popularity, scripted and documentaries, followed shows left out,
+  always shown (FR-039, ADR 0016)
 - "Open in [service]" with a menu for several services (FR-014, FR-015)
 - Territory setting and service availability (FR-016, FR-017)
 - Local notifications (FR-018)

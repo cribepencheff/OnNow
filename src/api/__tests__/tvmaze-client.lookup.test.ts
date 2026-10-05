@@ -62,26 +62,41 @@ describe("TvMazeClient.lookupShowId (FR-038)", () => {
   });
 });
 
-describe("TvMazeClient.getNextEpisodeAirstamp (FR-039)", () => {
-  it("reads the next episode's airstamp, or null when none is announced", async () => {
+describe("TvMazeClient.getWeekInfo (FR-039, CRI-110)", () => {
+  it("reads the type and the previous and next episodes in one request", async () => {
+    const fetchFn = jest.fn().mockResolvedValue(
+      jsonResponse({
+        id: 84,
+        type: "Animation",
+        _embedded: {
+          previousepisode: {
+            airstamp: "2026-05-11T00:00:00+00:00",
+            number: 20,
+          },
+          nextepisode: { airstamp: "2027-02-22T01:00:00+00:00", number: 1 },
+        },
+      }),
+    );
+
+    await expect(client(fetchFn).getWeekInfo(84)).resolves.toEqual({
+      type: "Animation",
+      episodes: [
+        { airstamp: "2026-05-11T00:00:00+00:00", number: 20 },
+        { airstamp: "2027-02-22T01:00:00+00:00", number: 1 },
+      ],
+    });
+    expect(fetchFn.mock.calls[0][0]).toContain(
+      "/shows/84?embed[]=previousepisode&embed[]=nextepisode",
+    );
+  });
+
+  it("has no episodes when none are listed", async () => {
     const fetchFn = jest
       .fn()
-      .mockResolvedValueOnce(
-        jsonResponse({
-          id: 75026,
-          _embedded: {
-            nextepisode: { airstamp: "2026-10-09T01:00:00+00:00" },
-          },
-        }),
-      )
-      .mockResolvedValueOnce(jsonResponse({ id: 1 }));
-
-    await expect(client(fetchFn).getNextEpisodeAirstamp(75026)).resolves.toBe(
-      "2026-10-09T01:00:00+00:00",
-    );
-    expect(fetchFn.mock.calls[0][0]).toContain(
-      "/shows/75026?embed=nextepisode",
-    );
-    await expect(client(fetchFn).getNextEpisodeAirstamp(1)).resolves.toBeNull();
+      .mockResolvedValue(jsonResponse({ id: 1, type: "Scripted" }));
+    await expect(client(fetchFn).getWeekInfo(1)).resolves.toEqual({
+      type: "Scripted",
+      episodes: [],
+    });
   });
 });

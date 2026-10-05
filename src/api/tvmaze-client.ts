@@ -2,6 +2,11 @@ import { TVMAZE_CREDIT } from "./tvmaze-credit";
 import { TvMazeNetworkError, TvMazeResponseError } from "./tvmaze-errors";
 import type { TvMazeSearchResult, TvMazeShowWithEmbeds } from "./tvmaze-types";
 
+export interface TvMazeWeekInfo {
+  type: string | null;
+  episodes: { airstamp: string | null; number: number | null }[];
+}
+
 const BASE_URL = "https://api.tvmaze.com";
 
 // TVmaze allows at least 20 requests per 10 seconds per IP (spike 0001,
@@ -33,7 +38,7 @@ export interface TvMazeClient {
     imdb: string | null;
     thetvdb: number | null;
   }) => Promise<number | null>;
-  getNextEpisodeAirstamp: (id: number) => Promise<string | null>;
+  getWeekInfo: (id: number) => Promise<TvMazeWeekInfo>;
 }
 
 export function createTvMazeClient(
@@ -141,19 +146,31 @@ export function createTvMazeClient(
     return null;
   }
 
-  // The show's next episode's airstamp, null when none is announced (FR-039).
-  async function getNextEpisodeAirstamp(id: number): Promise<string | null> {
+  // The show's type and its previous and next episodes, in one request:
+  // enough to tell whether it airs this week (FR-039, CRI-110).
+  async function getWeekInfo(id: number): Promise<TvMazeWeekInfo> {
+    type Episode = { airstamp?: string | null; number?: number | null };
     const show = await requestJson<{
-      _embedded?: { nextepisode?: { airstamp?: string | null } };
-    }>(`/shows/${id}?embed=nextepisode`);
-    return show._embedded?.nextepisode?.airstamp ?? null;
+      type?: string | null;
+      _embedded?: { previousepisode?: Episode; nextepisode?: Episode };
+    }>(`/shows/${id}?embed[]=previousepisode&embed[]=nextepisode`);
+    const episodes = [
+      show._embedded?.previousepisode,
+      show._embedded?.nextepisode,
+    ]
+      .filter((episode): episode is Episode => Boolean(episode))
+      .map((episode) => ({
+        airstamp: episode.airstamp ?? null,
+        number: episode.number ?? null,
+      }));
+    return { type: show.type ?? null, episodes };
   }
 
   return {
     searchShows,
     getShowWithEpisodesAndSeasons,
     lookupShowId,
-    getNextEpisodeAirstamp,
+    getWeekInfo,
   };
 }
 
