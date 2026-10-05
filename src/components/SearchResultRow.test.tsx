@@ -71,7 +71,20 @@ describe("SearchResultRow", () => {
     expect(screen.queryByText(/Slow Horses follows the story/)).toBeNull();
     expect(screen.queryByText(/Running/)).toBeNull();
     expect(screen.queryByText("Apple TV")).toBeNull();
-    expect(screen.queryByTestId("search-result-status")).toBeNull();
+  });
+
+  it("keeps the status line's space while the show lookup answers", async () => {
+    const show = showSlowHorsesFixture as unknown as TvMazeShow;
+
+    await render(
+      <SearchResultRow
+        show={show}
+        followed={false}
+        onToggleFollow={jest.fn()}
+      />,
+    );
+
+    expect(screen.getByTestId("search-result-status").props.children).toBe("");
   });
 
   it('shows the service, or plain "Unavailable" without the region (FR-027, CRI-97)', async () => {
@@ -113,24 +126,28 @@ describe("SearchResultRow", () => {
     expect(screen.getByTestId("search-result-service").props.children).toBe("");
   });
 
-  it("shows Show detail's status line once followed (FR-025)", async () => {
-    mockedUseShow.mockReturnValue({
-      data: showSlowHorsesFixture,
-    } as never);
-    const show = showSlowHorsesFixture as unknown as TvMazeShow;
+  it.each([false, true])(
+    "shows Show detail's status line whether followed or not (followed: %s, FR-025)",
+    async (followed) => {
+      mockedUseShow.mockReturnValue({
+        data: showSlowHorsesFixture,
+      } as never);
+      const show = showSlowHorsesFixture as unknown as TvMazeShow;
 
-    await render(
-      <SearchResultRow
-        show={show}
-        followed={true}
-        onToggleFollow={jest.fn()}
-      />,
-    );
+      await render(
+        <SearchResultRow
+          show={show}
+          followed={followed}
+          onToggleFollow={jest.fn()}
+        />,
+      );
 
-    // Season 6 episode 1 airs 2026-09-16, after season 5: a dated next
-    // season as of the fixed 2026-09-01 clock above (PRD 5.5).
-    expect(screen.getByText("Season 6 · Wed 16 Sep")).toBeTruthy();
-  });
+      // Season 6 episode 1 airs 2026-09-16, after season 5: a dated next
+      // season as of the fixed 2026-09-01 clock above (PRD 5.5).
+      expect(screen.getByText("Season 6 · Wed 16 Sep")).toBeTruthy();
+      expect(mockedUseShow).toHaveBeenCalledWith(show.id);
+    },
+  );
 
   it("calls onToggleFollow when the follow circle is pressed", async () => {
     const onToggleFollow = jest.fn();

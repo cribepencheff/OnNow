@@ -1,6 +1,7 @@
 // A single Search result row (PRD 5.4, FR-024, FR-025, FR-027): poster,
-// title, a meta line with year and genres, the service slot, and a follow
-// circle. Once followed, the row also shows Show detail's status line.
+// title, a meta line with year and genres, Show detail's status line, the
+// service slot, and a follow circle. The status line is on every row, so
+// it helps decide what to follow and rows keep their height.
 // Tapping the row opens Show detail; the circle still follows without
 // opening it (PRD 5.4, 5.5, CRI-79). Screen reader users get the row as
 // one button, with follow or unfollow as an accessibility action (NFR-008).
@@ -70,7 +71,7 @@ export function SearchResultRow({
             {metaLine}
           </Text>
         )}
-        {followed && <FollowedStatusLine showId={show.id} />}
+        <StatusLine showId={show.id} />
         {/* Its line is kept while TMDB answers, so the row does not grow. */}
         <Text
           style={styles.meta}
@@ -89,25 +90,28 @@ export function SearchResultRow({
   );
 }
 
-// FR-025: once followed, Show detail's status line confirms the app knows
-// the show ("Airing · next ep Fri 9 Oct").
-function FollowedStatusLine({ showId }: { showId: number }) {
+// FR-025: Show detail's status line ("Airing · next ep Fri 9 Oct"), from
+// the same cached show lookup as Show detail. Its line is kept while the
+// lookup answers, so the row does not grow.
+function StatusLine({ showId }: { showId: number }) {
   const { data } = useShow(showId);
   const todayDate = useToday();
 
-  if (!data) {
-    return null;
-  }
-  const state = showState(
-    data,
-    data._embedded.episodes,
-    data._embedded.seasons,
-    deviceTimeZone(),
-    todayDate,
-  );
+  const label = data
+    ? showStateLabel(
+        showState(
+          data,
+          data._embedded.episodes,
+          data._embedded.seasons,
+          deviceTimeZone(),
+          todayDate,
+        ),
+        todayDate,
+      )
+    : "";
   return (
-    <Text style={styles.status} numberOfLines={1} testID="search-result-status">
-      {showStateLabel(state, todayDate)}
+    <Text style={styles.meta} numberOfLines={1} testID="search-result-status">
+      {label}
     </Text>
   );
 }
@@ -142,10 +146,6 @@ const styles = StyleSheet.create({
   meta: {
     ...type.meta,
     minHeight: type.meta.lineHeight,
-    color: t.inkMuted,
-  },
-  status: {
-    ...type.meta,
     color: t.inkMuted,
   },
 });

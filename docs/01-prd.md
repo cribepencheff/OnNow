@@ -154,8 +154,8 @@ first user is the author, who currently uses Next Episode.
   original titles are not rewritten.
 - **Result row (references: PlayPilot, Spotify "Add to playlist"):** large
   portrait poster on the left. Next to it: title in bold, a meta line with
-  year and genres ("2026 · Drama, Thriller"), and the service slot on its
-  own line, by the same rules as the Shows row: "On [service]", or plain
+  year and genres ("2026 · Drama, Thriller"), the status line (below), and
+  the service slot on its own line, by the same rules as the Shows row: "On [service]", or plain
   "Unavailable" when there is none (Show detail and the Home hero name the
   region, rows do not), and nothing when TMDB does not know the show
   (FR-027, CRI-97, CRI-102). No summary and no IMDb rating: the rating is
@@ -165,9 +165,12 @@ first user is the author, who currently uses Next Episode.
   column. Not followed: hollow circle with a "+" at lower opacity. Followed:
   filled with the accent colour and a check, with light haptic feedback. The
   filled state is a status, not a competing action.
-- **After following (FR-025):** the row shows the status line from Show
+- **Status line (FR-025):** every row shows the status line from Show
   detail, the same as the Shows row ("Airing · next ep Fri 9 Oct",
-  "Season 3 · TBA", "Ended", 5.5), confirming the app knows the show.
+  "Season 3 · TBA", "Ended", 5.5), followed or not, so it helps decide what
+  to follow and the row does not change height when followed. It comes
+  from the same cached show lookup as Show detail; the pause in typing and
+  that cache keep it within TVmaze's rate limit (NFR-005).
 - **Before typing (FR-026):** Home's two poster rows, reused as they are:
   the same component, titles and data (5.1, FR-038, FR-039).
   "Top picks for you" with its "Refresh" control, then "Airing this week".
@@ -327,8 +330,8 @@ Reached from an icon. Territory and notifications.
 | FR-021 | Direct links to the show for more services | After MVP |
 | FR-022 | Explore: "what is releasing" feed with filters, starting with streaming service | After MVP |
 | FR-023 | Android widget | After MVP |
-| FR-024 | Search results show poster, title, a meta line with year and genres, the service slot (FR-027) and a follow circle at the right edge. PoC: year and status, and a two line summary. MVP: no summary, no status and no IMDb rating (the rating is in Show detail only). Results appear after a short pause in typing (about 250 ms), each show once, and are not filtered by region or show type. A clear button (X) inside the field on iOS and Android | PoC, MVP |
-| FR-025 | After following, the result row shows the next episode or "No date yet" (PoC). MVP: it shows Show detail's status line instead, the same as the Shows row (FR-035) | PoC, MVP |
+| FR-024 | Search results show poster, title, a meta line with year and genres, Show detail's status line (FR-025), the service slot (FR-027) and a follow circle at the right edge. PoC: year and status, and a two line summary. MVP: no summary, no TVmaze status in the meta line and no IMDb rating (the rating is in Show detail only). Results appear after a short pause in typing (about 250 ms), each show once, and are not filtered by region or show type. A clear button (X) inside the field on iOS and Android | PoC, MVP |
+| FR-025 | After following, the result row shows the next episode or "No date yet" (PoC). MVP: every result row shows Show detail's status line, followed or not, the same as the Shows row (FR-035), from the cached show lookup | PoC, MVP |
 | FR-026 | Before the user types, Search shows Home's rows as they are: "Top picks for you" with its shared Refresh (FR-038), then "Airing this week" (FR-039); only "Airing this week" when the follow list is empty. Region filtered as on Home (CRI-98) | MVP |
 | FR-027 | Search results and Shows rows show the services that carry the show in the user's territory, or plain "Unavailable" when there is none, and nothing when TMDB does not know the show; the row does not name the region, unlike Show detail (CRI-91, CRI-97, CRI-102) | MVP |
 | FR-028 | Show detail view with image, title, year, status, service, summary, next and latest episode. PoC shows the network instead of the service. MVP: a meta line with the premiere year, the first origin country from TMDB and up to three genres from TVmaze ("2026 · Philippines · Drama, Thriller"), any missing part left out; the country is the show's origin, kept on purpose, and the original network stays out of the UI. MVP adds the IMDb rating from OMDb (ADR 0013) | PoC, MVP |
