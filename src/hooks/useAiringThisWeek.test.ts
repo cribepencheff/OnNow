@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from "@testing-library/react-native";
+import { act, renderHook, waitFor } from "@testing-library/react-native";
 
 import { hasServiceInRegion } from "@/api/region-service";
 import { tmdbClient } from "@/api/tmdb-client";
@@ -47,6 +47,14 @@ const airsFriday = {
 };
 
 const ids = (cards: { tmdbId: number }[]) => cards.map((card) => card.tmdbId);
+
+async function renderRow() {
+  const client = createTestQueryClient();
+  const rendered = await renderHook(() => useAiringThisWeek(), {
+    wrapper: wrapperWithQueryClient(client),
+  });
+  return { ...rendered, client };
+}
 
 async function render() {
   const client = createTestQueryClient();
@@ -207,5 +215,70 @@ describe("useAiringThisWeek (FR-039, CRI-110)", () => {
     expect(ids(result.current)).not.toContain(201);
     await unmount();
     client.unmount();
+  });
+
+  // CRI-123: Refresh, as on "Top picks for you".
+  describe("Refresh (CRI-123)", () => {
+    it("shows the next most popular shows, without followed ones", async () => {
+      const { result, rerender, unmount, client } = await renderRow();
+      await waitFor(() => expect(result.current.cards).toHaveLength(10));
+      expect(result.current.canRefresh).toBe(true);
+
+      // 203 followed from the row, 212 from elsewhere.
+      mockFollowed = { ids: new Set([1203, 1212]), isLoaded: true };
+      await rerender({});
+      expect(ids(result.current.cards)).toContain(203);
+
+      await act(() => result.current.refresh());
+      await waitFor(() =>
+        expect(ids(result.current.cards)).toEqual([211, 213, 214]),
+      );
+      await unmount();
+      client.unmount();
+    });
+
+    it("is hidden once no shows are left for the week", async () => {
+      const { result, unmount, client } = await renderRow();
+      await waitFor(() => expect(result.current.cards).toHaveLength(10));
+
+      await act(() => result.current.refresh());
+      await waitFor(() => expect(result.current.cards).toHaveLength(4));
+      expect(result.current.canRefresh).toBe(false);
+      await unmount();
+      client.unmount();
+    });
+
+    it("keeps the row and hides when the shows left are all left out", async () => {
+      getWeekInfo.mockImplementation(async (tvmazeId: number) =>
+        tvmazeId > 1210 ? null : airsFriday,
+      );
+      const { result, unmount, client } = await renderRow();
+      await waitFor(() => expect(result.current.cards).toHaveLength(10));
+
+      await act(() => result.current.refresh());
+      await waitFor(() => expect(result.current.canRefresh).toBe(false));
+      expect(ids(result.current.cards)).toEqual([
+        201, 202, 203, 204, 205, 206, 207, 208, 209, 210,
+      ]);
+      await unmount();
+      client.unmount();
+    });
+
+    it("moves Home's and Search's rows together (FR-026)", async () => {
+      const client = createTestQueryClient();
+      const { result, unmount } = await renderHook(
+        () => ({ home: useAiringThisWeek(), search: useAiringThisWeek() }),
+        { wrapper: wrapperWithQueryClient(client) },
+      );
+      await waitFor(() => expect(result.current.home.cards).toHaveLength(10));
+
+      await act(() => result.current.search.refresh());
+      await waitFor(() => expect(result.current.home.cards).toHaveLength(4));
+      expect(ids(result.current.home.cards)).toEqual(
+        ids(result.current.search.cards),
+      );
+      await unmount();
+      client.unmount();
+    });
   });
 });

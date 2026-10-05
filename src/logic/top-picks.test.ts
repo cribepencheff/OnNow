@@ -77,10 +77,10 @@ describe("fillTopPicks (FR-038)", () => {
     expect(resolve).toHaveBeenCalledTimes(3);
   });
 
-  it("is empty for an empty ranking", async () => {
+  it("is empty for an empty ranking, with nothing left", async () => {
     await expect(
       fillTopPicks([], 0, 10, resolver(), notFollowed),
-    ).resolves.toEqual({ cards: [], nextStart: 0 });
+    ).resolves.toEqual({ cards: [], nextStart: 0, hasMore: false });
   });
 
   it("runs an optional check after the TVmaze id, which can reject or add to a card", async () => {
@@ -115,5 +115,70 @@ describe("fillTopPicks (FR-038)", () => {
     // One batch of three was checked, but titles 2 and 3 come next.
     expect(resolve).toHaveBeenCalledTimes(3);
     expect(page.nextStart).toBe(1);
+  });
+});
+
+// CRI-123: "Airing this week" walks its ranking once, without wrapping,
+// and says whether any titles are left for a next page.
+describe("fillTopPicks without wrapping (FR-039, CRI-123)", () => {
+  const once = { wrap: false };
+
+  it("fills from the start to the end of the ranking, never wrapping", async () => {
+    const page = await fillTopPicks(
+      ranking([1, 2, 3, 4, 5]),
+      3,
+      3,
+      resolver(),
+      notFollowed,
+      undefined,
+      once,
+    );
+    expect(page.cards.map((card) => card.tmdbId)).toEqual([4, 5]);
+    expect(page.nextStart).toBe(5);
+    expect(page.hasMore).toBe(false);
+  });
+
+  it("has more while titles are left after the page", async () => {
+    const page = await fillTopPicks(
+      ranking([1, 2, 3, 4, 5]),
+      0,
+      3,
+      resolver(),
+      notFollowed,
+      undefined,
+      once,
+    );
+    expect(page.cards.map((card) => card.tmdbId)).toEqual([1, 2, 3]);
+    expect(page.nextStart).toBe(3);
+    expect(page.hasMore).toBe(true);
+  });
+
+  it("has none left when only titles without a poster remain", async () => {
+    const page = await fillTopPicks(
+      ranking([1, 2, 3, 4, 5], [4, 5]),
+      0,
+      3,
+      resolver(),
+      notFollowed,
+      undefined,
+      once,
+    );
+    expect(page.hasMore).toBe(false);
+  });
+
+  it("is an empty page with none left when started at the end", async () => {
+    const resolve = resolver();
+    const page = await fillTopPicks(
+      ranking([1, 2, 3]),
+      3,
+      3,
+      resolve,
+      notFollowed,
+      undefined,
+      once,
+    );
+    expect(page.cards).toEqual([]);
+    expect(page.hasMore).toBe(false);
+    expect(resolve).not.toHaveBeenCalled();
   });
 });

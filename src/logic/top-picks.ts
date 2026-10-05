@@ -1,5 +1,6 @@
 // The poster rows on Home and in Search (FR-038, FR-039, FR-026): walk a ranking in order from a start
-// position, wrapping once, and check titles a few at a time until the row
+// position, wrapping once ("Top picks for you") or not at all ("Airing
+// this week", CRI-123), and check titles a few at a time until the row
 // is full. Checking is the only network cost, so it stops as soon as it
 // can; the TVmaze client's rate limit holds whatever the batch size.
 
@@ -14,8 +15,11 @@ export interface PosterItem {
 
 export interface FilledPage<Extra = object> {
   cards: (PosterItem & Extra)[];
-  // Where the next page starts in the ranking (wraps to 0).
+  // Where the next page starts in the ranking (wraps to 0 when wrapping).
   nextStart: number;
+  // Whether a next page has any titles left to look at. Always while
+  // wrapping; without wrapping, false once the ranking's end is reached.
+  hasMore: boolean;
 }
 
 // Titles checked at once: quicker than one by one, and at most two wasted
@@ -32,16 +36,17 @@ export async function fillTopPicks<Extra = object>(
   // Optional further checks (a service in the region, airing this week),
   // which can reject a title (null) or add to its card.
   check?: (tvmazeId: number, tmdbId: number) => Promise<Extra | null>,
+  { wrap }: { wrap: boolean } = { wrap: true },
 ): Promise<FilledPage<Extra>> {
   const total = ranking.length;
   if (total === 0) {
-    return { cards: [], nextStart: 0 };
+    return { cards: [], nextStart: 0, hasMore: false };
   }
-  // Every position once, in rank order from `start`, titles without a
-  // poster left out (no request for them).
+  // Every position once, in rank order from `start` (to the end when not
+  // wrapping), titles without a poster left out (no request for them).
   const positions = Array.from(
-    { length: total },
-    (_, i) => (start + i) % total,
+    { length: wrap ? total : Math.max(total - start, 0) },
+    (_, i) => (wrap ? (start + i) % total : start + i),
   ).filter((index) => ranking[index].recommendation.poster_path);
 
   async function evaluate(index: number): Promise<(PosterItem & Extra) | null> {
@@ -65,7 +70,7 @@ export async function fillTopPicks<Extra = object>(
   }
 
   const cards: (PosterItem & Extra)[] = [];
-  let nextStart = (start + total) % total;
+  let nextStart = wrap ? (start + total) % total : start;
   for (
     let b = 0;
     b < positions.length && cards.length < size;
@@ -74,7 +79,7 @@ export async function fillTopPicks<Extra = object>(
     const batch = positions.slice(b, b + CHECK_BATCH);
     const results = await Promise.all(batch.map(evaluate));
     for (let i = 0; i < batch.length; i += 1) {
-      nextStart = (batch[i] + 1) % total;
+      nextStart = wrap ? (batch[i] + 1) % total : batch[i] + 1;
       const card = results[i];
       if (card) {
         cards.push(card);
@@ -84,5 +89,8 @@ export async function fillTopPicks<Extra = object>(
       }
     }
   }
-  return { cards, nextStart };
+  const hasMore = wrap
+    ? positions.length > 0
+    : positions.some((index) => index >= nextStart);
+  return { cards, nextStart, hasMore };
 }
