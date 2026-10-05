@@ -2,6 +2,7 @@
 // the TMDB and JustWatch credits.
 
 import { Linking, StyleSheet, Text } from "react-native";
+import { t } from "@/theme/tokens";
 
 import { OMDB_CREDIT } from "@/api/omdb-credit";
 
@@ -20,7 +21,7 @@ export function OmdbCredit() {
 const styles = StyleSheet.create({
   credit: {
     textAlign: "center",
-    color: "#999999",
+    color: t.inkSubtle,
     fontSize: 12,
     paddingHorizontal: 32,
     paddingBottom: 24,

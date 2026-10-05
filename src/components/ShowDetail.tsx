@@ -48,7 +48,6 @@ import {
   openInAccessibilityLabel,
   openInLink,
 } from "@/logic/streaming-service";
-import { accent, withLightness } from "@/theme/color";
 import { ImdbRating } from "./ImdbRating";
 import { OmdbCredit } from "./OmdbCredit";
 import { PaidSubscriptionMarker } from "./PaidSubscriptionMarker";
@@ -141,10 +140,10 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
                 // An https link: iOS opens the service's app at the show when
                 // it is installed, and the website otherwise.
                 onPress={() => Linking.openURL(link.url)}
-                style={[styles.button, styles.buttonAccent, styles.heroButton]}
+                style={[styles.button, styles.buttonOnImage, styles.heroButton]}
                 testID="show-detail-open-in"
               >
-                <Text style={styles.followLabel}>Open in {link.service}</Text>
+                <Text style={styles.onImageLabel}>Open in {link.service}</Text>
               </Pressable>
               {link.requires && (
                 <PaidSubscriptionMarker
@@ -279,7 +278,7 @@ function FollowToggle({ showId }: { showId: number }) {
           android: followed ? "check" : "add",
           web: followed ? "check" : "add",
         }}
-        tintColor={followed ? QUIET_LABEL : "#FFFFFF"}
+        tintColor={followed ? t.ink : t.onAccent}
         size={16}
       />
       <Text style={followed ? styles.buttonQuietLabel : styles.followLabel}>
@@ -468,12 +467,10 @@ function EpisodeList({
 }
 
 const STILL_ASPECT_RATIO = 16 / 9;
-const MUTED = "#999999";
-const QUIET_LABEL = "#333333";
 
 const styles = StyleSheet.create({
   screen: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: t.bg,
   },
   scrollContent: {
     paddingBottom: 32,
@@ -513,6 +510,16 @@ const styles = StyleSheet.create({
     lineHeight: 44,
     color: t.ink,
   },
+  // Over the show image: a white pill with bg text, as on the Home hero
+  // (design system).
+  buttonOnImage: {
+    backgroundColor: t.ink,
+  },
+  onImageLabel: {
+    ...type.body,
+    fontWeight: "700",
+    color: t.bg,
+  },
   heroButton: {
     marginVertical: 0,
   },
@@ -528,7 +535,6 @@ const styles = StyleSheet.create({
   heroImage: {
     width: "100%",
     aspectRatio: 1,
-    backgroundColor: "#E0E0E0",
   },
   section: {
     paddingHorizontal: 16,
@@ -536,13 +542,12 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   meta: {
-    fontSize: 15,
-    color: "#666666",
+    ...type.meta,
+    color: t.inkMuted,
   },
   summary: {
-    fontSize: 15,
-    color: "#333333",
-    lineHeight: 21,
+    ...type.body,
+    color: t.ink,
   },
   // One shape for every action button; accent or quiet fill.
   button: {
@@ -552,34 +557,33 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingHorizontal: 20,
     paddingVertical: 12,
-    borderRadius: 24,
+    borderRadius: t.radiusPill,
     marginVertical: 8,
   },
   buttonAccent: {
-    backgroundColor: accent,
+    backgroundColor: t.accent,
   },
   buttonQuiet: {
-    backgroundColor: "#F0F0F0",
+    backgroundColor: t.surfaceRaised,
   },
   buttonQuietLabel: {
-    color: QUIET_LABEL,
+    ...type.body,
     fontWeight: "700",
-    fontSize: 16,
+    color: t.ink,
   },
   followLabel: {
-    color: "#FFFFFF",
+    ...type.body,
     fontWeight: "700",
-    fontSize: 16,
+    color: t.onAccent,
   },
   sectionLabel: {
-    fontSize: 13,
-    fontWeight: "700",
-    letterSpacing: 0.5,
-    color: "#666666",
+    ...type.label,
+    color: t.inkMuted,
   },
   nextLine: {
-    fontSize: 17,
+    ...type.body,
     fontWeight: "600",
+    color: t.ink,
   },
   episodeCard: {
     gap: 4,
@@ -587,24 +591,24 @@ const styles = StyleSheet.create({
   still: {
     width: "100%",
     aspectRatio: STILL_ASPECT_RATIO,
-    borderRadius: 10,
-    backgroundColor: "#E0E0E0",
+    borderRadius: t.radiusSm,
     marginBottom: 4,
   },
   episodeTitle: {
-    fontSize: 17,
+    ...type.body,
     fontWeight: "600",
+    color: t.ink,
   },
   episodeMetaRow: {
     flexDirection: "row",
   },
   episodeMeta: {
-    fontSize: 14,
-    color: "#666666",
+    ...type.meta,
+    color: t.inkMuted,
   },
   episodeSummary: {
-    fontSize: 14,
-    color: "#333333",
+    ...type.meta,
+    color: t.ink,
   },
   tabs: {
     paddingHorizontal: 16,
@@ -614,25 +618,27 @@ const styles = StyleSheet.create({
   tab: {
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 16,
-    backgroundColor: "#F0F0F0",
+    borderRadius: t.radiusPill,
+    backgroundColor: t.surfaceRaised,
     alignItems: "center",
   },
   tabSelected: {
-    backgroundColor: "#333333",
+    backgroundColor: t.ink,
   },
   tabLabel: {
     fontSize: 14,
     fontWeight: "600",
+    color: t.ink,
   },
   tabLabelSelected: {
-    color: "#FFFFFF",
+    color: t.bg,
   },
   tabNote: {
     fontSize: 11,
+    color: t.inkMuted,
   },
   muted: {
-    color: MUTED,
+    color: t.inkSubtle,
   },
   episodeList: {
     paddingTop: 8,
@@ -645,41 +651,43 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   episodeToday: {
-    backgroundColor: withLightness(accent, 94),
+    backgroundColor: t.surface,
   },
   episodeNumber: {
     width: 24,
-    fontSize: 15,
+    ...type.body,
     fontWeight: "600",
     textAlign: "right",
+    color: t.ink,
   },
   episodeRowDetails: {
     flex: 1,
     gap: 2,
   },
   episodeRowTitle: {
-    fontSize: 15,
+    ...type.body,
+    color: t.ink,
   },
   episodeRowDate: {
-    fontSize: 13,
-    color: "#666666",
+    ...type.meta,
+    color: t.inkMuted,
   },
   finaleBadge: {
     fontSize: 11,
     fontWeight: "700",
-    color: "#666666",
+    color: t.inkMuted,
     borderWidth: 1,
-    borderColor: "#CCCCCC",
-    borderRadius: 8,
+    borderColor: t.inkSubtle,
+    borderRadius: t.radiusPill,
     paddingHorizontal: 6,
     paddingVertical: 2,
     overflow: "hidden",
   },
   quietLine: {
+    ...type.body,
     textAlign: "center",
-    color: "#666666",
-    fontSize: 15,
-    paddingHorizontal: 32,
-    paddingTop: 24,
+    color: t.inkMuted,
+    paddingHorizontal: t.space10,
+    paddingTop: t.space6,
   },
 });

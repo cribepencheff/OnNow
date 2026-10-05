@@ -3,6 +3,7 @@
 // TMDB's terms also ask for its logo; that comes with the Design phase.
 
 import { Linking, StyleSheet, Text, View } from "react-native";
+import { t } from "@/theme/tokens";
 
 import { JUSTWATCH_CREDIT, TMDB_CREDIT } from "@/api/tmdb-credit";
 
@@ -35,7 +36,7 @@ const styles = StyleSheet.create({
   },
   credit: {
     textAlign: "center",
-    color: "#999999",
+    color: t.inkSubtle,
     fontSize: 12,
   },
 });

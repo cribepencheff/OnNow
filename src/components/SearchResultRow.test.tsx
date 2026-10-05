@@ -49,6 +49,8 @@ describe("SearchResultRow", () => {
       );
       return {
         ...format,
+        // Kept, so code that formats dates still works.
+        format: (date?: Date | number) => format.format(date),
         resolvedOptions: () => ({
           ...format.resolvedOptions(),
           timeZone: "UTC",
