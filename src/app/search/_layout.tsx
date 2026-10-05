@@ -6,10 +6,19 @@
 import { Stack, useNavigation } from "expo-router";
 
 import { CloseButton } from "@/components/CloseButton";
+import { t } from "@/theme/tokens";
 
 export default function SearchLayout() {
   return (
-    <Stack>
+    <Stack
+      // Show detail inside the sheet gets the same dark header as elsewhere.
+      screenOptions={{
+        headerStyle: { backgroundColor: t.bg },
+        headerTintColor: t.ink,
+        headerShadowVisible: false,
+        contentStyle: { backgroundColor: t.bg },
+      }}
+    >
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen
         name="show/[id]"

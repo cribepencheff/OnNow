@@ -2,21 +2,37 @@ import { fireEvent, render, screen } from "@testing-library/react-native";
 
 import { SearchResultRow } from "./SearchResultRow";
 import { useShow } from "@/hooks/useShow";
+import { useStreamingService } from "@/hooks/useStreamingService";
+import { NOT_ON_TMDB } from "@/logic/streaming-service";
 import showSlowHorsesFixture from "@/api/fixtures/show-slow-horses.json";
 import type { TvMazeShow } from "@/api/tvmaze-types";
 
 jest.mock("@/hooks/useShow", () => ({
   useShow: jest.fn(),
 }));
+jest.mock("@/hooks/useStreamingService", () => ({
+  useStreamingService: jest.fn(),
+}));
 
 const mockedUseShow = useShow as jest.MockedFunction<typeof useShow>;
+const mockedUseStreamingService = useStreamingService as jest.MockedFunction<
+  typeof useStreamingService
+>;
 
-// FR-024, FR-025, PRD 5.4: result row content and the after-follow next line.
+function mockProviders(data: unknown) {
+  mockedUseStreamingService.mockReturnValue({
+    data,
+  } as unknown as ReturnType<typeof useStreamingService>);
+}
+
+// FR-024, FR-025, FR-027, PRD 5.4: result row content, the service slot and
+// the after-follow status line.
 describe("SearchResultRow", () => {
   const originalDateTimeFormat = Intl.DateTimeFormat;
 
   beforeEach(() => {
     mockedUseShow.mockReturnValue({ data: undefined } as never);
+    mockProviders(undefined);
     // Fixed clock and time zone, so the next-line assertion below is exact
     // rather than dependent on the real date the test happens to run on.
     jest.useFakeTimers().setSystemTime(new Date("2026-09-01T00:00:00Z"));
@@ -39,7 +55,7 @@ describe("SearchResultRow", () => {
     jest.useRealTimers();
   });
 
-  it("shows the title, meta line and summary before following, and no network", async () => {
+  it("shows the title and year · genres, no summary, status or network (PRD 5.4)", async () => {
     const show = showSlowHorsesFixture as unknown as TvMazeShow;
 
     await render(
@@ -51,12 +67,53 @@ describe("SearchResultRow", () => {
     );
 
     expect(screen.getByText("Slow Horses")).toBeTruthy();
-    expect(screen.getByText("2022 · Running")).toBeTruthy();
+    expect(screen.getByText("2022 · Drama, Thriller, Espionage")).toBeTruthy();
+    expect(screen.queryByText(/Slow Horses follows the story/)).toBeNull();
+    expect(screen.queryByText(/Running/)).toBeNull();
     expect(screen.queryByText("Apple TV")).toBeNull();
-    expect(screen.getByText(/Slow Horses follows the story/)).toBeTruthy();
+    expect(screen.queryByTestId("search-result-status")).toBeNull();
   });
 
-  it("shows the next episode line instead of the summary once followed", async () => {
+  it('shows the service, or plain "Unavailable" without the region (FR-027, CRI-97)', async () => {
+    const show = showSlowHorsesFixture as unknown as TvMazeShow;
+    mockProviders([{ providerId: 350, providerName: "Apple TV" }]);
+
+    const { rerender } = await render(
+      <SearchResultRow
+        show={show}
+        followed={false}
+        onToggleFollow={jest.fn()}
+      />,
+    );
+    expect(screen.getByText("On Apple TV")).toBeTruthy();
+
+    mockProviders([]);
+    await rerender(
+      <SearchResultRow
+        show={show}
+        followed={false}
+        onToggleFollow={jest.fn()}
+      />,
+    );
+    expect(screen.getByText("Unavailable")).toBeTruthy();
+  });
+
+  it("shows no service when TMDB does not know the show (CRI-102)", async () => {
+    const show = showSlowHorsesFixture as unknown as TvMazeShow;
+    mockProviders(NOT_ON_TMDB);
+
+    await render(
+      <SearchResultRow
+        show={show}
+        followed={false}
+        onToggleFollow={jest.fn()}
+      />,
+    );
+
+    expect(screen.getByTestId("search-result-service").props.children).toBe("");
+  });
+
+  it("shows Show detail's status line once followed (FR-025)", async () => {
     mockedUseShow.mockReturnValue({
       data: showSlowHorsesFixture,
     } as never);
@@ -70,11 +127,9 @@ describe("SearchResultRow", () => {
       />,
     );
 
-    expect(screen.queryByText(/Slow Horses follows the story/)).toBeNull();
-    // Season 6 episode 1 ("Circle of Life") airs 2026-09-16, the earliest
-    // upcoming episode as of the fixed 2026-09-01 clock above. Episode 1
-    // is a season premiere (CRI-78).
-    expect(screen.getByText("Season 6 premiere · Wed 16 Sep")).toBeTruthy();
+    // Season 6 episode 1 airs 2026-09-16, after season 5: a dated next
+    // season as of the fixed 2026-09-01 clock above (PRD 5.5).
+    expect(screen.getByText("Season 6 · Wed 16 Sep")).toBeTruthy();
   });
 
   it("calls onToggleFollow when the follow circle is pressed", async () => {

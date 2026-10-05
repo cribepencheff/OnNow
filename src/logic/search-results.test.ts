@@ -19,7 +19,7 @@ function showWithStatus(status: string): TvMazeShow {
 describe("rankSearchResults", () => {
   it("keeps running shows above ended ones", () => {
     const running = showWithStatus("Running");
-    const ended = showWithStatus("Ended");
+    const ended = { ...showWithStatus("Ended"), id: running.id + 1 };
     const results: TvMazeSearchResult[] = [
       { score: 1, show: ended },
       { score: 1, show: running },
@@ -29,6 +29,21 @@ describe("rankSearchResults", () => {
 
     expect(ranked[0].show.status).toBe("Running");
     expect(ranked[1].show.status).toBe("Ended");
+  });
+
+  it("lists each show once (PRD 5.4)", () => {
+    const show = showWithStatus("Running");
+    const other = { ...showWithStatus("Ended"), id: show.id + 1 };
+    const results: TvMazeSearchResult[] = [
+      { score: 2, show },
+      { score: 1, show: other },
+      { score: 1, show },
+    ];
+
+    expect(rankSearchResults(results).map((r) => r.show.id)).toEqual([
+      show.id,
+      other.id,
+    ]);
   });
 
   it("preserves TVmaze's own order among shows with the same running state", () => {
@@ -57,22 +72,37 @@ describe("rankSearchResults", () => {
 });
 
 describe("searchResultMetaLine (FR-024)", () => {
-  it("combines the premiere year and status", () => {
-    const show = { ...showWithStatus("Running"), premiered: "2022-04-01" };
-    expect(searchResultMetaLine(show)).toBe("2022 · Running");
+  it("combines the premiere year and up to three genres", () => {
+    const show = {
+      ...showWithStatus("Running"),
+      premiered: "2022-04-01",
+      genres: ["Drama", "Thriller", "Espionage", "Crime"],
+    };
+    expect(searchResultMetaLine(show)).toBe(
+      "2022 · Drama, Thriller, Espionage",
+    );
   });
 
-  it("falls back to status alone when there is no premiere date, in plain words (CRI-81)", () => {
-    const show = { ...showWithStatus("In Development"), premiered: null };
-    expect(searchResultMetaLine(show)).toBe("In development");
+  it("leaves out a missing year or missing genres", () => {
+    const base = showWithStatus("Running");
+    expect(
+      searchResultMetaLine({ ...base, premiered: null, genres: ["Drama"] }),
+    ).toBe("Drama");
+    expect(
+      searchResultMetaLine({ ...base, premiered: "2026-09-16", genres: [] }),
+    ).toBe("2026");
+    expect(searchResultMetaLine({ ...base, premiered: null, genres: [] })).toBe(
+      "",
+    );
   });
 
-  it('shows "To Be Determined" as "Renewal not announced" (CRI-81)', () => {
+  it("does not show the status (PRD 5.4)", () => {
     const show = {
       ...showWithStatus("To Be Determined"),
       premiered: "2026-09-16",
+      genres: [],
     };
-    expect(searchResultMetaLine(show)).toBe("2026 · Renewal not announced");
+    expect(searchResultMetaLine(show)).toBe("2026");
   });
 });
 

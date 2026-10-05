@@ -2,7 +2,11 @@
 // directly; this wraps TVmaze's own search and ranking (spike 0001), only
 // re-ordering running shows above ended ones (FR-024 edge case).
 
-import { useQuery, type UseQueryResult } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useQuery,
+  type UseQueryResult,
+} from "@tanstack/react-query";
 
 import { tvMazeClient } from "@/api/tvmaze-client";
 import { rankSearchResults } from "@/logic/search-results";
@@ -20,5 +24,8 @@ export function useSearchShows(
       return rankSearchResults(results);
     },
     enabled: trimmedQuery.length > 0,
+    // The last results stay while the next search answers, so the list
+    // does not blink empty between pauses in typing.
+    placeholderData: keepPreviousData,
   });
 }

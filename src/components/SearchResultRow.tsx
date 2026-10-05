@@ -1,20 +1,22 @@
-// A single Search result row (PRD 5.4, FR-024, FR-025): poster, title, meta
-// line, two line summary, and a follow circle. Once followed, the
-// row shows the next episode or status instead of the summary. Tapping the
-// row opens Show detail; the circle still follows without opening it (PRD
-// 5.4, 5.5, CRI-79). Screen reader users get the row as one button, with
-// follow or unfollow as an accessibility action (NFR-008).
+// A single Search result row (PRD 5.4, FR-024, FR-025, FR-027): poster,
+// title, a meta line with year and genres, the service slot, and a follow
+// circle. Once followed, the row also shows Show detail's status line.
+// Tapping the row opens Show detail; the circle still follows without
+// opening it (PRD 5.4, 5.5, CRI-79). Screen reader users get the row as
+// one button, with follow or unfollow as an accessibility action (NFR-008).
 
 import { Image } from "expo-image";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { FollowCircle } from "./FollowCircle";
 import { useShow } from "@/hooks/useShow";
-import { nextForShow } from "@/logic/next-episode";
-import { nextEpisodeLabel } from "@/logic/next-episode-label";
-import { plainTextSummary, searchResultMetaLine } from "@/logic/search-results";
-import { today } from "@/logic/local-date";
+import { useStreamingService } from "@/hooks/useStreamingService";
+import { useToday } from "@/hooks/useToday";
+import { searchResultMetaLine } from "@/logic/search-results";
+import { showState, showStateLabel } from "@/logic/show-state";
+import { rowServiceText } from "@/logic/streaming-service";
 import type { TvMazeShow } from "@/api/tvmaze-types";
+import { t, type } from "@/theme/tokens";
 
 interface SearchResultRowProps {
   show: TvMazeShow;
@@ -33,7 +35,9 @@ export function SearchResultRow({
   onToggleFollow,
   onPress,
 }: SearchResultRowProps) {
-  const summary = plainTextSummary(show.summary);
+  const metaLine = searchResultMetaLine(show);
+  const { data: providers } = useStreamingService(show, true);
+  const service = rowServiceText(providers);
 
   return (
     <Pressable
@@ -61,18 +65,20 @@ export function SearchResultRow({
         <Text style={styles.title} numberOfLines={1}>
           {show.name}
         </Text>
-        <Text style={styles.meta} numberOfLines={1}>
-          {searchResultMetaLine(show)}
-        </Text>
-        {followed ? (
-          <FollowedNextLine showId={show.id} />
-        ) : (
-          summary && (
-            <Text style={styles.summary} numberOfLines={2}>
-              {summary}
-            </Text>
-          )
+        {metaLine !== "" && (
+          <Text style={styles.meta} numberOfLines={1}>
+            {metaLine}
+          </Text>
         )}
+        {followed && <FollowedStatusLine showId={show.id} />}
+        {/* Its line is kept while TMDB answers, so the row does not grow. */}
+        <Text
+          style={styles.meta}
+          numberOfLines={1}
+          testID="search-result-service"
+        >
+          {service ?? ""}
+        </Text>
       </View>
       <FollowCircle
         followed={followed}
@@ -83,25 +89,25 @@ export function SearchResultRow({
   );
 }
 
-function FollowedNextLine({ showId }: { showId: number }) {
+// FR-025: once followed, Show detail's status line confirms the app knows
+// the show ("Airing · next ep Fri 9 Oct").
+function FollowedStatusLine({ showId }: { showId: number }) {
   const { data } = useShow(showId);
+  const todayDate = useToday();
 
-  const timeZone = deviceTimeZone();
-  const todayDate = today(timeZone);
-
-  const next = data
-    ? nextForShow(
-        data,
-        data._embedded.episodes,
-        data._embedded.seasons,
-        timeZone,
-        todayDate,
-      )
-    : undefined;
-
+  if (!data) {
+    return null;
+  }
+  const state = showState(
+    data,
+    data._embedded.episodes,
+    data._embedded.seasons,
+    deviceTimeZone(),
+    todayDate,
+  );
   return (
-    <Text style={styles.nextLine}>
-      {nextEpisodeLabel(next, timeZone, todayDate)}
+    <Text style={styles.status} numberOfLines={1} testID="search-result-status">
+      {showStateLabel(state, todayDate)}
     </Text>
   );
 }
@@ -112,15 +118,17 @@ const POSTER_HEIGHT = 90;
 const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    gap: 12,
+    alignItems: "center",
+    paddingVertical: t.space2 + 4,
+    paddingHorizontal: t.space4,
+    gap: t.space2 + 4,
   },
+  // No image: nothing, never a grey box (design system, PRD 5.4); the space
+  // stays so titles line up.
   poster: {
     width: POSTER_WIDTH,
     height: POSTER_HEIGHT,
-    borderRadius: 6,
-    backgroundColor: "#E0E0E0",
+    borderRadius: t.radiusSm,
   },
   details: {
     flex: 1,
@@ -128,19 +136,16 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   title: {
-    fontSize: 16,
-    fontWeight: "600",
+    ...type.headline,
+    color: t.ink,
   },
   meta: {
-    fontSize: 13,
-    color: "#666666",
+    ...type.meta,
+    minHeight: type.meta.lineHeight,
+    color: t.inkMuted,
   },
-  summary: {
-    fontSize: 13,
-    color: "#333333",
-  },
-  nextLine: {
-    fontSize: 13,
-    fontWeight: "500",
+  status: {
+    ...type.meta,
+    color: t.inkMuted,
   },
 });

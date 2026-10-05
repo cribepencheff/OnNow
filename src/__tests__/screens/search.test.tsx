@@ -1,5 +1,6 @@
 import { Keyboard } from "react-native";
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -37,6 +38,10 @@ jest.mock("@/hooks/useShow", () => ({
   useShow: jest.fn(() => ({ data: undefined })),
 }));
 
+jest.mock("@/hooks/useStreamingService", () => ({
+  useStreamingService: jest.fn(() => ({ data: undefined })),
+}));
+
 const mockedSearchShows = tvMazeClient.searchShows as jest.MockedFunction<
   typeof tvMazeClient.searchShows
 >;
@@ -54,6 +59,10 @@ describe("SearchScreen", () => {
     mockedGetFollowedIds.mockReset().mockResolvedValue([]);
     mockedFollow.mockReset().mockResolvedValue(undefined);
     mockedUnfollow.mockReset().mockResolvedValue(undefined);
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   it("shows no results before typing (empty state)", async () => {
@@ -123,6 +132,54 @@ describe("SearchScreen", () => {
         searchSlowHorsesFixture[0].show.id,
       ),
     );
+
+    await unmount();
+    client.unmount();
+  });
+
+  it("PRD 5.4: waits for a pause in typing before searching", async () => {
+    jest.useFakeTimers();
+    mockedSearchShows.mockResolvedValue(searchSlowHorsesFixture as never);
+    const client = createTestQueryClient();
+    const { unmount } = await render(<SearchScreen />, {
+      wrapper: wrapperWithQueryClient(client),
+    });
+
+    const field = screen.getByLabelText("Search shows");
+    await fireEvent.changeText(field, "Slo");
+    await act(() => jest.advanceTimersByTime(100));
+    await fireEvent.changeText(field, "Slow Horses");
+    await act(() => jest.advanceTimersByTime(200));
+    expect(mockedSearchShows).not.toHaveBeenCalled();
+
+    await act(() => jest.advanceTimersByTime(50));
+    await waitFor(() =>
+      expect(mockedSearchShows).toHaveBeenCalledWith("Slow Horses"),
+    );
+    expect(mockedSearchShows).toHaveBeenCalledTimes(1);
+
+    await unmount();
+    client.unmount();
+  });
+
+  it("PRD 5.4: a clear button inside the field empties it, and shows only while there is text", async () => {
+    const client = createTestQueryClient();
+    const { unmount } = await render(<SearchScreen />, {
+      wrapper: wrapperWithQueryClient(client),
+    });
+
+    expect(screen.queryByLabelText("Clear search")).toBeNull();
+    await fireEvent.changeText(screen.getByLabelText("Search shows"), "Slow");
+
+    const header = within(screen.getByTestId("search-header"));
+    await fireEvent.press(header.getByLabelText("Clear search"));
+
+    expect(screen.getByLabelText("Search shows").props.value).toBe("");
+    expect(screen.queryByLabelText("Clear search")).toBeNull();
+    // The custom button replaces iOS's own, so both platforms match.
+    expect(
+      screen.getByLabelText("Search shows").props.clearButtonMode,
+    ).toBeUndefined();
 
     await unmount();
     client.unmount();

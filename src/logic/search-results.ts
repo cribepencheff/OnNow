@@ -1,9 +1,8 @@
 // Derived values for the Search sheet's result rows (FR-024, PRD 5.4).
 // TVmaze's own search ranking (`score`) is trusted as-is (data first); this
-// module only re-orders running shows above ended ones and derives display
-// text, it does not re-rank by relevance.
+// module only re-orders running shows above ended ones, lists each show
+// once, and derives display text; it does not re-rank by relevance.
 
-import { statusLabel } from "./show-status";
 import type { TvMazeSearchResult, TvMazeShow } from "@/api/tvmaze-types";
 
 export function rankSearchResults(
@@ -12,8 +11,13 @@ export function rankSearchResults(
   // A stable sort with a single narrow rule: a Running show ranks above an
   // Ended show. Every other status pairing (including Running vs. Running,
   // Ended vs. Ended, or either against an unrelated status like "In
-  // Development") is left exactly as TVmaze ranked it.
-  return [...results].sort((a, b) => {
+  // Development") is left exactly as TVmaze ranked it. A show TVmaze lists
+  // twice keeps its first place (PRD 5.4: each show once).
+  const seen = new Set<number>();
+  const unique = results.filter(
+    ({ show }) => !seen.has(show.id) && seen.add(show.id),
+  );
+  return unique.sort((a, b) => {
     if (a.show.status === "Running" && b.show.status === "Ended") {
       return -1;
     }
@@ -24,12 +28,12 @@ export function rankSearchResults(
   });
 }
 
-// "2022 · Running": premiere year and status, the status in plain words
-// (CRI-81).
+// "2022 · Drama, Thriller": premiere year and up to three genres, as in
+// Show detail's meta line; a missing part is left out (PRD 5.4, FR-024).
 export function searchResultMetaLine(show: TvMazeShow): string {
   const year = show.premiered ? show.premiered.slice(0, 4) : null;
-  const status = statusLabel(show.status);
-  return year ? `${year} · ${status}` : status;
+  const genres = (show.genres ?? []).slice(0, 3).join(", ");
+  return [year, genres].filter(Boolean).join(" · ");
 }
 
 export function searchResultNetworkName(show: TvMazeShow): string | null {
