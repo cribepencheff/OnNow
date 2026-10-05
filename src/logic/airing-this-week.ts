@@ -43,6 +43,18 @@ export function airingThisWeek(
     }));
 }
 
+// The row's order (CRI-122): what airs today first, then tomorrow, then
+// the weekdays. The cards are chosen in popularity order (airingThisWeek),
+// and the sort is stable, so the more popular show comes first within a
+// day.
+export function byAiringDate<Card extends { date: LocalDate }>(
+  cards: Card[],
+): Card[] {
+  return [...cards].sort((a, b) =>
+    a.date < b.date ? -1 : a.date > b.date ? 1 : 0,
+  );
+}
+
 // The hero's day words: "Today", "Tomorrow", then the weekday ("Fri");
 // null outside the 7-day window.
 export function weekDayWord(

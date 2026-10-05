@@ -79,6 +79,31 @@ describe("useAiringThisWeek (FR-039, CRI-110)", () => {
     client.unmount();
   });
 
+  it("CRI-122: shows the ten in date order, Today first, popularity order within a day", async () => {
+    // The two most popular air on Friday, the 3rd today, the 4th on
+    // Wednesday; the rest on Friday too.
+    const airsOn = (date: string) => ({
+      type: "Scripted",
+      episodes: [{ airstamp: `${date}T12:00:00+00:00`, number: 3 }],
+    });
+    getWeekInfo.mockImplementation(async (tvmazeId: number) => {
+      if (tvmazeId === 1203) return airsOn("2026-10-05");
+      if (tvmazeId === 1204) return airsOn("2026-10-07");
+      return airsFriday;
+    });
+    const { result, unmount, client } = await render();
+
+    await waitFor(() => expect(result.current).toHaveLength(10));
+    expect(ids(result.current).slice(0, 4)).toEqual([203, 204, 201, 202]);
+    expect(result.current.map((card) => card.day).slice(0, 3)).toEqual([
+      "Today",
+      "Wed",
+      "Fri",
+    ]);
+    await unmount();
+    client.unmount();
+  });
+
   it("asks discover for the region and the week (today and six days)", async () => {
     const { result, unmount, client } = await render();
     await waitFor(() => expect(result.current).toHaveLength(10));
