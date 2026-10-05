@@ -1,6 +1,6 @@
 // The round close button (X) that closes the Search sheet (PRD 5.4, 5.6,
-// FR-007, CRI-77). Shared by the Search results and by Show detail opened
-// inside the sheet (CRI-79), where it still closes all of Search.
+// FR-007, CRI-77), next to the search field. Show detail inside the sheet
+// has only a back arrow; a swipe down closes the sheet from there.
 
 import { Pressable, StyleSheet } from "react-native";
 import { SymbolView } from "expo-symbols";

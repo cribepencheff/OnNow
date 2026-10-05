@@ -152,7 +152,8 @@ function BeforeTyping() {
     <ScrollView
       testID="search-before-typing"
       contentContainerStyle={styles.resultsContent}
-      // A follow circle works with the keyboard up, as on the results.
+      // With the keyboard up, the first tap on a card or its follow circle
+      // closes the keyboard and the next one acts (accepted by the owner).
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
     >

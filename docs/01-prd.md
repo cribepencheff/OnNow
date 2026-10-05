@@ -277,9 +277,9 @@ per season come in the MVP.
   detail) have a back arrow top left and support the edge swipe back.
 - **Opening something on top gives a close button.** Sheets (Search) close
   with a round close button (X) at the top right or a swipe down.
-- **Inside a sheet the rules combine.** Show detail opened from Search has a
-  back arrow to the results. The close button stays and closes all of
-  Search, as does swiping the sheet down.
+- **Inside a sheet, going deeper gives only a back arrow.** Show detail
+  opened from Search (a result or a poster card) has a back arrow to Search
+  and no close button. Swiping the sheet down still closes all of Search.
 
 ### 5.7 Fixed defaults
 These are decisions, not settings. They match how the first user has set up

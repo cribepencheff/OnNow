@@ -118,7 +118,7 @@ describe("Show detail (real navigation)", () => {
 
   // Entry point: Shows' search field. With shows followed, Home has no
   // Search entry by design (FR-007).
-  it("FR-030, PRD 5.6: opens inside the Search sheet, where Close closes all of Search", async () => {
+  it("FR-030, PRD 5.6: opens inside the Search sheet with a back arrow to the results and no close button", async () => {
     const rendered = renderRouter("src/app", { initialUrl: "/shows" });
     await rendered;
 
@@ -132,8 +132,10 @@ describe("Show detail (real navigation)", () => {
     expect(rendered.getPathname()).toBe("/search/show/45039");
     expect(screen.getByTestId("show-detail-next")).toBeTruthy();
 
-    await fireEvent.press(screen.getByTestId("search-detail-close"));
-    expect(rendered.getPathname()).toBe("/shows");
+    // Only the back arrow: the sheet itself closes with a swipe down.
+    expect(screen.queryByRole("button", { name: "Close" })).toBeNull();
+    await act(() => router.back());
+    expect(rendered.getPathname()).toBe("/search");
   });
 
   // Same entry point as above (FR-007).
