@@ -239,12 +239,6 @@ per season come in the MVP.
   year only, so there is no year state.
   The same line is used on the Shows row (5.3) and on a followed Search
   row (5.4), and its state decides the Shows segment.
-- **Status wording:** wherever TVmaze's own status value is shown as is
-  (the status line's fallback for any other value), it reads in plain
-  words: "To Be Determined" reads "Renewal not
-  announced", "In Development" reads "In development"; "Running" and
-  "Ended" stay as they are. A translation of the source's own vocabulary,
-  not a guess (CRI-81).
 - **Season drops:** when several episodes of a season come out on the same
   day, the latest or next card shows them as one item, for example "Season
   1 · all 8 episodes · Wed 16 Sep" (same grouping as FR-012). "all" only
