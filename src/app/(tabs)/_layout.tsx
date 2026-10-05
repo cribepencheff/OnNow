@@ -68,6 +68,10 @@ export default function TabLayout() {
               size={size}
             />
           ),
+          // The header on bg, like the screen under it (as in Shows).
+          headerStyle: { backgroundColor: t.bg },
+          headerTitleStyle: { color: t.ink },
+          headerShadowVisible: false,
         }}
       />
       <Tabs.Screen

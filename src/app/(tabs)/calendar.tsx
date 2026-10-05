@@ -1,6 +1,6 @@
 // Calendar (PRD 5.2, FR-008, FR-009, FR-012, FR-036, FR-037): a month grid
-// for followed series, and the selected day's episodes below. Visual design
-// comes later, so styling here stays minimal and functional.
+// for followed series, and the selected day's episodes below, on the dark
+// design system (ADR 0011, CRI-119).
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -15,8 +15,8 @@ import {
   type NativeScrollEvent,
   type NativeSyntheticEvent,
 } from "react-native";
-import { Image } from "expo-image";
 
+import { ShowRow, ShowRowLine } from "@/components/ShowRow";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import { useToday } from "@/hooks/useToday";
@@ -38,13 +38,17 @@ import {
   type ShowEpisodesToday,
 } from "@/logic/episodes-today";
 import type { LocalDate } from "@/logic/local-date";
-import { accent } from "@/theme/color";
+import { t, type } from "@/theme/tokens";
 
 const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 // Shared between the weekday header row and the grid itself, so the two
 // stay aligned.
-const GRID_HORIZONTAL_PADDING = 16;
+const GRID_HORIZONTAL_PADDING = t.space4;
+
+// The translucent tab bar's height: the day list and the Today button
+// clear it (as in Shows).
+const TAB_BAR_HEIGHT = 83;
 
 function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -128,6 +132,7 @@ export default function CalendarScreen() {
             testID="calendar-refresh-control"
             refreshing={isRefetching}
             onRefresh={refetch}
+            tintColor={t.inkMuted}
           />
         }
       >
@@ -177,8 +182,11 @@ export default function CalendarScreen() {
           ) : episodesOnSelectedDay.length === 0 ? (
             <Text style={styles.quietLine}>Nothing on this day.</Text>
           ) : (
-            episodesOnSelectedDay.map(({ show, episodes }) => (
-              <CalendarRow key={show.id} show={show} episodes={episodes} />
+            episodesOnSelectedDay.map(({ show, episodes }, index) => (
+              <View key={show.id}>
+                {index > 0 && <View style={styles.separator} />}
+                <CalendarRow show={show} episodes={episodes} />
+              </View>
             ))
           )}
         </View>
@@ -300,6 +308,7 @@ function DayCell({
         </Text>
         {cell.hasEpisodes && (
           <View
+            testID="calendar-day-mark"
             style={[styles.dayMark, cell.isSelected && styles.dayMarkSelected]}
           />
         )}
@@ -308,15 +317,17 @@ function DayCell({
   );
 }
 
-// Tapping a row opens Show detail (FR-030, CRI-79).
+// The shared row (CRI-118): poster, title, and the episode code and title
+// (PRD 5.2). Tapping it opens Show detail (FR-030, CRI-79).
 function CalendarRow({ show, episodes }: ShowEpisodesToday) {
   const router = useGuardedRouter();
   const line = calendarRowLine(episodes);
 
   return (
-    <Pressable
+    <ShowRow
+      title={show.name}
+      posterUri={show.image?.medium}
       style={styles.row}
-      accessibilityRole="button"
       accessibilityLabel={line ? `${show.name}, ${line}` : show.name}
       onPress={() =>
         router.push({
@@ -326,49 +337,35 @@ function CalendarRow({ show, episodes }: ShowEpisodesToday) {
       }
       testID="calendar-row"
     >
-      <Image
-        source={show.image?.medium ?? undefined}
-        style={styles.poster}
-        contentFit="cover"
-        accessibilityIgnoresInvertColors
-      />
-      <View style={styles.rowDetails}>
-        <Text style={styles.rowTitle} numberOfLines={1}>
-          {show.name}
-        </Text>
-        {line ? (
-          <Text style={styles.rowLine} numberOfLines={1}>
-            {line}
-          </Text>
-        ) : null}
-      </View>
-    </Pressable>
+      {line ? <ShowRowLine>{line}</ShowRowLine> : null}
+    </ShowRow>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: t.bg,
   },
   scrollContent: {
-    paddingTop: 8,
-    paddingBottom: 32,
+    paddingTop: t.space2,
+    paddingBottom: TAB_BAR_HEIGHT + t.space4,
   },
   monthTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    paddingHorizontal: 16,
-    marginBottom: 8,
+    ...type.title,
+    color: t.ink,
+    paddingHorizontal: t.space4,
+    marginBottom: t.space2,
   },
   weekdayRow: {
     flexDirection: "row",
     paddingHorizontal: GRID_HORIZONTAL_PADDING,
   },
   weekdayLabel: {
+    ...type.meta,
     flex: 1,
     textAlign: "center",
-    fontSize: 12,
-    color: "#888888",
+    color: t.inkSubtle,
   },
   monthPage: {
     flexDirection: "column",
@@ -384,83 +381,71 @@ const styles = StyleSheet.create({
   dayCircle: {
     flex: 1,
     margin: 2,
-    borderRadius: 999,
+    borderRadius: t.radiusPill,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
     borderColor: "transparent",
   },
   dayCircleSelected: {
-    backgroundColor: accent,
+    backgroundColor: t.accent,
   },
   dayCircleToday: {
-    borderColor: accent,
+    borderColor: t.accent,
   },
   dayNumber: {
-    fontSize: 14,
+    ...type.body,
+    color: t.ink,
   },
   dayNumberSelected: {
-    color: "#FFFFFF",
+    color: t.onAccent,
     fontWeight: "700",
   },
+  // PRD 5.2: a short line under the date, in the accent colour, like the
+  // follow check.
   dayMark: {
     position: "absolute",
     bottom: 6,
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: accent,
+    width: 14,
+    height: 3,
+    borderRadius: t.radiusPill,
+    backgroundColor: t.accent,
   },
   dayMarkSelected: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: t.onAccent,
   },
   dayList: {
-    paddingTop: 16,
+    paddingTop: t.space4,
   },
   quietLine: {
+    ...type.body,
     textAlign: "center",
-    color: "#666666",
-    fontSize: 15,
-    paddingHorizontal: 32,
-    paddingTop: 24,
+    color: t.inkMuted,
+    paddingHorizontal: t.space10,
+    paddingTop: t.space6,
   },
+  // Rows on surface, as in Shows.
   row: {
-    flexDirection: "row",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    gap: 12,
+    backgroundColor: t.surface,
   },
-  poster: {
-    width: 60,
-    height: 90,
-    borderRadius: 6,
-    backgroundColor: "#E0E0E0",
-  },
-  rowDetails: {
-    flex: 1,
-    justifyContent: "center",
-    gap: 2,
-  },
-  rowTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  rowLine: {
-    fontSize: 13,
-    color: "#666666",
+  // Inset to the text column, as on iOS lists (as in Shows).
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    marginLeft: t.space4 + 60 + t.space2 + 4,
+    backgroundColor: t.hairline,
   },
   todayButton: {
     position: "absolute",
-    bottom: 32,
+    bottom: TAB_BAR_HEIGHT + t.space4,
     alignSelf: "center",
-    backgroundColor: accent,
+    backgroundColor: t.accent,
     paddingHorizontal: 32,
     paddingVertical: 14,
-    borderRadius: 24,
+    borderRadius: t.radiusPill,
   },
   todayLabel: {
-    color: "#FFFFFF",
+    ...type.body,
+    color: t.onAccent,
     fontWeight: "700",
-    fontSize: 16,
   },
 });

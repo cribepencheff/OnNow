@@ -9,6 +9,7 @@ import CalendarScreen from "@/app/(tabs)/calendar";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useWeekStart } from "@/hooks/useWeekStart";
 import type { TvMazeEpisode, TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
+import { t } from "@/theme/tokens";
 
 jest.mock("@/hooks/useFollowedEpisodes", () => ({
   useFollowedEpisodes: jest.fn(),
@@ -112,6 +113,33 @@ describe("CalendarScreen", () => {
       screen.getByLabelText("September 24, 2026, has episodes"),
     ).toBeTruthy();
     expect(screen.getByLabelText("September 22, 2026")).toBeTruthy();
+  });
+
+  it("marks a day with a short accent line under the date (PRD 5.2, CRI-119)", async () => {
+    const show = makeShow({ name: "Silo" });
+    const episode = makeEpisode({ airstamp: "2026-09-24T18:00:00+00:00" });
+    mockFollowedEpisodes({ followedShows: [{ show, episodes: [episode] }] });
+
+    await render(<CalendarScreen />);
+
+    const marks = screen.getAllByTestId("calendar-day-mark");
+    expect(marks).toHaveLength(1);
+    expect(marks[0]).toHaveStyle({
+      width: 14,
+      height: 3,
+      backgroundColor: t.accent,
+    });
+  });
+
+  it("fills the selected day with accent and on-accent text, never white (CRI-119)", async () => {
+    await render(<CalendarScreen />);
+
+    await fireEvent.press(screen.getByLabelText("September 22, 2026"));
+
+    const september = screen.getByTestId("calendar-month-page-2026-9");
+    expect(within(september).getByText("22")).toHaveStyle({
+      color: t.onAccent,
+    });
   });
 
   it("selects a day and lists its episodes (FR-009)", async () => {
