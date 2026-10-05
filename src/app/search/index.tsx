@@ -53,7 +53,6 @@ export default function SearchScreen() {
             onChangeText={setQuery}
             placeholder="Search shows"
             placeholderTextColor={t.inkMuted}
-            keyboardAppearance="dark"
             selectionColor={t.accent}
             style={styles.searchInput}
             returnKeyType="search"

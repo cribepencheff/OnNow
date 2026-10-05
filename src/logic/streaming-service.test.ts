@@ -369,12 +369,26 @@ describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
     ).toBe("Open in Peacock");
   });
 
-  it("names an add-on channel via its host in the text", () => {
+  it("names an add-on channel alone by its own service", () => {
     expect(
       availabilityText([
         { providerId: 296, providerName: "Hayu Amazon Channel" },
       ]),
-    ).toBe("On hayu via Prime Video");
+    ).toBe("On hayu");
+  });
+
+  it("drops a channel variant when the service itself is listed (Slow Horses)", () => {
+    // TMDB also lists "Apple TV Amazon Channel" for Sweden.
+    expect(availabilityText(regionProviders(providersSlowHorses, "SE"))).toBe(
+      "On Apple TV, Amazon Prime Video",
+    );
+    expect(
+      availabilityText([
+        { providerId: 2243, providerName: "Apple TV Amazon Channel" },
+        { providerId: 350, providerName: "Apple TV" },
+        { providerId: 296, providerName: "Hayu Amazon Channel" },
+      ]),
+    ).toBe("On Apple TV, hayu");
   });
 });
 
