@@ -1,4 +1,7 @@
 import {
+  calendarMonths,
+  isTodayButtonShown,
+  monthIndexAtOffset,
   addMonths,
   calendarDayCell,
   calendarRowLine,
@@ -237,5 +240,82 @@ describe("calendarDayCell (FR-008)", () => {
       calendarDayCell("2026-09-21", "2026-09-21", "2026-09-24", dates)
         .isSelected,
     ).toBe(false);
+  });
+});
+
+// CRI-120: one fixed list of months, PRD 5.2 "Range: no artificial limit".
+describe("calendarMonths (PRD 5.2, FR-036)", () => {
+  it("runs from the earliest to the latest month with an episode", () => {
+    const months = calendarMonths(
+      new Set(["2026-11-20", "2026-08-03", "2026-10-01"]),
+      "2026-10-05",
+    );
+    expect(months).toEqual([
+      { year: 2026, month: 8 },
+      { year: 2026, month: 9 },
+      { year: 2026, month: 10 },
+      { year: 2026, month: 11 },
+    ]);
+  });
+
+  it("always includes today's month, also with no episodes at all", () => {
+    expect(calendarMonths(new Set(), "2026-10-05")).toEqual([
+      { year: 2026, month: 10 },
+    ]);
+    expect(calendarMonths(new Set(["2027-02-01"]), "2026-10-05")).toEqual([
+      { year: 2026, month: 10 },
+      { year: 2026, month: 11 },
+      { year: 2026, month: 12 },
+      { year: 2027, month: 1 },
+      { year: 2027, month: 2 },
+    ]);
+  });
+
+  it("crosses years, back to a long-running show's first season", () => {
+    const months = calendarMonths(new Set(["1989-12-17"]), "2026-10-05");
+    expect(months[0]).toEqual({ year: 1989, month: 12 });
+    expect(months[months.length - 1]).toEqual({ year: 2026, month: 10 });
+    expect(months).toHaveLength(36 * 12 + 11);
+  });
+});
+
+// CRI-120: the month title switches as soon as the page passes halfway.
+describe("monthIndexAtOffset (FR-036)", () => {
+  it("is the page more than half on screen", () => {
+    expect(monthIndexAtOffset(0, 400, 5)).toBe(0);
+    expect(monthIndexAtOffset(199, 400, 5)).toBe(0);
+    expect(monthIndexAtOffset(200, 400, 5)).toBe(1);
+    expect(monthIndexAtOffset(1000, 400, 5)).toBe(3);
+  });
+
+  it("stays within the months, also in an edge bounce", () => {
+    expect(monthIndexAtOffset(-80, 400, 5)).toBe(0);
+    expect(monthIndexAtOffset(2100, 400, 5)).toBe(4);
+  });
+
+  it("is the first page before the pager has a width", () => {
+    expect(monthIndexAtOffset(300, 0, 5)).toBe(0);
+  });
+});
+
+// PRD 5.2: the Today button "disappears when today is selected again";
+// it also shows while today is selected but another month is on screen,
+// so there is always a way back (CRI-120).
+describe("isTodayButtonShown (FR-036)", () => {
+  const today = "2026-10-05";
+  const october = { year: 2026, month: 10 };
+
+  it("is hidden when today is selected and its month is on screen", () => {
+    expect(isTodayButtonShown(today, today, october)).toBe(false);
+  });
+
+  it("shows when another day is selected", () => {
+    expect(isTodayButtonShown("2026-10-07", today, october)).toBe(true);
+  });
+
+  it("shows when today is selected but another month is on screen", () => {
+    expect(isTodayButtonShown(today, today, { year: 2026, month: 11 })).toBe(
+      true,
+    );
   });
 });

@@ -44,6 +44,58 @@ export function monthOf(date: LocalDate): YearMonth {
   return { year, month };
 }
 
+export function sameMonth(a: YearMonth, b: YearMonth): boolean {
+  return a.year === b.year && a.month === b.month;
+}
+
+// The pager's months (PRD 5.2 "Range: no artificial limit", CRI-120): from
+// the earliest to the latest month with an episode of a followed show,
+// always including today's month.
+export function calendarMonths(
+  episodeDates: Iterable<LocalDate>,
+  todayDate: LocalDate,
+): YearMonth[] {
+  // "YYYY-MM-DD" sorts as text, so the range is the smallest and largest.
+  let first = todayDate;
+  let last = todayDate;
+  for (const date of episodeDates) {
+    if (date < first) first = date;
+    if (date > last) last = date;
+  }
+  const start = monthOf(first);
+  const end = monthOf(last);
+  const count = (end.year - start.year) * 12 + (end.month - start.month) + 1;
+  return Array.from({ length: count }, (_, i) => addMonths(start, i));
+}
+
+// The page that is more than half on screen, so the month title switches
+// as soon as a swipe passes halfway (CRI-120). Kept within the months
+// during an edge bounce.
+export function monthIndexAtOffset(
+  offsetX: number,
+  pageWidth: number,
+  count: number,
+): number {
+  if (pageWidth <= 0 || count === 0) {
+    return 0;
+  }
+  const index = Math.round(offsetX / pageWidth);
+  return Math.min(Math.max(index, 0), count - 1);
+}
+
+// FR-036, PRD 5.2: the Today button shows when the user has moved away
+// from today, by selecting another day or by swiping to another month,
+// and disappears when today is selected with its month on screen.
+export function isTodayButtonShown(
+  selectedDate: LocalDate,
+  todayDate: LocalDate,
+  visibleMonth: YearMonth,
+): boolean {
+  return (
+    selectedDate !== todayDate || !sameMonth(visibleMonth, monthOf(todayDate))
+  );
+}
+
 // "September 21, 2026", for accessibility labels on grid days.
 export function fullDateLabel(date: LocalDate): string {
   const { year, month } = monthOf(date);

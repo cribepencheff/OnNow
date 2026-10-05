@@ -11,6 +11,24 @@ import { useWeekStart } from "@/hooks/useWeekStart";
 import type { TvMazeEpisode, TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 import { t } from "@/theme/tokens";
 
+// Counts each month page's renders, to prove scrolling never redraws the
+// pager (CRI-120). Otherwise the real page.
+const mockMonthPageRenders: string[] = [];
+jest.mock("@/components/CalendarMonthPage", () => {
+  const React = jest.requireActual("react");
+  const actual = jest.requireActual("@/components/CalendarMonthPage");
+  return {
+    ...actual,
+    CalendarMonthPage: (props: {
+      yearMonth: { year: number; month: number };
+    }) => {
+      mockMonthPageRenders.push(
+        `${props.yearMonth.year}-${props.yearMonth.month}`,
+      );
+      return React.createElement(actual.CalendarMonthPage, props);
+    },
+  };
+});
 jest.mock("@/hooks/useFollowedEpisodes", () => ({
   useFollowedEpisodes: jest.fn(),
 }));
@@ -98,6 +116,7 @@ function mockFollowedEpisodes(
 describe("CalendarScreen", () => {
   beforeEach(() => {
     refetch.mockClear();
+    mockMonthPageRenders.length = 0;
     mockedUseWeekStart.mockReturnValue(1); // Monday, as in Sweden
     mockFollowedEpisodes({});
   });
@@ -214,21 +233,99 @@ describe("CalendarScreen", () => {
     expect(screen.queryByText("Nothing on this day.")).toBeNull();
   });
 
+  // Episodes from August to October 2026 give the pager three months,
+  // with September (today's month) in the middle.
+  function followShowAcrossThreeMonths() {
+    const show = makeShow({ name: "Silo" });
+    const episodes = ["2026-08-14", "2026-09-24", "2026-10-09"].map(
+      (date, index) =>
+        makeEpisode({
+          id: index + 1,
+          number: index + 1,
+          airstamp: `${date}T18:00:00+00:00`,
+        }),
+    );
+    mockFollowedEpisodes({ followedShows: [{ show, episodes }] });
+  }
+
+  function scrollPagerTo(x: number) {
+    return fireEvent.scroll(screen.getByTestId("calendar-pager"), {
+      nativeEvent: {
+        contentOffset: { x, y: 0 },
+        layoutMeasurement: { width: 400, height: 400 },
+        contentSize: { width: 1200, height: 400 },
+      },
+    });
+  }
+
   it("swipes to the next month and shows Today (FR-036)", async () => {
+    followShowAcrossThreeMonths();
     await render(<CalendarScreen />);
 
     expect(screen.getByText("September 2026")).toBeTruthy();
     expect(screen.queryByLabelText("Today")).toBeNull();
 
-    await fireEvent(screen.getByTestId("calendar-pager"), "momentumScrollEnd", {
-      nativeEvent: {
-        contentOffset: { x: 800 },
-        layoutMeasurement: { width: 400 },
-      },
-    });
+    await scrollPagerTo(800);
 
     expect(screen.getByText("October 2026")).toBeTruthy();
     expect(screen.getByLabelText("Today")).toBeTruthy();
+  });
+
+  it("switches the month title as soon as the page passes halfway (CRI-120)", async () => {
+    followShowAcrossThreeMonths();
+    await render(<CalendarScreen />);
+
+    await scrollPagerTo(599);
+    expect(screen.getByText("September 2026")).toBeTruthy();
+
+    await scrollPagerTo(601);
+    expect(screen.getByText("October 2026")).toBeTruthy();
+
+    await scrollPagerTo(199);
+    expect(screen.getByText("August 2026")).toBeTruthy();
+  });
+
+  it("never redraws the month pages while the title follows the scroll (CRI-120)", async () => {
+    followShowAcrossThreeMonths();
+    await render(<CalendarScreen />);
+    const drawnBefore = [...mockMonthPageRenders];
+    expect(drawnBefore).toContain("2026-9");
+    mockMonthPageRenders.length = 0;
+
+    await scrollPagerTo(601);
+    await scrollPagerTo(800);
+    await scrollPagerTo(150);
+
+    expect(screen.getByText("August 2026")).toBeTruthy();
+    // Months already on screen are not drawn again.
+    expect(
+      mockMonthPageRenders.filter((month) => drawnBefore.includes(month)),
+    ).toEqual([]);
+  });
+
+  it("puts Today on the month title's row (CRI-120)", async () => {
+    await render(<CalendarScreen />);
+
+    await fireEvent.press(screen.getByLabelText("September 22, 2026"));
+
+    const title = screen.getByTestId("calendar-month-title");
+    expect(within(title.parent!).getByLabelText("Today")).toBeTruthy();
+  });
+
+  it("shows Today while today is selected but another month is on screen, and Today brings it back (FR-036)", async () => {
+    followShowAcrossThreeMonths();
+    await render(<CalendarScreen />);
+
+    await scrollPagerTo(800);
+    expect(
+      screen.getByLabelText("September 21, 2026, today, selected"),
+    ).toBeTruthy();
+    expect(screen.getByLabelText("Today")).toBeTruthy();
+
+    await fireEvent.press(screen.getByLabelText("Today"));
+
+    expect(screen.getByText("September 2026")).toBeTruthy();
+    expect(screen.queryByLabelText("Today")).toBeNull();
   });
 
   it("starts the grid on Monday when the locale is Monday-first (PRD 5.7)", async () => {
