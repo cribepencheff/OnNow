@@ -19,7 +19,7 @@ import {
 } from "@/logic/airing-this-week";
 import { HOME_HERO_HORIZON_DAYS } from "@/logic/hero-carousel";
 import { addDays } from "@/logic/local-date";
-import { fillTopPicks, type TopPick } from "@/logic/top-picks";
+import { fillTopPicks, type PosterItem } from "@/logic/top-picks";
 import { useFollowList } from "./useFollowList";
 import { useRegion } from "./useRegion";
 import { useToday } from "./useToday";
@@ -30,7 +30,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 const WEEK_INFO_STALE_MS = DAY_MS / 4;
 const LAUNCH = Date.now();
 
-export type AiringPick = TopPick & { day: string };
+export type AiringPick = PosterItem & { day: string };
 
 function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;

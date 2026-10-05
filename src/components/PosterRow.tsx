@@ -1,4 +1,5 @@
-// A poster row on Home (FR-038, FR-039). While its cards load it keeps its
+// A poster row on Home, and in Search before typing (FR-038, FR-039,
+// FR-026). While its cards load it keeps its
 // full height, invisible, so nothing on the page moves when it appears;
 // then it fades in. Removed only when it ends up with no cards (CRI-110).
 
@@ -9,7 +10,7 @@ import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
 import { t, type } from "@/theme/tokens";
 import { CARD_HEIGHT } from "./ShowCard";
 
-export function HomeRow({
+export function PosterRow({
   title,
   isLoading,
   hasCards,

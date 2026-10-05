@@ -2,9 +2,10 @@
 // followed show are kept a day; a page of cards is filled once from their
 // ranking (fillTopPicks), only titles with a service in the region, and
 // then left alone, so following from the row never reshuffles it. Refresh
-// fills the next page, without followed shows.
+// fills the next page, without followed shows. The page number is shared
+// by every row on screen, so Refresh in Search also moves Home's row
+// (FR-026).
 
-import { useState } from "react";
 import {
   keepPreviousData,
   useQueries,
@@ -21,7 +22,11 @@ import { hasServiceInRegion } from "@/api/region-service";
 import { resolveTvMazeId } from "@/api/tvmaze-id";
 import type { TvMazeShow } from "@/api/tvmaze-types";
 import { rankRecommendations } from "@/logic/recommendations";
-import { fillTopPicks, type FilledPage, type TopPick } from "@/logic/top-picks";
+import {
+  fillTopPicks,
+  type FilledPage,
+  type PosterItem,
+} from "@/logic/top-picks";
 import { useFollowList } from "./useFollowList";
 import { useRegion } from "./useRegion";
 
@@ -30,6 +35,8 @@ export const ROW_SIZE = 10;
 const RECOMMENDATIONS_KEY = ["recommendations", "v1"];
 // Pages belong to one launch: the next launch starts from the top again.
 const LAUNCH = Date.now();
+// Which page the rows show, in the query cache so Home and Search share it.
+const PAGE_INDEX_KEY = ["topPicksPageIndex", LAUNCH];
 
 // An answer with recommendations, not "not on TMDB", no key or loading.
 function isFound(data: unknown): data is TmdbRecommendations {
@@ -37,7 +44,7 @@ function isFound(data: unknown): data is TmdbRecommendations {
 }
 
 export function useTopPicks(followedShows: TvMazeShow[]): {
-  cards: TopPick[];
+  cards: PosterItem[];
   // No page yet: the row keeps its space (CRI-110).
   isLoading: boolean;
   refresh: () => Promise<void>;
@@ -58,7 +65,12 @@ export function useTopPicks(followedShows: TvMazeShow[]): {
     followedShows.length > 0 &&
     answers.every((query) => !query.isLoading);
 
-  const [pageIndex, setPageIndex] = useState(0);
+  const { data: pageIndex = 0 } = useQuery({
+    queryKey: PAGE_INDEX_KEY,
+    queryFn: () => 0,
+    initialData: 0,
+    staleTime: Infinity,
+  });
   const page = useQuery({
     queryKey: ["topPicksPage", LAUNCH, region, pageIndex],
     enabled: settled,
@@ -96,7 +108,7 @@ export function useTopPicks(followedShows: TvMazeShow[]): {
       queryKey: RECOMMENDATIONS_KEY,
       predicate: (query) => query.isStaleByTime(DAY_MS),
     });
-    setPageIndex((index) => index + 1);
+    queryClient.setQueryData<number>(PAGE_INDEX_KEY, (index = 0) => index + 1);
   }
 
   return {

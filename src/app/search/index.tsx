@@ -1,4 +1,4 @@
-// Search sheet (PRD 5.4, FR-001, FR-007): a sheet over the current view
+// Search sheet (PRD 5.4, FR-001, FR-007, FR-026): a sheet over the current view
 // with the keyboard open on entry, results while typing, and a round close
 // button next to the search field that returns to where the user came
 // from. It sits at the top so the keyboard never covers it (CRI-77).
@@ -6,10 +6,11 @@
 // a short pause in typing, and a clear button (X) inside the field empties
 // it, the same on iOS and Android (PRD 5.4).
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   FlatList,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -18,9 +19,12 @@ import {
 import { useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
 
+import { AiringThisWeekRow } from "@/components/AiringThisWeekRow";
 import { CloseButton } from "@/components/CloseButton";
 import { SearchResultRow } from "@/components/SearchResultRow";
+import { TopPicksRow } from "@/components/TopPicksRow";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useFollowList } from "@/hooks/useFollowList";
 import { useSearchShows } from "@/hooks/useSearchShows";
 import { t, type } from "@/theme/tokens";
@@ -89,7 +93,9 @@ export default function SearchScreen() {
         <CloseButton onPress={() => router.back()} testID="search-close" />
       </View>
 
-      {query.trim().length > 0 && (
+      {query.trim().length === 0 ? (
+        <BeforeTyping />
+      ) : (
         <FlatList
           testID="search-results"
           data={results ?? []}
@@ -128,6 +134,36 @@ export default function SearchScreen() {
         />
       )}
     </View>
+  );
+}
+
+// Before typing (PRD 5.4, FR-026): Home's two poster rows as they are, the
+// same components and data. "Top picks for you" only with followed shows,
+// as on Home; its Refresh is shared with Home's row. A card opens Show
+// detail inside the sheet (PRD 5.6).
+function BeforeTyping() {
+  const { followedShows, followedCount } = useFollowedEpisodes();
+  const followedShowList = useMemo(
+    () => followedShows.map(({ show }) => show),
+    [followedShows],
+  );
+
+  return (
+    <ScrollView
+      testID="search-before-typing"
+      contentContainerStyle={styles.resultsContent}
+      // A follow circle works with the keyboard up, as on the results.
+      keyboardShouldPersistTaps="handled"
+      keyboardDismissMode="on-drag"
+    >
+      {followedCount > 0 && (
+        <TopPicksRow
+          followedShows={followedShowList}
+          detailPathname="/search/show/[id]"
+        />
+      )}
+      <AiringThisWeekRow detailPathname="/search/show/[id]" />
+    </ScrollView>
   );
 }
 
