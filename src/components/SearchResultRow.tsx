@@ -6,10 +6,8 @@
 // opening it (PRD 5.4, 5.5, CRI-79). Screen reader users get the row as
 // one button, with follow or unfollow as an accessibility action (NFR-008).
 
-import { Image } from "expo-image";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-
 import { FollowCircle } from "./FollowCircle";
+import { ShowRow, ShowRowLine } from "./ShowRow";
 import { useFollowToggle } from "@/hooks/useFollowList";
 import { useShow } from "@/hooks/useShow";
 import { useStreamingService } from "@/hooks/useStreamingService";
@@ -18,7 +16,6 @@ import { searchResultMetaLine } from "@/logic/search-results";
 import { showState, showStateLabel } from "@/logic/show-state";
 import { rowServiceText } from "@/logic/streaming-service";
 import type { TvMazeShow } from "@/api/tvmaze-types";
-import { t, type } from "@/theme/tokens";
 
 interface SearchResultRowProps {
   show: TvMazeShow;
@@ -37,11 +34,11 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
   const service = rowServiceText(providers);
 
   return (
-    <Pressable
-      style={styles.row}
+    <ShowRow
+      title={show.name}
+      posterUri={show.image?.medium}
       testID="search-result-row"
       onPress={onPress}
-      accessibilityRole="button"
       accessibilityLabel={show.name}
       accessibilityActions={[
         { name: "toggleFollow", label: followed ? "Unfollow" : "Follow" },
@@ -51,38 +48,19 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
           toggle();
         }
       }}
+      trailing={
+        <FollowCircle
+          followed={followed}
+          onPress={toggle}
+          testID={`follow-${show.id}`}
+        />
+      }
     >
-      <Image
-        source={show.image?.medium ?? undefined}
-        style={styles.poster}
-        contentFit="cover"
-        accessibilityIgnoresInvertColors
-      />
-      <View style={styles.details}>
-        <Text style={styles.title} numberOfLines={1}>
-          {show.name}
-        </Text>
-        {metaLine !== "" && (
-          <Text style={styles.meta} numberOfLines={1}>
-            {metaLine}
-          </Text>
-        )}
-        <StatusLine showId={show.id} />
-        {/* Its line is kept while TMDB answers, so the row does not grow. */}
-        <Text
-          style={styles.meta}
-          numberOfLines={1}
-          testID="search-result-service"
-        >
-          {service ?? ""}
-        </Text>
-      </View>
-      <FollowCircle
-        followed={followed}
-        onPress={toggle}
-        testID={`follow-${show.id}`}
-      />
-    </Pressable>
+      {metaLine !== "" && <ShowRowLine>{metaLine}</ShowRowLine>}
+      <StatusLine showId={show.id} />
+      {/* Its line is kept while TMDB answers, so the row does not grow. */}
+      <ShowRowLine testID="search-result-service">{service ?? ""}</ShowRowLine>
+    </ShowRow>
   );
 }
 
@@ -105,43 +83,5 @@ function StatusLine({ showId }: { showId: number }) {
         todayDate,
       )
     : "";
-  return (
-    <Text style={styles.meta} numberOfLines={1} testID="search-result-status">
-      {label}
-    </Text>
-  );
+  return <ShowRowLine testID="search-result-status">{label}</ShowRowLine>;
 }
-
-const POSTER_WIDTH = 60;
-const POSTER_HEIGHT = 90;
-
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: t.space2 + 4,
-    paddingHorizontal: t.space4,
-    gap: t.space2 + 4,
-  },
-  // No image: nothing, never a grey box (design system, PRD 5.4); the space
-  // stays so titles line up.
-  poster: {
-    width: POSTER_WIDTH,
-    height: POSTER_HEIGHT,
-    borderRadius: t.radiusSm,
-  },
-  details: {
-    flex: 1,
-    justifyContent: "center",
-    gap: 2,
-  },
-  title: {
-    ...type.headline,
-    color: t.ink,
-  },
-  meta: {
-    ...type.meta,
-    minHeight: type.meta.lineHeight,
-    color: t.inkMuted,
-  },
-});

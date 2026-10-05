@@ -1,5 +1,5 @@
 // A followed show row in the Shows list (PRD 5.3, FR-002, FR-010, FR-035),
-// in the same visual language as Search's result row: poster, title,
+// on the shared ShowRow, like Search's result row: poster, title,
 // Show detail's status line, and the service slot (FR-027). Tapping the row
 // opens Show detail (FR-030, CRI-79). Swipe left reveals
 // "Unfollow" (react-native-gesture-handler's Swipeable, Expo Go
@@ -8,10 +8,10 @@
 // swipe, so the row also exposes an "Unfollow" accessibility action
 // (NFR-008).
 
-import { Image } from "expo-image";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 
+import { ShowRow, ShowRowLine } from "./ShowRow";
 import { useStreamingService } from "@/hooks/useStreamingService";
 import { rowServiceText } from "@/logic/streaming-service";
 import type { TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
@@ -43,9 +43,10 @@ export function ShowsRow({
         <UnfollowAction onPress={onUnfollow} showName={show.name} />
       )}
     >
-      <Pressable
+      <ShowRow
+        title={show.name}
+        posterUri={show.image?.medium}
         style={styles.row}
-        accessibilityRole="button"
         accessibilityLabel={label}
         onPress={onPress}
         accessibilityActions={ACCESSIBILITY_ACTIONS}
@@ -56,29 +57,10 @@ export function ShowsRow({
         }}
         testID="shows-row"
       >
-        <Image
-          source={show.image?.medium ?? undefined}
-          style={styles.poster}
-          contentFit="cover"
-          accessibilityIgnoresInvertColors
-        />
-        <View style={styles.details}>
-          <Text style={styles.title} numberOfLines={1}>
-            {show.name}
-          </Text>
-          <Text style={styles.line} numberOfLines={1}>
-            {statusLine}
-          </Text>
-          {/* Its line is kept while TMDB answers, so the row does not grow. */}
-          <Text
-            style={styles.line}
-            numberOfLines={1}
-            testID="shows-row-service"
-          >
-            {service ?? ""}
-          </Text>
-        </View>
-      </Pressable>
+        <ShowRowLine>{statusLine}</ShowRowLine>
+        {/* Its line is kept while TMDB answers, so the row does not grow. */}
+        <ShowRowLine testID="shows-row-service">{service ?? ""}</ShowRowLine>
+      </ShowRow>
     </Swipeable>
   );
 }
@@ -102,39 +84,15 @@ function UnfollowAction({
   );
 }
 
-const POSTER_WIDTH = 60;
-const POSTER_HEIGHT = 90;
 const ACTION_WIDTH = 96;
 
 const styles = StyleSheet.create({
-  // Opaque, so the Unfollow action stays hidden until the swipe.
+  // Opaque, so the Unfollow action stays hidden until the swipe. Stretched
+  // rather than ShowRow's centred, as Shows' rows always were: centring
+  // rounds the lines a pixel lower here.
   row: {
-    flexDirection: "row",
-    paddingVertical: t.space2 + 4,
-    paddingHorizontal: t.space4,
-    gap: t.space2 + 4,
+    alignItems: "stretch",
     backgroundColor: t.surface,
-  },
-  // No image: nothing, never a grey box (design system); the space stays
-  // so titles line up.
-  poster: {
-    width: POSTER_WIDTH,
-    height: POSTER_HEIGHT,
-    borderRadius: t.radiusSm,
-  },
-  details: {
-    flex: 1,
-    justifyContent: "center",
-    gap: 2,
-  },
-  title: {
-    ...type.headline,
-    color: t.ink,
-  },
-  line: {
-    ...type.meta,
-    minHeight: type.meta.lineHeight,
-    color: t.inkMuted,
   },
   actionContainer: {
     width: ACTION_WIDTH,
