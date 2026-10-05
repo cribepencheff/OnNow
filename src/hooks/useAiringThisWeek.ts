@@ -2,8 +2,9 @@
 // for the region and the week in popularity order (kept a day); each must
 // have a service in the region, the same rule as "Open in", and TVmaze
 // decides: a show is kept only if it would be in the hero if followed, with
-// its day on the card (CRI-110). A page is filled once per launch and left
-// alone, so following from the row keeps the card.
+// its day on the card (CRI-110). The ten are shown by air date, Today
+// first (CRI-122). A page is filled once per launch and left alone, so
+// following from the row keeps the card.
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -13,12 +14,13 @@ import { tvMazeClient } from "@/api/tvmaze-client";
 import { resolveTvMazeId } from "@/api/tvmaze-id";
 import {
   airingThisWeek,
+  byAiringDate,
   firstEpisodeDayThisWeek,
   isAiringType,
   weekDayWord,
 } from "@/logic/airing-this-week";
 import { HOME_HERO_HORIZON_DAYS } from "@/logic/hero-carousel";
-import { addDays } from "@/logic/local-date";
+import { addDays, type LocalDate } from "@/logic/local-date";
 import { fillTopPicks, type PosterItem } from "@/logic/top-picks";
 import { useFollowList } from "./useFollowList";
 import { useRegion } from "./useRegion";
@@ -30,7 +32,8 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 const WEEK_INFO_STALE_MS = DAY_MS / 4;
 const LAUNCH = Date.now();
 
-export type AiringPick = PosterItem & { day: string };
+// The day word on the card ("Today", "Fri") and the date it orders by.
+export type AiringPick = PosterItem & { day: string; date: LocalDate };
 
 function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -59,11 +62,11 @@ export function useAiringThisWeek(): {
     queryFn: () => tmdbClient.findAiringThisWeek(week),
   });
   const page = useQuery({
-    queryKey: ["airingThisWeekPage", "v3", LAUNCH, region, todayDate],
+    queryKey: ["airingThisWeekPage", "v4", LAUNCH, region, todayDate],
     enabled: isLoaded && region !== undefined && candidates.data !== undefined,
     staleTime: Infinity,
-    queryFn: () =>
-      fillTopPicks(
+    queryFn: async () => {
+      const filled = await fillTopPicks(
         airingThisWeek(candidates.data ?? []),
         0,
         ROW_SIZE,
@@ -89,9 +92,11 @@ export function useAiringThisWeek(): {
             todayDate,
           );
           const word = day && weekDayWord(day, todayDate);
-          return word ? { day: word } : null;
+          return word ? { day: word, date: day } : null;
         },
-      ),
+      );
+      return { ...filled, cards: byAiringDate(filled.cards) };
+    },
   });
   return {
     cards: page.data?.cards ?? [],

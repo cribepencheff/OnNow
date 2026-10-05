@@ -1,6 +1,7 @@
 import onTheAir from "@/api/fixtures/tmdb-on-the-air.json";
 import {
   airingThisWeek,
+  byAiringDate,
   firstEpisodeDayThisWeek,
   isAiringType,
   weekDayWord,
@@ -124,5 +125,45 @@ describe("weekDayWord (FR-039)", () => {
   it("is nothing outside the 7-day window", () => {
     expect(weekDayWord("2026-10-12", "2026-10-05")).toBeNull();
     expect(weekDayWord("2026-10-04", "2026-10-05")).toBeNull();
+  });
+});
+
+// CRI-122: what airs today first, then tomorrow, then the weekdays.
+describe("byAiringDate (FR-039, CRI-122)", () => {
+  it("orders the cards by air date, today first", () => {
+    const cards = [
+      { name: "MobLand", date: "2026-10-09" },
+      { name: "NCIS", date: "2026-10-07" },
+      { name: "The Simpsons", date: "2026-10-05" },
+      { name: "Silo", date: "2026-10-06" },
+    ];
+    expect(byAiringDate(cards).map((card) => card.name)).toEqual([
+      "The Simpsons",
+      "Silo",
+      "NCIS",
+      "MobLand",
+    ]);
+  });
+
+  it("keeps popularity order within a day", () => {
+    const cards = [
+      { name: "Law & Order", date: "2026-10-09" },
+      { name: "The Simpsons", date: "2026-10-05" },
+      { name: "MobLand", date: "2026-10-09" },
+    ];
+    expect(byAiringDate(cards).map((card) => card.name)).toEqual([
+      "The Simpsons",
+      "Law & Order",
+      "MobLand",
+    ]);
+  });
+
+  it("leaves the cards it is given unchanged", () => {
+    const cards = [
+      { name: "MobLand", date: "2026-10-09" },
+      { name: "The Simpsons", date: "2026-10-05" },
+    ];
+    byAiringDate(cards);
+    expect(cards[0].name).toBe("MobLand");
   });
 });
