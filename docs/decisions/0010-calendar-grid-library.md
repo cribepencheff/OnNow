@@ -1,6 +1,7 @@
 # 0010. Calendar month grid: react-native-calendars instead of our own
 
-Status: Deferred to the Design phase
+Status: Decided in the Design phase: keep our own grid (CRI-121,
+2026-10-05)
 
 ## Context
 CRI-67 built the Calendar month grid as our own component: a pure
@@ -108,3 +109,30 @@ linked to this ADR.
 - If react-native-calendars is picked up again, the day list
   (`datesWithEpisodes`, `calendarRowLine`, FR-009/FR-012) stays ours either
   way, since the library only owns the grid, not the day list below it.
+
+## Decision in the Design phase (CRI-121, 2026-10-05)
+Keep our own grid. Do not switch to react-native-calendars.
+
+- **The Design phase is done for Calendar without it.** Calendar moved to
+  the dark design system (CRI-119) with our own day cells: today's ring,
+  the selected fill with on-accent text, and the short day line PRD 5.2
+  asks for. All of it was plain styling on the grid we already had.
+- **The pager's behaviour is the part a library made hardest.** The
+  owner asked for one fixed month title that switches as soon as a swipe
+  passes halfway, driven by the scroll position, without redrawing the
+  pager (CRI-120). That is exactly the header timing and composition the
+  CRI-76 attempt struggled with above. Our pager now does it with one
+  fixed list of months and a title that is the only part following the
+  scroll, tested at the halfway point and for no redraws.
+- **The risk this ADR named is covered.** The week-row structure (seven
+  cells per row) is unit tested, and every PRD requirement listed above
+  (FR-008, FR-009, FR-012, FR-036, FR-037, NFR-001, NFR-008) is met and
+  tested.
+
+Consequences:
+- No calendar dependency. `monthGridDates`, `monthGridWeeks`,
+  `calendarMonths` and the pager stay ours, with their tests.
+- CRI-76 (the migration issue) is closed as not planned.
+- Edge cases a library would have absorbed (very small or large screens,
+  Dynamic Type, RTL) stay ours to find. RTL is not planned (English only,
+  ADR 0003).
