@@ -250,17 +250,29 @@ export function openInAccessibilityLabel(link: ServiceLink): string {
 // CRI-84): every streaming service it lists, in TMDB's order and names
 // ("On Crunchyroll, HIDIVE"), or for none "Unavailable in Sweden" with a
 // region (hero, Show detail), plain "Unavailable" without (rows, CRI-97).
-// Pay-TV never counts.
+// Pay-TV never counts. An add-on channel ("Hayu Amazon Channel") reads as
+// its own service ("hayu"), and is left out when TMDB also lists that
+// service directly ("Apple TV" and "Apple TV Amazon Channel" read "On
+// Apple TV").
 export function availabilityText(
   providers: StreamingProvider[],
   region?: string,
 ): string {
-  const names = providers.filter(isStreaming).map((provider) => {
+  const entries = providers.filter(isStreaming).map((provider) => {
     const channel = addOnChannel(provider);
     return channel
-      ? `${channel.name} via ${channel.host.service}`
-      : provider.providerName;
+      ? { name: channel.name, direct: false }
+      : { name: provider.providerName, direct: true };
   });
+  // A service's own listing gives its name, also for its channel variant.
+  const directNames = new Map(
+    entries
+      .filter((entry) => entry.direct)
+      .map((entry) => [entry.name.toLowerCase(), entry.name]),
+  );
+  const names = entries.map(
+    (entry) => directNames.get(entry.name.toLowerCase()) ?? entry.name,
+  );
   const unique = [...new Set(names)];
   if (unique.length > 0) {
     return `On ${unique.join(", ")}`;

@@ -25,7 +25,11 @@ import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useToday } from "@/hooks/useToday";
 import { deriveHomeViewState } from "@/logic/home";
-import { findHeroSlides, type HeroSlide } from "@/logic/hero-carousel";
+import {
+  findHeroSlides,
+  heroPagerKey,
+  type HeroSlide,
+} from "@/logic/hero-carousel";
 import { updatedAgoLabel } from "@/logic/launch";
 import { t as tokens, type } from "@/theme/tokens";
 
@@ -249,6 +253,8 @@ export default function HomeScreen() {
           <>
             {heroSlides.length > 0 && (
               <HeroPager
+                // A new set of slides starts a fresh pager (heroPagerKey).
+                key={heroPagerKey(heroSlides)}
                 slides={heroSlides}
                 todayDate={todayDate}
                 pullDistance={pullDistance}
@@ -260,6 +266,7 @@ export default function HomeScreen() {
               horizon. */}
             {heroSlides.length === 0 && state.kind === "next-day" && (
               <HeroPager
+                key={heroPagerKey(state.shows)}
                 slides={state.shows.map((show): HeroSlide => ({
                   ...show,
                   localDate: state.localDate,

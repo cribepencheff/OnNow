@@ -2,45 +2,90 @@
 // with the keyboard open on entry, results while typing, and a round close
 // button next to the search field that returns to where the user came
 // from. It sits at the top so the keyboard never covers it (CRI-77).
-// Following is saved immediately; there is no "Cancel".
+// Following is saved immediately; there is no "Cancel". A search waits for
+// a short pause in typing, and a clear button (X) inside the field empties
+// it, the same on iOS and Android (PRD 5.4).
 
 import { useState } from "react";
-import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { useRouter } from "expo-router";
+import { SymbolView } from "expo-symbols";
 
 import { CloseButton } from "@/components/CloseButton";
 import { SearchResultRow } from "@/components/SearchResultRow";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useFollowList } from "@/hooks/useFollowList";
 import { useSearchShows } from "@/hooks/useSearchShows";
+import { t, type } from "@/theme/tokens";
+
+// The pause in typing before a search is sent (PRD 5.4).
+const SEARCH_DELAY_MS = 250;
 
 export default function SearchScreen() {
   const router = useRouter();
   const [query, setQuery] = useState("");
 
-  const { data: results, isLoading } = useSearchShows(query);
+  const searchedQuery = useDebouncedValue(query, SEARCH_DELAY_MS);
+  const { data: results, isFetching } = useSearchShows(searchedQuery);
+  // "No results" only once the search for what is typed has answered.
+  const answered = !isFetching && searchedQuery.trim() === query.trim();
   const { isFollowed, follow, unfollow } = useFollowList();
 
   return (
     <View style={styles.container}>
       <View style={styles.header} testID="search-header">
-        <TextInput
-          autoFocus
-          value={query}
-          onChangeText={setQuery}
-          placeholder="Search shows"
-          style={styles.searchField}
-          returnKeyType="search"
-          // The return key ("Search") closes the keyboard; results already
-          // appear while typing.
-          submitBehavior="blurAndSubmit"
-          // Show titles are names, not dictionary words: autocorrect would
-          // rewrite them.
-          autoCorrect={false}
-          spellCheck={false}
-          accessibilityLabel="Search shows"
-          clearButtonMode="while-editing"
-          testID="search-input"
-        />
+        <View style={styles.searchField}>
+          <SymbolView
+            name={{ ios: "magnifyingglass", android: "search", web: "search" }}
+            tintColor={t.inkMuted}
+            size={16}
+          />
+          <TextInput
+            autoFocus
+            value={query}
+            onChangeText={setQuery}
+            placeholder="Search shows"
+            placeholderTextColor={t.inkMuted}
+            selectionColor={t.accent}
+            style={styles.searchInput}
+            returnKeyType="search"
+            // The return key ("Search") closes the keyboard; results already
+            // appear while typing.
+            submitBehavior="blurAndSubmit"
+            // Show titles are names, not dictionary words: autocorrect would
+            // rewrite them.
+            autoCorrect={false}
+            spellCheck={false}
+            accessibilityLabel="Search shows"
+            testID="search-input"
+          />
+          {query.length > 0 && (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Clear search"
+              onPress={() => setQuery("")}
+              hitSlop={8}
+              testID="search-clear"
+            >
+              <SymbolView
+                name={{
+                  ios: "xmark.circle.fill",
+                  android: "cancel",
+                  web: "cancel",
+                }}
+                tintColor={t.inkSubtle}
+                size={18}
+              />
+            </Pressable>
+          )}
+        </View>
         <CloseButton onPress={() => router.back()} testID="search-close" />
       </View>
 
@@ -69,7 +114,7 @@ export default function SearchScreen() {
             />
           )}
           ListEmptyComponent={
-            !isLoading ? (
+            answered ? (
               <Text style={styles.noResults}>
                 No results. Try the original title.
               </Text>
@@ -89,31 +134,40 @@ export default function SearchScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
-    paddingTop: 16,
+    backgroundColor: t.bg,
+    paddingTop: t.space4,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
-    marginHorizontal: 16,
-    marginBottom: 12,
+    gap: t.space2 + 4,
+    marginHorizontal: t.space4,
+    marginBottom: t.space2 + 4,
   },
   searchField: {
     flex: 1,
-    paddingHorizontal: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: t.space2,
+    paddingHorizontal: t.space4,
+    borderRadius: t.radiusPill,
+    backgroundColor: t.surfaceRaised,
+  },
+  searchInput: {
+    flex: 1,
+    ...type.headline,
+    fontWeight: "400",
     paddingVertical: 12,
-    borderRadius: 12,
-    backgroundColor: "#F0F0F0",
-    fontSize: 20,
+    color: t.ink,
   },
   resultsContent: {
-    paddingBottom: 32,
+    paddingBottom: t.space10,
   },
   noResults: {
+    ...type.body,
     textAlign: "center",
-    marginTop: 32,
-    paddingHorizontal: 32,
-    color: "#666666",
+    marginTop: t.space10,
+    paddingHorizontal: t.space10,
+    color: t.inkMuted,
   },
 });

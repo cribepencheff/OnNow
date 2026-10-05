@@ -5,13 +5,14 @@
 import { Pressable, StyleSheet } from "react-native";
 import { SymbolView } from "expo-symbols";
 
+import { t } from "@/theme/tokens";
+
 interface CloseButtonProps {
   onPress: () => void;
   testID?: string;
 }
 
 const CLOSE_BUTTON_SIZE = 32;
-const CLOSE_ICON_COLOR = "#666666";
 
 export function CloseButton({ onPress, testID }: CloseButtonProps) {
   return (
@@ -25,7 +26,7 @@ export function CloseButton({ onPress, testID }: CloseButtonProps) {
     >
       <SymbolView
         name={{ ios: "xmark", android: "close", web: "close" }}
-        tintColor={CLOSE_ICON_COLOR}
+        tintColor={t.inkMuted}
         size={14}
         weight="semibold"
       />
@@ -40,6 +41,7 @@ const styles = StyleSheet.create({
     borderRadius: CLOSE_BUTTON_SIZE / 2,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#F0F0F0",
+    // A quiet round button (design system).
+    backgroundColor: t.surfaceRaised,
   },
 });
