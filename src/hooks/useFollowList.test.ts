@@ -1,7 +1,7 @@
 import { act, renderHook, waitFor } from "@testing-library/react-native";
 
 import { follow, getFollowedIds, unfollow } from "@/storage/follow-list";
-import { useFollowList } from "./useFollowList";
+import { useFollowList, useFollowToggle } from "./useFollowList";
 import { createTestQueryClient, wrapperWithQueryClient } from "./test-utils";
 
 jest.mock("@/storage/follow-list", () => ({
@@ -127,6 +127,86 @@ describe("useFollowList", () => {
 
     await act(async () => fail(new Error("disk full")));
     await waitFor(() => expect(result.current.isFollowed(5)).toBe(true));
+
+    await unmount();
+    client.unmount();
+  });
+
+  it("does not read storage again after a successful write", async () => {
+    mockedGetFollowedIds.mockResolvedValue([]);
+    mockedFollow.mockResolvedValue(undefined);
+    const client = createTestQueryClient();
+
+    const { result, unmount } = await renderHook(() => useFollowList(), {
+      wrapper: wrapperWithQueryClient(client),
+    });
+    await waitFor(() => expect(result.current.isLoaded).toBe(true));
+
+    await act(() => result.current.follow(5));
+
+    await waitFor(() => expect(result.current.isFollowed(5)).toBe(true));
+    expect(mockedFollow).toHaveBeenCalledWith(5);
+    expect(mockedGetFollowedIds).toHaveBeenCalledTimes(1);
+
+    await unmount();
+    client.unmount();
+  });
+});
+
+// CRI-86: one show's follow control changes the moment it is tapped, and
+// the list follows on the next frame.
+describe("useFollowToggle", () => {
+  beforeEach(() => {
+    mockedGetFollowedIds.mockReset().mockResolvedValue([]);
+    mockedFollow.mockReset();
+    mockedUnfollow.mockReset();
+  });
+
+  it("shows the new state at once, before the list or storage changes", async () => {
+    let finishWrite: () => void = () => undefined;
+    mockedFollow.mockReturnValue(
+      new Promise<void>((resolve) => (finishWrite = resolve)),
+    );
+    const client = createTestQueryClient();
+    const { result, unmount } = await renderHook(
+      () => ({ toggle: useFollowToggle(5), list: useFollowList() }),
+      { wrapper: wrapperWithQueryClient(client) },
+    );
+    await waitFor(() => expect(result.current.list.isLoaded).toBe(true));
+
+    await act(() => result.current.toggle.toggle());
+
+    expect(result.current.toggle.followed).toBe(true);
+
+    await waitFor(() => expect(result.current.list.isFollowed(5)).toBe(true));
+    expect(mockedFollow).toHaveBeenCalledWith(5);
+    await act(async () => finishWrite());
+    expect(result.current.toggle.followed).toBe(true);
+
+    await unmount();
+    client.unmount();
+  });
+
+  it("goes back when the write fails", async () => {
+    let failWrite: () => void = () => undefined;
+    mockedFollow.mockReturnValue(
+      new Promise<void>(
+        (_resolve, reject) => (failWrite = () => reject(new Error("full"))),
+      ),
+    );
+    const client = createTestQueryClient();
+    const { result, unmount } = await renderHook(() => useFollowToggle(5), {
+      wrapper: wrapperWithQueryClient(client),
+    });
+    await waitFor(() => expect(mockedGetFollowedIds).toHaveBeenCalled());
+
+    await act(() => result.current.toggle());
+    expect(result.current.followed).toBe(true);
+    await waitFor(() => expect(mockedFollow).toHaveBeenCalledWith(5));
+
+    await act(async () => failWrite());
+
+    await waitFor(() => expect(result.current.followed).toBe(false));
 
     await unmount();
     client.unmount();

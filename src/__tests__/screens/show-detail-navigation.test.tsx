@@ -19,9 +19,9 @@ import searchSlowHorsesFixture from "@/api/fixtures/search-slow-horses.json";
 jest.mock("@/hooks/useFollowedEpisodes", () => ({
   useFollowedEpisodes: jest.fn(),
 }));
-jest.mock("@/hooks/useFollowList", () => ({
-  useFollowList: jest.fn(),
-}));
+jest.mock("@/hooks/useFollowList", () =>
+  jest.requireActual("@/hooks/test-follow-list-mock").followListMock(),
+);
 jest.mock("@/hooks/useSearchShows", () => ({
   useSearchShows: jest.fn(),
 }));
@@ -118,7 +118,7 @@ describe("Show detail (real navigation)", () => {
 
   // Entry point: Shows' search field. With shows followed, Home has no
   // Search entry by design (FR-007).
-  it("FR-030, PRD 5.6: opens inside the Search sheet, where Close closes all of Search", async () => {
+  it("FR-030, PRD 5.6: opens inside the Search sheet with a back arrow to the results and no close button", async () => {
     const rendered = renderRouter("src/app", { initialUrl: "/shows" });
     await rendered;
 
@@ -132,8 +132,14 @@ describe("Show detail (real navigation)", () => {
     expect(rendered.getPathname()).toBe("/search/show/45039");
     expect(screen.getByTestId("show-detail-next")).toBeTruthy();
 
-    await fireEvent.press(screen.getByTestId("search-detail-close"));
-    expect(rendered.getPathname()).toBe("/shows");
+    // Only the back arrow, in a header of fixed height: the sheet itself
+    // closes with a swipe down.
+    expect(screen.queryByRole("button", { name: "Close" })).toBeNull();
+    expect(screen.getByTestId("sheet-back-header").props.style).toMatchObject({
+      height: 44,
+    });
+    await fireEvent.press(screen.getByRole("button", { name: "Back" }));
+    expect(rendered.getPathname()).toBe("/search");
   });
 
   // Same entry point as above (FR-007).

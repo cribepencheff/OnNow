@@ -119,6 +119,28 @@ describe("useTopPicks (FR-038)", () => {
     client.unmount();
   });
 
+  it("shares Refresh between Home and Search: both rows move to the next picks (FR-026)", async () => {
+    const client = createTestQueryClient();
+    const wrapper = wrapperWithQueryClient(client);
+    const home = await renderHook(() => useTopPicks([followedShow]), {
+      wrapper,
+    });
+    const search = await renderHook(() => useTopPicks([followedShow]), {
+      wrapper,
+    });
+    await waitFor(() => expect(home.result.current.cards).toHaveLength(10));
+    await waitFor(() => expect(search.result.current.cards).toHaveLength(10));
+
+    await act(() => search.result.current.refresh());
+
+    const next = [111, 112, 113, 114, 101, 102, 103, 104, 105, 106];
+    await waitFor(() => expect(ids(search.result.current.cards)).toEqual(next));
+    await waitFor(() => expect(ids(home.result.current.cards)).toEqual(next));
+    await home.unmount();
+    await search.unmount();
+    client.unmount();
+  });
+
   it("Refresh fetches recommendations again only once they are a day old", async () => {
     const { result, unmount, client } = await renderRow();
     await waitFor(() => expect(result.current.cards).toHaveLength(10));

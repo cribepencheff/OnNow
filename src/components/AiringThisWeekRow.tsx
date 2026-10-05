@@ -4,14 +4,18 @@
 // the row stays, marked.
 
 import { useAiringThisWeek } from "@/hooks/useAiringThisWeek";
-import { HomeRow } from "./HomeRow";
-import { ShowCard } from "./ShowCard";
+import { PosterRow } from "./PosterRow";
+import { ShowCard, type DetailPathname } from "./ShowCard";
 
-export function AiringThisWeekRow() {
+export function AiringThisWeekRow({
+  detailPathname,
+}: {
+  detailPathname?: DetailPathname;
+} = {}) {
   const { cards, isLoading } = useAiringThisWeek();
 
   return (
-    <HomeRow
+    <PosterRow
       title="Airing this week"
       isLoading={isLoading}
       hasCards={cards.length > 0}
@@ -23,8 +27,9 @@ export function AiringThisWeekRow() {
           card={card}
           caption={card.day}
           testID="airing"
+          detailPathname={detailPathname}
         />
       ))}
-    </HomeRow>
+    </PosterRow>
   );
 }

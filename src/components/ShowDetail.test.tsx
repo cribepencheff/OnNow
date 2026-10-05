@@ -41,9 +41,9 @@ const mockShowImages = jest.fn();
 jest.mock("@/hooks/useShowImages", () => ({
   useShowImages: () => mockShowImages(),
 }));
-jest.mock("@/hooks/useFollowList", () => ({
-  useFollowList: jest.fn(),
-}));
+jest.mock("@/hooks/useFollowList", () =>
+  jest.requireActual("@/hooks/test-follow-list-mock").followListMock(),
+);
 // Slow Horses S6E2 comes out on this day in Stockholm.
 jest.mock("@/hooks/useToday", () => ({
   useToday: () => "2026-09-23",

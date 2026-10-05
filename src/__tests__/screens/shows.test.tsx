@@ -20,9 +20,9 @@ jest.mock("expo-router", () => ({
 jest.mock("@/hooks/useFollowedEpisodes", () => ({
   useFollowedEpisodes: jest.fn(),
 }));
-jest.mock("@/hooks/useFollowList", () => ({
-  useFollowList: jest.fn(),
-}));
+jest.mock("@/hooks/useFollowList", () =>
+  jest.requireActual("@/hooks/test-follow-list-mock").followListMock(),
+);
 jest.mock("@/hooks/useStreamingService", () => ({
   useStreamingService: jest.fn(),
 }));

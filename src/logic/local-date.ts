@@ -4,12 +4,40 @@
 
 export type LocalDate = string; // "YYYY-MM-DD"
 
+// Every view converts every episode of every followed show, often several
+// times per render, and building a date formatter is slow (Hermes builds a
+// new one for each toLocaleDateString call). So one formatter per time
+// zone, and each airstamp's answer is kept. "en-CA" formats as
+// "YYYY-MM-DD".
+const formatters = new Map<string, Intl.DateTimeFormat>();
+const localDates = new Map<string, LocalDate>();
+// Enough for every episode of many followed shows; cleared past it.
+const MAX_CACHED_DATES = 50_000;
+
+function formatterFor(timeZone: string): Intl.DateTimeFormat {
+  let formatter = formatters.get(timeZone);
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat("en-CA", { timeZone });
+    formatters.set(timeZone, formatter);
+  }
+  return formatter;
+}
+
 export function localDateFromAirstamp(
   airstamp: string,
   timeZone: string,
 ): LocalDate {
-  const date = new Date(airstamp);
-  return date.toLocaleDateString("en-CA", { timeZone });
+  const key = `${timeZone}|${airstamp}`;
+  const cached = localDates.get(key);
+  if (cached !== undefined) {
+    return cached;
+  }
+  if (localDates.size >= MAX_CACHED_DATES) {
+    localDates.clear();
+  }
+  const localDate = formatterFor(timeZone).format(new Date(airstamp));
+  localDates.set(key, localDate);
+  return localDate;
 }
 
 export function today(

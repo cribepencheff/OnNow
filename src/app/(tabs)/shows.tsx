@@ -3,7 +3,7 @@
 // and its service, swipe to unfollow, and a search field that opens Search
 // (the same sheet as Home's "+"), in the design system's dark tokens.
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   Pressable,
   RefreshControl,
@@ -19,7 +19,7 @@ import { AddFirstShow } from "@/components/AddFirstShow";
 import { RegionLink } from "@/components/RegionLink";
 import { ShowsRow } from "@/components/ShowsRow";
 import { TvMazeCredit } from "@/components/TvMazeCredit";
-import { useFollowList } from "@/hooks/useFollowList";
+import { afterThisFrame, useFollowActions } from "@/hooks/useFollowList";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useToday } from "@/hooks/useToday";
 import { splitBySegment, type ShowsSegment } from "@/logic/shows-list";
@@ -28,6 +28,8 @@ import { t, type } from "@/theme/tokens";
 
 // The translucent tab bar's height (tabs layout): the list ends above it.
 const TAB_BAR_HEIGHT = 83;
+
+const NONE_LEAVING: ReadonlySet<number> = new Set();
 
 const SEGMENT_TITLES: Record<ShowsSegment, string> = {
   active: "Active",
@@ -43,25 +45,51 @@ export default function ShowsScreen() {
   const todayDate = useToday();
   const timeZone = deviceTimeZone();
 
-  const { unfollow } = useFollowList();
+  const { unfollow } = useFollowActions();
   const { followedShows, followedCount, isLoading, isRefetching, refetch } =
     useFollowedEpisodes();
+
+  // Rows unfollowed here leave at once (CRI-86): hidden until the follow
+  // list changes, on the next frame. A failed write puts the list back,
+  // which also brings the row back.
+  const [leaving, setLeaving] = useState<{
+    from: typeof followedShows;
+    ids: ReadonlySet<number>;
+  } | null>(null);
+  const hidden: ReadonlySet<number> =
+    leaving?.from === followedShows ? leaving.ids : NONE_LEAVING;
+  const unfollowRow = useCallback(
+    (showId: number) => {
+      setLeaving((current) => ({
+        from: followedShows,
+        ids: new Set(current?.from === followedShows ? current.ids : []).add(
+          showId,
+        ),
+      }));
+      afterThisFrame(() => {
+        unfollow(showId).catch(() => undefined);
+      });
+    },
+    [followedShows, unfollow],
+  );
 
   const segments = useMemo(
     () =>
       splitBySegment(
-        followedShows.map(({ show }) => ({
-          show,
-          state: showState(
+        followedShows
+          .filter(({ show }) => !hidden.has(show.id))
+          .map(({ show }) => ({
             show,
-            show._embedded.episodes,
-            show._embedded.seasons,
-            timeZone,
-            todayDate,
-          ),
-        })),
+            state: showState(
+              show,
+              show._embedded.episodes,
+              show._embedded.seasons,
+              timeZone,
+              todayDate,
+            ),
+          })),
       ),
-    [followedShows, timeZone, todayDate],
+    [followedShows, hidden, timeZone, todayDate],
   );
 
   // A segment without shows is left out.
@@ -117,7 +145,7 @@ export default function ShowsScreen() {
             <ShowsRow
               show={item.show}
               statusLine={showStateLabel(item.state, todayDate)}
-              onUnfollow={() => unfollow(item.show.id)}
+              onUnfollow={() => unfollowRow(item.show.id)}
               onPress={() =>
                 router.push({
                   pathname: "/show/[id]",

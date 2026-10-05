@@ -1,11 +1,11 @@
-// Home's poster rows (FR-038, FR-039): walk a ranking in order from a start
+// The poster rows on Home and in Search (FR-038, FR-039, FR-026): walk a ranking in order from a start
 // position, wrapping once, and check titles a few at a time until the row
 // is full. Checking is the only network cost, so it stops as soon as it
 // can; the TVmaze client's rate limit holds whatever the batch size.
 
 import type { RankedRecommendation } from "./recommendations";
 
-export interface TopPick {
+export interface PosterItem {
   tmdbId: number;
   tvmazeId: number;
   name: string;
@@ -13,7 +13,7 @@ export interface TopPick {
 }
 
 export interface FilledPage<Extra = object> {
-  cards: (TopPick & Extra)[];
+  cards: (PosterItem & Extra)[];
   // Where the next page starts in the ranking (wraps to 0).
   nextStart: number;
 }
@@ -44,7 +44,7 @@ export async function fillTopPicks<Extra = object>(
     (_, i) => (start + i) % total,
   ).filter((index) => ranking[index].recommendation.poster_path);
 
-  async function evaluate(index: number): Promise<(TopPick & Extra) | null> {
+  async function evaluate(index: number): Promise<(PosterItem & Extra) | null> {
     const { recommendation } = ranking[index];
     const tvmazeId = await resolveTvMazeId(recommendation.id);
     if (tvmazeId === null || isFollowed(tvmazeId)) {
@@ -64,7 +64,7 @@ export async function fillTopPicks<Extra = object>(
         };
   }
 
-  const cards: (TopPick & Extra)[] = [];
+  const cards: (PosterItem & Extra)[] = [];
   let nextStart = (start + total) % total;
   for (
     let b = 0;

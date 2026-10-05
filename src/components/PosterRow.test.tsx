@@ -1,16 +1,21 @@
 import { StyleSheet, Text } from "react-native";
 import { render, screen } from "@testing-library/react-native";
 
-import { HomeRow } from "./HomeRow";
+import { PosterRow } from "./PosterRow";
 import { CARD_HEIGHT } from "./ShowCard";
 
 // CRI-110: a loading row keeps its space, so nothing moves when it appears.
-describe("HomeRow (FR-038, FR-039)", () => {
+describe("PosterRow (FR-038, FR-039)", () => {
   it("keeps a card's full height while loading, hidden from screen readers", async () => {
     await render(
-      <HomeRow title="Airing this week" isLoading hasCards={false} testID="row">
+      <PosterRow
+        title="Airing this week"
+        isLoading
+        hasCards={false}
+        testID="row"
+      >
         {null}
-      </HomeRow>,
+      </PosterRow>,
     );
 
     const row = screen.getByTestId("row", { includeHiddenElements: true });
@@ -24,9 +29,14 @@ describe("HomeRow (FR-038, FR-039)", () => {
 
   it("shows its cards once they are in", async () => {
     await render(
-      <HomeRow title="Airing this week" isLoading={false} hasCards testID="row">
+      <PosterRow
+        title="Airing this week"
+        isLoading={false}
+        hasCards
+        testID="row"
+      >
         <Text>Lanterns</Text>
-      </HomeRow>,
+      </PosterRow>,
     );
 
     expect(screen.getByText("Airing this week")).toBeTruthy();
@@ -35,14 +45,14 @@ describe("HomeRow (FR-038, FR-039)", () => {
 
   it("is removed when it ends up with no cards", async () => {
     await render(
-      <HomeRow
+      <PosterRow
         title="Airing this week"
         isLoading={false}
         hasCards={false}
         testID="row"
       >
         {null}
-      </HomeRow>,
+      </PosterRow>,
     );
 
     expect(

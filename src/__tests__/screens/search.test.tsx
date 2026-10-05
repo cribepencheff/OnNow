@@ -18,8 +18,38 @@ import {
 } from "@/hooks/test-utils";
 
 const mockBack = jest.fn();
+const mockPush = jest.fn();
 jest.mock("expo-router", () => ({
-  useRouter: () => ({ back: mockBack }),
+  useRouter: () => ({ back: mockBack, push: mockPush }),
+}));
+
+// Home's poster rows before typing (FR-026), with their data mocked.
+let mockFollowedShows: { show: { id: number; name: string } }[] = [];
+jest.mock("@/hooks/useFollowedEpisodes", () => ({
+  useFollowedEpisodes: () => ({
+    followedShows: mockFollowedShows,
+    followedCount: mockFollowedShows.length,
+  }),
+}));
+const card = (id: number) => ({
+  tmdbId: id,
+  tvmazeId: id + 1000,
+  name: `Pick ${id}`,
+  posterPath: `/p${id}.jpg`,
+});
+jest.mock("@/hooks/useTopPicks", () => ({
+  useTopPicks: () => ({
+    cards: [card(1)],
+    isLoading: false,
+    refresh: jest.fn(),
+    isRefreshing: false,
+  }),
+}));
+jest.mock("@/hooks/useAiringThisWeek", () => ({
+  useAiringThisWeek: () => ({
+    cards: [{ ...card(2), day: "Fri" }],
+    isLoading: false,
+  }),
 }));
 
 jest.mock("@/api/tvmaze-client", () => ({
@@ -55,6 +85,8 @@ const mockedUnfollow = unfollow as jest.MockedFunction<typeof unfollow>;
 describe("SearchScreen", () => {
   beforeEach(() => {
     mockBack.mockClear();
+    mockPush.mockClear();
+    mockFollowedShows = [];
     mockedSearchShows.mockReset();
     mockedGetFollowedIds.mockReset().mockResolvedValue([]);
     mockedFollow.mockReset().mockResolvedValue(undefined);
@@ -73,6 +105,71 @@ describe("SearchScreen", () => {
 
     expect(screen.queryByTestId("search-result-row")).toBeNull();
     expect(mockedSearchShows).not.toHaveBeenCalled();
+
+    await unmount();
+    client.unmount();
+  });
+
+  it("FR-026: before typing, shows Top picks and Airing this week with followed shows", async () => {
+    mockFollowedShows = [{ show: { id: 1, name: "MobLand" } }];
+    const client = createTestQueryClient();
+    const { unmount } = await render(<SearchScreen />, {
+      wrapper: wrapperWithQueryClient(client),
+    });
+
+    expect(screen.getByTestId("top-picks-row")).toBeTruthy();
+    expect(screen.getByTestId("airing-this-week-row")).toBeTruthy();
+    expect(screen.getByText("Top picks for you")).toBeTruthy();
+    expect(screen.getByText("Airing this week")).toBeTruthy();
+
+    await unmount();
+    client.unmount();
+  });
+
+  it("FR-026: before typing with an empty follow list, shows only Airing this week", async () => {
+    const client = createTestQueryClient();
+    const { unmount } = await render(<SearchScreen />, {
+      wrapper: wrapperWithQueryClient(client),
+    });
+
+    expect(screen.queryByTestId("top-picks-row")).toBeNull();
+    expect(screen.getByTestId("airing-this-week-row")).toBeTruthy();
+
+    await unmount();
+    client.unmount();
+  });
+
+  it("FR-026, PRD 5.6: a card opens Show detail inside the sheet", async () => {
+    const client = createTestQueryClient();
+    const { unmount } = await render(<SearchScreen />, {
+      wrapper: wrapperWithQueryClient(client),
+    });
+
+    await fireEvent.press(screen.getByTestId("airing"));
+
+    expect(mockPush).toHaveBeenCalledWith({
+      pathname: "/search/show/[id]",
+      params: { id: 1002 },
+    });
+
+    await unmount();
+    client.unmount();
+  });
+
+  it("FR-026: typing replaces the rows with results", async () => {
+    mockedSearchShows.mockResolvedValue(searchSlowHorsesFixture as never);
+    const client = createTestQueryClient();
+    const { unmount } = await render(<SearchScreen />, {
+      wrapper: wrapperWithQueryClient(client),
+    });
+
+    await fireEvent.changeText(
+      screen.getByLabelText("Search shows"),
+      "Slow Horses",
+    );
+
+    expect(screen.queryByTestId("search-before-typing")).toBeNull();
+    await waitFor(() => expect(screen.getByText("Slow Horses")).toBeTruthy());
 
     await unmount();
     client.unmount();

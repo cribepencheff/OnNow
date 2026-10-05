@@ -7,19 +7,21 @@ import { SymbolView } from "expo-symbols";
 import type { TvMazeShow } from "@/api/tvmaze-types";
 import { useTopPicks } from "@/hooks/useTopPicks";
 import { t, type } from "@/theme/tokens";
-import { HomeRow } from "./HomeRow";
-import { ShowCard } from "./ShowCard";
+import { PosterRow } from "./PosterRow";
+import { ShowCard, type DetailPathname } from "./ShowCard";
 
 export function TopPicksRow({
   followedShows,
+  detailPathname,
 }: {
   followedShows: TvMazeShow[];
+  detailPathname?: DetailPathname;
 }) {
   const { cards, isLoading, refresh, isRefreshing } =
     useTopPicks(followedShows);
 
   return (
-    <HomeRow
+    <PosterRow
       title="Top picks for you"
       isLoading={isLoading}
       hasCards={cards.length > 0}
@@ -50,9 +52,14 @@ export function TopPicksRow({
       }
     >
       {cards.map((card) => (
-        <ShowCard key={card.tmdbId} card={card} testID="top-pick" />
+        <ShowCard
+          key={card.tmdbId}
+          card={card}
+          testID="top-pick"
+          detailPathname={detailPathname}
+        />
       ))}
-    </HomeRow>
+    </PosterRow>
   );
 }
 

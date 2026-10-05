@@ -84,6 +84,31 @@ describe("localDateFromAirstamp (ADR 0001, ADR 0006)", () => {
   });
 });
 
+describe("localDateFromAirstamp, repeated (performance)", () => {
+  it("gives the same answer from its cache, per time zone", () => {
+    const airstamp = "2026-10-04T23:30:00+00:00";
+    expect(localDateFromAirstamp(airstamp, "Europe/Stockholm")).toBe(
+      "2026-10-05",
+    );
+    expect(localDateFromAirstamp(airstamp, "America/New_York")).toBe(
+      "2026-10-04",
+    );
+    expect(localDateFromAirstamp(airstamp, "Europe/Stockholm")).toBe(
+      "2026-10-05",
+    );
+  });
+
+  it("builds one date formatter per time zone, not one per call", () => {
+    const spy = jest.spyOn(Intl, "DateTimeFormat");
+    for (let day = 1; day <= 28; day += 1) {
+      const date = `2027-02-${String(day).padStart(2, "0")}`;
+      localDateFromAirstamp(`${date}T12:00:00+00:00`, "Asia/Tokyo");
+    }
+    expect(spy.mock.calls.length).toBeLessThanOrEqual(1);
+    spy.mockRestore();
+  });
+});
+
 describe("today", () => {
   it("returns the local date for the given time zone from an injected clock", () => {
     const now = () => new Date("2026-06-25T23:30:00+00:00");

@@ -10,6 +10,7 @@ import { Image } from "expo-image";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { FollowCircle } from "./FollowCircle";
+import { useFollowToggle } from "@/hooks/useFollowList";
 import { useShow } from "@/hooks/useShow";
 import { useStreamingService } from "@/hooks/useStreamingService";
 import { useToday } from "@/hooks/useToday";
@@ -21,8 +22,6 @@ import { t, type } from "@/theme/tokens";
 
 interface SearchResultRowProps {
   show: TvMazeShow;
-  followed: boolean;
-  onToggleFollow: () => void;
   onPress?: () => void;
 }
 
@@ -30,12 +29,9 @@ function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
 }
 
-export function SearchResultRow({
-  show,
-  followed,
-  onToggleFollow,
-  onPress,
-}: SearchResultRowProps) {
+export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
+  // Only this show's follow state: a follow redraws this row, not the list.
+  const { followed, toggle } = useFollowToggle(show.id);
   const metaLine = searchResultMetaLine(show);
   const { data: providers } = useStreamingService(show, true);
   const service = rowServiceText(providers);
@@ -52,7 +48,7 @@ export function SearchResultRow({
       ]}
       onAccessibilityAction={(event) => {
         if (event.nativeEvent.actionName === "toggleFollow") {
-          onToggleFollow();
+          toggle();
         }
       }}
     >
@@ -83,7 +79,7 @@ export function SearchResultRow({
       </View>
       <FollowCircle
         followed={followed}
-        onPress={onToggleFollow}
+        onPress={toggle}
         testID={`follow-${show.id}`}
       />
     </Pressable>
