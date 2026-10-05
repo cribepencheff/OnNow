@@ -56,13 +56,13 @@ jest.mock("@/hooks/useTopPicks", () => ({
   }),
 }));
 const mockFollow = jest.fn();
-jest.mock("@/hooks/useFollowList", () => ({
-  useFollowList: () => ({
+jest.mock("@/hooks/useFollowList", () =>
+  jest.requireActual("@/hooks/test-follow-list-mock").followListMock(() => ({
     isFollowed: () => false,
     follow: mockFollow,
     unfollow: jest.fn(),
-  }),
-}));
+  })),
+);
 jest.mock("@/hooks/useImdbRating", () => ({
   useImdbRating: jest.fn(() => ({ data: undefined })),
 }));

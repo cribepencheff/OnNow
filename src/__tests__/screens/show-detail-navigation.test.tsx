@@ -19,9 +19,9 @@ import searchSlowHorsesFixture from "@/api/fixtures/search-slow-horses.json";
 jest.mock("@/hooks/useFollowedEpisodes", () => ({
   useFollowedEpisodes: jest.fn(),
 }));
-jest.mock("@/hooks/useFollowList", () => ({
-  useFollowList: jest.fn(),
-}));
+jest.mock("@/hooks/useFollowList", () =>
+  jest.requireActual("@/hooks/test-follow-list-mock").followListMock(),
+);
 jest.mock("@/hooks/useSearchShows", () => ({
   useSearchShows: jest.fn(),
 }));
@@ -132,9 +132,13 @@ describe("Show detail (real navigation)", () => {
     expect(rendered.getPathname()).toBe("/search/show/45039");
     expect(screen.getByTestId("show-detail-next")).toBeTruthy();
 
-    // Only the back arrow: the sheet itself closes with a swipe down.
+    // Only the back arrow, in a header of fixed height: the sheet itself
+    // closes with a swipe down.
     expect(screen.queryByRole("button", { name: "Close" })).toBeNull();
-    await act(() => router.back());
+    expect(screen.getByTestId("sheet-back-header").props.style).toMatchObject({
+      height: 44,
+    });
+    await fireEvent.press(screen.getByRole("button", { name: "Back" }));
     expect(rendered.getPathname()).toBe("/search");
   });
 

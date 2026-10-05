@@ -10,6 +10,11 @@ import type { TvMazeShow } from "@/api/tvmaze-types";
 jest.mock("@/hooks/useShow", () => ({
   useShow: jest.fn(),
 }));
+const mockToggle = jest.fn();
+let mockFollowed = false;
+jest.mock("@/hooks/useFollowList", () => ({
+  useFollowToggle: () => ({ followed: mockFollowed, toggle: mockToggle }),
+}));
 jest.mock("@/hooks/useStreamingService", () => ({
   useStreamingService: jest.fn(),
 }));
@@ -33,6 +38,8 @@ describe("SearchResultRow", () => {
   beforeEach(() => {
     mockedUseShow.mockReturnValue({ data: undefined } as never);
     mockProviders(undefined);
+    mockToggle.mockClear();
+    mockFollowed = false;
     // Fixed clock and time zone, so the next-line assertion below is exact
     // rather than dependent on the real date the test happens to run on.
     jest.useFakeTimers().setSystemTime(new Date("2026-09-01T00:00:00Z"));
@@ -58,13 +65,7 @@ describe("SearchResultRow", () => {
   it("shows the title and year · genres, no summary, status or network (PRD 5.4)", async () => {
     const show = showSlowHorsesFixture as unknown as TvMazeShow;
 
-    await render(
-      <SearchResultRow
-        show={show}
-        followed={false}
-        onToggleFollow={jest.fn()}
-      />,
-    );
+    await render(<SearchResultRow show={show} />);
 
     expect(screen.getByText("Slow Horses")).toBeTruthy();
     expect(screen.getByText("2022 · Drama, Thriller, Espionage")).toBeTruthy();
@@ -76,13 +77,7 @@ describe("SearchResultRow", () => {
   it("keeps the status line's space while the show lookup answers", async () => {
     const show = showSlowHorsesFixture as unknown as TvMazeShow;
 
-    await render(
-      <SearchResultRow
-        show={show}
-        followed={false}
-        onToggleFollow={jest.fn()}
-      />,
-    );
+    await render(<SearchResultRow show={show} />);
 
     expect(screen.getByTestId("search-result-status").props.children).toBe("");
   });
@@ -91,23 +86,11 @@ describe("SearchResultRow", () => {
     const show = showSlowHorsesFixture as unknown as TvMazeShow;
     mockProviders([{ providerId: 350, providerName: "Apple TV" }]);
 
-    const { rerender } = await render(
-      <SearchResultRow
-        show={show}
-        followed={false}
-        onToggleFollow={jest.fn()}
-      />,
-    );
+    const { rerender } = await render(<SearchResultRow show={show} />);
     expect(screen.getByText("On Apple TV")).toBeTruthy();
 
     mockProviders([]);
-    await rerender(
-      <SearchResultRow
-        show={show}
-        followed={false}
-        onToggleFollow={jest.fn()}
-      />,
-    );
+    await rerender(<SearchResultRow show={show} />);
     expect(screen.getByText("Unavailable")).toBeTruthy();
   });
 
@@ -115,13 +98,7 @@ describe("SearchResultRow", () => {
     const show = showSlowHorsesFixture as unknown as TvMazeShow;
     mockProviders(NOT_ON_TMDB);
 
-    await render(
-      <SearchResultRow
-        show={show}
-        followed={false}
-        onToggleFollow={jest.fn()}
-      />,
-    );
+    await render(<SearchResultRow show={show} />);
 
     expect(screen.getByTestId("search-result-service").props.children).toBe("");
   });
@@ -129,18 +106,13 @@ describe("SearchResultRow", () => {
   it.each([false, true])(
     "shows Show detail's status line whether followed or not (followed: %s, FR-025)",
     async (followed) => {
+      mockFollowed = followed;
       mockedUseShow.mockReturnValue({
         data: showSlowHorsesFixture,
       } as never);
       const show = showSlowHorsesFixture as unknown as TvMazeShow;
 
-      await render(
-        <SearchResultRow
-          show={show}
-          followed={followed}
-          onToggleFollow={jest.fn()}
-        />,
-      );
+      await render(<SearchResultRow show={show} />);
 
       // Season 6 episode 1 airs 2026-09-16, after season 5: a dated next
       // season as of the fixed 2026-09-01 clock above (PRD 5.5).
@@ -149,61 +121,39 @@ describe("SearchResultRow", () => {
     },
   );
 
-  it("calls onToggleFollow when the follow circle is pressed", async () => {
-    const onToggleFollow = jest.fn();
+  it("toggles follow when the follow circle is pressed", async () => {
     const show = showSlowHorsesFixture as unknown as TvMazeShow;
 
-    await render(
-      <SearchResultRow
-        show={show}
-        followed={false}
-        onToggleFollow={onToggleFollow}
-      />,
-    );
+    await render(<SearchResultRow show={show} />);
 
     // The row itself is a button too (CRI-79), so the circle is found by
     // its own name.
     fireEvent.press(screen.getByRole("button", { name: "Follow" }));
 
-    expect(onToggleFollow).toHaveBeenCalledTimes(1);
+    expect(mockToggle).toHaveBeenCalledTimes(1);
   });
 
   it("CRI-79: pressing the row opens Show detail and does not follow", async () => {
-    const onToggleFollow = jest.fn();
     const onPress = jest.fn();
     const show = showSlowHorsesFixture as unknown as TvMazeShow;
 
-    await render(
-      <SearchResultRow
-        show={show}
-        followed={false}
-        onToggleFollow={onToggleFollow}
-        onPress={onPress}
-      />,
-    );
+    await render(<SearchResultRow show={show} onPress={onPress} />);
 
     fireEvent.press(screen.getByTestId("search-result-row"));
 
     expect(onPress).toHaveBeenCalledTimes(1);
-    expect(onToggleFollow).not.toHaveBeenCalled();
+    expect(mockToggle).not.toHaveBeenCalled();
   });
 
   it("NFR-008: screen reader users can follow from the row's accessibility action", async () => {
-    const onToggleFollow = jest.fn();
     const show = showSlowHorsesFixture as unknown as TvMazeShow;
 
-    await render(
-      <SearchResultRow
-        show={show}
-        followed={false}
-        onToggleFollow={onToggleFollow}
-      />,
-    );
+    await render(<SearchResultRow show={show} />);
 
     fireEvent(screen.getByTestId("search-result-row"), "accessibilityAction", {
       nativeEvent: { actionName: "toggleFollow" },
     });
 
-    expect(onToggleFollow).toHaveBeenCalledTimes(1);
+    expect(mockToggle).toHaveBeenCalledTimes(1);
   });
 });

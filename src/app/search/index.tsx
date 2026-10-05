@@ -25,7 +25,6 @@ import { SearchResultRow } from "@/components/SearchResultRow";
 import { TopPicksRow } from "@/components/TopPicksRow";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
-import { useFollowList } from "@/hooks/useFollowList";
 import { useSearchShows } from "@/hooks/useSearchShows";
 import { t, type } from "@/theme/tokens";
 
@@ -40,7 +39,6 @@ export default function SearchScreen() {
   const { data: results, isFetching } = useSearchShows(searchedQuery);
   // "No results" only once the search for what is typed has answered.
   const answered = !isFetching && searchedQuery.trim() === query.trim();
-  const { isFollowed, follow, unfollow } = useFollowList();
 
   return (
     <View style={styles.container}>
@@ -103,12 +101,6 @@ export default function SearchScreen() {
           renderItem={({ item }) => (
             <SearchResultRow
               show={item.show}
-              followed={isFollowed(item.show.id)}
-              onToggleFollow={() =>
-                isFollowed(item.show.id)
-                  ? unfollow(item.show.id)
-                  : follow(item.show.id)
-              }
               // Show detail opens inside the sheet, with a back arrow to
               // these results (PRD 5.6, CRI-79).
               onPress={() =>

@@ -19,7 +19,7 @@ import type {
   TvMazeShow,
   TvMazeShowWithEmbeds,
 } from "@/api/tvmaze-types";
-import { useFollowList } from "@/hooks/useFollowList";
+import { useFollowToggle } from "@/hooks/useFollowList";
 import { useOriginCountries } from "@/hooks/useOriginCountries";
 import { useShow } from "@/hooks/useShow";
 import { useShowImages } from "@/hooks/useShowImages";
@@ -253,8 +253,7 @@ function useOpenIn(show: TvMazeShow) {
 // FR-029: "Follow" / "Following" is one toggle button that stays in place,
 // so an unfollow is undone by tapping again; it updates at once (CRI-86).
 function FollowToggle({ showId }: { showId: number }) {
-  const { isFollowed, follow, unfollow } = useFollowList();
-  const followed = isFollowed(showId);
+  const { followed, toggle } = useFollowToggle(showId);
 
   return (
     <Pressable
@@ -263,12 +262,10 @@ function FollowToggle({ showId }: { showId: number }) {
       accessibilityHint={followed ? "Unfollows the show" : undefined}
       accessibilityState={{ selected: followed }}
       onPress={() => {
-        if (followed) {
-          unfollow(showId);
-        } else {
+        if (!followed) {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-          follow(showId);
         }
+        toggle();
       }}
       style={[
         styles.button,

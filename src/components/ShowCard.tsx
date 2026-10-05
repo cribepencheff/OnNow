@@ -8,7 +8,7 @@ import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 
 import { IMAGE_BASE } from "@/api/tmdb-types";
-import { useFollowList } from "@/hooks/useFollowList";
+import { useFollowToggle } from "@/hooks/useFollowList";
 import type { PosterItem } from "@/logic/top-picks";
 import { t, type } from "@/theme/tokens";
 import { FollowCircle } from "./FollowCircle";
@@ -37,8 +37,7 @@ export function ShowCard({
   detailPathname?: DetailPathname;
 }) {
   const router = useRouter();
-  const { isFollowed, follow, unfollow } = useFollowList();
-  const followed = isFollowed(card.tvmazeId);
+  const { followed, toggle } = useFollowToggle(card.tvmazeId);
 
   return (
     <Pressable
@@ -61,9 +60,7 @@ export function ShowCard({
         <View style={styles.follow}>
           <FollowCircle
             followed={followed}
-            onPress={() =>
-              followed ? unfollow(card.tvmazeId) : follow(card.tvmazeId)
-            }
+            onPress={toggle}
             testID={`${testID}-follow-${card.tvmazeId}`}
           />
         </View>
