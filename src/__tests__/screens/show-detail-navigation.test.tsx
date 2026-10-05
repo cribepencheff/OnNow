@@ -9,6 +9,7 @@ import {
 } from "expo-router/testing-library";
 
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
+import { releaseNavigation } from "@/hooks/navigation-lock";
 import { useFollowList } from "@/hooks/useFollowList";
 import { useSearchShows } from "@/hooks/useSearchShows";
 import { useShow } from "@/hooks/useShow";
@@ -116,6 +117,19 @@ describe("Show detail (real navigation)", () => {
     expect(rendered.getPathname()).toBe("/shows");
   });
 
+  it("CRI-117: a double tap on a Shows row opens Show detail once, so one back returns to Shows", async () => {
+    const rendered = renderRouter("src/app", { initialUrl: "/shows" });
+    await rendered;
+
+    const row = screen.getByTestId("shows-row");
+    await fireEvent.press(row);
+    await fireEvent.press(row);
+    expect(rendered.getPathname()).toBe("/show/45039");
+
+    await act(() => router.back());
+    expect(rendered.getPathname()).toBe("/shows");
+  });
+
   // Entry point: Shows' search field. With shows followed, Home has no
   // Search entry by design (FR-007).
   it("FR-030, PRD 5.6: opens inside the Search sheet with a back arrow to the results and no close button", async () => {
@@ -123,11 +137,15 @@ describe("Show detail (real navigation)", () => {
     await rendered;
 
     await fireEvent.press(screen.getByRole("button", { name: "Search shows" }));
+    // The test renderer has no screen transitions, so end each one here,
+    // as the Stack's transitionEnd does in the app (CRI-117).
+    releaseNavigation();
     await fireEvent.changeText(
       screen.getByTestId("search-input"),
       "Slow Horses",
     );
     await fireEvent.press(screen.getAllByTestId("search-result-row")[0]);
+    releaseNavigation();
 
     expect(rendered.getPathname()).toBe("/search/show/45039");
     expect(screen.getByTestId("show-detail-next")).toBeTruthy();

@@ -12,7 +12,6 @@ import {
   Text,
   View,
 } from "react-native";
-import { useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
 
 import { AddFirstShow } from "@/components/AddFirstShow";
@@ -21,6 +20,7 @@ import { ShowsRow } from "@/components/ShowsRow";
 import { TvMazeCredit } from "@/components/TvMazeCredit";
 import { afterThisFrame, useFollowActions } from "@/hooks/useFollowList";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
+import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import { useToday } from "@/hooks/useToday";
 import { splitBySegment, type ShowsSegment } from "@/logic/shows-list";
 import { showState, showStateLabel } from "@/logic/show-state";
@@ -41,7 +41,7 @@ function deviceTimeZone(): string {
 }
 
 export default function ShowsScreen() {
-  const router = useRouter();
+  const router = useGuardedRouter();
   const todayDate = useToday();
   const timeZone = deviceTimeZone();
 

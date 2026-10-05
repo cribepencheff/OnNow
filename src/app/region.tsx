@@ -1,10 +1,10 @@
 // Region picker (FR-016, CRI-88, ADR 0014): the phone's region first, then
 // every region TMDB has streaming data for. Visual design comes later.
 
-import { useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
+import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import { useRegion } from "@/hooks/useRegion";
 import { REGIONS, regionName } from "@/logic/regions";
 import { accent } from "@/theme/color";
@@ -13,7 +13,7 @@ import { t, type } from "@/theme/tokens";
 const DEVICE = "device";
 
 export default function RegionScreen() {
-  const router = useRouter();
+  const router = useGuardedRouter();
   const { region, detected, isManual, setRegion, followDeviceRegion } =
     useRegion();
 

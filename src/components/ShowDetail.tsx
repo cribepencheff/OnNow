@@ -7,7 +7,6 @@
 
 import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
-import * as Linking from "expo-linking";
 import { SymbolView } from "expo-symbols";
 import { useRef, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -20,6 +19,7 @@ import type {
   TvMazeShowWithEmbeds,
 } from "@/api/tvmaze-types";
 import { useFollowToggle } from "@/hooks/useFollowList";
+import { openExternalUrl } from "@/hooks/useGuardedRouter";
 import { useOriginCountries } from "@/hooks/useOriginCountries";
 import { useShow } from "@/hooks/useShow";
 import { useShowImages } from "@/hooks/useShowImages";
@@ -139,7 +139,7 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
                 accessibilityLabel={openInAccessibilityLabel(link)}
                 // An https link: iOS opens the service's app at the show when
                 // it is installed, and the website otherwise.
-                onPress={() => Linking.openURL(link.url)}
+                onPress={() => openExternalUrl(link.url)}
                 style={[styles.button, styles.buttonOnImage, styles.heroButton]}
                 testID="show-detail-open-in"
               >

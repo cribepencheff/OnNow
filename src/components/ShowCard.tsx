@@ -5,10 +5,10 @@
 
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Image } from "expo-image";
-import { useRouter } from "expo-router";
 
 import { IMAGE_BASE } from "@/api/tmdb-types";
 import { useFollowToggle } from "@/hooks/useFollowList";
+import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import type { PosterItem } from "@/logic/top-picks";
 import { t, type } from "@/theme/tokens";
 import { FollowCircle } from "./FollowCircle";
@@ -36,7 +36,7 @@ export function ShowCard({
   testID: string;
   detailPathname?: DetailPathname;
 }) {
-  const router = useRouter();
+  const router = useGuardedRouter();
   const { followed, toggle } = useFollowToggle(card.tvmazeId);
 
   return (

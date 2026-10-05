@@ -1,7 +1,8 @@
 // OMDb attribution (CRI-87, ADR 0013, NFR-007), in the same quiet style as
 // the TMDB and JustWatch credits.
 
-import { Linking, StyleSheet, Text } from "react-native";
+import { StyleSheet, Text } from "react-native";
+import { openExternalUrl } from "@/hooks/useGuardedRouter";
 import { t } from "@/theme/tokens";
 
 import { OMDB_CREDIT } from "@/api/omdb-credit";
@@ -11,7 +12,7 @@ export function OmdbCredit() {
     <Text
       style={styles.credit}
       accessibilityRole="link"
-      onPress={() => Linking.openURL(OMDB_CREDIT.url)}
+      onPress={() => openExternalUrl(OMDB_CREDIT.url)}
     >
       {OMDB_CREDIT.text}
     </Text>

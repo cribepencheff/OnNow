@@ -4,16 +4,16 @@
 // one is the same height from the first frame, whatever it shows.
 
 import { Pressable, StyleSheet, View } from "react-native";
-import { useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
 
+import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import { t } from "@/theme/tokens";
 
 // The iOS navigation bar's height.
 export const SHEET_HEADER_HEIGHT = 44;
 
 export function SheetBackHeader() {
-  const router = useRouter();
+  const router = useGuardedRouter();
   return (
     <View style={styles.header} testID="sheet-back-header">
       <Pressable

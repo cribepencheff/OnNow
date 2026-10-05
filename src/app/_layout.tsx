@@ -5,6 +5,7 @@ import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { setUpAppStateFocus } from "@/hooks/app-state-focus";
+import { releaseNavigation } from "@/hooks/navigation-lock";
 import { asyncStoragePersister, queryClient } from "@/hooks/query-client";
 import { t } from "@/theme/tokens";
 
@@ -39,6 +40,9 @@ export default function RootLayout() {
             headerShadowVisible: false,
             contentStyle: { backgroundColor: t.bg },
           }}
+          // A navigation is over once its screen transition ends, so the
+          // next tap may navigate again (CRI-117).
+          screenListeners={{ transitionEnd: releaseNavigation }}
         >
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen

@@ -1,15 +1,15 @@
 // The way to the region picker (FR-016, CRI-88, ADR 0014): a quiet line in
 // the Shows footer until there is a settings view (FR-019).
 
-import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, Text } from "react-native";
 
+import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import { useRegion } from "@/hooks/useRegion";
 import { regionName } from "@/logic/regions";
 import { t, type } from "@/theme/tokens";
 
 export function RegionLink() {
-  const router = useRouter();
+  const router = useGuardedRouter();
   const { region } = useRegion();
   if (!region) {
     return null;

@@ -15,7 +15,6 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as SplashScreen from "expo-splash-screen";
-import { useRouter } from "expo-router";
 
 import { HeroPager } from "@/components/Hero/HeroPager";
 import { AddFirstShow } from "@/components/AddFirstShow";
@@ -23,6 +22,7 @@ import { AiringThisWeekRow } from "@/components/AiringThisWeekRow";
 import { TopPicksRow } from "@/components/TopPicksRow";
 import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
+import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import { useToday } from "@/hooks/useToday";
 import { deriveHomeViewState } from "@/logic/home";
 import {
@@ -38,7 +38,7 @@ function deviceTimeZone(): string {
 }
 
 export default function HomeScreen() {
-  const router = useRouter();
+  const router = useGuardedRouter();
   const { width, height, fontScale } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const { reduceMotionEnabled } = useAccessibilityFlags();

@@ -1,7 +1,6 @@
 // CRI-87, ADR 0013: the IMDb rating from OMDb, linking to the title on
 // IMDb. Nothing at all without a rating. Shared by Show detail and the Home hero.
 
-import * as Linking from "expo-linking";
 import {
   Pressable,
   StyleSheet,
@@ -11,6 +10,7 @@ import {
 } from "react-native";
 
 import type { TvMazeShow } from "@/api/tvmaze-types";
+import { openExternalUrl } from "@/hooks/useGuardedRouter";
 import { useImdbRating } from "@/hooks/useImdbRating";
 import { imdbTitleUrl } from "@/logic/imdb-rating";
 import { t } from "@/theme/tokens";
@@ -36,7 +36,7 @@ export function ImdbRating({
       accessibilityRole="link"
       accessibilityLabel={`IMDb rating ${rating}`}
       accessibilityHint="Opens the show on IMDb"
-      onPress={() => Linking.openURL(imdbTitleUrl(imdbId))}
+      onPress={() => openExternalUrl(imdbTitleUrl(imdbId))}
       hitSlop={8}
       style={styles.row}
       testID="imdb-rating"
