@@ -175,7 +175,9 @@ first user is the author, who currently uses Next Episode.
   Search also moves Home's row to the next picks. The poster rows
   deliberately look different from search results.
 - **Edge cases:** no results gives a short hint to try the original title.
-  Shows without an image get a neutral placeholder with the title. Running
+  A show without an image gets no poster, as everywhere in the app (design
+  system: "No image: show nothing, never a grey placeholder box"): the
+  poster space stays empty and the title stays in its column. Running
   shows rank above ended ones.
 
 ### 5.5 Show detail (PoC slice, complete in MVP)
@@ -226,7 +228,10 @@ per season come in the MVP.
   then a "Follow" / "Following" toggle button that updates at once.
 - **Status line (CRI-86):** one state derived from TVmaze's status,
   episodes and seasons, dated facts first: "Airing · next ep <date>" (next
-  episode in the season that is airing), "Season <n> · <date>" (a dated
+  episode in the season that is airing), "Airing · new ep today" (the
+  latest episode is out today and nothing is dated after it), "Airing ·
+  next ep TBA" (the next episode in the season that is airing is listed
+  without a date), "Season <n> · <date>" (a dated
   next season), "Season <n> · TBA" (a new season listed without a date),
   "Between seasons" (Running, nothing listed; no renewal implied), "Future
   uncertain" (To Be Determined), "Ended". It alone says whether anything is
@@ -363,11 +368,6 @@ later. See `decisions/0005-data-sources.md`.
   claim regional availability. A "Not in [country] yet" label needs
   per-episode availability behind our own server, for a public release
   (spike 0003).
-- **Status line for two Active cases (5.3, FR-010):** a show whose latest
-  episode is out today with nothing dated after it, and a show mid-season
-  whose next episode has no airstamp yet, are Active, but Show detail's
-  status line has no airing wording for them today: they read "Between
-  seasons" (or "Ended"). Their wording is to be decided.
 - Name (working name: On Now)
 - Notifications: morning summary, per episode, or both
 - Menu for several services: anchored to the button or centred overlay
