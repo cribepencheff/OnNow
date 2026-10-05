@@ -2,6 +2,8 @@ import { Pressable, type GestureResponderEvent } from "react-native";
 import { SymbolView } from "expo-symbols";
 import { Tabs, useRouter } from "expo-router";
 
+import { t } from "@/theme/tokens";
+
 // The hidden image review screen is reached by a long press on the Shows
 // tab, development builds only. Typed loosely rather than importing
 // expo-router's internal BottomTabBarButtonProps, which is not part of
@@ -81,6 +83,10 @@ export default function TabLayout() {
           ),
           // Long press opens the hidden image review screen.
           tabBarButton: ShowsTabButton,
+          // The header on bg, like the screen under it.
+          headerStyle: { backgroundColor: t.bg },
+          headerTitleStyle: { color: t.ink },
+          headerShadowVisible: false,
         }}
       />
     </Tabs>

@@ -1,7 +1,7 @@
 // Shows (PRD 5.3, FR-002, FR-010, FR-035): the followed shows list, each
 // with its next episode or status, swipe to unfollow, and a search field
-// that opens Search (the same sheet as Home's "+"). Visual design comes
-// later, so styling here stays minimal and functional.
+// that opens Search (the same sheet as Home's "+"), in the design
+// system's dark tokens.
 
 import { useCallback, useMemo } from "react";
 import {
@@ -13,6 +13,7 @@ import {
   View,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { SymbolView } from "expo-symbols";
 
 import { RegionLink } from "@/components/RegionLink";
 import { ShowsRow } from "@/components/ShowsRow";
@@ -21,6 +22,10 @@ import { useFollowList } from "@/hooks/useFollowList";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useToday } from "@/hooks/useToday";
 import { sortShowsByTitle } from "@/logic/shows-list";
+import { t, type } from "@/theme/tokens";
+
+// The translucent tab bar's height (tabs layout): the list ends above it.
+const TAB_BAR_HEIGHT = 83;
 
 function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -50,6 +55,11 @@ export default function ShowsScreen() {
         onPress={openSearch}
         style={styles.searchField}
       >
+        <SymbolView
+          name={{ ios: "magnifyingglass", android: "search", web: "search" }}
+          tintColor={t.inkMuted}
+          size={16}
+        />
         <Text style={styles.searchFieldText}>Search shows</Text>
       </Pressable>
 
@@ -80,18 +90,25 @@ export default function ShowsScreen() {
               }
             />
           )}
+          ItemSeparatorComponent={RowSeparator}
           ListFooterComponent={ShowsFooter}
+          contentContainerStyle={styles.listContent}
           refreshControl={
             <RefreshControl
               testID="shows-refresh-control"
               refreshing={isRefetching}
               onRefresh={refetch}
+              tintColor={t.inkMuted}
             />
           }
         />
       )}
     </View>
   );
+}
+
+function RowSeparator() {
+  return <View style={styles.separator} />;
 }
 
 // The region sits here until there is a settings view (CRI-88).
@@ -107,25 +124,38 @@ function ShowsFooter() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 8,
+    paddingTop: t.space2,
+    backgroundColor: t.bg,
   },
   searchField: {
-    marginHorizontal: 16,
-    marginBottom: 8,
-    paddingHorizontal: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: t.space2,
+    marginHorizontal: t.space4,
+    marginBottom: t.space2,
+    paddingHorizontal: t.space4,
     paddingVertical: 12,
-    borderRadius: 12,
-    backgroundColor: "#F0F0F0",
+    borderRadius: t.radiusPill,
+    backgroundColor: t.surfaceRaised,
   },
   searchFieldText: {
-    fontSize: 16,
-    color: "#888888",
+    ...type.body,
+    color: t.inkMuted,
+  },
+  listContent: {
+    paddingBottom: TAB_BAR_HEIGHT + t.space4,
+  },
+  // Inset to the text column, as on iOS lists.
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    marginLeft: t.space4 + 60 + t.space2 + 4,
+    backgroundColor: t.hairline,
   },
   quietLine: {
+    ...type.body,
     textAlign: "center",
-    color: "#666666",
-    fontSize: 15,
-    paddingHorizontal: 32,
-    paddingTop: 24,
+    color: t.inkMuted,
+    paddingHorizontal: t.space10,
+    paddingTop: t.space6,
   },
 });

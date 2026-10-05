@@ -13,6 +13,7 @@ On Now is a stripped, cinematic iOS app that answers one question in two seconds
 - Set text in `ink`, meta lines in `ink-muted`, and upcoming episodes and data credits in `ink-subtle`. All three hold 4.5:1 on every ground above.
 - Over a show image, make the primary action a white pill: `ink` fill with `bg` text. The photo already brings the colour, so nothing on top of it is coloured. Spend `accent` only on the primary action of plain screens without an image, and on small status marks (the follow check, the calendar day line). If a view seems to need two accent elements, one of them is not primary.
 - Put `on-accent` on accent fills, never white.
+- Fill a destructive action (Unfollow, revealed by a swipe) with `destructive`, with `ink` text. Use it nowhere else.
 - Draw the focus ring as a solid 2px `accent` ring; it holds 3:1 on every surface.
 - Use `hairline` for dividers only, never as the only edge of a control.
 - Put `image-control-backdrop` behind a small control drawn on an image (the follow circle on a poster card, the pull-to-refresh spinner over the hero), with a soft shadow, so it reads on light and busy images.

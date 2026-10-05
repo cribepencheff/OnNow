@@ -16,6 +16,8 @@ export const t = {
   // duplicated as a second hardcoded hex.
   accent,
   onAccent: "#07130e",
+  // A destructive action's fill (Unfollow), with ink on it (4.56:1).
+  destructive: "#c93c3c",
   space2: 8,
   space4: 16,
   space6: 24,

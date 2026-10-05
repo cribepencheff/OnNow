@@ -16,6 +16,7 @@ import { nextForShow } from "@/logic/next-episode";
 import { showsRowLine } from "@/logic/shows-list";
 import type { LocalDate } from "@/logic/local-date";
 import type { TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
+import { t, type } from "@/theme/tokens";
 
 interface ShowsRowProps {
   show: TvMazeShowWithEmbeds;
@@ -106,18 +107,20 @@ const POSTER_HEIGHT = 90;
 const ACTION_WIDTH = 96;
 
 const styles = StyleSheet.create({
+  // Opaque, so the Unfollow action stays hidden until the swipe.
   row: {
     flexDirection: "row",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    gap: 12,
-    backgroundColor: "#FFFFFF",
+    paddingVertical: t.space2 + 4,
+    paddingHorizontal: t.space4,
+    gap: t.space2 + 4,
+    backgroundColor: t.surface,
   },
+  // No image: nothing, never a grey box (design system); the space stays
+  // so titles line up.
   poster: {
     width: POSTER_WIDTH,
     height: POSTER_HEIGHT,
-    borderRadius: 6,
-    backgroundColor: "#E0E0E0",
+    borderRadius: t.radiusSm,
   },
   details: {
     flex: 1,
@@ -125,22 +128,22 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   title: {
-    fontSize: 16,
-    fontWeight: "600",
+    ...type.headline,
+    color: t.ink,
   },
   line: {
-    fontSize: 13,
-    fontWeight: "500",
+    ...type.meta,
+    color: t.inkMuted,
   },
   actionContainer: {
     width: ACTION_WIDTH,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#D64545",
+    backgroundColor: t.destructive,
   },
   actionLabel: {
-    color: "#FFFFFF",
-    fontWeight: "700",
-    fontSize: 14,
+    ...type.meta,
+    fontWeight: "600",
+    color: t.ink,
   },
 });
