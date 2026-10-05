@@ -13,6 +13,7 @@ import {
 import type { TvMazeShow } from "@/api/tvmaze-types";
 import { useImdbRating } from "@/hooks/useImdbRating";
 import { imdbTitleUrl } from "@/logic/imdb-rating";
+import { t } from "@/theme/tokens";
 
 // The mark's fixed height: line height, padding and border. The Home hero
 // reserves it on every slide.
@@ -53,14 +54,14 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     gap: 6,
   },
-  // The mark is text until design, in Show detail's badge style.
+  // The mark is text, not IMDb's logo, in the badge style.
   mark: {
     fontSize: 11,
     lineHeight: MARK_LINE_HEIGHT,
     fontWeight: "700",
-    color: "#666666",
+    color: t.inkMuted,
     borderWidth: 1,
-    borderColor: "#CCCCCC",
+    borderColor: t.inkSubtle,
     borderRadius: 8,
     paddingHorizontal: 6,
     paddingVertical: 2,

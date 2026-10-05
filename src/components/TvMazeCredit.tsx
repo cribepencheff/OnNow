@@ -4,6 +4,7 @@
 import { Linking, StyleSheet, Text } from "react-native";
 
 import { TVMAZE_CREDIT } from "@/api/tvmaze-credit";
+import { t } from "@/theme/tokens";
 
 export function TvMazeCredit() {
   return (
@@ -20,7 +21,7 @@ export function TvMazeCredit() {
 const styles = StyleSheet.create({
   credit: {
     textAlign: "center",
-    color: "#999999",
+    color: t.inkSubtle,
     fontSize: 12,
     paddingVertical: 24,
   },

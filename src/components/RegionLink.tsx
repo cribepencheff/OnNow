@@ -6,6 +6,7 @@ import { Pressable, StyleSheet, Text } from "react-native";
 
 import { useRegion } from "@/hooks/useRegion";
 import { regionName } from "@/logic/regions";
+import { t, type } from "@/theme/tokens";
 
 export function RegionLink() {
   const router = useRouter();
@@ -29,11 +30,11 @@ export function RegionLink() {
 
 const styles = StyleSheet.create({
   line: {
+    ...type.meta,
     textAlign: "center",
-    color: "#666666",
-    fontSize: 15,
-    paddingHorizontal: 32,
-    paddingTop: 24,
-    paddingBottom: 12,
+    color: t.inkMuted,
+    paddingHorizontal: t.space4,
+    paddingTop: t.space6,
+    paddingBottom: t.space2,
   },
 });
