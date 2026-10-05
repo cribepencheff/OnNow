@@ -212,6 +212,15 @@ export function isLoopWrapSlot(physicalIndex: number, count: number): boolean {
 // one), and that single shared instance's periodic opacity already
 // crossfades correctly for a swipe in either direction, so it doesn't
 // need two.
+// The pager's React key: the slides' shows in order. HeroPager keeps its
+// page and scroll position for as long as it stays mounted, so a different
+// set of slides (a show followed, unfollowed or out of the window) mounts a
+// fresh pager from the first slide instead of leaving it pointing past the
+// last one.
+export function heroPagerKey(slides: { show: { id: number } }[]): string {
+  return slides.map((slide) => slide.show.id).join(",");
+}
+
 export function contentMountFrames(count: number, pageIndex: number): number[] {
   if (count <= 1) {
     return count === 0 ? [] : [pageIndex];

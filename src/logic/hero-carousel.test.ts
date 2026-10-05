@@ -8,6 +8,7 @@
 // contentMountFrames).
 
 import {
+  heroPagerKey,
   contentMountFrames,
   dotKinds,
   dotWindowRange,
@@ -353,5 +354,27 @@ describe("contentMountFrames", () => {
     // crossfade (logicalCrossfadePosition, periodic) already reads the
     // same regardless of which direction scrollX approaches it from.
     expect(contentMountFrames(2, 0)).toEqual([1, 0]);
+  });
+});
+
+// The pager keeps its page and scroll position while mounted; a different
+// set of slides must remount it, or it can point past the last slide
+// (a crash when unfollowing on slide 3 of 3 left one slide).
+describe("heroPagerKey", () => {
+  const slide = (id: number) => ({ show: { id } });
+
+  it("is the same for the same shows in the same order", () => {
+    expect(heroPagerKey([slide(1), slide(2)])).toBe(
+      heroPagerKey([slide(1), slide(2)]),
+    );
+  });
+
+  it("changes when a show leaves, joins or moves", () => {
+    const key = heroPagerKey([slide(1), slide(2), slide(3)]);
+    expect(heroPagerKey([slide(1)])).not.toBe(key);
+    expect(heroPagerKey([slide(1), slide(2), slide(3), slide(4)])).not.toBe(
+      key,
+    );
+    expect(heroPagerKey([slide(2), slide(1), slide(3)])).not.toBe(key);
   });
 });
