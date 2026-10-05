@@ -101,20 +101,42 @@ describe("useTopPicks (FR-038)", () => {
     client.unmount();
   });
 
-  it("Refresh shows the next ones, wrapping around, without followed shows or a new fetch", async () => {
+  it('Refresh shows the next ones, then "Start over" goes back to the top, without followed shows or a new fetch (CRI-123)', async () => {
     const { result, rerender, unmount, client } = await renderRow();
     await waitFor(() => expect(result.current.cards).toHaveLength(10));
+    expect(result.current.control).toBe("refresh");
 
     mockFollowed = new Set([1, 1103]);
     await rerender({});
     await act(() => result.current.refresh());
 
     await waitFor(() =>
+      expect(ids(result.current.cards)).toEqual([111, 112, 113, 114]),
+    );
+    expect(result.current.control).toBe("startOver");
+
+    await act(() => result.current.refresh());
+    await waitFor(() =>
       expect(ids(result.current.cards)).toEqual([
-        111, 112, 113, 114, 101, 102, 104, 105, 106, 107,
+        101, 102, 104, 105, 106, 107, 108, 109, 110, 111,
       ]),
     );
+    expect(result.current.control).toBe("refresh");
     expect(findRecommendations).toHaveBeenCalledTimes(1);
+    await unmount();
+    client.unmount();
+  });
+
+  it('says "all followed" only when every pick is followed (CRI-123)', async () => {
+    mockFollowed = new Set([
+      1,
+      ...recommendations.results.map((pick) => pick.id + 1000),
+    ]);
+    const { result, unmount, client } = await renderRow();
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    expect(result.current.cards).toEqual([]);
+    expect(result.current.allFollowed).toBe(true);
     await unmount();
     client.unmount();
   });
@@ -133,7 +155,7 @@ describe("useTopPicks (FR-038)", () => {
 
     await act(() => search.result.current.refresh());
 
-    const next = [111, 112, 113, 114, 101, 102, 103, 104, 105, 106];
+    const next = [111, 112, 113, 114];
     await waitFor(() => expect(ids(search.result.current.cards)).toEqual(next));
     await waitFor(() => expect(ids(home.result.current.cards)).toEqual(next));
     await home.unmount();

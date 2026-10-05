@@ -1,13 +1,13 @@
 // "Top picks for you" under the Home hero (FR-038, ADR 0016). A card
 // followed from the row stays, marked, until Refresh shows the next picks.
-
-import { Pressable, StyleSheet, Text } from "react-native";
-import { SymbolView } from "expo-symbols";
+// At the end of the picks the control reads "Start over"; the row is
+// empty, with a line saying so, only when every pick is followed
+// (CRI-123).
 
 import type { TvMazeShow } from "@/api/tvmaze-types";
 import { useTopPicks } from "@/hooks/useTopPicks";
-import { t, type } from "@/theme/tokens";
 import { PosterRow } from "./PosterRow";
+import { RowRefresh } from "./RowRefresh";
 import { ShowCard, type DetailPathname } from "./ShowCard";
 
 export function TopPicksRow({
@@ -17,38 +17,32 @@ export function TopPicksRow({
   followedShows: TvMazeShow[];
   detailPathname?: DetailPathname;
 }) {
-  const { cards, isLoading, refresh, isRefreshing } =
-    useTopPicks(followedShows);
+  const {
+    cards,
+    isLoading,
+    refresh,
+    isRefreshing,
+    control,
+    allFollowed,
+    batch,
+  } = useTopPicks(followedShows);
 
   return (
     <PosterRow
       title="Top picks for you"
       isLoading={isLoading}
       hasCards={cards.length > 0}
+      emptyText={allFollowed ? "That's all for now" : null}
+      batch={batch}
       testID="top-picks-row"
       footer={
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Refresh"
-          accessibilityHint="Shows the next top picks"
-          accessibilityState={{ busy: isRefreshing }}
-          disabled={isRefreshing}
+        <RowRefresh
+          control={control}
           onPress={refresh}
-          hitSlop={8}
-          style={styles.refresh}
+          isRefreshing={isRefreshing}
+          refreshHint="Shows the next top picks"
           testID="top-picks-refresh"
-        >
-          <SymbolView
-            name={{
-              ios: "arrow.clockwise",
-              android: "refresh",
-              web: "refresh",
-            }}
-            tintColor={t.inkMuted}
-            size={14}
-          />
-          <Text style={styles.refreshLabel}>Refresh</Text>
-        </Pressable>
+        />
       }
     >
       {cards.map((card) => (
@@ -62,19 +56,3 @@ export function TopPicksRow({
     </PosterRow>
   );
 }
-
-const styles = StyleSheet.create({
-  // Quiet, like the meta line: a small control, not a primary action.
-  refresh: {
-    flexDirection: "row",
-    alignItems: "center",
-    alignSelf: "flex-start",
-    gap: t.space2,
-    marginHorizontal: t.space4,
-    paddingVertical: t.space2,
-  },
-  refreshLabel: {
-    ...type.meta,
-    color: t.inkMuted,
-  },
-});
