@@ -3,7 +3,7 @@
 // and its service, swipe to unfollow, and a search field that opens Search
 // (the same sheet as Home's "+"), in the design system's dark tokens.
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import {
   Pressable,
   RefreshControl,
@@ -47,9 +47,6 @@ export default function ShowsScreen() {
   const { followedShows, followedCount, isLoading, isRefetching, refetch } =
     useFollowedEpisodes();
 
-  // Inactive starts collapsed; its header expands it (PRD 5.3).
-  const [inactiveExpanded, setInactiveExpanded] = useState(false);
-
   const segments = useMemo(
     () =>
       splitBySegment(
@@ -70,11 +67,7 @@ export default function ShowsScreen() {
   // A segment without shows is left out.
   const sections = (["active", "inactive"] as const)
     .filter((key) => segments[key].length > 0)
-    .map((key) => ({
-      key,
-      count: segments[key].length,
-      data: key === "inactive" && !inactiveExpanded ? [] : segments[key],
-    }));
+    .map((key) => ({ key, data: segments[key] }));
 
   const openSearch = useCallback(() => router.push("/search"), [router]);
 
@@ -113,18 +106,12 @@ export default function ShowsScreen() {
         <SectionList
           sections={sections}
           keyExtractor={({ show }) => String(show.id)}
-          stickySectionHeadersEnabled={false}
+          // Each segment's header stays at the top while its rows scroll
+          // (PRD 5.3); Android needs this set, iOS has it by default.
+          stickySectionHeadersEnabled
+          testID="shows-list"
           renderSectionHeader={({ section }) => (
-            <SegmentHeader
-              segment={section.key}
-              count={section.count}
-              expanded={section.key === "active" || inactiveExpanded}
-              onToggle={
-                section.key === "inactive"
-                  ? () => setInactiveExpanded((expanded) => !expanded)
-                  : undefined
-              }
-            />
+            <SegmentHeader segment={section.key} count={section.data.length} />
           )}
           renderItem={({ item }) => (
             <ShowsRow
@@ -156,65 +143,28 @@ export default function ShowsScreen() {
   );
 }
 
-// "Active · 4"; the Inactive header is a button that expands or collapses
-// its segment.
+// "Active · 4", on bg so rows pass under it while it sticks.
 function SegmentHeader({
   segment,
   count,
-  expanded,
-  onToggle,
 }: {
   segment: ShowsSegment;
   count: number;
-  expanded: boolean;
-  onToggle?: () => void;
 }) {
   const title = SEGMENT_TITLES[segment];
-  const content = (
-    <>
+  return (
+    <View
+      style={styles.segmentHeader}
+      accessible
+      accessibilityRole="header"
+      accessibilityLabel={`${title}, ${count}`}
+      testID={`shows-segment-${segment}`}
+    >
       <Text style={styles.segmentTitle}>
         {title}
         <Text style={styles.segmentCount}> · {count}</Text>
       </Text>
-      {onToggle && (
-        <SymbolView
-          name={{
-            ios: expanded ? "chevron.down" : "chevron.right",
-            android: expanded ? "expand_more" : "chevron_right",
-            web: expanded ? "expand_more" : "chevron_right",
-          }}
-          tintColor={t.inkMuted}
-          size={14}
-          weight="semibold"
-        />
-      )}
-    </>
-  );
-
-  if (!onToggle) {
-    return (
-      <View
-        style={styles.segmentHeader}
-        accessibilityRole="header"
-        accessible
-        accessibilityLabel={`${title}, ${count}`}
-        testID={`shows-segment-${segment}`}
-      >
-        {content}
-      </View>
-    );
-  }
-  return (
-    <Pressable
-      style={styles.segmentHeader}
-      accessibilityRole="button"
-      accessibilityLabel={`${title}, ${count}`}
-      accessibilityState={{ expanded }}
-      onPress={onToggle}
-      testID={`shows-segment-${segment}`}
-    >
-      {content}
-    </Pressable>
+    </View>
   );
 }
 
@@ -260,9 +210,7 @@ const styles = StyleSheet.create({
     paddingBottom: TAB_BAR_HEIGHT,
   },
   segmentHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: t.space2,
+    backgroundColor: t.bg,
     paddingHorizontal: t.space4,
     paddingTop: t.space6,
     paddingBottom: t.space2,

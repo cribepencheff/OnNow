@@ -208,7 +208,7 @@ describe("ShowsScreen", () => {
     expect(screen.getByText("Season 4 · TBA")).toBeTruthy();
   });
 
-  it("keeps Inactive collapsed until its header is pressed (PRD 5.3)", async () => {
+  it("shows Inactive rows without a tap, with sticky segment headers (PRD 5.3)", async () => {
     mockShows([
       airingShow(1, "Silo"),
       makeShow({ id: 2, name: "The Bear", status: "Ended" }),
@@ -216,14 +216,15 @@ describe("ShowsScreen", () => {
 
     await render(<ShowsScreen />);
 
-    expect(screen.queryByText("The Bear")).toBeNull();
-    const header = screen.getByTestId("shows-segment-inactive");
-    expect(header.props.accessibilityState).toEqual({ expanded: false });
-
-    await fireEvent.press(header);
-
     expect(screen.getByText("The Bear")).toBeTruthy();
     expect(screen.getByText("Ended")).toBeTruthy();
+    expect(
+      screen.getByTestId("shows-segment-inactive").props.accessibilityRole,
+    ).toBe("header");
+    // Both segment headers stick (the list keeps their indices).
+    expect(
+      screen.getByTestId("shows-list").props.stickyHeaderIndices,
+    ).toHaveLength(2);
   });
 
   it("leaves out a segment without shows", async () => {
