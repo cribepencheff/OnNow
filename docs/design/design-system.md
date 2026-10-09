@@ -58,11 +58,12 @@ Measured on a 390 × 844 screen, from the design canvas:
 
 Refinement round (2026-10-09, CRI-124, CRI-127), replacing the measurements above where they differ:
 
-- A header over the hero: a 44 bar under the status bar, with a left slot (the app's logo, white, now; a back button later) and a right slot (later actions, such as a profile picture). Apple TV style: at rest it sits over the hero; scrolling up, it leaves with the content, fading and blurring, and is gone once scrolled past; on a pull to refresh it stays put. Behind it, a gradient from `bg` at the top of the screen keeps the status bar and the logo legible on bright images.
+- One screen margin across Home, `space-4` (16): the header, the hero's content and the rows line up on one left edge.
+- A header over the hero: a 56 bar under the status bar (room above and below the 20 tall logo), with a left slot (the app's logo, white, now; a back button later) and a right slot (later actions, such as a profile picture). Apple TV style: at rest it sits over the hero; scrolling up, it leaves with the content, fading and blurring, and is gone once scrolled past; on a pull to refresh it stays put. Behind it, a gradient from `bg` at the top of the screen keeps the status bar and the logo legible on bright images.
 - The backdrop fills the whole hero and fades into `bg` at its bottom, with no visible edge and no block behind any line of text.
 - The hero ends about 100 above the tab bar, so the first row's heading and the top of its posters show below it. On a 390 × 844 screen, roughly: the pill's centre at 420, the button's at 590, the page dots at 645, 6 under the button's note line.
 - Above the logo, centred, a date pill in sentence case ("Today · Fri 9 Oct", "Today–Thu · 9–15 Oct") on `image-control-backdrop` with a background blur and an `image-control-edge` hairline.
-- Under the logo, one episode line ("S2E4 · Blank Curtain"), with the IMDb rating in one chip ("IMDb 8.3") at its right end.
+- Under the logo, one episode line ("S2E4 · Blank Curtain"), with the IMDb rating in one chip ("IMDb 8.3") at its right end: a complement, not a focal point. The chip has the date pill's `image-control-edge` hairline and the episode line's weight and colour (`ink-muted`, regular) at about 85% of its size (12), with tabular figures so it keeps its width from slide to slide.
 - Poster rows: cards about 150 wide, two full cards and a peek of the third; every swipe rests with a card at the left margin. The name on one line; "Airing this week" keeps the day on its own second line.
 
 Open questions: whether "+" stays quiet (current proposal) and how to find the "newest" backdrop (the TMDB image list has no upload date; to be checked in the prototype).
