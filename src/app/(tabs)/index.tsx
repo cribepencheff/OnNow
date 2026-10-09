@@ -40,7 +40,6 @@ import {
 } from "@/logic/hero-carousel";
 import { HEADER_BAR_HEIGHT } from "@/logic/header";
 import {
-  TOP_SEAM_DEBUG,
   TAB_BAR_HEIGHT,
   heroLayout,
   posterDimAt,
@@ -371,7 +370,6 @@ export default function HomeScreen() {
       {showsHero && (
         <Header
           left={<AppLogo height={APP_LOGO_HEIGHT} color={tokens.ink} />}
-          edgeBlur={!TOP_SEAM_DEBUG}
           scrollOffset={scrollOffset}
         />
       )}

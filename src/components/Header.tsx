@@ -20,24 +20,14 @@ import {
   headerScrollProgress,
 } from "@/logic/header";
 import { t } from "@/theme/tokens";
-import { ProgressiveBlur } from "./ProgressiveBlur";
-
-// The blur band at the top edge: gentle, so the status bar reads.
-const EDGE_BLUR_INTENSITY = 24;
 
 export function Header({
   left,
   right,
-  edgeBlur = false,
   scrollOffset,
 }: {
   left?: ReactNode;
   right?: ReactNode;
-  // A progressive blur band at the top edge, full to half the top
-  // safe-area inset and clear by its end (sized by the inset, so it fits a
-  // notch, the Dynamic Island and the SE). Part of the header: it leaves
-  // and fades with the slots (CRI-124).
-  edgeBlur?: boolean;
   // How far the screen is scrolled from its resting top, negative during
   // a pull. Without it the header stays put.
   scrollOffset?: Animated.Value | Animated.AnimatedInterpolation<number>;
@@ -88,16 +78,6 @@ export function Header({
       ]}
       testID="header"
     >
-      {edgeBlur && (
-        <ProgressiveBlur
-          intensity={EDGE_BLUR_INTENSITY}
-          fullAt={0.5}
-          strongAt="top"
-          fade={motion.opacity}
-          style={[styles.edge, { height: insets.top }]}
-          testID="header-edge-blur"
-        />
-      )}
       <Animated.View
         pointerEvents="box-none"
         style={[styles.bar, { top: insets.top, opacity: motion.opacity }]}
@@ -123,12 +103,6 @@ export function Header({
 
 const styles = StyleSheet.create({
   header: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-  },
-  edge: {
     position: "absolute",
     top: 0,
     left: 0,

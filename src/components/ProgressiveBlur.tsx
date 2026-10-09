@@ -7,7 +7,6 @@
 // image instead (HeroPage, ProgressiveMask).
 
 import {
-  Animated,
   Platform,
   StyleSheet,
   type StyleProp,
@@ -45,7 +44,6 @@ export function ProgressiveBlur({
   intensity,
   fullAt,
   strongAt = "bottom",
-  fade,
   style,
   testID,
 }: {
@@ -56,9 +54,6 @@ export function ProgressiveBlur({
   // Which end is blurred: the bottom (the hero's mirror) or the top (the
   // screen's top edge band).
   strongAt?: "bottom" | "top";
-  // Fades the whole blur in or out (1 shown, 0 gone). Through the mask, not
-  // the blur view: iOS draws a blur view with an opacity below 1 wrongly.
-  fade?: number | Animated.Value | Animated.AnimatedInterpolation<number>;
   style?: StyleProp<ViewStyle>;
   testID?: string;
 }) {
@@ -69,13 +64,7 @@ export function ProgressiveBlur({
     <MaskedView
       pointerEvents="none"
       style={style}
-      maskElement={
-        <Animated.View
-          style={[StyleSheet.absoluteFill, { opacity: fade ?? 1 }]}
-        >
-          <ProgressiveMask fullAt={fullAt} strongAt={strongAt} />
-        </Animated.View>
-      }
+      maskElement={<ProgressiveMask fullAt={fullAt} strongAt={strongAt} />}
       testID={testID}
     >
       <BlurView

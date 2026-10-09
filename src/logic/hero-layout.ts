@@ -4,6 +4,7 @@
 // measured, and nothing moves from one slide to the next.
 
 import { t, type } from "@/theme/tokens";
+import { HEADER_BAR_HEIGHT } from "./header";
 
 // The translucent tab bar's height (app/(tabs)/_layout.tsx).
 export const TAB_BAR_HEIGHT = 83;
@@ -40,12 +41,6 @@ export const CONTENT_GAP = t.space2;
 // the logo has room (owner, CRI-124).
 export const TITLE_GAP = t.space4;
 
-// Step 1 of the top's new approach (owner, CRI-124): the top blur, the top
-// gradient and the header's edge band are off, and a thin line marks where
-// the image starts, so the raw mirror and the position can be judged. Off
-// again once the owner approves the position.
-export const TOP_SEAM_DEBUG = false;
-
 // Where the sharp image's top edge sits relative to the bottom of the top
 // safe area: 15 above it (owner, CRI-124). The image is zoomed out to fit
 // between there and the bottom seam, so faces near the pill barely move
@@ -56,9 +51,16 @@ export const IMAGE_TOP_MARGIN = -15;
 // symmetry never reads, then easing off this far into the image, before
 // the heads.
 export const TOP_BLUR_INTO_IMAGE = 40;
-// The thin dark gradient at the top: just past the status bar, so the clock
-// and icons read; not a darkening like the bottom's.
-export const TOP_GRADIENT_BELOW_INSET = 16;
+// The dark gradient at the top (owner, CRI-124): behind the status bar and
+// the logo row, so the clock, the icons and the logo read on bright images,
+// over the image-toned top blur; it fades out this far below the logo row.
+export const TOP_SCRIM_FADE = 40;
+// How dark it is (bg at this opacity): at the top of the screen, at the
+// bottom of the safe area, and at the bottom of the logo row. Matched to
+// the previous layers (a dark-tinted blur view, a 45% gradient and the
+// header's edge band) under the status bar, measured on screenshots, and
+// a little darker behind the logo for its contrast.
+export const TOP_SCRIM_ALPHA = { top: 0.55, safeArea: 0.45, logoRow: 0.42 };
 
 export interface HeroLayout {
   // The hero's own height.
@@ -93,7 +95,7 @@ export interface HeroLayout {
   // Where the fade into bg starts (with the blur); it ends, solid, at
   // heroHeight.
   fadeTop: number;
-  // How tall the top gradient behind the status bar and logo is.
+  // How tall the top gradient behind the status bar and logo row is.
   topGradientHeight: number;
 }
 
@@ -134,7 +136,7 @@ export function heroLayout(windowHeight: number, topInset: number): HeroLayout {
     contentTop,
     dotsTop: contentTop + contentHeight + dotsGap,
     fadeTop: contentTop,
-    topGradientHeight: topInset + TOP_GRADIENT_BELOW_INSET,
+    topGradientHeight: topInset + HEADER_BAR_HEIGHT + TOP_SCRIM_FADE,
   };
 }
 
@@ -223,4 +225,22 @@ export function posterDimAt(scrollOffset: number, endScroll: number): number {
   // Eased at both ends (smoothstep): about half gone halfway.
   const eased = progress * progress * (3 - 2 * progress);
   return POSTER_REST_DIM * (1 - eased);
+}
+
+// The top gradient's stops (CSS, for experimental_backgroundImage): dark
+// behind the status bar and the logo row (TOP_SCRIM_ALPHA), then eased out
+// over TOP_SCRIM_FADE below the logo row.
+export function topScrimGradient(topInset: number): string {
+  const height = topInset + HEADER_BAR_HEIGHT + TOP_SCRIM_FADE;
+  const at = (y: number) => `${((y / height) * 100).toFixed(1)}%`;
+  const bg = (alpha: number) => `rgba(11,12,15,${alpha})`;
+  const logoRowEnd = topInset + HEADER_BAR_HEIGHT;
+  const stops = [
+    `${bg(TOP_SCRIM_ALPHA.top)} 0%`,
+    `${bg(TOP_SCRIM_ALPHA.safeArea)} ${at(topInset)}`,
+    `${bg(TOP_SCRIM_ALPHA.logoRow)} ${at(logoRowEnd)}`,
+    `${bg(0.12)} ${at(logoRowEnd + TOP_SCRIM_FADE / 2)}`,
+    `${bg(0)} 100%`,
+  ];
+  return `linear-gradient(to bottom, ${stops.join(", ")})`;
 }

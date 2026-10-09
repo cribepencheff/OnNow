@@ -28,7 +28,8 @@ import {
   physicalToLogical,
   type HeroSlide,
 } from "@/logic/hero-carousel";
-import { TOP_SEAM_DEBUG } from "@/logic/hero-layout";
+import { topScrimGradient } from "@/logic/hero-layout";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ProgressiveBlur } from "../ProgressiveBlur";
 import { ContentLayer, HeroPage, useHeroLayout } from "./HeroPage";
 import { PageIndicator } from "./PageIndicator";
@@ -54,10 +55,6 @@ const FADE_GRADIENT =
 // How strong the blur over the mirror zone gets: the image reads as
 // almost one colour there.
 const MIRROR_BLUR_INTENSITY = 80;
-// A thin, light dark gradient behind the status bar, so the clock and icons
-// read on bright images; not a darkening like the bottom's (owner, CRI-124).
-const TOP_GRADIENT =
-  "linear-gradient(to bottom, rgba(11,12,15,0.3) 0%, rgba(11,12,15,0.12) 55%, rgba(11,12,15,0) 100%)";
 
 // Whether the app is in the foreground. Auto-advance pauses in the
 // background (CRI-124).
@@ -88,9 +85,10 @@ export function HeroPager({
   pullDistance: Animated.AnimatedInterpolation<number>;
 }) {
   const { width } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  const topScrim = useMemo(() => topScrimGradient(insets.top), [insets.top]);
   const {
     heroHeight,
-    imageTop,
     imageHeight,
     blurTop,
     fadeTop,
@@ -589,37 +587,22 @@ export function HeroPager({
         />
         {/* Pinned with the backdrop, so it stays at the image's top during
             a pull. */}
-        {TOP_SEAM_DEBUG ? (
-          // Where the sharp image starts (TOP_SEAM_DEBUG).
-          <View
-            pointerEvents="none"
-            style={{
-              position: "absolute",
-              top: imageTop,
-              left: 0,
-              width,
-              height: 1,
-              backgroundColor: "red",
-            }}
-            testID="hero-top-seam-debug"
-          />
-        ) : (
-          <>
-            <View
-              pointerEvents="none"
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width,
-                height: topGradientHeight,
-                experimental_backgroundImage: TOP_GRADIENT,
-              }}
-            />
-            {/* The top edge's blur is each slide's own (HeroPage): a
-                blurred copy of its image, no tinted blur view. */}
-          </>
-        )}
+        {/* Dark behind the status bar and the logo row, so the clock,
+            the icons and the logo read on bright images; over each slide's
+            image-toned top blur (HeroPage), and fading out below the logo
+            row (topScrimGradient). */}
+        <View
+          pointerEvents="none"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width,
+            height: topGradientHeight,
+            experimental_backgroundImage: topScrim,
+          }}
+          testID="hero-top-scrim"
+        />
       </Animated.View>
 
       {/* Over the hero's lower part, once for all slides rather than per

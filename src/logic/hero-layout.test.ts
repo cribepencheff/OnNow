@@ -3,6 +3,9 @@
 import { HEADER_BAR_HEIGHT } from "./header";
 import {
   HERO_END_ABOVE_TAB_BAR,
+  TOP_SCRIM_ALPHA,
+  TOP_SCRIM_FADE,
+  topScrimGradient,
   POSTER_REST_DIM,
   posterDimAt,
   posterDimEndScroll,
@@ -125,10 +128,17 @@ describe("heroLayout (CRI-124)", () => {
     expect(layout.fadeTop).toBe(layout.blurTop);
   });
 
-  it("keeps the top gradient thin: just past the status bar", () => {
-    const { topGradientHeight } = heroLayout(844, 47);
-    expect(topGradientHeight).toBeGreaterThan(47);
-    expect(topGradientHeight).toBeLessThan(47 + HEADER_BAR_HEIGHT);
+  // The logo reads on bright images: the top gradient is dark behind the
+  // status bar and the logo row, and fades out below it.
+  it("covers the status bar and the logo row, and fades out below it", () => {
+    const { topGradientHeight } = heroLayout(874, 62);
+    expect(topGradientHeight).toBe(62 + HEADER_BAR_HEIGHT + TOP_SCRIM_FADE);
+    const css = topScrimGradient(62);
+    expect(css).toContain(`rgba(11,12,15,${TOP_SCRIM_ALPHA.top}) 0%`);
+    // The bottom of the logo row: 106 of 146.
+    expect(css).toContain(`rgba(11,12,15,${TOP_SCRIM_ALPHA.logoRow}) 72.6%`);
+    expect(css).toContain("rgba(11,12,15,0) 100%");
+    expect(TOP_SCRIM_ALPHA.logoRow).toBeGreaterThanOrEqual(0.3);
   });
 });
 
