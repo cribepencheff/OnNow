@@ -281,7 +281,11 @@ describe("HomeScreen", () => {
       expect(withChipRows).toHaveLength(1);
       const chip = within(withChipRows[0]).getByTestId("imdb-rating");
       expect(within(chip).getByText("IMDb")).toBeTruthy();
-      expect(within(chip).getByText("8.1")).toBeTruthy();
+      // Tabular figures: the chip keeps its width from slide to slide.
+      expect(
+        StyleSheet.flatten(within(chip).getByText("8.1").props.style)
+          .fontVariant,
+      ).toEqual(["tabular-nums"]);
       expect(heights("hero-title-block")).toEqual([88, 88]);
     } finally {
       (useShowImages as jest.Mock).mockImplementation(() => ({

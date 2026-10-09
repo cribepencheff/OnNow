@@ -520,8 +520,9 @@ export const ContentLayer = memo(function ContentLayer({
 const styles = StyleSheet.create({
   content: {
     position: "absolute",
-    left: 24,
-    right: 24,
+    // One screen margin on Home, the rows' too (CRI-124).
+    left: t.space4,
+    right: t.space4,
     gap: CONTENT_GAP,
   },
   // As tall as the pill, so nothing below shifts per slide.

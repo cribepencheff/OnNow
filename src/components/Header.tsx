@@ -116,8 +116,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    // In line with the hero's content.
-    paddingHorizontal: t.space6,
+    // The screen margin, in line with the hero's content and the rows.
+    paddingHorizontal: t.space4,
   },
   slot: {
     flexDirection: "row",
