@@ -46,11 +46,11 @@ export const TITLE_GAP = t.space4;
 // again once the owner approves the position.
 export const TOP_SEAM_DEBUG = true;
 
-// How far below the top safe area the sharp image's top edge sits. The
-// image is zoomed out to fit between there and the bottom seam, so faces
-// near the pill barely move while the top gains room, filled by the
-// upward mirror (owner, CRI-124; being tuned).
-export const IMAGE_TOP_MARGIN = 40;
+// Where the sharp image's top edge sits relative to the bottom of the top
+// safe area: 20 above it (owner, CRI-124). The image is zoomed out to fit
+// between there and the bottom seam, so faces near the pill barely move
+// while the top gains room, filled by the upward mirror.
+export const IMAGE_TOP_MARGIN = -20;
 // The top blur, the bottom one flipped upwards: full from the top of the
 // screen all the way to the image's top (the seam), so the mirror's
 // symmetry never reads, then easing off this far into the image, before
