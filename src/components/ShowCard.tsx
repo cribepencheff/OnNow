@@ -1,28 +1,40 @@
 // A poster card for the poster rows on Home and in Search (FR-038, FR-039,
 // FR-026), built from the app's existing components and design tokens. A
 // tap opens Show detail (inside the sheet when shown in Search, PRD 5.6);
-// the Search follow circle follows at once.
+// the follow circle follows at once.
 
+import { useCallback } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Image } from "expo-image";
+import * as Haptics from "expo-haptics";
+import { SymbolView } from "expo-symbols";
 
 import { IMAGE_BASE } from "@/api/tmdb-types";
 import { useFollowToggle } from "@/hooks/useFollowList";
 import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import type { PosterItem } from "@/logic/top-picks";
 import { t, type } from "@/theme/tokens";
-import { FollowCircle } from "./FollowCircle";
 
-const POSTER_WIDTH = 112;
+// About 150 wide: two full cards and a peek of the third (CRI-127).
+export const POSTER_WIDTH = 150;
 const POSTER_HEIGHT = POSTER_WIDTH * 1.5;
-// A card at its tallest: poster, two name lines and the caption line. A
-// row reserves this while it loads, so nothing moves when it appears.
+const FOLLOW_CIRCLE_SIZE = 32;
+
 // Where a tap opens Show detail: on top of the tabs, or inside the Search
 // sheet with a back arrow to it (PRD 5.6).
 export type DetailPathname = "/show/[id]" | "/search/show/[id]";
 
-export const CARD_HEIGHT =
-  POSTER_HEIGHT + t.space2 + 2 * type.meta.lineHeight + type.label.lineHeight;
+// A card's height: the poster, the name on one line, and the caption line
+// ("Today") when the row has one. Each row has one fixed height, so nothing
+// moves while its cards load (CRI-127).
+export function cardHeight(withCaption: boolean): number {
+  return (
+    POSTER_HEIGHT +
+    t.space2 +
+    type.meta.lineHeight +
+    (withCaption ? type.label.lineHeight : 0)
+  );
+}
 
 export function ShowCard({
   card,
@@ -52,13 +64,14 @@ export function ShowCard({
     >
       <View>
         <Image
-          source={`${IMAGE_BASE}/w342${card.posterPath}`}
+          source={`${IMAGE_BASE}/w500${card.posterPath}`}
           style={styles.poster}
           contentFit="cover"
           accessibilityIgnoresInvertColors
         />
+        <View style={styles.edge} pointerEvents="none" />
         <View style={styles.follow}>
-          <FollowCircle
+          <PosterFollowCircle
             followed={followed}
             onPress={toggle}
             testID={`${testID}-follow-${card.tvmazeId}`}
@@ -66,12 +79,89 @@ export function ShowCard({
         </View>
       </View>
       <View>
-        <Text style={styles.name} numberOfLines={2}>
+        <Text style={styles.name} numberOfLines={1}>
           {card.name}
         </Text>
-        {caption && <Text style={styles.caption}>{caption}</Text>}
+        {/* Its own line, so a long name never pushes it out. */}
+        {caption != null && (
+          <Text style={styles.caption} numberOfLines={1}>
+            {caption}
+          </Text>
+        )}
       </View>
     </Pressable>
+  );
+}
+
+// The follow circle on a poster (CRI-127), Apple TV style. Not followed: a
+// translucent dark fill, no blur, a light hairline edge and a white plus.
+// Followed: a solid fill, the same as "Following" in Show detail, and a
+// white check. The icon is always white. (Search results and Shows keep
+// their own FollowCircle.)
+function PosterFollowCircle({
+  followed,
+  onPress,
+  testID,
+}: {
+  followed: boolean;
+  onPress: () => void;
+  testID: string;
+}) {
+  const handlePress = useCallback(() => {
+    if (!followed) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    onPress();
+  }, [followed, onPress]);
+
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={followed ? "Followed" : "Follow"}
+      accessibilityState={{ selected: followed }}
+      onPress={handlePress}
+      // A 44pt tap target around the 32pt circle.
+      hitSlop={6}
+      testID={testID}
+    >
+      <View
+        style={[
+          styles.circle,
+          followed ? styles.circleFollowed : styles.circleNotFollowed,
+        ]}
+      >
+        <SymbolView
+          name={{
+            ios: followed ? "checkmark" : "plus",
+            android: followed ? "check" : "add",
+            web: followed ? "check" : "add",
+          }}
+          tintColor="#FFFFFF"
+          size={15}
+        />
+      </View>
+    </Pressable>
+  );
+}
+
+// A card's shape while its row loads for the first time (CRI-127): exactly
+// a real card's size, the name line and caption line included, so nothing
+// moves when the posters come in.
+export function SkeletonCard({ withCaption }: { withCaption: boolean }) {
+  return (
+    <View style={styles.card} testID="skeleton-card">
+      <View style={[styles.poster, styles.skeletonPoster]} />
+      <View>
+        <View style={styles.nameLine}>
+          <View style={[styles.bar, styles.nameBar]} />
+        </View>
+        {withCaption && (
+          <View style={styles.captionLine}>
+            <View style={[styles.bar, styles.captionBar]} />
+          </View>
+        )}
+      </View>
+    </View>
   );
 }
 
@@ -86,18 +176,35 @@ const styles = StyleSheet.create({
     borderRadius: t.radiusSm,
     backgroundColor: t.surface,
   },
-  // On the image-control backdrop, so it reads on light posters too.
+  // The card's light hairline edge (Apple TV style), over the image.
+  edge: {
+    ...StyleSheet.absoluteFill,
+    borderRadius: t.radiusSm,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: t.imageControlEdge,
+  },
   follow: {
     position: "absolute",
     top: t.space2,
     right: t.space2,
-    borderRadius: t.radiusPill,
-    padding: 2,
+  },
+  circle: {
+    width: FOLLOW_CIRCLE_SIZE,
+    height: FOLLOW_CIRCLE_SIZE,
+    borderRadius: FOLLOW_CIRCLE_SIZE / 2,
+    borderWidth: StyleSheet.hairlineWidth,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  circleNotFollowed: {
     backgroundColor: t.imageControlBackdrop,
-    shadowColor: "#000000",
-    shadowOpacity: 0.4,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
+    borderColor: t.imageControlEdge,
+  },
+  // Show detail's "Following" fill; the edge matches it, so the circle
+  // keeps its size.
+  circleFollowed: {
+    backgroundColor: t.surfaceRaised,
+    borderColor: t.surfaceRaised,
   },
   name: {
     ...type.meta,
@@ -106,5 +213,29 @@ const styles = StyleSheet.create({
   caption: {
     ...type.label,
     color: t.ink,
+  },
+  skeletonPoster: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: t.imageControlEdge,
+  },
+  nameLine: {
+    height: type.meta.lineHeight,
+    justifyContent: "center",
+  },
+  captionLine: {
+    height: type.label.lineHeight,
+    justifyContent: "center",
+  },
+  bar: {
+    borderRadius: t.radiusPill,
+    backgroundColor: t.surfaceRaised,
+  },
+  nameBar: {
+    width: "70%",
+    height: 10,
+  },
+  captionBar: {
+    width: "35%",
+    height: 8,
   },
 });

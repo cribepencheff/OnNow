@@ -1,25 +1,41 @@
 // A poster row on Home, and in Search before typing (FR-038, FR-039,
 // FR-026). Its card strip has one fixed height in every state, so nothing
-// on the page moves: while its cards load it keeps that height, invisible,
-// then fades in (CRI-110). A new batch (Refresh, Start over) crossfades in
-// over the old one, scrolled to its start; an empty row says why where its
-// cards were (CRI-123). Removed only when it has no cards and nothing to
-// say, which means its source has no shows at all.
+// on the page moves (CRI-110, CRI-127). On a first load, with nothing
+// cached, it shows skeleton cards of the real cards' exact size, which
+// crossfade into the cards (CRI-127). A new batch (Refresh, Start over)
+// crossfades in over the old one, scrolled to its start; an empty row says
+// why where its cards were (CRI-123). Removed only when it has no cards
+// and nothing to say, which means its source has no shows at all. A swipe
+// always comes to rest with a card at the left margin (CRI-127).
 
-import { useEffect, useLayoutEffect, useState, type ReactNode } from "react";
+import {
+  Children,
+  useEffect,
+  useLayoutEffect,
+  useState,
+  type ReactNode,
+} from "react";
 import {
   Animated,
   ScrollView,
   StyleSheet,
   Text,
   View,
+  useWindowDimensions,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
 } from "react-native";
 
 import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
+import { posterSnapOffsets } from "@/logic/poster-snap";
 import { t, type } from "@/theme/tokens";
-import { CARD_HEIGHT } from "./ShowCard";
+import { POSTER_WIDTH, SkeletonCard, cardHeight } from "./ShowCard";
+
+// Skeleton cards on a first load: two full and the peek of a third, as
+// many as the screen shows.
+const SKELETON_COUNT = 3;
+// The strip key while skeleton cards are on screen; batches count from 0.
+const SKELETON_BATCH = -1;
 
 const CROSSFADE_MS = 250;
 
@@ -33,6 +49,7 @@ export function PosterRow({
   title,
   isLoading,
   hasCards,
+  withCaption = false,
   emptyText,
   batch = 0,
   testID,
@@ -42,6 +59,9 @@ export function PosterRow({
   title: string;
   isLoading: boolean;
   hasCards: boolean;
+  // Whether the cards have a caption line ("Today"), which sets the row's
+  // fixed height.
+  withCaption?: boolean;
   // Said where the cards were when there are none (CRI-123).
   emptyText?: string | null;
   // Which batch the cards are; a new one crossfades in (CRI-123).
@@ -51,7 +71,11 @@ export function PosterRow({
   footer?: ReactNode;
 }) {
   const { reduceMotionEnabled } = useAccessibilityFlags();
-  const isShown = hasCards || Boolean(emptyText);
+  const { width: viewportWidth } = useWindowDimensions();
+  const height = cardHeight(withCaption);
+  // No cards yet and none cached: skeleton cards hold the row's place.
+  const showSkeleton = isLoading && !hasCards;
+  const isShown = hasCards || Boolean(emptyText) || showSkeleton;
   const [opacity] = useState(() => new Animated.Value(isShown ? 1 : 0));
 
   useEffect(() => {
@@ -71,18 +95,30 @@ export function PosterRow({
     return () => fadeIn.stop();
   }, [isShown, reduceMotionEnabled, opacity]);
 
+  // The skeleton counts as a batch of its own, so the cards crossfade in
+  // over it like a new batch over the old.
+  const stripBatch = showSkeleton ? SKELETON_BATCH : batch;
+  const stripChildren = showSkeleton
+    ? Array.from({ length: SKELETON_COUNT }, (_, index) => (
+        <SkeletonCard key={index} withCaption={withCaption} />
+      ))
+    : children;
+
   // The crossfade between batches. A new batch is noticed while
   // rendering, so the old cards are kept for the same frame; the fade
   // itself starts before paint.
   const [incoming] = useState(() => new Animated.Value(1));
   const [fading] = useState(() => new Animated.Value(0));
-  const [shownBatch, setShownBatch] = useState({ batch, children });
+  const [shownBatch, setShownBatch] = useState({
+    batch: stripBatch,
+    children: stripChildren,
+  });
   const [outgoing, setOutgoing] = useState<Outgoing | null>(null);
   // Where the strip rests, kept when a scroll ends.
   const [scrollOffset, setScrollOffset] = useState(0);
 
-  if (batch !== shownBatch.batch) {
-    setShownBatch({ batch, children });
+  if (stripBatch !== shownBatch.batch) {
+    setShownBatch({ batch: stripBatch, children: stripChildren });
     setScrollOffset(0);
     setOutgoing(
       reduceMotionEnabled
@@ -122,6 +158,15 @@ export function PosterRow({
     setScrollOffset(event.nativeEvent.contentOffset.x);
   }
 
+  const snapOffsets = posterSnapOffsets({
+    count: Children.count(stripChildren),
+    cardWidth: POSTER_WIDTH,
+    gap: t.space2,
+    margin: t.space4,
+    viewportWidth,
+  });
+  const fixedHeight = { height };
+
   if (!isLoading && !isShown) {
     return null;
   }
@@ -136,11 +181,18 @@ export function PosterRow({
       <Text style={styles.heading} accessibilityRole="header">
         {title}
       </Text>
-      <View style={styles.stripBox}>
-        {!hasCards && emptyText ? (
+      <View
+        style={fixedHeight}
+        // Skeleton cards say nothing to a screen reader.
+        accessibilityElementsHidden={showSkeleton}
+        importantForAccessibility={
+          showSkeleton ? "no-hide-descendants" : "auto"
+        }
+      >
+        {!showSkeleton && !hasCards && emptyText ? (
           <Animated.View
             testID={`${testID}-empty`}
-            style={[styles.empty, { opacity: incoming }]}
+            style={[styles.empty, fixedHeight, { opacity: incoming }]}
           >
             <Text style={styles.emptyText}>{emptyText}</Text>
           </Animated.View>
@@ -148,16 +200,19 @@ export function PosterRow({
           <Animated.View style={{ opacity: incoming }}>
             <ScrollView
               // A new batch is a new strip, so it starts at its beginning.
-              key={batch}
+              key={stripBatch}
               horizontal
               showsHorizontalScrollIndicator={false}
-              style={styles.strip}
-              testID={`${testID}-cards`}
+              style={fixedHeight}
+              testID={showSkeleton ? `${testID}-skeleton` : `${testID}-cards`}
               contentContainerStyle={styles.cards}
+              snapToOffsets={snapOffsets}
+              decelerationRate="fast"
+              scrollEnabled={!showSkeleton}
               onScrollEndDrag={keepScrollOffset}
               onMomentumScrollEnd={keepScrollOffset}
             >
-              {children}
+              {stripChildren}
             </ScrollView>
           </Animated.View>
         )}
@@ -174,7 +229,7 @@ export function PosterRow({
               scrollEnabled={false}
               showsHorizontalScrollIndicator={false}
               contentOffset={{ x: outgoing.offset, y: 0 }}
-              style={styles.strip}
+              style={fixedHeight}
               contentContainerStyle={styles.cards}
             >
               {outgoing.children}
@@ -197,18 +252,11 @@ const styles = StyleSheet.create({
     color: t.ink,
     paddingHorizontal: t.space4,
   },
-  stripBox: {
-    height: CARD_HEIGHT,
-  },
-  strip: {
-    height: CARD_HEIGHT,
-  },
   cards: {
     paddingHorizontal: t.space4,
     gap: t.space2,
   },
   empty: {
-    height: CARD_HEIGHT,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: t.space4,

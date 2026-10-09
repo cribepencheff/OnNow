@@ -30,6 +30,8 @@ export function AiringThisWeekRow({
       title="Airing this week"
       isLoading={isLoading}
       hasCards={cards.length > 0}
+      // The day on its own second line (CRI-127).
+      withCaption
       emptyText={allFollowed ? "That's all this week" : null}
       batch={batch}
       testID="airing-this-week-row"

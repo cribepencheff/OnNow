@@ -9,6 +9,9 @@ export const t = {
   surfaceRaised: "#22252c",
   hairline: "#2c2f37",
   imageControlBackdrop: "rgba(11, 12, 15, 0.55)",
+  // The hairline light border of the date pill, the Home follow circle and
+  // the poster cards (Apple TV style), drawn StyleSheet.hairlineWidth wide.
+  imageControlEdge: "rgba(255, 255, 255, 0.16)",
   ink: "#f4f4f6",
   inkMuted: "#a3a6ae",
   inkSubtle: "#8b8e97",

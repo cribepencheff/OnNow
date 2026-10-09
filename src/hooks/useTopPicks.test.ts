@@ -69,8 +69,30 @@ describe("useTopPicks (FR-038)", () => {
     expect(ids(result.current.cards)).toEqual([
       101, 102, 103, 104, 105, 106, 107, 108, 109, 110,
     ]);
-    // Three at a time: at most two checks beyond the ten cards.
-    expect(resolve.mock.calls.length).toBeLessThanOrEqual(12);
+    // Three at a time: at most two checks beyond the ten cards, before the
+    // next batch is prepared (CRI-127).
+    expect(resolve.mock.calls.map(([id]) => id).slice(0, 12)).toEqual([
+      101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112,
+    ]);
+    await unmount();
+    client.unmount();
+  });
+
+  // CRI-127: Refresh is near instant because the next batch was checked
+  // while the first was on screen; only one batch ahead.
+  it("prepares the next batch in the background, so Refresh needs no new checks", async () => {
+    const { result, unmount, client } = await renderRow();
+    await waitFor(() => expect(result.current.cards).toHaveLength(10));
+    await waitFor(() =>
+      expect(resolve.mock.calls.map(([id]) => id)).toContain(114),
+    );
+    const checks = resolve.mock.calls.length;
+
+    await act(() => result.current.refresh());
+    await waitFor(() =>
+      expect(ids(result.current.cards)).toEqual([111, 112, 113, 114]),
+    );
+    expect(resolve.mock.calls.length).toBe(checks);
     await unmount();
     client.unmount();
   });
@@ -137,6 +159,8 @@ describe("useTopPicks (FR-038)", () => {
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     expect(result.current.cards).toEqual([]);
     expect(result.current.allFollowed).toBe(true);
+    // Nothing to refresh to (CRI-127).
+    expect(result.current.control).toBeNull();
     await unmount();
     client.unmount();
   });
