@@ -167,7 +167,8 @@ export const HeroPage = memo(function HeroPage({
   // per cell that would defeat this memo regardless of anything else.
   onBackdropLoad: (index: number) => void;
 }) {
-  const { heroHeight, imageHeight, blurTop } = useHeroLayout();
+  const { heroHeight, imageTop, imageHeight, blurTop, topBlurHeight } =
+    useHeroLayout();
   const router = useGuardedRouter();
   const show = item.show as TvMazeShowWithEmbeds;
   const { data: images, isLoading: imagesLoading } = useShowImages(
@@ -181,11 +182,13 @@ export const HeroPage = memo(function HeroPage({
   // Nothing below this line (parallax, crossfade, pull-zoom, mirror, blur)
   // depends on which image it is.
   const displayPath = images?.highestRatedBackdrop?.file_path;
-  // The image fills the hero down to the title slot's bottom (heroLayout).
-  // Below it, the same image mirrored (Apple TV style); HeroPager's single
-  // progressive blur and fade, both fixed overlays, start on the image at
-  // the pill and turn the hero's lower part soft.
+  // The sharp image runs from under the top safe area down to the title
+  // slot's bottom (heroLayout), mirrored above and below it (Apple TV
+  // style); HeroPager's progressive blurs, one at each end for all slides,
+  // turn the mirrors soft. backdropHeight is the whole column's reach down
+  // to the bottom seam, which the pull stretch works on.
   const backdropHeight = imageHeight;
+  const imageBoxHeight = imageHeight - imageTop;
   // Ready for auto-advance once the image loads, fails, or turns out not to
   // exist; a slide without an image must never hold the pager.
   const handleLoad = useCallback(
@@ -214,7 +217,7 @@ export const HeroPage = memo(function HeroPage({
   // (heroImageSize): "original" on today's phones.
   const imageSize = heroImageSize(
     backdropWidth,
-    backdropHeight,
+    imageBoxHeight,
     PixelRatio.get(),
   );
 
@@ -342,86 +345,72 @@ export const HeroPage = memo(function HeroPage({
                 transform: [{ translateX }],
               }}
             >
-              <Image
-                source={`${IMAGE_BASE}/${imageSize}${displayPath}`}
-                style={{ width: backdropWidth, height: backdropHeight }}
-                contentFit="cover"
-                contentPosition="center"
-                accessibilityIgnoresInvertColors
+              <ImageColumn
+                uri={`${IMAGE_BASE}/${imageSize}${displayPath}`}
+                width={backdropWidth}
+                imageTop={imageTop}
+                boxHeight={imageBoxHeight}
                 onLoad={handleLoad}
-                onError={handleLoad}
-                testID="hero-backdrop-image"
               />
-              {/* The mirror: the same box flipped under the seam, so its
-                  top edge continues the sharp image's bottom edge. It
-                  moves with the image's parallax and pull stretch. */}
-              <View
-                pointerEvents="none"
-                testID="hero-backdrop-mirror-box"
-                style={{
-                  position: "absolute",
-                  top: backdropHeight,
-                  left: 0,
-                  width: backdropWidth,
-                  height: backdropHeight,
-                }}
-              >
-                <Image
-                  source={`${IMAGE_BASE}/${imageSize}${displayPath}`}
-                  style={[
-                    { width: backdropWidth, height: backdropHeight },
-                    styles.flipped,
-                  ]}
-                  contentFit="cover"
-                  contentPosition="center"
-                  accessibilityIgnoresInvertColors
-                  testID="hero-backdrop-mirror"
-                />
-              </View>
               {/* Android has no progressive BlurView (ProgressiveBlur): a
-                  blurred copy of the image and its mirror shows through
-                  the same eased mask instead, from the pill's top, full by
-                  the seam. */}
+                  blurred copy of the column shows through the same eased
+                  masks instead, at both ends. */}
               {Platform.OS === "android" && (
-                <MaskedView
-                  pointerEvents="none"
-                  style={{
-                    position: "absolute",
-                    top: blurTop,
-                    left: 0,
-                    width: backdropWidth,
-                    height: heroHeight - blurTop,
-                  }}
-                  maskElement={
-                    <ProgressiveMask
-                      fullAt={
-                        (backdropHeight - blurTop) / (heroHeight - blurTop)
-                      }
-                    />
-                  }
-                >
-                  <View
-                    style={{ position: "absolute", top: -blurTop, left: 0 }}
+                <>
+                  <MaskedView
+                    pointerEvents="none"
+                    style={{
+                      position: "absolute",
+                      top: blurTop,
+                      left: 0,
+                      width: backdropWidth,
+                      height: heroHeight - blurTop,
+                    }}
+                    maskElement={
+                      <ProgressiveMask
+                        fullAt={
+                          (backdropHeight - blurTop) / (heroHeight - blurTop)
+                        }
+                      />
+                    }
                   >
-                    <Image
-                      source={`${IMAGE_BASE}/${imageSize}${displayPath}`}
-                      style={{ width: backdropWidth, height: backdropHeight }}
-                      contentFit="cover"
-                      contentPosition="center"
+                    <View
+                      style={{ position: "absolute", top: -blurTop, left: 0 }}
+                    >
+                      <ImageColumn
+                        uri={`${IMAGE_BASE}/${imageSize}${displayPath}`}
+                        width={backdropWidth}
+                        imageTop={imageTop}
+                        boxHeight={imageBoxHeight}
+                        blurRadius={ANDROID_MIRROR_BLUR_RADIUS}
+                      />
+                    </View>
+                  </MaskedView>
+                  <MaskedView
+                    pointerEvents="none"
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: backdropWidth,
+                      height: topBlurHeight,
+                    }}
+                    maskElement={
+                      <ProgressiveMask
+                        fullAt={(topBlurHeight - imageTop) / topBlurHeight}
+                        strongAt="top"
+                      />
+                    }
+                  >
+                    <ImageColumn
+                      uri={`${IMAGE_BASE}/${imageSize}${displayPath}`}
+                      width={backdropWidth}
+                      imageTop={imageTop}
+                      boxHeight={imageBoxHeight}
                       blurRadius={ANDROID_MIRROR_BLUR_RADIUS}
                     />
-                    <Image
-                      source={`${IMAGE_BASE}/${imageSize}${displayPath}`}
-                      style={[
-                        { width: backdropWidth, height: backdropHeight },
-                        styles.flipped,
-                      ]}
-                      contentFit="cover"
-                      contentPosition="center"
-                      blurRadius={ANDROID_MIRROR_BLUR_RADIUS}
-                    />
-                  </View>
-                </MaskedView>
+                  </MaskedView>
+                </>
               )}
             </Animated.View>
           </Animated.View>
@@ -430,6 +419,64 @@ export const HeroPage = memo(function HeroPage({
     </Pressable>
   );
 });
+
+// One slide's image as a column: the sharp image from imageTop down
+// boxHeight, the same box flipped above it (its bottom edge continues the
+// image's top edge) and flipped below it (its top edge continues the
+// image's bottom edge). Positioned from the column's own top. Drawn once
+// sharp, and on Android once more, blurred, for the masked blur.
+function ImageColumn({
+  uri,
+  width,
+  imageTop,
+  boxHeight,
+  blurRadius,
+  onLoad,
+}: {
+  uri: string;
+  width: number;
+  imageTop: number;
+  boxHeight: number;
+  blurRadius?: number;
+  // Only the sharp column reports its load (auto-advance waits for it).
+  onLoad?: () => void;
+}) {
+  const sharp = blurRadius === undefined;
+  const image = (flipped: boolean, testID?: string) => (
+    <Image
+      source={uri}
+      style={[{ width, height: boxHeight }, flipped && styles.flipped]}
+      contentFit="cover"
+      contentPosition="center"
+      accessibilityIgnoresInvertColors
+      blurRadius={blurRadius}
+      onLoad={flipped ? undefined : onLoad}
+      onError={flipped ? undefined : onLoad}
+      testID={sharp ? testID : undefined}
+    />
+  );
+  return (
+    <>
+      <View
+        pointerEvents="none"
+        testID={sharp ? "hero-backdrop-top-mirror-box" : undefined}
+        style={[styles.box, { top: imageTop - boxHeight, width }]}
+      >
+        {image(true, "hero-backdrop-top-mirror")}
+      </View>
+      <View pointerEvents="none" style={[styles.box, { top: imageTop, width }]}>
+        {image(false, "hero-backdrop-image")}
+      </View>
+      <View
+        pointerEvents="none"
+        testID={sharp ? "hero-backdrop-mirror-box" : undefined}
+        style={[styles.box, { top: imageTop + boxHeight, width }]}
+      >
+        {image(true, "hero-backdrop-mirror")}
+      </View>
+    </>
+  );
+}
 
 // Fixed overlay, a sibling of the paging FlatList in HeroPager (like the
 // scrim and PageIndicator): shows one slide's text/logo/meta/Open-in
@@ -600,6 +647,11 @@ export const ContentLayer = memo(function ContentLayer({
 });
 
 const styles = StyleSheet.create({
+  // One box of the image column (ImageColumn).
+  box: {
+    position: "absolute",
+    left: 0,
+  },
   // A mirror image: upside down, around its own centre.
   flipped: {
     transform: [{ scaleY: -1 }],

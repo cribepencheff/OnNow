@@ -41,13 +41,29 @@ export const CONTENT_GAP = t.space2;
 // the logo has room (owner, CRI-124).
 export const TITLE_GAP = t.space4;
 
+// Extra room above the sharp image, beyond the top safe area: a tuning
+// value (owner, CRI-124).
+export const IMAGE_TOP_EXTRA = 0;
+// How far below the image's top the top blur eases off: short, since faces
+// sit there; the mirror above is mostly under the status bar.
+export const TOP_BLUR_RAMP = 48;
+
 export interface HeroLayout {
   // The hero's own height.
   heroHeight: number;
-  // How tall the image is: down to the fixed bottom of the title (logo)
-  // slot, the same on every slide, so the seam never moves (owner,
-  // CRI-124). Below it, to the hero's end, the image mirrored.
+  // Where the sharp image starts: under the top safe area (status bar,
+  // notch or Dynamic Island), so faces and heads sit lower, clear of the
+  // top edge (owner, CRI-124). The logo row is not part of the offset: the
+  // logo sits at the side. Above it, the image mirrored upwards.
+  imageTop: number;
+  // Where the sharp image ends (the bottom seam): the fixed bottom of the
+  // title (logo) slot, the same on every slide, so the seam never moves.
+  // Below it, to the hero's end, the image mirrored.
   imageHeight: number;
+  // How far down the top blur reaches: full from the top of the screen to
+  // imageTop, then easing off on the image itself, the bottom blur flipped
+  // upwards.
+  topBlurHeight: number;
   // Where the progressive blur starts: the pill's top, on the image
   // itself, so it is already soft at the seam and the mirror's symmetry
   // does not read. It grows to full by the seam and stays full below.
@@ -98,7 +114,9 @@ export function heroLayout(windowHeight: number, topInset: number): HeroLayout {
     buttonHeight,
     openInMargin,
     dotsGap,
+    imageTop: topInset + IMAGE_TOP_EXTRA,
     imageHeight: contentTop + PILL_HEIGHT + TITLE_GAP + TITLE_BLOCK_HEIGHT,
+    topBlurHeight: topInset + IMAGE_TOP_EXTRA + TOP_BLUR_RAMP,
     blurTop: contentTop,
     contentTop,
     dotsTop: contentTop + contentHeight + dotsGap,

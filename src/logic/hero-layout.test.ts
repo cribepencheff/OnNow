@@ -71,6 +71,41 @@ describe("heroLayout (CRI-124)", () => {
     expect(imageHeight).toBe(contentTop + 26 + 16 + 88);
   });
 
+  // Faces and heads sit lower: the image starts under the top safe area.
+  it.each([
+    ["iPhone SE", 667, 20],
+    ["iPhone 16", 844, 47],
+    ["iPhone 16 Pro Max", 956, 62],
+  ])(
+    "starts the sharp image under the top safe area on %s, the seam and content where they were",
+    (_name, windowHeight, topInset) => {
+      const layout = heroLayout(windowHeight, topInset);
+      expect(layout.imageTop).toBe(topInset);
+      expect(layout.topBlurHeight).toBeGreaterThan(layout.imageTop);
+      expect(layout.topBlurHeight).toBeLessThan(layout.contentTop);
+      // Nothing below moves with the inset.
+      const atZero = heroLayout(windowHeight, 0);
+      expect(layout.imageHeight).toBe(atZero.imageHeight);
+      expect(layout.contentTop).toBe(atZero.contentTop);
+    },
+  );
+
+  it("has an image tall enough to mirror both ends", () => {
+    for (const [windowHeight, inset] of [
+      [667, 20],
+      [844, 47],
+      [956, 62],
+    ]) {
+      const { imageTop, imageHeight, heroHeight } = heroLayout(
+        windowHeight,
+        inset,
+      );
+      const image = imageHeight - imageTop;
+      expect(heroHeight - imageHeight).toBeLessThanOrEqual(image);
+      expect(imageTop).toBeLessThanOrEqual(image);
+    }
+  });
+
   it("has a mirror zone no taller than the image it mirrors", () => {
     for (const windowHeight of [667, 844, 956]) {
       const { imageHeight, heroHeight } = heroLayout(windowHeight, 47);

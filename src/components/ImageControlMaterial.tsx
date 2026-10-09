@@ -1,8 +1,8 @@
 // The material of a small control drawn on an image (CRI-124), Apple TV
 // style: a background blur with image-control-backdrop over it. Fills its
 // parent, which gives the shape (a pill, a circle), the image-control-edge
-// hairline and overflow: "hidden" to clip the blur. Shared by the hero's
-// date pill and the header's search button.
+// hairline and overflow: "hidden" to clip the blur. The hero's date pill
+// uses it; it is shared so later controls on images look the same.
 
 import { StyleSheet, View } from "react-native";
 import { BlurView } from "expo-blur";

@@ -186,9 +186,9 @@ describe("HomeScreen", () => {
     expect(screen.getByText("S1E1 · Episode")).toBeTruthy();
     // The header with the logo, over the hero (CRI-124).
     expect(screen.getByTestId("app-logo")).toBeTruthy();
-    // Its right slot: the search button opens Search (CRI-124, FR-007).
-    await fireEvent.press(screen.getByRole("button", { name: "Search" }));
-    expect(mockPush).toHaveBeenCalledWith("/search");
+    // Its right slot is empty for now: no search entry on Home while
+    // shows are followed (FR-007).
+    expect(screen.queryByRole("button", { name: "Search" })).toBeNull();
     // The top edge blur band (CRI-124).
     expect(screen.getByTestId("home-top-edge-blur")).toBeTruthy();
     // One slide: no page dots.

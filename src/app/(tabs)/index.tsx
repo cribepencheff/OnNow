@@ -28,7 +28,6 @@ import { AppLogo } from "@/components/AppLogo";
 import { Header } from "@/components/Header";
 import { PosterDimContext } from "@/components/PosterDim";
 import { ProgressiveBlur } from "@/components/ProgressiveBlur";
-import { SearchButton } from "@/components/SearchButton";
 import { TopPicksRow } from "@/components/TopPicksRow";
 import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
@@ -362,7 +361,6 @@ export default function HomeScreen() {
       {showsHero && (
         <Header
           left={<AppLogo height={APP_LOGO_HEIGHT} color={tokens.ink} />}
-          right={<SearchButton onPress={openSearch} />}
           scrollOffset={scrollOffset}
         />
       )}

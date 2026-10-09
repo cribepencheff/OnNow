@@ -96,4 +96,21 @@ describe("HeroPage mirror (CRI-124)", () => {
     );
     expect(mirrorBox.top).toBe(sharpHeight);
   });
+
+  // The top edge, mirrored upwards: its bottom edge meets the image's top.
+  it("draws the image flipped again, right above the sharp one", async () => {
+    await renderPage(jest.fn());
+    const sharp = screen.getByTestId("hero-backdrop-image");
+    const top = screen.getByTestId("hero-backdrop-top-mirror");
+    expect(top.props.source).toEqual(sharp.props.source);
+    expect(StyleSheet.flatten(top.props.style).transform).toEqual([
+      { scaleY: -1 },
+    ]);
+    const sharpHeight = StyleSheet.flatten(sharp.props.style).height;
+    const topBox = StyleSheet.flatten(
+      screen.getByTestId("hero-backdrop-top-mirror-box").props.style,
+    );
+    // Jest's safe-area inset is 0, so the image starts at 0.
+    expect(topBox.top).toBe(-sharpHeight);
+  });
 });

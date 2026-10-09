@@ -89,7 +89,9 @@ export function HeroPager({
   const { width } = useWindowDimensions();
   const {
     heroHeight,
+    imageTop,
     imageHeight,
+    topBlurHeight,
     blurTop,
     fadeTop,
     topGradientHeight,
@@ -597,6 +599,25 @@ export function HeroPager({
             height: topGradientHeight,
             experimental_backgroundImage: TOP_GRADIENT,
           }}
+        />
+        {/* The top edge, the bottom's mirror and blur flipped upwards: full
+            from the top of the screen down to where the sharp image
+            starts, easing off a little way into it, so the mirror above it
+            does not read. Pinned with the backdrop, so a pull keeps it on
+            the image's top seam; over the light gradient. It blends into
+            Home's own top edge band, which is clear by the same inset. */}
+        <ProgressiveBlur
+          intensity={MIRROR_BLUR_INTENSITY}
+          fullAt={(topBlurHeight - imageTop) / topBlurHeight}
+          strongAt="top"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width,
+            height: topBlurHeight,
+          }}
+          testID="hero-top-mirror-blur"
         />
       </Animated.View>
 
