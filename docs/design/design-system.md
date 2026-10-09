@@ -16,11 +16,13 @@ On Now is a stripped, cinematic iOS app that answers one question in two seconds
 - Fill a destructive action (Unfollow, revealed by a swipe) with `destructive`, with `ink` text. Use it nowhere else.
 - Draw the focus ring as a solid 2px `accent` ring; it holds 3:1 on every surface.
 - Use `hairline` for dividers only, never as the only edge of a control.
-- Put `image-control-backdrop` behind a small control drawn on an image (the follow circle on a poster card, the pull-to-refresh spinner over the hero), with a soft shadow, so it reads on light and busy images.
+- Put `image-control-backdrop` behind a small control drawn on an image, so it reads on light and busy images: the date pill on the Home hero (with a background blur), the follow circle on a poster card when not followed (no blur), the pull-to-refresh spinner over the hero.
+- Edge the date pill, the follow circle on a Home poster card, and the poster cards themselves with a hairline of `image-control-edge` (white at 16%, the thinnest line the screen draws), as Apple TV does. One token for all three. A followed circle is filled with `surface-raised`, the same fill as "Following" in Show detail, with a white check; the icon on the circle is always white.
 
 ## Type
 
 - The typeface is the iOS system font (SF Pro). It is not bundled; the stack falls back to the platform sans.
+- Trial: button labels (`button`, for example "Open in [service]") are set in Manrope ExtraBold at -3% letter spacing, bundled with the app. Only the `button` family points at Manrope, so rolling back is one change.
 - On Home the show's logo replaces the title. Use `display` for the title only when a show has no logo. `title` names a Show detail and the Calendar month; `headline` names cards and rows.
 - Set badges in `label`, uppercase: "NEW TODAY · 1/2", "TOMORROW", "FINALE".
 - Write English, with original show titles. Never show a time of day. Use the data's own words, made readable: "Future uncertain", "Season 3 · TBA", "Season 4 premiere · Fri 9 Jul 2027". No em dashes.
@@ -50,8 +52,16 @@ Measured on a 390 × 844 screen, from the design canvas:
 - Backdrop: full width, 580 tall from the top of the screen, cropped to fill (cover), centred.
 - Fade: from 280 to 580, transparent `bg` to 75% `bg` at the middle to solid `bg` at 580.
 - Content block on the fade: starts at 452, 24 side padding, 8 between items: badge (`label`, `ink-muted`), logo box (240 × 88), meta line (`meta`, `ink-muted`), then 16 down to the button.
-- Button: full content width, 52 tall, `radius-pill`, `ink` fill, `bg` text, 16 semibold: "Open in [service]". Page dots 16 below: 8 × 8, active `ink`, others `hairline`.
+- Button: full content width, 47 tall (Apple TV reference), `radius-pill`, `ink` fill, `bg` text in `button`: "Open in [service]". Page dots 16 below: 8 × 8, active `ink`, others `hairline`.
 - "+": top right, 44 round, quiet: `bg` at 55% opacity, white plus icon.
 - Tab bar: 83 tall, `surface` at 72% opacity with a background blur, `hairline` top edge; active tab `ink`, others `ink-subtle`.
+
+Refinement round (2026-10-09, CRI-124, CRI-127), replacing the measurements above where they differ:
+
+- The app's logo, white, top left over an Apple TV style gradient from `bg` at the top of the screen, so the status bar and the logo stay legible on bright images.
+- The backdrop fills the whole hero and fades into `bg` at its bottom, with no visible edge and no block behind any line of text.
+- The hero ends about one button height above the tab bar, so the first row peeks in below it.
+- Above the logo, a date pill in sentence case ("Today · Fri 9 Oct", "Today–Thu · 9–15 Oct") on `image-control-backdrop` with a background blur and an `image-control-edge` hairline. The IMDb rating stays on the right.
+- Poster rows: cards about 150 wide, two full cards and a peek of the third; every swipe rests with a card at the left margin. The name on one line; "Airing this week" keeps the day on its own second line.
 
 Open questions: whether "+" stays quiet (current proposal) and how to find the "newest" backdrop (the TMDB image list has no upload date; to be checked in the prototype).

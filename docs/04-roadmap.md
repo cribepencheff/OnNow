@@ -1,19 +1,19 @@
 # Roadmap
 
-## 0. Discovery (now)
+## 0. Discovery (done)
 Vision, PRD, PoC scope and key decisions.
 **Exit:** the documents in `docs/` are agreed and the open decisions needed
 for the PoC are accepted.
 
-## 1. Proof of Concept
+## 1. Proof of Concept (done)
 See `02-poc.md`.
 **Exit:** PoC success criteria met.
 
-## 2. Design
+## 2. Design (done)
 Look and feel. References from Mobbin, design in Figma or Claude Design.
 **Exit:** designs for Home, Calendar and Shows, plus a small design system.
 
-## 3. MVP
+## 3. MVP (now)
 See `03-mvp.md`.
 **Exit:** MVP success criteria met.
 
