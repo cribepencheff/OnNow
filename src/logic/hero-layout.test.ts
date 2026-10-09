@@ -71,22 +71,22 @@ describe("heroLayout (CRI-124)", () => {
     expect(imageHeight).toBe(contentTop + 26 + 16 + 88);
   });
 
-  // Faces and heads sit lower: the image starts below the header row
-  // (safe area and logo row) and a small margin.
+  // Faces and heads sit lower: the image starts under the top safe area
+  // and a small margin.
   it.each([
     ["iPhone SE", 667, 20],
     ["iPhone 17", 874, 62],
     ["iPhone 16 Pro Max", 956, 62],
   ])(
-    "starts the sharp image below the header row on %s, the seam and content where they were",
+    "starts the sharp image under the top safe area on %s, the seam and content where they were",
     (_name, windowHeight, topInset) => {
       const layout = heroLayout(windowHeight, topInset);
-      expect(layout.imageTop).toBe(topInset + HEADER_BAR_HEIGHT + 8);
-      // The blur is full above the seam and clear a little way into the
-      // image, never down at the content.
-      expect(layout.topBlurFullTo).toBeLessThan(layout.imageTop);
+      expect(layout.imageTop).toBe(topInset + 8);
+      // The blur is full all the way to the seam, so the mirror never
+      // reads, and clear a little way into the image, before the heads.
+      expect(layout.topBlurFullTo).toBe(layout.imageTop);
       expect(layout.topBlurHeight).toBeGreaterThan(layout.imageTop);
-      expect(layout.topBlurHeight - layout.imageTop).toBeLessThanOrEqual(16);
+      expect(layout.topBlurHeight - layout.imageTop).toBeLessThanOrEqual(24);
       // Nothing below moves with the inset.
       const atZero = heroLayout(windowHeight, 0);
       expect(layout.imageHeight).toBe(atZero.imageHeight);
@@ -125,9 +125,10 @@ describe("heroLayout (CRI-124)", () => {
     expect(layout.fadeTop).toBe(layout.blurTop);
   });
 
-  it("makes the top gradient cover the status bar and the logo", () => {
+  it("keeps the top gradient thin: just past the status bar", () => {
     const { topGradientHeight } = heroLayout(844, 47);
-    expect(topGradientHeight).toBeGreaterThan(47 + HEADER_BAR_HEIGHT);
+    expect(topGradientHeight).toBeGreaterThan(47);
+    expect(topGradientHeight).toBeLessThan(47 + HEADER_BAR_HEIGHT);
   });
 });
 

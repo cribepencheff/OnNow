@@ -53,10 +53,10 @@ const FADE_GRADIENT =
 // How strong the blur over the mirror zone gets: the image reads as
 // almost one colour there.
 const MIRROR_BLUR_INTENSITY = 80;
-// Apple TV style, behind the status bar and the logo, so both stay legible
-// on bright images.
+// A thin, light dark gradient behind the status bar, so the clock and icons
+// read on bright images; not a darkening like the bottom's (owner, CRI-124).
 const TOP_GRADIENT =
-  "linear-gradient(to bottom, rgba(11,12,15,0.6) 0%, rgba(11,12,15,0.32) 50%, rgba(11,12,15,0) 100%)";
+  "linear-gradient(to bottom, rgba(11,12,15,0.45) 0%, rgba(11,12,15,0.2) 55%, rgba(11,12,15,0) 100%)";
 
 // Whether the app is in the foreground. Auto-advance pauses in the
 // background (CRI-124).

@@ -4,7 +4,6 @@
 // measured, and nothing moves from one slide to the next.
 
 import { t, type } from "@/theme/tokens";
-import { HEADER_BAR_HEIGHT } from "./header";
 
 // The translucent tab bar's height (app/(tabs)/_layout.tsx).
 export const TAB_BAR_HEIGHT = 83;
@@ -41,23 +40,25 @@ export const CONTENT_GAP = t.space2;
 // the logo has room (owner, CRI-124).
 export const TITLE_GAP = t.space4;
 
-// A small margin between the header row (the logo) and the sharp image,
-// so heads sit clearly below the logo and the island (owner, CRI-124).
+// A small margin between the top safe area and the sharp image, so heads
+// clear the island without the pill reaching faces (owner, CRI-124).
 export const IMAGE_TOP_MARGIN = 8;
 // The top blur, the bottom one flipped upwards: full from the top of the
-// screen down to this far above the image's top, then easing off to clear
-// this far into the image. Short into the image, since heads sit close to
-// its top edge.
-export const TOP_BLUR_FULL_ABOVE = 32;
-export const TOP_BLUR_INTO_IMAGE = 12;
+// screen all the way to the image's top (the seam), so the mirror's
+// symmetry never reads, then easing off this far into the image, before
+// the heads.
+export const TOP_BLUR_INTO_IMAGE = 24;
+// The thin dark gradient at the top: just past the status bar, so the clock
+// and icons read; not a darkening like the bottom's.
+export const TOP_GRADIENT_BELOW_INSET = 16;
 
 export interface HeroLayout {
   // The hero's own height.
   heroHeight: number;
-  // Where the sharp image starts: below the header row (the safe area and
-  // the logo row) and a small margin, so faces and heads sit clearly below
-  // the logo and the island (owner, CRI-124). Above it, the image mirrored
-  // upwards and blurred.
+  // Where the sharp image starts: under the top safe area (status bar,
+  // notch or Dynamic Island) and a small margin, so heads clear the island
+  // without the pill reaching faces (owner, CRI-124). Above it, the image
+  // mirrored upwards and fully blurred.
   imageTop: number;
   // Where the sharp image ends (the bottom seam): the fixed bottom of the
   // title (logo) slot, the same on every slide, so the seam never moves.
@@ -117,17 +118,15 @@ export function heroLayout(windowHeight: number, topInset: number): HeroLayout {
     buttonHeight,
     openInMargin,
     dotsGap,
-    imageTop: topInset + HEADER_BAR_HEIGHT + IMAGE_TOP_MARGIN,
+    imageTop: topInset + IMAGE_TOP_MARGIN,
     imageHeight: contentTop + PILL_HEIGHT + TITLE_GAP + TITLE_BLOCK_HEIGHT,
-    topBlurHeight:
-      topInset + HEADER_BAR_HEIGHT + IMAGE_TOP_MARGIN + TOP_BLUR_INTO_IMAGE,
-    topBlurFullTo:
-      topInset + HEADER_BAR_HEIGHT + IMAGE_TOP_MARGIN - TOP_BLUR_FULL_ABOVE,
+    topBlurHeight: topInset + IMAGE_TOP_MARGIN + TOP_BLUR_INTO_IMAGE,
+    topBlurFullTo: topInset + IMAGE_TOP_MARGIN,
     blurTop: contentTop,
     contentTop,
     dotsTop: contentTop + contentHeight + dotsGap,
     fadeTop: contentTop,
-    topGradientHeight: topInset + HEADER_BAR_HEIGHT + 24,
+    topGradientHeight: topInset + TOP_GRADIENT_BELOW_INSET,
   };
 }
 

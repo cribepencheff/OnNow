@@ -453,11 +453,9 @@ function ImageColumn({
       source={uri}
       style={[{ width, height: boxHeight }, flipped && styles.flipped]}
       contentFit="cover"
-      // Anchored at the image's top edge: the box is shorter than the
-      // drawn image (it is drawn wide for the swipe's parallax), and many
-      // backdrops have little room above the heads, so the crop takes
-      // from the bottom, which the lower mirror covers anyway.
-      contentPosition="top"
+      // Centred: anchoring the crop at the image's top edge kept more hair
+      // but moved faces down onto the pill (owner, CRI-124).
+      contentPosition="center"
       accessibilityIgnoresInvertColors
       blurRadius={blurRadius}
       onLoad={flipped ? undefined : onLoad}
