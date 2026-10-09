@@ -57,7 +57,7 @@ const MIRROR_BLUR_INTENSITY = 80;
 // A thin, light dark gradient behind the status bar, so the clock and icons
 // read on bright images; not a darkening like the bottom's (owner, CRI-124).
 const TOP_GRADIENT =
-  "linear-gradient(to bottom, rgba(11,12,15,0.45) 0%, rgba(11,12,15,0.2) 55%, rgba(11,12,15,0) 100%)";
+  "linear-gradient(to bottom, rgba(11,12,15,0.3) 0%, rgba(11,12,15,0.12) 55%, rgba(11,12,15,0) 100%)";
 
 // Whether the app is in the foreground. Auto-advance pauses in the
 // background (CRI-124).
@@ -92,8 +92,6 @@ export function HeroPager({
     heroHeight,
     imageTop,
     imageHeight,
-    topBlurHeight,
-    topBlurFullTo,
     blurTop,
     fadeTop,
     topGradientHeight,
@@ -618,25 +616,8 @@ export function HeroPager({
                 experimental_backgroundImage: TOP_GRADIENT,
               }}
             />
-            {/* The top edge, the bottom's mirror and blur flipped upwards: full
-            from the top of the screen to a little above where the sharp
-            image starts, clear a little way into it, so the mirror above
-            does not read and heads stay sharp. Pinned with the backdrop, so a pull keeps it on
-            the image's top seam; over the light gradient. It blends into
-            Home's own top edge band, which is clear by the same inset. */}
-            <ProgressiveBlur
-              intensity={MIRROR_BLUR_INTENSITY}
-              fullAt={(topBlurHeight - topBlurFullTo) / topBlurHeight}
-              strongAt="top"
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width,
-                height: topBlurHeight,
-              }}
-              testID="hero-top-mirror-blur"
-            />
+            {/* The top edge's blur is each slide's own (HeroPage): a
+                blurred copy of its image, no tinted blur view. */}
           </>
         )}
       </Animated.View>

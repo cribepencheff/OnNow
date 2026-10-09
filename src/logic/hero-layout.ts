@@ -44,7 +44,7 @@ export const TITLE_GAP = t.space4;
 // gradient and the header's edge band are off, and a thin line marks where
 // the image starts, so the raw mirror and the position can be judged. Off
 // again once the owner approves the position.
-export const TOP_SEAM_DEBUG = true;
+export const TOP_SEAM_DEBUG = false;
 
 // Where the sharp image's top edge sits relative to the bottom of the top
 // safe area: 15 above it (owner, CRI-124). The image is zoomed out to fit
@@ -55,7 +55,7 @@ export const IMAGE_TOP_MARGIN = -15;
 // screen all the way to the image's top (the seam), so the mirror's
 // symmetry never reads, then easing off this far into the image, before
 // the heads.
-export const TOP_BLUR_INTO_IMAGE = 24;
+export const TOP_BLUR_INTO_IMAGE = 40;
 // The thin dark gradient at the top: just past the status bar, so the clock
 // and icons read; not a darkening like the bottom's.
 export const TOP_GRADIENT_BELOW_INSET = 16;

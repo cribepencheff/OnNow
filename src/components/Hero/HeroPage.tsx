@@ -52,9 +52,19 @@ import {
 } from "@/logic/hero-layout";
 import { t, type } from "@/theme/tokens";
 
-// How strongly Android blurs its copy of the image and the mirror, where
-// the progressive BlurView does not run (ProgressiveBlur).
-const ANDROID_MIRROR_BLUR_RADIUS = 30;
+// How strongly Android blurs its copy of the image and the mirror at the
+// bottom, where the progressive BlurView does not run (ProgressiveBlur), in
+// the pixels of its small source (BLURRED_COPY_SIZE).
+const ANDROID_MIRROR_BLUR_RADIUS = 12;
+// How strongly the top edge's copy is blurred, on every platform, in the
+// pixels of its small source (BLURRED_COPY_SIZE): strong, so the mirror
+// above the seam reads as soft colour from the image.
+const TOP_MIRROR_BLUR_RADIUS = 12;
+// The blurred copies load a small version of the image: a blur radius
+// works in the source's own pixels, so on the full-size image even a large
+// radius stays sharp on screen; a small source blurs far more softly, and
+// is cheaper to decode.
+const BLURRED_COPY_SIZE = "w300";
 
 // The hero's layout for this screen (logic/hero-layout.ts).
 export function useHeroLayout() {
@@ -369,7 +379,7 @@ export const HeroPage = memo(function HeroPage({
               />
               {/* Android has no progressive BlurView (ProgressiveBlur): a
                   blurred copy of the column shows through the same eased
-                  masks instead, at both ends. */}
+                  mask instead, at the bottom. */}
               {Platform.OS === "android" && (
                 <>
                   <MaskedView
@@ -393,7 +403,7 @@ export const HeroPage = memo(function HeroPage({
                       style={{ position: "absolute", top: -blurTop, left: 0 }}
                     >
                       <ImageColumn
-                        uri={`${IMAGE_BASE}/${imageSize}${displayPath}`}
+                        uri={`${IMAGE_BASE}/${BLURRED_COPY_SIZE}${displayPath}`}
                         width={columnWidth}
                         left={columnLeft}
                         imageTop={imageTop}
@@ -402,33 +412,39 @@ export const HeroPage = memo(function HeroPage({
                       />
                     </View>
                   </MaskedView>
-                  <MaskedView
-                    pointerEvents="none"
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: backdropWidth,
-                      height: topBlurHeight,
-                    }}
-                    maskElement={
-                      <ProgressiveMask
-                        fullAt={(topBlurHeight - topBlurFullTo) / topBlurHeight}
-                        strongAt="top"
-                      />
-                    }
-                  >
-                    <ImageColumn
-                      uri={`${IMAGE_BASE}/${imageSize}${displayPath}`}
-                      width={columnWidth}
-                      left={columnLeft}
-                      imageTop={imageTop}
-                      boxHeight={imageBoxHeight}
-                      blurRadius={ANDROID_MIRROR_BLUR_RADIUS}
-                    />
-                  </MaskedView>
                 </>
               )}
+              {/* The top edge, on every platform: a blurred copy of the
+                  column (the image's own pixels, no tint) shows through an
+                  eased mask, fully blurred from the top of the screen down
+                  to the seam, so the mirror never reads, fading out a
+                  little way into the image, before the heads. A blur view
+                  here would lay iOS's dark material over the top. */}
+              <MaskedView
+                pointerEvents="none"
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: backdropWidth,
+                  height: topBlurHeight,
+                }}
+                maskElement={
+                  <ProgressiveMask
+                    fullAt={(topBlurHeight - topBlurFullTo) / topBlurHeight}
+                    strongAt="top"
+                  />
+                }
+              >
+                <ImageColumn
+                  uri={`${IMAGE_BASE}/${BLURRED_COPY_SIZE}${displayPath}`}
+                  width={columnWidth}
+                  left={columnLeft}
+                  imageTop={imageTop}
+                  boxHeight={imageBoxHeight}
+                  blurRadius={TOP_MIRROR_BLUR_RADIUS}
+                />
+              </MaskedView>
             </Animated.View>
           </Animated.View>
         )}

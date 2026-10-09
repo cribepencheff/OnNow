@@ -86,7 +86,7 @@ describe("heroLayout (CRI-124)", () => {
       // reads, and clear a little way into the image, before the heads.
       expect(layout.topBlurFullTo).toBe(layout.imageTop);
       expect(layout.topBlurHeight).toBeGreaterThan(layout.imageTop);
-      expect(layout.topBlurHeight - layout.imageTop).toBeLessThanOrEqual(24);
+      expect(layout.topBlurHeight - layout.imageTop).toBeLessThanOrEqual(40);
       // Nothing below moves with the inset.
       const atZero = heroLayout(windowHeight, 0);
       expect(layout.imageHeight).toBe(atZero.imageHeight);
