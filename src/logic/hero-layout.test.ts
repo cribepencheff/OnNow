@@ -78,10 +78,10 @@ describe("heroLayout (CRI-124)", () => {
     ["iPhone 17", 874, 62],
     ["iPhone 16 Pro Max", 956, 62],
   ])(
-    "starts the sharp image 20 above the bottom of the top safe area on %s, the seam and content where they were",
+    "starts the sharp image 15 above the bottom of the top safe area on %s, the seam and content where they were",
     (_name, windowHeight, topInset) => {
       const layout = heroLayout(windowHeight, topInset);
-      expect(layout.imageTop).toBe(topInset - 20);
+      expect(layout.imageTop).toBe(topInset - 15);
       // The blur is full all the way to the seam, so the mirror never
       // reads, and clear a little way into the image, before the heads.
       expect(layout.topBlurFullTo).toBe(layout.imageTop);
