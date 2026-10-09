@@ -1,20 +1,31 @@
 // The hero's vertical layout and image size (CRI-124).
 
+import { HEADER_BAR_HEIGHT } from "./header";
 import {
-  APP_LOGO_HEIGHT,
-  APP_LOGO_TOP_SPACE,
-  HERO_ROW_PEEK,
+  HERO_END_ABOVE_TAB_BAR,
   TAB_BAR_HEIGHT,
   heroImageSize,
   heroLayout,
 } from "./hero-layout";
 
 describe("heroLayout (CRI-124)", () => {
-  it("ends the hero about one button height above the tab bar, so the first row peeks in", () => {
+  it("ends the hero well above the tab bar, so the first row's heading and posters peek in", () => {
     const { heroHeight } = heroLayout(844, 47);
-    expect(heroHeight).toBe(844 - TAB_BAR_HEIGHT - HERO_ROW_PEEK);
-    expect(HERO_ROW_PEEK).toBeGreaterThanOrEqual(44);
-    expect(HERO_ROW_PEEK).toBeLessThanOrEqual(52);
+    expect(heroHeight).toBe(844 - TAB_BAR_HEIGHT - HERO_END_ABOVE_TAB_BAR);
+    // A row's heading (24 above, 25 tall) and its gap leave room for the
+    // top of the posters.
+    expect(HERO_END_ABOVE_TAB_BAR - 24 - 25 - 8).toBeGreaterThan(30);
+  });
+
+  // The owner's sketch on a 390 × 844 screen, read for proportions: the
+  // pill's centre near 422, the button's near 592, the dots near 644.
+  it("places the content as in the owner's sketch, within a few points", () => {
+    const { contentTop, dotsTop } = heroLayout(844, 47);
+    const pillCentre = contentTop + 13;
+    const buttonCentre = contentTop + 26 + 8 + 88 + 8 + 20 + 8 + 8 + 47 / 2;
+    expect(Math.abs(pillCentre - 422)).toBeLessThan(12);
+    expect(Math.abs(buttonCentre - 592)).toBeLessThan(12);
+    expect(Math.abs(dotsTop + 4 - 644)).toBeLessThan(12);
   });
 
   it("uses a 47pt button on regular screens and 44pt on short ones", () => {
@@ -31,7 +42,7 @@ describe("heroLayout (CRI-124)", () => {
     "keeps the content below the app logo and inside the hero on %s",
     (_name, windowHeight, topInset) => {
       const layout = heroLayout(windowHeight, topInset);
-      const logoBottom = topInset + APP_LOGO_TOP_SPACE + APP_LOGO_HEIGHT;
+      const logoBottom = topInset + HEADER_BAR_HEIGHT;
       expect(layout.contentTop).toBeGreaterThan(logoBottom + 40);
       expect(layout.contentTop).toBeLessThan(layout.heroHeight);
     },
@@ -54,9 +65,7 @@ describe("heroLayout (CRI-124)", () => {
 
   it("makes the top gradient cover the status bar and the logo", () => {
     const { topGradientHeight } = heroLayout(844, 47);
-    expect(topGradientHeight).toBeGreaterThan(
-      47 + APP_LOGO_TOP_SPACE + APP_LOGO_HEIGHT,
-    );
+    expect(topGradientHeight).toBeGreaterThan(47 + HEADER_BAR_HEIGHT);
   });
 });
 

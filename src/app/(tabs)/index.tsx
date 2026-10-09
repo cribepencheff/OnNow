@@ -19,6 +19,8 @@ import * as SplashScreen from "expo-splash-screen";
 import { HeroPager } from "@/components/Hero/HeroPager";
 import { AddFirstShow } from "@/components/AddFirstShow";
 import { AiringThisWeekRow } from "@/components/AiringThisWeekRow";
+import { AppLogo } from "@/components/AppLogo";
+import { Header } from "@/components/Header";
 import { TopPicksRow } from "@/components/TopPicksRow";
 import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
@@ -33,6 +35,9 @@ import {
 import { TAB_BAR_HEIGHT } from "@/logic/hero-layout";
 import { updatedAgoLabel } from "@/logic/launch";
 import { t as tokens, type } from "@/theme/tokens";
+
+// The app logo's height in the header.
+const APP_LOGO_HEIGHT = 20;
 
 function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -109,6 +114,10 @@ export default function HomeScreen() {
   );
 
   const openSearch = useCallback(() => router.push("/search"), [router]);
+
+  // The header (logo) is shown over the hero only, for now (CRI-124).
+  const showsHero =
+    isReady && (heroSlides.length > 0 || state.kind === "next-day");
 
   // The outer ScrollView's raw vertical offset, native-driven, and how far
   // it's been pulled past its resting top (see pullDistance below) drive
@@ -220,6 +229,13 @@ export default function HomeScreen() {
     });
   }, [scrollY, pullRestOffsetY]);
 
+  // How far the page is scrolled from its resting top, negative during a
+  // pull: the header leaves with the content and stays put on a pull.
+  const scrollOffset = useMemo(
+    () => Animated.subtract(scrollY, pullRestOffsetY ?? 0),
+    [scrollY, pullRestOffsetY],
+  );
+
   return (
     <View style={[styles.container, { backgroundColor: tokens.bg }]}>
       <Animated.ScrollView
@@ -310,6 +326,13 @@ export default function HomeScreen() {
           </>
         )}
       </Animated.ScrollView>
+
+      {showsHero && (
+        <Header
+          left={<AppLogo height={APP_LOGO_HEIGHT} color={tokens.ink} />}
+          scrollOffset={scrollOffset}
+        />
+      )}
 
       <PullToRefreshIndicator
         pullDistance={pullDistance}

@@ -39,6 +39,7 @@ import {
 } from "@/logic/hero-carousel";
 import {
   CONTENT_GAP,
+  EPISODE_LINE_HEIGHT,
   NOTE_LINE,
   PILL_HEIGHT,
   TITLE_BLOCK_HEIGHT,
@@ -467,19 +468,16 @@ export const ContentLayer = memo(function ContentLayer({
         style={[styles.content, { top: contentTop }]}
         pointerEvents="box-none"
       >
-        {/* The date pill, and the IMDb rating on the right (CRI-124). The
-            page dots give the slide's place in the pager. */}
+        {/* The date pill, centred (CRI-124). The page dots give the
+            slide's place in the pager. */}
         <View
           style={styles.pillRow}
-          pointerEvents="box-none"
+          pointerEvents="none"
           testID="hero-label-row"
         >
-          <View pointerEvents="none">
-            <DatePill label={heroPillLabel(slide, todayDate)} />
-          </View>
-          <ImdbRating show={show} textStyle={styles.badge} />
+          <DatePill label={heroPillLabel(slide, todayDate)} />
         </View>
-        <View pointerEvents="none" style={styles.passThrough}>
+        <View pointerEvents="none">
           <View style={styles.titleBlock} testID="hero-title-block">
             {logo ? (
               <Image
@@ -495,11 +493,23 @@ export const ContentLayer = memo(function ContentLayer({
               </Text>
             )}
           </View>
-          {/* One fixed line, on the fade, no block behind it: the code
-              and the episode title. */}
-          <Text style={styles.meta} numberOfLines={1}>
+        </View>
+        {/* One fixed line, on the fade, no block behind it: the code and
+            the episode title, and the IMDb chip at its right end. Only the
+            chip takes touches. */}
+        <View
+          style={styles.episodeRow}
+          pointerEvents="box-none"
+          testID="hero-episode-row"
+        >
+          <Text
+            style={styles.episodeLine}
+            numberOfLines={1}
+            pointerEvents="none"
+          >
             {heroEpisodeLine(slide.episodes)}
           </Text>
+          <ImdbRating show={show} variant="chip" />
         </View>
         <OpenInSlot availability={availability} />
       </View>
@@ -514,23 +524,24 @@ const styles = StyleSheet.create({
     right: 24,
     gap: CONTENT_GAP,
   },
-  // As tall as the pill, so nothing below shifts per slide; the IMDb chip
-  // (shorter) is centred beside it.
+  // As tall as the pill, so nothing below shifts per slide.
   pillRow: {
     height: PILL_HEIGHT,
     flexDirection: "row",
+    justifyContent: "center",
+  },
+  // As tall as the IMDb chip, chip or not, so nothing below shifts.
+  episodeRow: {
+    height: EPISODE_LINE_HEIGHT,
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
     gap: CONTENT_GAP,
   },
-  // Keeps the content block's own row gap inside the pass-through group.
-  passThrough: {
-    gap: CONTENT_GAP,
-  },
-  badge: {
-    ...type.label,
+  // Takes the room the chip leaves, cut with an ellipsis.
+  episodeLine: {
+    ...type.meta,
     color: t.inkMuted,
-    textTransform: "uppercase",
+    flex: 1,
   },
   // One height for a logo and a text title, so nothing below shifts.
   titleBlock: {
@@ -550,10 +561,6 @@ const styles = StyleSheet.create({
     fontSize: 40,
     lineHeight: 44,
     color: t.ink,
-  },
-  meta: {
-    ...type.meta,
-    color: t.inkMuted,
   },
   requires: {
     marginTop: 4,

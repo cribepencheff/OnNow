@@ -52,11 +52,12 @@ export const type = {
     fontWeight: "700",
     letterSpacing: 0.6,
   },
-  // -3% letter spacing: 16 × -0.03.
+  // -3% letter spacing: 18 × -0.03. One step up from 16, where Manrope
+  // read small (owner, CRI-124).
   button: {
     ...buttonFont,
-    fontSize: 16,
-    lineHeight: 20,
-    letterSpacing: -0.48,
+    fontSize: 18,
+    lineHeight: 22,
+    letterSpacing: -0.54,
   },
 } as const;

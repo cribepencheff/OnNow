@@ -3,10 +3,17 @@ import {
   StyleSheet,
   type RefreshControlProps,
 } from "react-native";
-import { act, fireEvent, render, screen } from "@testing-library/react-native";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  within,
+} from "@testing-library/react-native";
 
 import * as SplashScreen from "expo-splash-screen";
 import HomeScreen from "@/app/(tabs)/index";
+import { IMDB_CHIP_HEIGHT } from "@/components/ImdbRating";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useImdbRating } from "@/hooks/useImdbRating";
 import { useShowImages } from "@/hooks/useShowImages";
@@ -184,6 +191,8 @@ describe("HomeScreen", () => {
     expect(screen.getByText("Today · Mon 21 Sep")).toBeTruthy();
     expect(screen.getByText("Slow Horses")).toBeTruthy();
     expect(screen.getByText("S1E1 · Episode")).toBeTruthy();
+    // The header with the logo, over the hero (CRI-124).
+    expect(screen.getByTestId("app-logo")).toBeTruthy();
     // One slide: no page dots.
     expect(screen.queryByLabelText(/^Show \d+ of/)).toBeNull();
   });
@@ -258,8 +267,21 @@ describe("HomeScreen", () => {
         screen
           .getAllByTestId(testID)
           .map((view) => StyleSheet.flatten(view.props.style).height);
-      // The pill's height (CRI-124), with or without the IMDb chip.
+      // The pill's height, and the episode line as tall as the IMDb chip,
+      // chip or not (CRI-124).
       expect(heights("hero-label-row")).toEqual([26, 26]);
+      expect(heights("hero-episode-row")).toEqual([
+        IMDB_CHIP_HEIGHT,
+        IMDB_CHIP_HEIGHT,
+      ]);
+      // "IMDb 8.1" in one chip, on the episode line.
+      const withChipRows = screen
+        .getAllByTestId("hero-episode-row")
+        .filter((row) => within(row).queryByTestId("imdb-rating"));
+      expect(withChipRows).toHaveLength(1);
+      const chip = within(withChipRows[0]).getByTestId("imdb-rating");
+      expect(within(chip).getByText("IMDb")).toBeTruthy();
+      expect(within(chip).getByText("8.1")).toBeTruthy();
       expect(heights("hero-title-block")).toEqual([88, 88]);
     } finally {
       (useShowImages as jest.Mock).mockImplementation(() => ({
@@ -442,6 +464,8 @@ describe("HomeScreen", () => {
     await render(<HomeScreen />);
 
     expect(screen.getByText("Add your first show")).toBeTruthy();
+    // Logo only over the hero, for now (CRI-124).
+    expect(screen.queryByTestId("app-logo")).toBeNull();
 
     fireEvent.press(
       screen.getByRole("button", { name: "Add your first show" }),

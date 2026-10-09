@@ -16,7 +16,6 @@ import {
   type NativeSyntheticEvent,
 } from "react-native";
 import { useIsFocused } from "expo-router";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
 import {
@@ -29,9 +28,6 @@ import {
   physicalToLogical,
   type HeroSlide,
 } from "@/logic/hero-carousel";
-import { APP_LOGO_HEIGHT, APP_LOGO_TOP_SPACE } from "@/logic/hero-layout";
-import { t } from "@/theme/tokens";
-import { AppLogo } from "../AppLogo";
 import { ContentLayer, HeroPage, useHeroLayout } from "./HeroPage";
 import { PageIndicator } from "./PageIndicator";
 
@@ -85,7 +81,6 @@ export function HeroPager({
   pullDistance: Animated.AnimatedInterpolation<number>;
 }) {
   const { width } = useWindowDimensions();
-  const insets = useSafeAreaInsets();
   const { heroHeight, fadeTop, topGradientHeight, dotsTop } = useHeroLayout();
   const { reduceMotionEnabled, screenReaderEnabled } = useAccessibilityFlags();
   // Auto-advance pauses, on the same slide, while Home is not the focused
@@ -608,18 +603,6 @@ export function HeroPager({
           }}
         />
       </Animated.View>
-
-      {/* The app logo, white, top left (CRI-124). */}
-      <View
-        pointerEvents="none"
-        style={{
-          position: "absolute",
-          left: 24,
-          top: insets.top + APP_LOGO_TOP_SPACE,
-        }}
-      >
-        <AppLogo height={APP_LOGO_HEIGHT} color={t.ink} />
-      </View>
 
       {contentFrames.map((logicalIndex) => (
         <ContentLayer

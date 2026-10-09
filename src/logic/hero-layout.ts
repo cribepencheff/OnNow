@@ -4,20 +4,21 @@
 // measured, and nothing moves from one slide to the next.
 
 import { t, type } from "@/theme/tokens";
+import { HEADER_BAR_HEIGHT } from "./header";
 
 // The translucent tab bar's height (app/(tabs)/_layout.tsx).
 export const TAB_BAR_HEIGHT = 83;
 
-// The hero ends this far above the tab bar, about one button height, so
-// the first row's heading peeks in below it.
-export const HERO_ROW_PEEK = 47;
+// The hero ends this far above the tab bar, so the first row's heading and
+// the top of its posters show below it (the owner's sketch, CRI-124).
+export const HERO_END_ABOVE_TAB_BAR = 100;
 
 // Short screens (iPhone SE is 667pt tall) tighten the gaps around the
 // button. The threshold sits between the SE (667) and the next size up
 // (812), so every taller screen keeps the regular values.
 export const SHORT_SCREEN_MAX_HEIGHT = 700;
 
-// The date pill's height; the IMDb chip (20) is centred beside it.
+// The date pill's height, centred in its own row.
 export const PILL_HEIGHT = 26;
 // The logo box under the pill: a logo or the display title.
 export const TITLE_BLOCK_HEIGHT = 88;
@@ -25,6 +26,9 @@ export const TITLE_BLOCK_HEIGHT = 88;
 // (still the minimum tap target).
 export const BUTTON_HEIGHT = 47;
 export const BUTTON_HEIGHT_SHORT = 44;
+// The episode line under the logo: its text and, at its right end, the
+// IMDb chip, which sets the height (ImdbRating's IMDB_CHIP_HEIGHT).
+export const EPISODE_LINE_HEIGHT = 20;
 // One note line under the button, reserved on every slide so the dots stay
 // put: an add-on's "Requires hayu subscription" (CRI-101).
 export const NOTE_LINE = 4 + type.meta.lineHeight;
@@ -33,10 +37,6 @@ const DOTS_HEIGHT = 8;
 const DOTS_BOTTOM_SPACE = 8;
 // The gap between the content block's rows.
 export const CONTENT_GAP = t.space2;
-
-// The app logo, top left, under the status bar.
-export const APP_LOGO_HEIGHT = 20;
-export const APP_LOGO_TOP_SPACE = 8;
 
 export interface HeroLayout {
   // The hero's own height: the backdrop fills it and fades out at its end.
@@ -61,8 +61,9 @@ export function heroLayout(windowHeight: number, topInset: number): HeroLayout {
   const isShort = windowHeight < SHORT_SCREEN_MAX_HEIGHT;
   const buttonHeight = isShort ? BUTTON_HEIGHT_SHORT : BUTTON_HEIGHT;
   const openInMargin = isShort ? 0 : 8;
-  const dotsGap = isShort ? 8 : 16;
-  const heroHeight = windowHeight - TAB_BAR_HEIGHT - HERO_ROW_PEEK;
+  // Tight under the note line, which is often empty (the owner's sketch).
+  const dotsGap = isShort ? 4 : 6;
+  const heroHeight = windowHeight - TAB_BAR_HEIGHT - HERO_END_ABOVE_TAB_BAR;
 
   // Pill row, logo box, episode line, then the "Open in" slot with its
   // note line, with the content's row gap between them.
@@ -71,7 +72,7 @@ export function heroLayout(windowHeight: number, topInset: number): HeroLayout {
     CONTENT_GAP +
     TITLE_BLOCK_HEIGHT +
     CONTENT_GAP +
-    type.meta.lineHeight +
+    EPISODE_LINE_HEIGHT +
     CONTENT_GAP +
     openInMargin +
     buttonHeight +
@@ -90,7 +91,7 @@ export function heroLayout(windowHeight: number, topInset: number): HeroLayout {
     // A long, gentle fade that is already well under way where the pill
     // sits, so the text reads on any image.
     fadeTop: Math.max(0, contentTop - 160),
-    topGradientHeight: topInset + APP_LOGO_TOP_SPACE + APP_LOGO_HEIGHT + 40,
+    topGradientHeight: topInset + HEADER_BAR_HEIGHT + 24,
   };
 }
 
