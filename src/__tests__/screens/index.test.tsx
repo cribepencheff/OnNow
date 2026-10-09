@@ -3,18 +3,27 @@ import {
   StyleSheet,
   type RefreshControlProps,
 } from "react-native";
-import { act, fireEvent, render, screen } from "@testing-library/react-native";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  within,
+} from "@testing-library/react-native";
 
 import * as SplashScreen from "expo-splash-screen";
 import HomeScreen from "@/app/(tabs)/index";
+import { IMDB_CHIP_HEIGHT } from "@/components/ImdbRating";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useImdbRating } from "@/hooks/useImdbRating";
 import { useShowImages } from "@/hooks/useShowImages";
 import type { TvMazeEpisode, TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 
 const mockPush = jest.fn();
+const mockIsFocused = jest.fn(() => true);
 jest.mock("expo-router", () => ({
   useRouter: () => ({ push: mockPush }),
+  useIsFocused: () => mockIsFocused(),
 }));
 
 jest.mock("expo-splash-screen", () => ({
@@ -29,13 +38,6 @@ jest.mock("@/hooks/useToday", () => ({
 }));
 jest.mock("@/hooks/useShowImages", () => ({
   useShowImages: jest.fn(() => ({
-    data: undefined,
-    isLoading: false,
-    isError: false,
-  })),
-}));
-jest.mock("@/hooks/useEpisodeStill", () => ({
-  useEpisodeStill: jest.fn(() => ({
     data: undefined,
     isLoading: false,
     isError: false,
@@ -157,9 +159,15 @@ function mockFollowedEpisodes(
 // CRI-66 "done when": component tests cover today with one, several and no
 // shows, and an empty follow list.
 describe("HomeScreen", () => {
+  // The hero's page dots run a timed progress fill (auto-advance); fake
+  // timers keep it inside each test instead of updating after it.
   beforeEach(() => {
+    jest.useFakeTimers();
     mockPush.mockClear();
     refetch.mockClear();
+  });
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   it("renders one card when one followed show has an episode today (FR-004)", async () => {
@@ -172,13 +180,27 @@ describe("HomeScreen", () => {
     await render(<HomeScreen />);
 
     expect(screen.getByTestId("home-pager")).toBeTruthy();
-    expect(screen.getByText("TODAY · 1/1")).toBeTruthy();
+    // CRI-124: the date pill, then the code and title on one line.
+    expect(screen.getByText("Today · Mon 21 Sep")).toBeTruthy();
     expect(screen.getByText("Slow Horses")).toBeTruthy();
-    expect(screen.getByText("Mon 21 Sep · S1E1")).toBeTruthy();
-    expect(screen.getAllByText("Episode").length).toBeGreaterThan(0);
+    expect(screen.getByText("S1E1 · Episode")).toBeTruthy();
+    // The header with the logo, over the hero (CRI-124).
+    expect(screen.getByTestId("app-logo")).toBeTruthy();
+    // Its right slot is empty for now: no search entry on Home while
+    // shows are followed (FR-007).
+    expect(screen.queryByRole("button", { name: "Search" })).toBeNull();
+    // Under the status bar, a plain scrim that only shows once the header
+    // has left (CRI-124).
+    expect(
+      StyleSheet.flatten(
+        screen.getByTestId("home-status-bar-scrim").props.style,
+      ).opacity,
+    ).toBe(0);
+    // One slide: no page dots.
+    expect(screen.queryByLabelText(/^Show \d+ of/)).toBeNull();
   });
 
-  it("renders several cards with paging and a count label when several shows have an episode today (FR-004, FR-005)", async () => {
+  it("renders several cards with paging and a count when several shows have an episode today (FR-004, FR-005)", async () => {
     const showA = makeShow({ id: 1, name: "Slow Horses" });
     const showB = makeShow({ id: 2, name: "Silo" });
     const showC = makeShow({ id: 3, name: "The Bear" });
@@ -192,7 +214,9 @@ describe("HomeScreen", () => {
 
     await render(<HomeScreen />);
 
-    expect(screen.getByText("TODAY · 1/3")).toBeTruthy();
+    // CRI-124: the count is the page dots' (the pill only dates the slide).
+    expect(screen.getByLabelText("Show 1 of 3")).toBeTruthy();
+    expect(screen.getAllByText("Today · Mon 21 Sep").length).toBeGreaterThan(0);
     expect(screen.getByText("Slow Horses")).toBeTruthy();
 
     // The pager loops (loopSlideData): logical slide 0 lives at physical
@@ -205,12 +229,12 @@ describe("HomeScreen", () => {
       },
     });
 
-    expect(screen.getByText("TODAY · 2/3")).toBeTruthy();
+    expect(screen.getByLabelText("Show 2 of 3")).toBeTruthy();
     expect(screen.getByText("Silo")).toBeTruthy();
   });
 
   // CRI-94: every slide's rows have one height whatever they hold, so the
-  // label, title and date line never jump between slides.
+  // pill row, title and episode line never jump between slides.
   it("gives the label row and title block one height with or without an IMDb chip and logo (CRI-94)", async () => {
     const withChip = makeShow({
       id: 1,
@@ -246,7 +270,25 @@ describe("HomeScreen", () => {
         screen
           .getAllByTestId(testID)
           .map((view) => StyleSheet.flatten(view.props.style).height);
-      expect(heights("hero-label-row")).toEqual([20, 20]);
+      // The pill's height, and the episode line as tall as the IMDb chip,
+      // chip or not (CRI-124).
+      expect(heights("hero-label-row")).toEqual([26, 26]);
+      expect(heights("hero-episode-row")).toEqual([
+        IMDB_CHIP_HEIGHT,
+        IMDB_CHIP_HEIGHT,
+      ]);
+      // "IMDb 8.1" in one chip, on the episode line.
+      const withChipRows = screen
+        .getAllByTestId("hero-episode-row")
+        .filter((row) => within(row).queryByTestId("imdb-rating"));
+      expect(withChipRows).toHaveLength(1);
+      const chip = within(withChipRows[0]).getByTestId("imdb-rating");
+      expect(within(chip).getByText("IMDb")).toBeTruthy();
+      // Tabular figures: the chip keeps its width from slide to slide.
+      expect(
+        StyleSheet.flatten(within(chip).getByText("8.1").props.style)
+          .fontVariant,
+      ).toEqual(["tabular-nums"]);
       expect(heights("hero-title-block")).toEqual([88, 88]);
     } finally {
       (useShowImages as jest.Mock).mockImplementation(() => ({
@@ -260,7 +302,7 @@ describe("HomeScreen", () => {
     }
   });
 
-  // CRI-94: one slide per show, so the counter counts slides, not episodes.
+  // CRI-94: one slide per show, so a show's episodes are one slide.
   it("shows several same-day episodes of one show as one slide with a range (FR-012, CRI-94)", async () => {
     const show = makeShow({ name: "The Bear" });
     const episodes = [1, 2, 3].map((number) => makeEpisode({ number }));
@@ -270,11 +312,12 @@ describe("HomeScreen", () => {
 
     await render(<HomeScreen />);
 
-    expect(screen.getByText("TODAY · 1/1")).toBeTruthy();
-    expect(screen.getByText("Mon 21 Sep · S1E1–3")).toBeTruthy();
+    expect(screen.getByText("Today · Mon 21 Sep")).toBeTruthy();
+    expect(screen.getByText("S1E1–3 · Episode")).toBeTruthy();
+    expect(screen.queryByLabelText(/^Show \d+ of/)).toBeNull();
   });
 
-  it("shows one card labelled TOMORROW · 1/1 when one show releases on the next day with episodes (FR-006)", async () => {
+  it("shows one card labelled Tomorrow when one show releases on the next day with episodes (FR-006)", async () => {
     const show = makeShow({ name: "Silo" });
     const episode = makeEpisode({
       season: 2,
@@ -291,16 +334,15 @@ describe("HomeScreen", () => {
     await render(<HomeScreen />);
 
     expect(screen.getByTestId("home-pager")).toBeTruthy();
-    expect(screen.getByText("TOMORROW · 1/1")).toBeTruthy();
+    expect(screen.getByText("Tomorrow · Tue 22 Sep")).toBeTruthy();
     expect(screen.getByText("Silo")).toBeTruthy();
     // Network dropped from the meta line (94e72ad: "the network
     // contradicted the Open in button... the episode itself, not the
     // network, goes here instead").
-    expect(screen.getByText("Tue 22 Sep · S2E3")).toBeTruthy();
-    expect(screen.getAllByText("Episode").length).toBeGreaterThan(0);
+    expect(screen.getByText("S2E3 · Episode")).toBeTruthy();
   });
 
-  it("shows two cards labelled TOMORROW · 1/2 and 2/2 when two shows release on the next day with episodes (FR-006)", async () => {
+  it("shows two cards labelled Tomorrow, counted 1 of 2 and 2 of 2, when two shows release on the next day with episodes (FR-006)", async () => {
     const showA = makeShow({ id: 1, name: "Slow Horses" });
     const showB = makeShow({ id: 2, name: "Silo" });
     const episodeA = makeEpisode({ airstamp: "2026-09-22T18:00:00+00:00" });
@@ -317,7 +359,10 @@ describe("HomeScreen", () => {
 
     await render(<HomeScreen />);
 
-    expect(screen.getByText("TOMORROW · 1/2")).toBeTruthy();
+    expect(screen.getAllByText("Tomorrow · Tue 22 Sep").length).toBeGreaterThan(
+      0,
+    );
+    expect(screen.getByLabelText("Show 1 of 2")).toBeTruthy();
     expect(screen.getByText("Slow Horses")).toBeTruthy();
 
     // See the "renders several cards with paging" test above for why
@@ -329,11 +374,11 @@ describe("HomeScreen", () => {
       },
     });
 
-    expect(screen.getByText("TOMORROW · 2/2")).toBeTruthy();
+    expect(screen.getByLabelText("Show 2 of 2")).toBeTruthy();
     expect(screen.getByText("Silo")).toBeTruthy();
   });
 
-  it("labels the next day with episodes by its date, not TOMORROW, when it is further away (FR-006)", async () => {
+  it("labels the next day with episodes by its date, not Tomorrow, when it is further away (FR-006)", async () => {
     const show = makeShow({ name: "Silo" });
     const episode = makeEpisode({ airstamp: "2026-09-24T18:00:00+00:00" });
     mockFollowedEpisodes({
@@ -345,9 +390,8 @@ describe("HomeScreen", () => {
 
     await render(<HomeScreen />);
 
-    expect(screen.getByText("UPCOMING · 1/1")).toBeTruthy();
-    expect(screen.getByText("Thu 24 Sep · S1E1")).toBeTruthy();
-    expect(screen.getAllByText("Episode").length).toBeGreaterThan(0);
+    expect(screen.getByText("Thu 24 Sep")).toBeTruthy();
+    expect(screen.getByText("S1E1 · Episode")).toBeTruthy();
   });
 
   // Unlike the hero's own 7-day horizon (see the FR-012-does-not-apply test
@@ -371,8 +415,54 @@ describe("HomeScreen", () => {
 
     await render(<HomeScreen />);
 
-    expect(screen.getByText("TOMORROW · 1/1")).toBeTruthy();
-    expect(screen.getByText("Tue 22 Sep · S1E1–3")).toBeTruthy();
+    expect(screen.getByText("Tomorrow · Tue 22 Sep")).toBeTruthy();
+    expect(screen.getByText("S1E1–3 · Episode")).toBeTruthy();
+  });
+
+  // CRI-124: the hero advances by itself, but not while Home is out of
+  // sight; it then resumes on the same slide.
+  describe("auto-advance (CRI-124)", () => {
+    function twoSlides() {
+      mockFollowedEpisodes({
+        followedShows: [
+          {
+            show: makeShow({ id: 1, name: "Slow Horses" }),
+            episodes: [makeEpisode()],
+          },
+          {
+            show: makeShow({ id: 2, name: "Silo" }),
+            episodes: [makeEpisode()],
+          },
+        ],
+      });
+    }
+
+    afterEach(() => {
+      mockIsFocused.mockReturnValue(true);
+    });
+
+    it("moves to the next slide after its dwell time", async () => {
+      twoSlides();
+      await render(<HomeScreen />);
+      expect(screen.getByLabelText("Show 1 of 2")).toBeTruthy();
+
+      await act(async () => jest.advanceTimersByTime(6500));
+      expect(screen.getByLabelText("Show 2 of 2")).toBeTruthy();
+    });
+
+    it("pauses while Home is not the focused tab, and resumes on the same slide", async () => {
+      mockIsFocused.mockReturnValue(false);
+      twoSlides();
+      await render(<HomeScreen />);
+
+      await act(async () => jest.advanceTimersByTime(20000));
+      expect(screen.getByLabelText("Show 1 of 2")).toBeTruthy();
+
+      mockIsFocused.mockReturnValue(true);
+      await screen.rerender(<HomeScreen />);
+      await act(async () => jest.advanceTimersByTime(6500));
+      expect(screen.getByLabelText("Show 2 of 2")).toBeTruthy();
+    });
   });
 
   it("shows Add your first show when the follow list is empty and opens Search (backlog CRI-66, PRD FR-013)", async () => {
@@ -381,6 +471,8 @@ describe("HomeScreen", () => {
     await render(<HomeScreen />);
 
     expect(screen.getByText("Add your first show")).toBeTruthy();
+    // Logo only over the hero, for now (CRI-124).
+    expect(screen.queryByTestId("app-logo")).toBeNull();
 
     fireEvent.press(
       screen.getByRole("button", { name: "Add your first show" }),
@@ -497,6 +589,27 @@ describe("HomeScreen", () => {
     };
 
     afterEach(() => mockTopPicks.mockReturnValue([]));
+
+    // CRI-124 experiment: posters dimmed at rest, headings not; a dimmed
+    // poster still opens (the overlay takes no touches).
+    it("dims the posters at rest, not the heading, and keeps them tappable", async () => {
+      mockTopPicks.mockReturnValue([gangs]);
+      mockFollowedEpisodes({
+        followedShows: [{ show, episodes: [makeEpisode()] }],
+      });
+      await render(<HomeScreen />);
+
+      const dim = screen.getByTestId("poster-dim");
+      expect(StyleSheet.flatten(dim.props.style).opacity).toBeCloseTo(0.3);
+      expect(dim.props.pointerEvents).toBe("none");
+      await fireEvent.press(
+        screen.getByRole("button", { name: "Gangs of London" }),
+      );
+      expect(mockPush).toHaveBeenCalledWith({
+        pathname: "/show/[id]",
+        params: { id: 15299 },
+      });
+    });
 
     it("shows the row with its cards; a tap opens Show detail, the circle follows at once", async () => {
       mockTopPicks.mockReturnValue([gangs]);

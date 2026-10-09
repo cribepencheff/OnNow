@@ -15,11 +15,4 @@ export interface TmdbImages {
   logos?: TmdbImage[];
 }
 
-// A single episode's TMDB stills, the same TmdbImage shape as
-// backdrops/logos above, just under its own "stills" key (TMDB's own
-// /tv/{id}/season/{s}/episode/{e}/images endpoint response shape).
-export interface TmdbEpisodeImages {
-  stills?: TmdbImage[];
-}
-
 export const IMAGE_BASE = "https://image.tmdb.org/t/p";

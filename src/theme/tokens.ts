@@ -9,6 +9,9 @@ export const t = {
   surfaceRaised: "#22252c",
   hairline: "#2c2f37",
   imageControlBackdrop: "rgba(11, 12, 15, 0.55)",
+  // The hairline light border of the date pill, the Home follow circle and
+  // the poster cards (Apple TV style), drawn StyleSheet.hairlineWidth wide.
+  imageControlEdge: "rgba(255, 255, 255, 0.16)",
   ink: "#f4f4f6",
   inkMuted: "#a3a6ae",
   inkSubtle: "#8b8e97",
@@ -27,10 +30,10 @@ export const t = {
   radiusPill: 999,
 } as const;
 
-// The screen height the hero's own measurements (components/Hero/*) are
-// tuned for (390 × 844); every layout value there scales from
-// height / REF_HEIGHT.
-export const REF_HEIGHT = 844;
+// Trial (CRI-124): button labels in Manrope ExtraBold, loaded in
+// app/_layout.tsx. The one place to roll it back: replace this with
+// { fontWeight: "600" } and the buttons are back on the system font.
+const buttonFont = { fontFamily: "Manrope_800ExtraBold" } as const;
 
 export const type = {
   display: {
@@ -48,5 +51,13 @@ export const type = {
     lineHeight: 16,
     fontWeight: "700",
     letterSpacing: 0.6,
+  },
+  // -3% letter spacing: 18 × -0.03. One step up from 16, where Manrope
+  // read small (owner, CRI-124).
+  button: {
+    ...buttonFont,
+    fontSize: 18,
+    lineHeight: 22,
+    letterSpacing: -0.54,
   },
 } as const;
