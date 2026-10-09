@@ -24,7 +24,7 @@ On Now is a stripped, cinematic iOS app that answers one question in two seconds
 - The typeface is the iOS system font (SF Pro). It is not bundled; the stack falls back to the platform sans.
 - Trial: button labels (`button`, for example "Open in [service]") are set in Manrope ExtraBold at -3% letter spacing, bundled with the app. Only the `button` family points at Manrope, so rolling back is one change.
 - On Home the show's logo replaces the title. Use `display` for the title only when a show has no logo. `title` names a Show detail and the Calendar month; `headline` names cards and rows.
-- Set badges in `label`, uppercase: "NEW TODAY · 1/2", "TOMORROW", "FINALE".
+- Set badges in `label`, uppercase: "TOMORROW", "FINALE". The Home hero's date is a pill in sentence case instead (see Home below).
 - Write English, with original show titles. Never show a time of day. Use the data's own words, made readable: "Future uncertain", "Season 3 · TBA", "Season 4 premiere · Fri 9 Jul 2027". No em dashes.
 
 ## Shape and space

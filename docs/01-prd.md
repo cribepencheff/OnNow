@@ -28,20 +28,21 @@ first user is the author, who currently uses Next Episode.
 - **Concept:** a full-width backdrop hero (ADR 0012), one show per slide.
   Horizontal swipe between slides, page dots below. The hero covers the next
   7 days, today first. A show with several episodes in that window is one
-  slide (CRI-94). A label such as "TODAY · 1/3" ("TOMORROW", "UPCOMING")
-  carries the slide count. Two metadata lines: the original air date and
-  episode code ("Fri 9 Oct · S2E4"), or a range ("5–7 Oct · S23E156–158",
-  "S1E10–S2E1" across seasons, "Today–Thu" or "Tomorrow–Fri" when it starts today or tomorrow, always
-  from today as days pass), then the first episode's title, or the count
-  ("2 episodes") when a range starts with a placeholder title such as
-  "Episode 9" or "TBA"; a single episode with a placeholder title reads
-  "Title not announced" (FR-031). No network: where to watch is "Open in". Tapping the card
+  slide (CRI-94). The page dots carry the slide count (CRI-124). Above the
+  logo, a date pill in sentence case gives the original air date: "Today ·
+  Fri 9 Oct", "Tomorrow · Sat 10 Oct" or "Mon 12 Oct", or a range
+  ("Today–Thu · 9–15 Oct", "Mon–Wed · 12–14 Oct"), always from today as
+  days pass. Under the logo, one line: the episode code ("S2E4", or a
+  range, "S23E156–158", "S1E10–S2E1" across seasons) and the first
+  episode's title, or the count ("2 episodes") when a range starts with a
+  placeholder title such as "Episode 9" or "TBA"; a single episode with a
+  placeholder title reads "Title not announced" (FR-031). No network: where to watch is "Open in". Tapping the card
   opens Show detail (FR-030). No search entry while shows are followed:
   Search is reached from the Shows tab (FR-007).
 - **Empty week:** when nothing airs within the 7 days, the cards show the
   episodes of the next day with episodes,
-  labelled with that day ("TOMORROW" or a date, with the year when it is
-  not in the current year) and the count, in the same pager as today.
+  labelled with that day ("Tomorrow · Tue 22 Sep" or a date, with the year
+  when it is not in the current year), in the same pager as today.
 - **Below the hero:** one row, "Top picks for you" (FR-038, ADR 0016):
   TMDB's recommendations for each followed show, already followed shows
   removed, ranked by how many followed shows recommend the same title, and
@@ -330,7 +331,7 @@ Reached from an icon. Territory and notifications.
 | FR-002 | Follow and unfollow a series | PoC |
 | FR-003 | The follow list is stored on the device and survives a restart | PoC |
 | FR-004 | Home shows followed series with an episode released today | PoC |
-| FR-005 | Home shows the slide count with a day label ("TODAY · 1/3", "TOMORROW", "UPCOMING") | PoC, MVP |
+| FR-005 | Home shows the slide count in the page dots, and each slide's day in a date pill ("Today · Fri 9 Oct", "Tomorrow · Sat 10 Oct", "Mon 12 Oct", "Today–Thu · 9–15 Oct"); the PoC used a label ("TODAY · 1/3") (CRI-124) | PoC, MVP |
 | FR-006 | When nothing airs within the hero's 7 days, Home shows the episodes of the next day with episodes | PoC, MVP |
 | FR-007 | Search opens as a sheet from the search field in Shows, from the button on an empty Shows list, and from "Add your first show" on an empty Home (FR-013). With shows followed, Home has no search entry. The close button (X) or swipe down returns to where Search was opened | PoC, MVP |
 | FR-008 | Calendar shows a month grid with days that have episodes marked, today preselected | PoC |
