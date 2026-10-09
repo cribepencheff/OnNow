@@ -40,9 +40,17 @@ export const CONTENT_GAP = t.space2;
 // the logo has room (owner, CRI-124).
 export const TITLE_GAP = t.space4;
 
-// A small margin between the top safe area and the sharp image, so heads
-// clear the island without the pill reaching faces (owner, CRI-124).
-export const IMAGE_TOP_MARGIN = 8;
+// Step 1 of the top's new approach (owner, CRI-124): the top blur, the top
+// gradient and the header's edge band are off, and a thin line marks where
+// the image starts, so the raw mirror and the position can be judged. Off
+// again once the owner approves the position.
+export const TOP_SEAM_DEBUG = true;
+
+// How far below the top safe area the sharp image's top edge sits. The
+// image is zoomed out to fit between there and the bottom seam, so faces
+// near the pill barely move while the top gains room, filled by the
+// upward mirror (owner, CRI-124; being tuned).
+export const IMAGE_TOP_MARGIN = 40;
 // The top blur, the bottom one flipped upwards: full from the top of the
 // screen all the way to the image's top (the seam), so the mirror's
 // symmetry never reads, then easing off this far into the image, before

@@ -219,10 +219,18 @@ export const HeroPage = memo(function HeroPage({
     ? width
     : width * (1 + 2 * HERO_PARALLAX_FACTOR);
   const backdropLeft = -((backdropWidth - width) / 2);
+  // Zoomed out to fit the box's height, centred: the image's bottom edge
+  // stays on the bottom seam and its top edge on imageTop, so more of its
+  // width shows. Never narrower than the screen.
+  const backdrop = images?.highestRatedBackdrop;
+  const aspectRatio =
+    backdrop && backdrop.height > 0 ? backdrop.width / backdrop.height : 16 / 9;
+  const columnWidth = Math.max(width, imageBoxHeight * aspectRatio);
+  const columnLeft = (backdropWidth - columnWidth) / 2;
   // Sharp on this screen's pixels at the width the image is drawn
   // (heroImageSize): "original" on today's phones.
   const imageSize = heroImageSize(
-    backdropWidth,
+    columnWidth,
     imageBoxHeight,
     PixelRatio.get(),
   );
@@ -353,7 +361,8 @@ export const HeroPage = memo(function HeroPage({
             >
               <ImageColumn
                 uri={`${IMAGE_BASE}/${imageSize}${displayPath}`}
-                width={backdropWidth}
+                width={columnWidth}
+                left={columnLeft}
                 imageTop={imageTop}
                 boxHeight={imageBoxHeight}
                 onLoad={handleLoad}
@@ -385,7 +394,8 @@ export const HeroPage = memo(function HeroPage({
                     >
                       <ImageColumn
                         uri={`${IMAGE_BASE}/${imageSize}${displayPath}`}
-                        width={backdropWidth}
+                        width={columnWidth}
+                        left={columnLeft}
                         imageTop={imageTop}
                         boxHeight={imageBoxHeight}
                         blurRadius={ANDROID_MIRROR_BLUR_RADIUS}
@@ -410,7 +420,8 @@ export const HeroPage = memo(function HeroPage({
                   >
                     <ImageColumn
                       uri={`${IMAGE_BASE}/${imageSize}${displayPath}`}
-                      width={backdropWidth}
+                      width={columnWidth}
+                      left={columnLeft}
                       imageTop={imageTop}
                       boxHeight={imageBoxHeight}
                       blurRadius={ANDROID_MIRROR_BLUR_RADIUS}
@@ -434,6 +445,7 @@ export const HeroPage = memo(function HeroPage({
 function ImageColumn({
   uri,
   width,
+  left,
   imageTop,
   boxHeight,
   blurRadius,
@@ -441,6 +453,8 @@ function ImageColumn({
 }: {
   uri: string;
   width: number;
+  // From the left of the backdrop box: the column is centred in it.
+  left: number;
   imageTop: number;
   boxHeight: number;
   blurRadius?: number;
@@ -468,17 +482,20 @@ function ImageColumn({
       <View
         pointerEvents="none"
         testID={sharp ? "hero-backdrop-top-mirror-box" : undefined}
-        style={[styles.box, { top: imageTop - boxHeight, width }]}
+        style={[styles.box, { top: imageTop - boxHeight, left, width }]}
       >
         {image(true, "hero-backdrop-top-mirror")}
       </View>
-      <View pointerEvents="none" style={[styles.box, { top: imageTop, width }]}>
+      <View
+        pointerEvents="none"
+        style={[styles.box, { top: imageTop, left, width }]}
+      >
         {image(false, "hero-backdrop-image")}
       </View>
       <View
         pointerEvents="none"
         testID={sharp ? "hero-backdrop-mirror-box" : undefined}
-        style={[styles.box, { top: imageTop + boxHeight, width }]}
+        style={[styles.box, { top: imageTop + boxHeight, left, width }]}
       >
         {image(true, "hero-backdrop-mirror")}
       </View>
@@ -658,7 +675,6 @@ const styles = StyleSheet.create({
   // One box of the image column (ImageColumn).
   box: {
     position: "absolute",
-    left: 0,
   },
   // A mirror image: upside down, around its own centre.
   flipped: {

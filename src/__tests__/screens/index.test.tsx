@@ -14,6 +14,7 @@ import {
 import * as SplashScreen from "expo-splash-screen";
 import HomeScreen from "@/app/(tabs)/index";
 import { IMDB_CHIP_HEIGHT } from "@/components/ImdbRating";
+import { TOP_SEAM_DEBUG } from "@/logic/hero-layout";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useImdbRating } from "@/hooks/useImdbRating";
 import { useShowImages } from "@/hooks/useShowImages";
@@ -191,7 +192,10 @@ describe("HomeScreen", () => {
     expect(screen.queryByRole("button", { name: "Search" })).toBeNull();
     // The top edge blur band is part of the header (CRI-124); under the
     // status bar, a plain scrim that only shows once the header has left.
-    expect(screen.getByTestId("header-edge-blur")).toBeTruthy();
+    // (Off while the top seam is being positioned, TOP_SEAM_DEBUG.)
+    expect(screen.queryByTestId("header-edge-blur") !== null).toBe(
+      !TOP_SEAM_DEBUG,
+    );
     expect(
       StyleSheet.flatten(
         screen.getByTestId("home-status-bar-scrim").props.style,

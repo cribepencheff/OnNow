@@ -81,7 +81,7 @@ describe("heroLayout (CRI-124)", () => {
     "starts the sharp image under the top safe area on %s, the seam and content where they were",
     (_name, windowHeight, topInset) => {
       const layout = heroLayout(windowHeight, topInset);
-      expect(layout.imageTop).toBe(topInset + 8);
+      expect(layout.imageTop).toBe(topInset + 40);
       // The blur is full all the way to the seam, so the mirror never
       // reads, and clear a little way into the image, before the heads.
       expect(layout.topBlurFullTo).toBe(layout.imageTop);

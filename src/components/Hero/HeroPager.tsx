@@ -28,6 +28,7 @@ import {
   physicalToLogical,
   type HeroSlide,
 } from "@/logic/hero-carousel";
+import { TOP_SEAM_DEBUG } from "@/logic/hero-layout";
 import { ProgressiveBlur } from "../ProgressiveBlur";
 import { ContentLayer, HeroPage, useHeroLayout } from "./HeroPage";
 import { PageIndicator } from "./PageIndicator";
@@ -89,6 +90,7 @@ export function HeroPager({
   const { width } = useWindowDimensions();
   const {
     heroHeight,
+    imageTop,
     imageHeight,
     topBlurHeight,
     topBlurFullTo,
@@ -589,36 +591,54 @@ export function HeroPager({
         />
         {/* Pinned with the backdrop, so it stays at the image's top during
             a pull. */}
-        <View
-          pointerEvents="none"
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width,
-            height: topGradientHeight,
-            experimental_backgroundImage: TOP_GRADIENT,
-          }}
-        />
-        {/* The top edge, the bottom's mirror and blur flipped upwards: full
+        {TOP_SEAM_DEBUG ? (
+          // Where the sharp image starts (TOP_SEAM_DEBUG).
+          <View
+            pointerEvents="none"
+            style={{
+              position: "absolute",
+              top: imageTop,
+              left: 0,
+              width,
+              height: 1,
+              backgroundColor: "red",
+            }}
+            testID="hero-top-seam-debug"
+          />
+        ) : (
+          <>
+            <View
+              pointerEvents="none"
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width,
+                height: topGradientHeight,
+                experimental_backgroundImage: TOP_GRADIENT,
+              }}
+            />
+            {/* The top edge, the bottom's mirror and blur flipped upwards: full
             from the top of the screen to a little above where the sharp
             image starts, clear a little way into it, so the mirror above
             does not read and heads stay sharp. Pinned with the backdrop, so a pull keeps it on
             the image's top seam; over the light gradient. It blends into
             Home's own top edge band, which is clear by the same inset. */}
-        <ProgressiveBlur
-          intensity={MIRROR_BLUR_INTENSITY}
-          fullAt={(topBlurHeight - topBlurFullTo) / topBlurHeight}
-          strongAt="top"
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width,
-            height: topBlurHeight,
-          }}
-          testID="hero-top-mirror-blur"
-        />
+            <ProgressiveBlur
+              intensity={MIRROR_BLUR_INTENSITY}
+              fullAt={(topBlurHeight - topBlurFullTo) / topBlurHeight}
+              strongAt="top"
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width,
+                height: topBlurHeight,
+              }}
+              testID="hero-top-mirror-blur"
+            />
+          </>
+        )}
       </Animated.View>
 
       {/* Over the hero's lower part, once for all slides rather than per
