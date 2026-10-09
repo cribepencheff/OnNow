@@ -8,14 +8,16 @@ import { ProgressiveBlur } from "./ProgressiveBlur";
 
 describe("ProgressiveBlur (CRI-124)", () => {
   it("draws a masked blur on iOS", async () => {
-    await render(<ProgressiveBlur intensity={80} testID="blur" />);
+    await render(<ProgressiveBlur intensity={80} fullAt={0.5} testID="blur" />);
     expect(screen.getByTestId("blur")).toBeTruthy();
   });
 
   it("draws nothing on Android", async () => {
     jest.replaceProperty(Platform, "OS", "android");
     try {
-      await render(<ProgressiveBlur intensity={80} testID="blur" />);
+      await render(
+        <ProgressiveBlur intensity={80} fullAt={0.5} testID="blur" />,
+      );
       expect(screen.queryByTestId("blur")).toBeNull();
     } finally {
       jest.restoreAllMocks();

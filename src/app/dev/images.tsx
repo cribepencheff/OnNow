@@ -1,6 +1,6 @@
 // A hidden developer screen, development builds only. Lists every
 // followed show with what the hero
-// would show (the episode still, or the highest-rated backdrop fallback),
+// would show (the highest-rated backdrop, ADR 0012),
 // its logo, and the most and second most voted textless backdrops side by
 // side for reviewing the ranking. Opened by a long press on the Shows tab.
 
@@ -20,14 +20,12 @@ import { useFollowList } from "@/hooks/useFollowList";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useStreamingService } from "@/hooks/useStreamingService";
 import { useToday } from "@/hooks/useToday";
-import { latestEpisode } from "@/logic/show-detail";
 import { sortShowsByTitle } from "@/logic/shows-list";
 import { OpenInSlot } from "@/components/Hero/HeroPage";
 import { heroAvailability, type HeroAvailability } from "@/logic/hero-carousel";
 import { openInAccessibilityLabel } from "@/logic/streaming-service";
 import { IMAGE_BASE, type TmdbImage } from "@/api/tmdb-types";
-import type { TvMazeEpisode, TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
-import { useEpisodeStill } from "@/hooks/useEpisodeStill";
+import type { TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 import { useShowImages } from "@/hooks/useShowImages";
 import { t, type } from "@/theme/tokens";
 
@@ -94,8 +92,8 @@ export default function DevImagesScreen() {
         ListHeaderComponent={
           <View style={styles.header}>
             <Text style={styles.meta}>
-              {shows.length} followed shows. What the hero shows (episode still
-              or highest-rated backdrop), logo, and the voted backdrops.
+              {shows.length} followed shows. What the hero shows (the
+              highest-rated backdrop), logo, and the voted backdrops.
             </Text>
             <Pressable
               accessibilityRole="button"
@@ -161,14 +159,6 @@ function ShowImagesRow({
     region,
   );
   const half = (width - 16 * 2 - 8) / 2;
-  // The episode whose still the hero would prefer for this show; the latest
-  // aired regular episode is a representative one that is likely to have a
-  // still (an upcoming episode often has none yet).
-  const stillEpisode = latestEpisode(
-    show._embedded.episodes,
-    deviceTimeZone(),
-    todayDate,
-  );
 
   return (
     <View style={styles.row} testID="dev-images-row">
@@ -208,18 +198,8 @@ function ShowImagesRow({
             )}
           </View>
 
-          {/* What the hero actually shows: the episode's own still when TMDB
-              has one, otherwise the highest-rated backdrop. */}
-          {stillEpisode && (
-            <EpisodeStillThumb
-              show={show}
-              episode={stillEpisode}
-              todayDate={todayDate}
-              width={width - 32}
-            />
-          )}
           <Backdrop
-            label="Highest-rated backdrop (hero fallback)"
+            label="Highest-rated backdrop (what the hero shows)"
             image={data.highestRatedBackdrop}
             width={width - 32}
           />
@@ -233,47 +213,6 @@ function ShowImagesRow({
             />
           </View>
         </>
-      )}
-    </View>
-  );
-}
-
-// The episode still the hero would use for a show, when TMDB has one. Its
-// own component so useEpisodeStill is called unconditionally (the parent
-// only renders it when there is an episode to look up).
-function EpisodeStillThumb({
-  show,
-  episode,
-  todayDate,
-  width,
-}: {
-  show: TvMazeShowWithEmbeds;
-  episode: TvMazeEpisode;
-  todayDate: string;
-  width: number;
-}) {
-  const { data: still } = useEpisodeStill(
-    show,
-    episode,
-    deviceTimeZone(),
-    todayDate,
-  );
-  const label = `Episode still · S${episode.season}E${episode.number} (hero prefers this)`;
-
-  return (
-    <View style={{ width, gap: 4 }}>
-      <Text style={styles.meta}>
-        {label}
-        {still ? "" : " · none, falls back to backdrop"}
-      </Text>
-      {still ? (
-        <Image
-          source={`${IMAGE_BASE}/w780${still.filePath}`}
-          style={[styles.backdrop, { width, height: (width * 9) / 16 }]}
-          contentFit="cover"
-        />
-      ) : (
-        <Text style={styles.meta}>none</Text>
       )}
     </View>
   );

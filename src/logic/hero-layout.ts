@@ -44,11 +44,14 @@ export const TITLE_GAP = t.space4;
 export interface HeroLayout {
   // The hero's own height.
   heroHeight: number;
-  // How tall the sharp image is: the hero's upper part, down to the top of
-  // the content, so the picture's subject sits above the pill and title
-  // rather than under them (owner, CRI-124). Below it, to the hero's end,
-  // the image mirrored, blurred progressively and faded into bg.
+  // How tall the image is: down to the fixed bottom of the title (logo)
+  // slot, the same on every slide, so the seam never moves (owner,
+  // CRI-124). Below it, to the hero's end, the image mirrored.
   imageHeight: number;
+  // Where the progressive blur starts: the pill's top, on the image
+  // itself, so it is already soft at the seam and the mirror's symmetry
+  // does not read. It grows to full by the seam and stays full below.
+  blurTop: number;
   isShort: boolean;
   buttonHeight: number;
   // Above the button, on top of the content's own row gap.
@@ -59,8 +62,8 @@ export interface HeroLayout {
   contentTop: number;
   // Where the page dots sit, dotsGap under the button's note line.
   dotsTop: number;
-  // Where the fade into bg starts (the seam under the sharp image); it
-  // ends, solid, at heroHeight.
+  // Where the fade into bg starts (with the blur); it ends, solid, at
+  // heroHeight.
   fadeTop: number;
   // How tall the top gradient behind the status bar and logo is.
   topGradientHeight: number;
@@ -95,7 +98,8 @@ export function heroLayout(windowHeight: number, topInset: number): HeroLayout {
     buttonHeight,
     openInMargin,
     dotsGap,
-    imageHeight: contentTop,
+    imageHeight: contentTop + PILL_HEIGHT + TITLE_GAP + TITLE_BLOCK_HEIGHT,
+    blurTop: contentTop,
     contentTop,
     dotsTop: contentTop + contentHeight + dotsGap,
     fadeTop: contentTop,
@@ -124,4 +128,30 @@ export function heroImageSize(
   const neededPixels = drawnWidth * pixelRatio;
   const fit = SIZES.find(([, width]) => width >= neededPixels);
   return fit ? fit[0] : "original";
+}
+
+// The progressive blur's mask (CRI-124): from clear at the blur's top to
+// full at `fullAt` (a fraction of the blur's height: where the seam is),
+// eased so neither end shows as a line, then full to the bottom. Colours
+// and locations for expo-linear-gradient.
+export function progressiveMaskStops(fullAt: number): {
+  colors: string[];
+  locations: number[];
+} {
+  const end = Math.min(Math.max(fullAt, 0.05), 1);
+  const ramp: [at: number, alpha: number][] = [
+    [0, 0],
+    [0.2, 0.08],
+    [0.4, 0.28],
+    [0.6, 0.56],
+    [0.8, 0.84],
+    [1, 1],
+  ];
+  const colors = ramp.map(([, alpha]) => `rgba(0,0,0,${alpha})`);
+  const locations = ramp.map(([at]) => at * end);
+  if (end < 1) {
+    colors.push("rgba(0,0,0,1)");
+    locations.push(1);
+  }
+  return { colors, locations };
 }

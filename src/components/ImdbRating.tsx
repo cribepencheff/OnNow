@@ -83,10 +83,11 @@ const styles = StyleSheet.create({
     borderColor: t.imageControlEdge,
     borderRadius: 8,
   },
-  // The episode line's weight and colour, at about 85% of its size (12 to
-  // its 14), as in the owner's sketch.
+  // The episode line's colour at about 85% of its size (12 to its 14), as
+  // in the owner's sketch; Medium, since regular reads thin that small.
   chipMark: {
     ...type.meta,
+    fontWeight: "500",
     fontSize: 12,
     lineHeight: MARK_LINE_HEIGHT,
     color: t.inkMuted,
@@ -94,6 +95,7 @@ const styles = StyleSheet.create({
   // Tabular figures, so the chip keeps its width from slide to slide.
   chipRating: {
     ...type.meta,
+    fontWeight: "500",
     fontSize: 12,
     lineHeight: MARK_LINE_HEIGHT,
     color: t.inkMuted,

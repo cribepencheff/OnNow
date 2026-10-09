@@ -24,7 +24,6 @@ import { IMAGE_BASE } from "@/api/tmdb-types";
 import type { TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 import { openExternalUrl, useGuardedRouter } from "@/hooks/useGuardedRouter";
 import { useStreamingService } from "@/hooks/useStreamingService";
-import { useEpisodeStill } from "@/hooks/useEpisodeStill";
 import { useShowImages } from "@/hooks/useShowImages";
 import { openInAccessibilityLabel } from "@/logic/streaming-service";
 import { ImdbRating } from "../ImdbRating";
@@ -53,8 +52,8 @@ import {
 } from "@/logic/hero-layout";
 import { t, type } from "@/theme/tokens";
 
-// How strongly Android blurs the mirrored image, where the progressive
-// BlurView does not run (ProgressiveBlur).
+// How strongly Android blurs its copy of the image and the mirror, where
+// the progressive BlurView does not run (ProgressiveBlur).
 const ANDROID_MIRROR_BLUR_RADIUS = 30;
 
 // The hero's layout for this screen (logic/hero-layout.ts).
@@ -168,7 +167,7 @@ export const HeroPage = memo(function HeroPage({
   // per cell that would defeat this memo regardless of anything else.
   onBackdropLoad: (index: number) => void;
 }) {
-  const { heroHeight, imageHeight } = useHeroLayout();
+  const { heroHeight, imageHeight, blurTop } = useHeroLayout();
   const router = useGuardedRouter();
   const show = item.show as TvMazeShowWithEmbeds;
   const { data: images, isLoading: imagesLoading } = useShowImages(
@@ -176,32 +175,24 @@ export const HeroPage = memo(function HeroPage({
     deviceTimeZone(),
     todayDate,
   );
-  // The show's highest-rated backdrop (chooseHighestRatedBackdrop), used
-  // when the episode has no TMDB still of its own (displayPath below prefers
-  // the still). Nothing below this line (parallax, crossfade, pull-zoom,
-  // scrim) knows or cares which of the two it's showing.
-  const fallbackBackdropPath = images?.highestRatedBackdrop?.file_path;
-  const { data: episodeStill, isLoading: stillLoading } = useEpisodeStill(
-    show,
-    item.episodes[0],
-    deviceTimeZone(),
-    todayDate,
-  );
-  const displayPath = episodeStill?.filePath ?? fallbackBackdropPath;
-  // The sharp image fills the hero's upper part, so its subject sits above
-  // the pill and title (heroLayout). Below it, the same image mirrored
-  // (Apple TV style), which HeroPager's single progressive blur and fade,
-  // both fixed overlays, turn into the hero's soft lower part.
+  // The show's highest-rated backdrop (chooseHighestRatedBackdrop:
+  // textless first, then vote_average, vote_count as tie-break), the same
+  // image on every visit to the slide (ADR 0012, amended for CRI-124).
+  // Nothing below this line (parallax, crossfade, pull-zoom, mirror, blur)
+  // depends on which image it is.
+  const displayPath = images?.highestRatedBackdrop?.file_path;
+  // The image fills the hero down to the title slot's bottom (heroLayout).
+  // Below it, the same image mirrored (Apple TV style); HeroPager's single
+  // progressive blur and fade, both fixed overlays, start on the image at
+  // the pill and turn the hero's lower part soft.
   const backdropHeight = imageHeight;
-  // The mirror zone, from the seam to the hero's end.
-  const mirrorZoneHeight = heroHeight - imageHeight;
   // Ready for auto-advance once the image loads, fails, or turns out not to
   // exist; a slide without an image must never hold the pager.
   const handleLoad = useCallback(
     () => onBackdropLoad(index),
     [onBackdropLoad, index],
   );
-  const noImage = !displayPath && !imagesLoading && !stillLoading;
+  const noImage = !displayPath && !imagesLoading;
   useEffect(() => {
     if (noImage) {
       onBackdropLoad(index);
@@ -386,20 +377,39 @@ export const HeroPage = memo(function HeroPage({
                   accessibilityIgnoresInvertColors
                   testID="hero-backdrop-mirror"
                 />
-                {/* Android has no progressive BlurView (ProgressiveBlur):
-                    a blurred copy of the mirror shows through the same
-                    eased mask instead, clear at the seam. */}
-                {Platform.OS === "android" && (
-                  <MaskedView
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: backdropWidth,
-                      height: mirrorZoneHeight,
-                    }}
-                    maskElement={<ProgressiveMask />}
+              </View>
+              {/* Android has no progressive BlurView (ProgressiveBlur): a
+                  blurred copy of the image and its mirror shows through
+                  the same eased mask instead, from the pill's top, full by
+                  the seam. */}
+              {Platform.OS === "android" && (
+                <MaskedView
+                  pointerEvents="none"
+                  style={{
+                    position: "absolute",
+                    top: blurTop,
+                    left: 0,
+                    width: backdropWidth,
+                    height: heroHeight - blurTop,
+                  }}
+                  maskElement={
+                    <ProgressiveMask
+                      fullAt={
+                        (backdropHeight - blurTop) / (heroHeight - blurTop)
+                      }
+                    />
+                  }
+                >
+                  <View
+                    style={{ position: "absolute", top: -blurTop, left: 0 }}
                   >
+                    <Image
+                      source={`${IMAGE_BASE}/${imageSize}${displayPath}`}
+                      style={{ width: backdropWidth, height: backdropHeight }}
+                      contentFit="cover"
+                      contentPosition="center"
+                      blurRadius={ANDROID_MIRROR_BLUR_RADIUS}
+                    />
                     <Image
                       source={`${IMAGE_BASE}/${imageSize}${displayPath}`}
                       style={[
@@ -410,9 +420,9 @@ export const HeroPage = memo(function HeroPage({
                       contentPosition="center"
                       blurRadius={ANDROID_MIRROR_BLUR_RADIUS}
                     />
-                  </MaskedView>
-                )}
-              </View>
+                  </View>
+                </MaskedView>
+              )}
             </Animated.View>
           </Animated.View>
         )}

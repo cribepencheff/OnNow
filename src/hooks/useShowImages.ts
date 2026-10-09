@@ -1,18 +1,16 @@
-// TMDB backdrop, logo and episode still for a followed show, per
+// TMDB backdrop and logo for a followed show, per
 // docs/design/design-system.md "Imagery". Uses the same
 // EXPO_PUBLIC_TMDB_API_KEY as src/api/tmdb-client.ts.
 //
-// The hero shows the episode's own TMDB still when it has one
-// (useEpisodeStill, src/hooks/useEpisodeStill.ts), falling back to the
-// highest-rated backdrop (chooseHighestRatedBackdrop). Both are recomputed
-// on each run; there is no longer a stored "official" pick or a re-pick
-// window (removed with the /tv/{id}/changes machinery once episode stills
-// were adopted).
+// The hero shows the show's highest-rated backdrop
+// (chooseHighestRatedBackdrop, ADR 0012 as amended for CRI-124),
+// recomputed on each run; there is no stored "official" pick or re-pick
+// window (removed with the /tv/{id}/changes machinery).
 //
 // tmdb() and tmdbTvIdFor() below are this hook's own fetch helper, separate
 // from src/api/tmdb-client.ts's createTmdbClient (different retry
 // strategy, no injected fetchFn). Folding them into createTmdbClient is a
-// later piece of work; useEpisodeStill.ts imports tmdb() from here for now.
+// later piece of work.
 
 import { useQuery } from "@tanstack/react-query";
 
@@ -72,8 +70,8 @@ async function tmdbTvIdFor(show: TvMazeShowWithEmbeds): Promise<number | null> {
 export interface ShowImages {
   tmdbId: number | null;
   // The highest-rated backdrop currently available
-  // (chooseHighestRatedBackdrop): the hero's backdrop fallback when an
-  // episode has no TMDB still. Recomputed fresh every time this query runs
+  // (chooseHighestRatedBackdrop): the hero's image. Recomputed fresh every
+  // time this query runs
   // (once a day per show, via todayDate in the query key).
   highestRatedBackdrop: TmdbImage | null;
   // The most and second most voted textless backdrops, and how many textless
@@ -105,10 +103,7 @@ export function useShowImages(
     // pick and its fields (backdrop, airingNow, pickReason, ...) and the
     // /tv/{id}/changes "newest upload" machinery were removed, in favour of
     // episode-still-first with a highest-rated backdrop fallback.
-    // useEpisodeStill calls this hook directly for its own tmdbId rather than
-    // reading the cache under a hardcoded key, so it picks up whatever
-    // version is current here automatically; nothing else in the app reads
-    // this key.
+    // Nothing else in the app reads this key.
     // v4: drops "no TMDB match" answers cached before the name match (CRI-99).
     queryKey: ["proto-images-v4", show.id, todayDate],
     staleTime: Infinity,

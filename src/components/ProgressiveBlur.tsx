@@ -16,25 +16,17 @@ import MaskedView from "@react-native-masked-view/masked-view";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 
-// Eased, so neither the start nor the end of the blur shows as a line:
-// clear at the top, full from about two thirds down.
-const MASK_COLORS = [
-  "rgba(0,0,0,0)",
-  "rgba(0,0,0,0.08)",
-  "rgba(0,0,0,0.3)",
-  "rgba(0,0,0,0.62)",
-  "rgba(0,0,0,0.88)",
-  "rgba(0,0,0,1)",
-] as const;
-const MASK_LOCATIONS = [0, 0.12, 0.28, 0.45, 0.62, 0.72] as const;
+import { progressiveMaskStops } from "@/logic/hero-layout";
 
 // The mask itself: what it covers shows from nothing at the top to fully
-// at about two thirds down.
-export function ProgressiveMask() {
+// at `fullAt` (a fraction of its height), eased, then fully below
+// (progressiveMaskStops).
+export function ProgressiveMask({ fullAt }: { fullAt: number }) {
+  const { colors, locations } = progressiveMaskStops(fullAt);
   return (
     <LinearGradient
-      colors={MASK_COLORS}
-      locations={MASK_LOCATIONS}
+      colors={colors as [string, string, ...string[]]}
+      locations={locations as [number, number, ...number[]]}
       style={StyleSheet.absoluteFill}
     />
   );
@@ -42,10 +34,13 @@ export function ProgressiveMask() {
 
 export function ProgressiveBlur({
   intensity,
+  fullAt,
   style,
   testID,
 }: {
   intensity: number;
+  // Where the blur reaches full strength, as a fraction of its height.
+  fullAt: number;
   style?: StyleProp<ViewStyle>;
   testID?: string;
 }) {
@@ -56,12 +51,12 @@ export function ProgressiveBlur({
     <MaskedView
       pointerEvents="none"
       style={style}
-      maskElement={<ProgressiveMask />}
+      maskElement={<ProgressiveMask fullAt={fullAt} />}
       testID={testID}
     >
       <BlurView
         intensity={intensity}
-        tint="dark"
+        tint="default"
         style={StyleSheet.absoluteFill}
       />
     </MaskedView>

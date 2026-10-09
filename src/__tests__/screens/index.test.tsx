@@ -43,13 +43,6 @@ jest.mock("@/hooks/useShowImages", () => ({
     isError: false,
   })),
 }));
-jest.mock("@/hooks/useEpisodeStill", () => ({
-  useEpisodeStill: jest.fn(() => ({
-    data: undefined,
-    isLoading: false,
-    isError: false,
-  })),
-}));
 const mockAiring = jest.fn(() => [] as unknown[]);
 jest.mock("@/hooks/useAiringThisWeek", () => ({
   useAiringThisWeek: () => ({ cards: mockAiring(), isLoading: false }),

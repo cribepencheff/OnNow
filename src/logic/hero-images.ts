@@ -1,11 +1,7 @@
 // The image rules from docs/design/design-system.md, "Imagery": which TMDB
 // image the hero shows, ranked from raw TMDB image-list data.
 
-import type {
-  TmdbEpisodeImages,
-  TmdbImage,
-  TmdbImages,
-} from "@/api/tmdb-types";
+import type { TmdbImage, TmdbImages } from "@/api/tmdb-types";
 
 // Textless images have no language (TMDB: iso_639_1 null; newer uploads can
 // use "xx" for "no language").
@@ -26,8 +22,7 @@ export function textlessBackdrops(images: TmdbImages): TmdbImage[] {
 // backdrops currently exist, textlessBackdrops first (already byVotes-
 // sorted, so its own first element is the answer), falling back to the same
 // ranking over every backdrop, textless or not, only when there's no
-// textless one at all. This is the hero's backdrop fallback when an episode
-// has no TMDB still.
+// textless one at all. This is the hero's image (ADR 0012).
 export function chooseHighestRatedBackdrop(
   images: TmdbImages,
 ): TmdbImage | null {
@@ -36,17 +31,6 @@ export function chooseHighestRatedBackdrop(
     return textless[0];
   }
   return (images.backdrops ?? []).slice().sort(byVotes)[0] ?? null;
-}
-
-// "The highest-rated still": same rule as any other TMDB image list here
-// (byVotes: vote_average, then vote_count). No language/textless filter:
-// episode stills are plain screenshots, not promotional art that can carry
-// alternate-language text baked in.
-export function chooseEpisodeStill(
-  images: TmdbEpisodeImages,
-): TmdbImage | null {
-  const stills = (images.stills ?? []).slice().sort(byVotes);
-  return stills[0] ?? null;
 }
 
 // "The most voted English logo, PNG preferred."

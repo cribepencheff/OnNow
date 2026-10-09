@@ -44,11 +44,12 @@ const AnimatedFlatList = Animated.createAnimatedComponent(
 // carousel auto-advances to the next one.
 const AUTO_ADVANCE_MS = 6000;
 
-// The fade into bg over the mirror zone, from the seam to the hero's end:
-// eased, so it has no visible edge, and already part way down under the
-// title so the text reads on any image; solid towards the dots.
+// The fade into bg from the pill's top to the hero's end, with the blur:
+// light down to the seam (about halfway), so the soft image keeps its own
+// tone around the title, then into solid bg towards the dots. Eased, so it
+// has no visible edge.
 const FADE_GRADIENT =
-  "linear-gradient(to bottom, rgba(11,12,15,0) 0%, rgba(11,12,15,0.35) 15%, rgba(11,12,15,0.6) 35%, rgba(11,12,15,0.82) 60%, rgba(11,12,15,0.95) 80%, rgba(11,12,15,1) 92%)";
+  "linear-gradient(to bottom, rgba(11,12,15,0) 0%, rgba(11,12,15,0.1) 25%, rgba(11,12,15,0.22) 47%, rgba(11,12,15,0.48) 65%, rgba(11,12,15,0.8) 82%, rgba(11,12,15,1) 95%)";
 // How strong the blur over the mirror zone gets: the image reads as
 // almost one colour there.
 const MIRROR_BLUR_INTENSITY = 80;
@@ -86,8 +87,16 @@ export function HeroPager({
   pullDistance: Animated.AnimatedInterpolation<number>;
 }) {
   const { width } = useWindowDimensions();
-  const { heroHeight, imageHeight, fadeTop, topGradientHeight, dotsTop } =
-    useHeroLayout();
+  const {
+    heroHeight,
+    imageHeight,
+    blurTop,
+    fadeTop,
+    topGradientHeight,
+    dotsTop,
+  } = useHeroLayout();
+  // The blur is full by the seam, so the mirror's symmetry does not read.
+  const blurFullAt = (imageHeight - blurTop) / (heroHeight - blurTop);
   const { reduceMotionEnabled, screenReaderEnabled } = useAccessibilityFlags();
   // Auto-advance pauses, on the same slide, while Home is not the focused
   // tab or the app is in the background, as it does under a finger
@@ -591,21 +600,23 @@ export function HeroPager({
         />
       </Animated.View>
 
-      {/* Over the mirror zone, once for all slides rather than per slide,
-          and not part of the pinned pager: on a pull the backdrop stretches
-          down from its pinned top, so its seam moves down with the pull,
-          as these do. First the progressive blur (clear at the seam), then
-          the fade into bg. Both horizontally uniform, so nothing slides or
+      {/* Over the hero's lower part, once for all slides rather than per
+          slide, and not part of the pinned pager: on a pull the backdrop
+          stretches down from its pinned top, so its seam moves down with
+          the pull, as these do. First the progressive blur, which starts
+          at the pill's top on the image itself and is full by the seam, so
+          the mirror's symmetry does not read; then the fade into bg. Both horizontally uniform, so nothing slides or
           seams with a swipe. One point past the end covers a rounding
           seam. */}
       <ProgressiveBlur
         intensity={MIRROR_BLUR_INTENSITY}
+        fullAt={blurFullAt}
         style={{
           position: "absolute",
           left: 0,
           width,
-          top: imageHeight,
-          height: heroHeight - imageHeight,
+          top: blurTop,
+          height: heroHeight - blurTop,
         }}
         testID="hero-mirror-blur"
       />

@@ -3,6 +3,7 @@
 import { HEADER_BAR_HEIGHT } from "./header";
 import {
   HERO_END_ABOVE_TAB_BAR,
+  progressiveMaskStops,
   TAB_BAR_HEIGHT,
   heroImageSize,
   heroLayout,
@@ -59,22 +60,26 @@ describe("heroLayout (CRI-124)", () => {
     },
   );
 
-  // Round 3: the subject sits above the pill and title, not under them.
-  it("ends the sharp image at the top of the content, about 55–60% of the hero", () => {
-    const { imageHeight, heroHeight, contentTop } = heroLayout(844, 47);
-    expect(imageHeight).toBe(contentTop);
-    expect(imageHeight / heroHeight).toBeGreaterThan(0.55);
-    expect(imageHeight / heroHeight).toBeLessThan(0.6);
+  // Mirror round: the seam sits at the title slot's fixed bottom, the
+  // same on every slide.
+  it("puts the seam at the bottom of the title slot", () => {
+    const { imageHeight, contentTop } = heroLayout(844, 47);
+    expect(imageHeight).toBe(contentTop + 26 + 16 + 88);
   });
 
   it("has a mirror zone no taller than the image it mirrors", () => {
-    const { imageHeight, heroHeight } = heroLayout(844, 47);
-    expect(heroHeight - imageHeight).toBeLessThanOrEqual(imageHeight);
+    for (const windowHeight of [667, 844, 956]) {
+      const { imageHeight, heroHeight } = heroLayout(windowHeight, 47);
+      expect(heroHeight - imageHeight).toBeLessThanOrEqual(imageHeight);
+      expect(heroHeight - imageHeight).toBeGreaterThan(0);
+    }
   });
 
-  it("starts the fade into bg at the seam under the sharp image", () => {
+  it("starts the blur and the fade on the image itself, at the pill's top", () => {
     const layout = heroLayout(844, 47);
-    expect(layout.fadeTop).toBe(layout.imageHeight);
+    expect(layout.blurTop).toBe(layout.contentTop);
+    expect(layout.blurTop).toBeLessThan(layout.imageHeight);
+    expect(layout.fadeTop).toBe(layout.blurTop);
   });
 
   it("makes the top gradient cover the status bar and the logo", () => {
@@ -97,5 +102,24 @@ describe("heroImageSize (CRI-124)", () => {
   it("takes a smaller size when it is sharp enough", () => {
     expect(heroImageSize(300, 160, 2)).toBe("w780");
     expect(heroImageSize(600, 300, 2)).toBe("w1280");
+  });
+});
+
+describe("progressiveMaskStops (CRI-124)", () => {
+  it("is clear at the top, full at the seam, and full below it", () => {
+    const { colors, locations } = progressiveMaskStops(0.47);
+    expect(colors[0]).toBe("rgba(0,0,0,0)");
+    expect(locations[0]).toBe(0);
+    const seam = locations.indexOf(0.47);
+    expect(colors[seam]).toBe("rgba(0,0,0,1)");
+    expect(colors[colors.length - 1]).toBe("rgba(0,0,0,1)");
+    expect(locations[locations.length - 1]).toBe(1);
+  });
+
+  it("only ever grows", () => {
+    const { colors, locations } = progressiveMaskStops(0.47);
+    const alphas = colors.map((c) => Number(c.slice(11, -1)));
+    expect([...alphas].sort((a, b) => a - b)).toEqual(alphas);
+    expect([...locations].sort((a, b) => a - b)).toEqual(locations);
   });
 });
