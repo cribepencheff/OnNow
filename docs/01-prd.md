@@ -29,14 +29,14 @@ first user is the author, who currently uses Next Episode.
   Horizontal swipe between slides, page dots below. The hero covers the next
   7 days, today first. A show with several episodes in that window is one
   slide (CRI-94). The page dots carry the slide count (CRI-124). Above the
-  logo, a date pill in sentence case gives the original air date: "Today ·
+  logo, a centred date pill in sentence case gives the original air date: "Today ·
   Fri 9 Oct", "Tomorrow · Sat 10 Oct" or "Mon 12 Oct", or a range
   ("Today–Thu · 9–15 Oct", "Mon–Wed · 12–14 Oct"), always from today as
   days pass. Under the logo, one line: the episode code ("S2E4", or a
   range, "S23E156–158", "S1E10–S2E1" across seasons) and the first
   episode's title, or the count ("2 episodes") when a range starts with a
   placeholder title such as "Episode 9" or "TBA"; a single episode with a
-  placeholder title reads "Title not announced" (FR-031). No network: where to watch is "Open in". Tapping the card
+  placeholder title reads "Title not announced" (FR-031). The IMDb rating sits in one chip at the right end of that line (ADR 0013), left out when there is none. No network: where to watch is "Open in". Tapping the card
   opens Show detail (FR-030). No search entry while shows are followed:
   Search is reached from the Shows tab (FR-007).
 - **Empty week:** when nothing airs within the 7 days, the cards show the

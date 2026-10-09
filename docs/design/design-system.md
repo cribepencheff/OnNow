@@ -52,16 +52,17 @@ Measured on a 390 × 844 screen, from the design canvas:
 - Backdrop: full width, 580 tall from the top of the screen, cropped to fill (cover), centred.
 - Fade: from 280 to 580, transparent `bg` to 75% `bg` at the middle to solid `bg` at 580.
 - Content block on the fade: starts at 452, 24 side padding, 8 between items: badge (`label`, `ink-muted`), logo box (240 × 88), meta line (`meta`, `ink-muted`), then 16 down to the button.
-- Button: full content width, 47 tall (Apple TV reference), `radius-pill`, `ink` fill, `bg` text in `button`: "Open in [service]". Page dots 16 below: 8 × 8, active `ink`, others `hairline`.
+- Button: full content width, 47 tall (Apple TV reference), `radius-pill`, `ink` fill, `bg` text in `button` (18): "Open in [service]". Page dots 16 below: 8 × 8, active `ink`, others `hairline`.
 - "+": top right, 44 round, quiet: `bg` at 55% opacity, white plus icon.
 - Tab bar: 83 tall, `surface` at 72% opacity with a background blur, `hairline` top edge; active tab `ink`, others `ink-subtle`.
 
 Refinement round (2026-10-09, CRI-124, CRI-127), replacing the measurements above where they differ:
 
-- The app's logo, white, top left over an Apple TV style gradient from `bg` at the top of the screen, so the status bar and the logo stay legible on bright images.
+- A header over the hero: a 44 bar under the status bar, with a left slot (the app's logo, white, now; a back button later) and a right slot (later actions, such as a profile picture). Apple TV style: at rest it sits over the hero; scrolling up, it leaves with the content, fading and blurring, and is gone once scrolled past; on a pull to refresh it stays put. Behind it, a gradient from `bg` at the top of the screen keeps the status bar and the logo legible on bright images.
 - The backdrop fills the whole hero and fades into `bg` at its bottom, with no visible edge and no block behind any line of text.
-- The hero ends about one button height above the tab bar, so the first row peeks in below it.
-- Above the logo, a date pill in sentence case ("Today · Fri 9 Oct", "Today–Thu · 9–15 Oct") on `image-control-backdrop` with a background blur and an `image-control-edge` hairline. The IMDb rating stays on the right.
+- The hero ends about 100 above the tab bar, so the first row's heading and the top of its posters show below it. On a 390 × 844 screen, roughly: the pill's centre at 420, the button's at 590, the page dots at 645, 6 under the button's note line.
+- Above the logo, centred, a date pill in sentence case ("Today · Fri 9 Oct", "Today–Thu · 9–15 Oct") on `image-control-backdrop` with a background blur and an `image-control-edge` hairline.
+- Under the logo, one episode line ("S2E4 · Blank Curtain"), with the IMDb rating in one chip ("IMDb 8.3") at its right end.
 - Poster rows: cards about 150 wide, two full cards and a peek of the third; every swipe rests with a card at the left margin. The name on one line; "Airing this week" keeps the day on its own second line.
 
 Open questions: whether "+" stays quiet (current proposal) and how to find the "newest" backdrop (the TMDB image list has no upload date; to be checked in the prototype).
