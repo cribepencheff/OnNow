@@ -26,6 +26,12 @@ import type { TvMazeEpisode, TvMazeShow } from "@/api/tvmaze-types";
 // (no parallax at all).
 export const HERO_PARALLAX_FACTOR = 0.75;
 
+// How far a swipe goes, as a fraction of a page, before a slide's text
+// (pill, title, episode line, button) has faded out; it fades back in over
+// the same distance as the next slide lands (CRI-124). Only the images
+// move in between.
+export const HERO_CONTENT_FADE_PAGES = 0.12;
+
 // How visible each slide is at the mid-swipe blend point, a half page away
 // from center, where the outgoing and incoming backdrops overlap. 1 would
 // mean no fade at all.

@@ -1,4 +1,4 @@
-import { Animated } from "react-native";
+import { Animated, StyleSheet } from "react-native";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
 import type { TvMazeEpisode, TvMazeShow } from "@/api/tvmaze-types";
@@ -76,5 +76,32 @@ describe("HeroPage backdrop readiness (CRI-94)", () => {
       nativeEvent: { error: "404" },
     });
     expect(onBackdropLoad).toHaveBeenCalledWith(3);
+  });
+});
+
+// CRI-124, round 3: the sharp image fills the hero's upper part; under it
+// the same image, mirrored, for the progressive blur to soften.
+describe("HeroPage mirror (CRI-124)", () => {
+  beforeEach(() => {
+    mockedStill.mockReturnValue({ data: undefined, isLoading: false });
+    mockedImages.mockReturnValue({
+      data: { highestRatedBackdrop: { file_path: "/backdrop.jpg" } },
+      isLoading: false,
+    });
+  });
+
+  it("draws the image again, flipped, right under the sharp one", async () => {
+    await renderPage(jest.fn());
+    const sharp = screen.getByTestId("hero-backdrop-image");
+    const mirror = screen.getByTestId("hero-backdrop-mirror");
+    expect(mirror.props.source).toEqual(sharp.props.source);
+    expect(StyleSheet.flatten(mirror.props.style).transform).toEqual([
+      { scaleY: -1 },
+    ]);
+    const sharpHeight = StyleSheet.flatten(sharp.props.style).height;
+    const mirrorBox = StyleSheet.flatten(
+      screen.getByTestId("hero-backdrop-mirror-box").props.style,
+    );
+    expect(mirrorBox.top).toBe(sharpHeight);
   });
 });

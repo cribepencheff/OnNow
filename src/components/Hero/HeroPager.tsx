@@ -28,6 +28,7 @@ import {
   physicalToLogical,
   type HeroSlide,
 } from "@/logic/hero-carousel";
+import { ProgressiveBlur } from "../ProgressiveBlur";
 import { ContentLayer, HeroPage, useHeroLayout } from "./HeroPage";
 import { PageIndicator } from "./PageIndicator";
 
@@ -43,10 +44,14 @@ const AnimatedFlatList = Animated.createAnimatedComponent(
 // carousel auto-advances to the next one.
 const AUTO_ADVANCE_MS = 6000;
 
-// The fade into bg at the hero's end: eased, so it has no visible edge
-// where it starts or where the backdrop ends.
+// The fade into bg over the mirror zone, from the seam to the hero's end:
+// eased, so it has no visible edge, and already part way down under the
+// title so the text reads on any image; solid towards the dots.
 const FADE_GRADIENT =
-  "linear-gradient(to bottom, rgba(11,12,15,0) 0%, rgba(11,12,15,0.12) 20%, rgba(11,12,15,0.38) 40%, rgba(11,12,15,0.68) 60%, rgba(11,12,15,0.9) 80%, rgba(11,12,15,1) 100%)";
+  "linear-gradient(to bottom, rgba(11,12,15,0) 0%, rgba(11,12,15,0.35) 15%, rgba(11,12,15,0.6) 35%, rgba(11,12,15,0.82) 60%, rgba(11,12,15,0.95) 80%, rgba(11,12,15,1) 92%)";
+// How strong the blur over the mirror zone gets: the image reads as
+// almost one colour there.
+const MIRROR_BLUR_INTENSITY = 80;
 // Apple TV style, behind the status bar and the logo, so both stay legible
 // on bright images.
 const TOP_GRADIENT =
@@ -81,7 +86,8 @@ export function HeroPager({
   pullDistance: Animated.AnimatedInterpolation<number>;
 }) {
   const { width } = useWindowDimensions();
-  const { heroHeight, fadeTop, topGradientHeight, dotsTop } = useHeroLayout();
+  const { heroHeight, imageHeight, fadeTop, topGradientHeight, dotsTop } =
+    useHeroLayout();
   const { reduceMotionEnabled, screenReaderEnabled } = useAccessibilityFlags();
   // Auto-advance pauses, on the same slide, while Home is not the focused
   // tab or the app is in the background, as it does under a finger
@@ -570,25 +576,6 @@ export function HeroPager({
           onMomentumScrollEnd={handleScrollEnd}
           renderItem={renderItem}
         />
-        {/* Fixed over the paging list, not part of each slide: horizontally
-            uniform and always opaque, so it reads as one continuous scrim
-            rather than sliding or seaming with the swipe. From fadeTop to
-            the hero's end, where it is solid bg, so the backdrop never
-            shows an edge. Pinned with the backdrop (inside this pinned
-            view), so a pull never opens a gap between the image's end and
-            the fade's; the text, which moves with the pull, lands on solid
-            bg. One point past the end covers a rounding seam. */}
-        <View
-          pointerEvents="none"
-          style={{
-            position: "absolute",
-            left: 0,
-            width,
-            top: fadeTop,
-            height: heroHeight - fadeTop + 1,
-            experimental_backgroundImage: FADE_GRADIENT,
-          }}
-        />
         {/* Pinned with the backdrop, so it stays at the image's top during
             a pull. */}
         <View
@@ -603,6 +590,36 @@ export function HeroPager({
           }}
         />
       </Animated.View>
+
+      {/* Over the mirror zone, once for all slides rather than per slide,
+          and not part of the pinned pager: on a pull the backdrop stretches
+          down from its pinned top, so its seam moves down with the pull,
+          as these do. First the progressive blur (clear at the seam), then
+          the fade into bg. Both horizontally uniform, so nothing slides or
+          seams with a swipe. One point past the end covers a rounding
+          seam. */}
+      <ProgressiveBlur
+        intensity={MIRROR_BLUR_INTENSITY}
+        style={{
+          position: "absolute",
+          left: 0,
+          width,
+          top: imageHeight,
+          height: heroHeight - imageHeight,
+        }}
+        testID="hero-mirror-blur"
+      />
+      <View
+        pointerEvents="none"
+        style={{
+          position: "absolute",
+          left: 0,
+          width,
+          top: fadeTop,
+          height: heroHeight - fadeTop + 1,
+          experimental_backgroundImage: FADE_GRADIENT,
+        }}
+      />
 
       {contentFrames.map((logicalIndex) => (
         <ContentLayer

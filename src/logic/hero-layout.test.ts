@@ -59,10 +59,22 @@ describe("heroLayout (CRI-124)", () => {
     },
   );
 
-  it("starts the fade above the content, so the pill sits on it", () => {
+  // Round 3: the subject sits above the pill and title, not under them.
+  it("ends the sharp image at the top of the content, about 55–60% of the hero", () => {
+    const { imageHeight, heroHeight, contentTop } = heroLayout(844, 47);
+    expect(imageHeight).toBe(contentTop);
+    expect(imageHeight / heroHeight).toBeGreaterThan(0.55);
+    expect(imageHeight / heroHeight).toBeLessThan(0.6);
+  });
+
+  it("has a mirror zone no taller than the image it mirrors", () => {
+    const { imageHeight, heroHeight } = heroLayout(844, 47);
+    expect(heroHeight - imageHeight).toBeLessThanOrEqual(imageHeight);
+  });
+
+  it("starts the fade into bg at the seam under the sharp image", () => {
     const layout = heroLayout(844, 47);
-    expect(layout.fadeTop).toBeLessThan(layout.contentTop);
-    expect(layout.fadeTop).toBeGreaterThanOrEqual(0);
+    expect(layout.fadeTop).toBe(layout.imageHeight);
   });
 
   it("makes the top gradient cover the status bar and the logo", () => {

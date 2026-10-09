@@ -42,8 +42,13 @@ export const CONTENT_GAP = t.space2;
 export const TITLE_GAP = t.space4;
 
 export interface HeroLayout {
-  // The hero's own height: the backdrop fills it and fades out at its end.
+  // The hero's own height.
   heroHeight: number;
+  // How tall the sharp image is: the hero's upper part, down to the top of
+  // the content, so the picture's subject sits above the pill and title
+  // rather than under them (owner, CRI-124). Below it, to the hero's end,
+  // the image mirrored, blurred progressively and faded into bg.
+  imageHeight: number;
   isShort: boolean;
   buttonHeight: number;
   // Above the button, on top of the content's own row gap.
@@ -54,7 +59,8 @@ export interface HeroLayout {
   contentTop: number;
   // Where the page dots sit, dotsGap under the button's note line.
   dotsTop: number;
-  // Where the fade into bg starts; it ends, solid, at heroHeight.
+  // Where the fade into bg starts (the seam under the sharp image); it
+  // ends, solid, at heroHeight.
   fadeTop: number;
   // How tall the top gradient behind the status bar and logo is.
   topGradientHeight: number;
@@ -89,18 +95,18 @@ export function heroLayout(windowHeight: number, topInset: number): HeroLayout {
     buttonHeight,
     openInMargin,
     dotsGap,
+    imageHeight: contentTop,
     contentTop,
     dotsTop: contentTop + contentHeight + dotsGap,
-    // A long, gentle fade that is already well under way where the pill
-    // sits, so the text reads on any image.
-    fadeTop: Math.max(0, contentTop - 160),
+    fadeTop: contentTop,
     topGradientHeight: topInset + HEADER_BAR_HEIGHT + 24,
   };
 }
 
 // The TMDB image size for the hero backdrop (CRI-124). The image is cropped
-// to fill (cover) a box as tall as the hero, so a landscape image is drawn
-// wider than the box and only its middle shows (about a third on a phone).
+// to fill (cover) its box, which is wider than the screen for the swipe's
+// parallax, so a landscape image is drawn wider than the screen and only
+// its middle shows (about 40% on a phone).
 // It must stay sharp on the screen's pixels at that drawn width, so the
 // size is the smallest TMDB size at least that many pixels wide, else
 // "original". Assumes 16:9, TMDB's backdrop and still shape.

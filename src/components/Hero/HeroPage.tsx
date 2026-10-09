@@ -9,6 +9,7 @@ import { memo, useCallback, useEffect, useMemo } from "react";
 import {
   Animated,
   PixelRatio,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -17,6 +18,7 @@ import {
 } from "react-native";
 import { Image } from "expo-image";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import MaskedView from "@react-native-masked-view/masked-view";
 
 import { IMAGE_BASE } from "@/api/tmdb-types";
 import type { TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
@@ -27,8 +29,10 @@ import { useShowImages } from "@/hooks/useShowImages";
 import { openInAccessibilityLabel } from "@/logic/streaming-service";
 import { ImdbRating } from "../ImdbRating";
 import { PaidSubscriptionMarker } from "../PaidSubscriptionMarker";
+import { ProgressiveMask } from "../ProgressiveBlur";
 import { DatePill } from "./DatePill";
 import {
+  HERO_CONTENT_FADE_PAGES,
   HERO_CROSSFADE_FLOOR,
   HERO_PARALLAX_FACTOR,
   heroAvailability,
@@ -48,6 +52,10 @@ import {
   heroLayout,
 } from "@/logic/hero-layout";
 import { t, type } from "@/theme/tokens";
+
+// How strongly Android blurs the mirrored image, where the progressive
+// BlurView does not run (ProgressiveBlur).
+const ANDROID_MIRROR_BLUR_RADIUS = 30;
 
 // The hero's layout for this screen (logic/hero-layout.ts).
 export function useHeroLayout() {
@@ -160,7 +168,7 @@ export const HeroPage = memo(function HeroPage({
   // per cell that would defeat this memo regardless of anything else.
   onBackdropLoad: (index: number) => void;
 }) {
-  const { heroHeight } = useHeroLayout();
+  const { heroHeight, imageHeight } = useHeroLayout();
   const router = useGuardedRouter();
   const show = item.show as TvMazeShowWithEmbeds;
   const { data: images, isLoading: imagesLoading } = useShowImages(
@@ -180,9 +188,13 @@ export const HeroPage = memo(function HeroPage({
     todayDate,
   );
   const displayPath = episodeStill?.filePath ?? fallbackBackdropPath;
-  // The backdrop fills the whole hero and fades out at its end (the fade
-  // is HeroPager's, a fixed overlay).
-  const backdropHeight = heroHeight;
+  // The sharp image fills the hero's upper part, so its subject sits above
+  // the pill and title (heroLayout). Below it, the same image mirrored
+  // (Apple TV style), which HeroPager's single progressive blur and fade,
+  // both fixed overlays, turn into the hero's soft lower part.
+  const backdropHeight = imageHeight;
+  // The mirror zone, from the seam to the hero's end.
+  const mirrorZoneHeight = heroHeight - imageHeight;
   // Ready for auto-advance once the image loads, fails, or turns out not to
   // exist; a slide without an image must never hold the pager.
   const handleLoad = useCallback(
@@ -349,6 +361,58 @@ export const HeroPage = memo(function HeroPage({
                 onError={handleLoad}
                 testID="hero-backdrop-image"
               />
+              {/* The mirror: the same box flipped under the seam, so its
+                  top edge continues the sharp image's bottom edge. It
+                  moves with the image's parallax and pull stretch. */}
+              <View
+                pointerEvents="none"
+                testID="hero-backdrop-mirror-box"
+                style={{
+                  position: "absolute",
+                  top: backdropHeight,
+                  left: 0,
+                  width: backdropWidth,
+                  height: backdropHeight,
+                }}
+              >
+                <Image
+                  source={`${IMAGE_BASE}/${imageSize}${displayPath}`}
+                  style={[
+                    { width: backdropWidth, height: backdropHeight },
+                    styles.flipped,
+                  ]}
+                  contentFit="cover"
+                  contentPosition="center"
+                  accessibilityIgnoresInvertColors
+                  testID="hero-backdrop-mirror"
+                />
+                {/* Android has no progressive BlurView (ProgressiveBlur):
+                    a blurred copy of the mirror shows through the same
+                    eased mask instead, clear at the seam. */}
+                {Platform.OS === "android" && (
+                  <MaskedView
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: backdropWidth,
+                      height: mirrorZoneHeight,
+                    }}
+                    maskElement={<ProgressiveMask />}
+                  >
+                    <Image
+                      source={`${IMAGE_BASE}/${imageSize}${displayPath}`}
+                      style={[
+                        { width: backdropWidth, height: backdropHeight },
+                        styles.flipped,
+                      ]}
+                      contentFit="cover"
+                      contentPosition="center"
+                      blurRadius={ANDROID_MIRROR_BLUR_RADIUS}
+                    />
+                  </MaskedView>
+                )}
+              </View>
             </Animated.View>
           </Animated.View>
         )}
@@ -428,8 +492,10 @@ export const ContentLayer = memo(function ContentLayer({
   const logo = images?.logo;
 
   // Full opacity centered on this layer's own fixed logical index, down to
-  // 0 by half a (logical) page away in either direction, the same
-  // triangular shape as HeroPage's backdropOpacity, just built from
+  // 0 already HERO_CONTENT_FADE_PAGES of a page away in either direction
+  // (CRI-124): a swipe fades the text out almost at once, so only the
+  // images move, and it fades back in as the slide lands. (This also
+  // keeps the pill's blur out of a long crossfade.) Built from
   // logicalCrossfadePosition (periodic) rather than scrollX directly: see
   // that value's own comment in HeroPager for why. wrapped shifts things
   // so the peak sits at pageCount / 2 instead of at this layer's own
@@ -452,7 +518,11 @@ export const ContentLayer = memo(function ContentLayer({
       pageCount,
     );
     return wrapped.interpolate({
-      inputRange: [pageCount / 2 - 0.5, pageCount / 2, pageCount / 2 + 0.5],
+      inputRange: [
+        pageCount / 2 - HERO_CONTENT_FADE_PAGES,
+        pageCount / 2,
+        pageCount / 2 + HERO_CONTENT_FADE_PAGES,
+      ],
       outputRange: [0, 1, 0],
       extrapolate: "clamp",
     });
@@ -520,6 +590,10 @@ export const ContentLayer = memo(function ContentLayer({
 });
 
 const styles = StyleSheet.create({
+  // A mirror image: upside down, around its own centre.
+  flipped: {
+    transform: [{ scaleY: -1 }],
+  },
   content: {
     position: "absolute",
     // One screen margin on Home, the rows' too (CRI-124).
