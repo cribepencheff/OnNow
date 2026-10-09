@@ -23,7 +23,7 @@ describe("Header (CRI-124)", () => {
     await act(async () => scrollOffset.setValue(-80));
     expect(screen.queryByTestId("header-blur")).toBeNull();
 
-    // Scrolled up, past the header (56 under a zero test inset).
+    // Scrolled up, past the header (44 under a zero test inset).
     await act(async () => scrollOffset.setValue(30));
     expect(screen.getByTestId("header-blur")).toBeTruthy();
   });

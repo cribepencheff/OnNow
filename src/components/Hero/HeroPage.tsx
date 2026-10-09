@@ -40,6 +40,7 @@ import {
 import {
   CONTENT_GAP,
   EPISODE_LINE_HEIGHT,
+  TITLE_GAP,
   NOTE_LINE,
   PILL_HEIGHT,
   TITLE_BLOCK_HEIGHT,
@@ -477,7 +478,8 @@ export const ContentLayer = memo(function ContentLayer({
         >
           <DatePill label={heroPillLabel(slide, todayDate)} />
         </View>
-        <View pointerEvents="none">
+        {/* TITLE_GAP above and below, on top of the row gap. */}
+        <View pointerEvents="none" style={styles.titleRoom}>
           <View style={styles.titleBlock} testID="hero-title-block">
             {logo ? (
               <Image
@@ -545,6 +547,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   // One height for a logo and a text title, so nothing below shifts.
+  titleRoom: {
+    marginVertical: TITLE_GAP - CONTENT_GAP,
+  },
   titleBlock: {
     height: TITLE_BLOCK_HEIGHT,
     justifyContent: "center",

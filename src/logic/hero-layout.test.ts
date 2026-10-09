@@ -18,18 +18,20 @@ describe("heroLayout (CRI-124)", () => {
   });
 
   // The owner's sketch on a 390 × 844 screen, read for proportions: the
-  // pill's centre near 422, the button's near 592, the dots near 644.
+  // pill's centre near 422, the button's near 592, the dots near 644. The
+  // pill sits 16 higher since the show's logo got more room around it.
   it("places the content as in the owner's sketch, within a few points", () => {
     const { contentTop, dotsTop } = heroLayout(844, 47);
     const pillCentre = contentTop + 13;
-    const buttonCentre = contentTop + 26 + 8 + 88 + 8 + 20 + 8 + 8 + 47 / 2;
-    expect(Math.abs(pillCentre - 422)).toBeLessThan(12);
+    const buttonCentre = contentTop + 26 + 16 + 88 + 16 + 20 + 8 + 8 + 50 / 2;
+    // 16 more room around the logo than the sketch: 2 × (16 − 8).
+    expect(Math.abs(pillCentre - (422 - 16))).toBeLessThan(12);
     expect(Math.abs(buttonCentre - 592)).toBeLessThan(12);
     expect(Math.abs(dotsTop + 4 - 644)).toBeLessThan(12);
   });
 
-  it("uses a 47pt button on regular screens and 44pt on short ones", () => {
-    expect(heroLayout(844, 47).buttonHeight).toBe(47);
+  it("uses a 50pt button on regular screens and 44pt on short ones", () => {
+    expect(heroLayout(844, 47).buttonHeight).toBe(50);
     expect(heroLayout(667, 20).buttonHeight).toBe(44);
   });
 

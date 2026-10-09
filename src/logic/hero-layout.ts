@@ -22,9 +22,9 @@ export const SHORT_SCREEN_MAX_HEIGHT = 700;
 export const PILL_HEIGHT = 26;
 // The logo box under the pill: a logo or the display title.
 export const TITLE_BLOCK_HEIGHT = 88;
-// The "Open in" button: 47 (Apple TV reference), 44 on short screens
-// (still the minimum tap target).
-export const BUTTON_HEIGHT = 47;
+// The "Open in" button: 50, a tad over the Apple TV reference (47) at the
+// owner's request; 44 on short screens (still the minimum tap target).
+export const BUTTON_HEIGHT = 50;
 export const BUTTON_HEIGHT_SHORT = 44;
 // The episode line under the logo: its text and, at its right end, the
 // IMDb chip, which sets the height (ImdbRating's IMDB_CHIP_HEIGHT).
@@ -37,6 +37,9 @@ const DOTS_HEIGHT = 8;
 const DOTS_BOTTOM_SPACE = 8;
 // The gap between the content block's rows.
 export const CONTENT_GAP = t.space2;
+// Above and below the show's logo, more than between the other rows, so
+// the logo has room (owner, CRI-124).
+export const TITLE_GAP = t.space4;
 
 export interface HeroLayout {
   // The hero's own height: the backdrop fills it and fades out at its end.
@@ -69,9 +72,9 @@ export function heroLayout(windowHeight: number, topInset: number): HeroLayout {
   // note line, with the content's row gap between them.
   const contentHeight =
     PILL_HEIGHT +
-    CONTENT_GAP +
+    TITLE_GAP +
     TITLE_BLOCK_HEIGHT +
-    CONTENT_GAP +
+    TITLE_GAP +
     EPISODE_LINE_HEIGHT +
     CONTENT_GAP +
     openInMargin +

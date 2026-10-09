@@ -2,9 +2,8 @@
 // (CRI-124). Pure, so the scroll behaviour can be tested without
 // rendering.
 
-// The bar under the status bar that holds the left and right slots: room
-// above and below a 20pt logo, so it is not tight under the status bar.
-export const HEADER_BAR_HEIGHT = 56;
+// The bar under the status bar that holds the left and right slots.
+export const HEADER_BAR_HEIGHT = 44;
 // The strongest blur, reached as the header leaves the screen.
 export const HEADER_MAX_BLUR = 40;
 
