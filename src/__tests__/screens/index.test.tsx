@@ -159,9 +159,15 @@ function mockFollowedEpisodes(
 // CRI-66 "done when": component tests cover today with one, several and no
 // shows, and an empty follow list.
 describe("HomeScreen", () => {
+  // The hero's page dots run a timed progress fill (auto-advance); fake
+  // timers keep it inside each test instead of updating after it.
   beforeEach(() => {
+    jest.useFakeTimers();
     mockPush.mockClear();
     refetch.mockClear();
+  });
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   it("renders one card when one followed show has an episode today (FR-004)", async () => {
@@ -402,9 +408,7 @@ describe("HomeScreen", () => {
       });
     }
 
-    beforeEach(() => jest.useFakeTimers());
     afterEach(() => {
-      jest.useRealTimers();
       mockIsFocused.mockReturnValue(true);
     });
 
