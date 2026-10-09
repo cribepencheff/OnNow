@@ -26,6 +26,12 @@ import type { TvMazeEpisode, TvMazeShow } from "@/api/tvmaze-types";
 // (no parallax at all).
 export const HERO_PARALLAX_FACTOR = 0.75;
 
+// How far a swipe goes, as a fraction of a page, before a slide's text
+// (pill, title, episode line, button) has faded out; it fades back in over
+// the same distance as the next slide lands (CRI-124). Only the images
+// move in between.
+export const HERO_CONTENT_FADE_PAGES = 0.12;
+
 // How visible each slide is at the mid-swipe blend point, a half page away
 // from center, where the outgoing and incoming backdrops overlap. 1 would
 // mean no fade at all.
@@ -139,6 +145,38 @@ export function pagingReleaseTarget(
 
   const projected = offsetX + velocityX * RELEASE_PROJECTION_MS;
   return clampToNeighbor(Math.round(projected / pageWidth));
+}
+
+// A short, fast flick changes slide, as on Apple TV (CRI-124): released
+// faster than FLICK_MIN_VELOCITY (points per ms, iOS's own unit, see
+// RELEASE_PROJECTION_MS) after moving at least FLICK_MIN_DISTANCE the same
+// way. UIKit's own paging decides by distance and needs a longer, faster
+// swipe, so a flick that passes here overrides its target.
+export const FLICK_MIN_VELOCITY = 0.2;
+export const FLICK_MIN_DISTANCE = 12;
+
+// The neighbouring page a flick goes to, or null when the release is not a
+// flick (then pagingReleaseTarget decides as before). Clamped to the list.
+export function flickReleaseTarget(
+  offsetX: number,
+  pageWidth: number,
+  pageCount: number,
+  startPage: number,
+  velocityX: number,
+): number | null {
+  if (pageWidth <= 0 || pageCount <= 1) {
+    return null;
+  }
+  const moved = offsetX - startPage * pageWidth;
+  const direction = Math.sign(velocityX);
+  const isFlick =
+    Math.abs(velocityX) >= FLICK_MIN_VELOCITY &&
+    Math.sign(moved) === direction &&
+    Math.abs(moved) >= FLICK_MIN_DISTANCE;
+  if (!isFlick) {
+    return null;
+  }
+  return Math.min(Math.max(startPage + direction, 0), pageCount - 1);
 }
 
 // Bidirectional loop (Apple TV+ style) for the hero pager. pageIndex, and
@@ -268,10 +306,30 @@ export function pullStretchTransform(
   };
 }
 
-// "Fri 9 Oct · S2E4", "5–7 Oct · S23E156–158": the original air dates
+// The date pill above the logo (CRI-124), in sentence case: "Today · Fri 9
+// Oct", "Tomorrow · Sat 10 Oct" or "Mon 12 Oct" for one day; "Today–Thu ·
+// 9–15 Oct", "Mon–Wed · 12–14 Oct" for several. The original air dates
 // (FR-031, ADR 0015), no verb and no network (CRI-94).
-export function heroDateLine(slide: HeroSlide, todayDate: LocalDate): string {
-  return `${heroDateRange(slide.localDate, slide.endDate, todayDate)} · ${heroEpisodeRange(slide.episodes)}`;
+export function heroPillLabel(slide: HeroSlide, todayDate: LocalDate): string {
+  const { localDate: startDate, endDate } = slide;
+  const startWord =
+    startDate === todayDate
+      ? "Today"
+      : startDate === addDays(todayDate, 1)
+        ? "Tomorrow"
+        : null;
+  const dates = heroDateRange(startDate, endDate, todayDate);
+  if (startDate === endDate) {
+    return startWord ? `${startWord} · ${dates}` : dates;
+  }
+  const days = `${startWord ?? dateParts(startDate).weekday}–${dateParts(endDate).weekday}`;
+  return `${days} · ${dates}`;
+}
+
+// The episode line under the logo (CRI-124): "S2E4 · Blank Curtain",
+// "S23E156–158 · 3 episodes".
+export function heroEpisodeLine(episodes: TvMazeEpisode[]): string {
+  return `${heroEpisodeRange(episodes)} · ${heroEpisodeTitle(episodes)}`;
 }
 
 function dateParts(isoDate: LocalDate) {
@@ -280,9 +338,8 @@ function dateParts(isoDate: LocalDate) {
   return { year, month: MONTHS[month - 1], day, weekday: WEEKDAYS[weekday] };
 }
 
-// "Fri 9 Oct" for one day, "5–7 Oct" or "30 Sep–2 Oct" for several, and
-// "Today–Thu" or "Tomorrow–Fri" when the range starts today or tomorrow.
-// The year only when not this year.
+// "Fri 9 Oct" for one day, "5–7 Oct" or "30 Sep–2 Oct" for several. The
+// year only when not this year. The pill adds the day words in front.
 export function heroDateRange(
   startDate: LocalDate,
   endDate: LocalDate,
@@ -293,12 +350,6 @@ export function heroDateRange(
   }
   const start = dateParts(startDate);
   const end = dateParts(endDate);
-  if (startDate === todayDate) {
-    return `Today–${end.weekday}`;
-  }
-  if (startDate === addDays(todayDate, 1)) {
-    return `Tomorrow–${end.weekday}`;
-  }
   const todayYear = Number(todayDate.slice(0, 4));
   const endLabel =
     end.year === todayYear
@@ -336,7 +387,7 @@ export function heroEpisodeTitle(episodes: TvMazeEpisode[]): string | null {
   if (title) {
     return title;
   }
-  // The line above already gives the code ("S1E9").
+  // The episode line already gives the code ("S1E9").
   return episodes.length > 1
     ? `${episodes.length} episodes`
     : "Title not announced";

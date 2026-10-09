@@ -30,10 +30,10 @@ export const t = {
   radiusPill: 999,
 } as const;
 
-// The screen height the hero's own measurements (components/Hero/*) are
-// tuned for (390 × 844); every layout value there scales from
-// height / REF_HEIGHT.
-export const REF_HEIGHT = 844;
+// Trial (CRI-124): button labels in Manrope ExtraBold, loaded in
+// app/_layout.tsx. The one place to roll it back: replace this with
+// { fontWeight: "600" } and the buttons are back on the system font.
+const buttonFont = { fontFamily: "Manrope_800ExtraBold" } as const;
 
 export const type = {
   display: {
@@ -51,5 +51,13 @@ export const type = {
     lineHeight: 16,
     fontWeight: "700",
     letterSpacing: 0.6,
+  },
+  // -3% letter spacing: 18 × -0.03. One step up from 16, where Manrope
+  // read small (owner, CRI-124).
+  button: {
+    ...buttonFont,
+    fontSize: 18,
+    lineHeight: 22,
+    letterSpacing: -0.54,
   },
 } as const;

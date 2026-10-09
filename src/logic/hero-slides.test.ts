@@ -4,9 +4,9 @@
 import type { TvMazeEpisode, TvMazeShow } from "@/api/tvmaze-types";
 import {
   findHeroSlides,
-  heroDateLine,
   heroDateRange,
   heroEpisodeRange,
+  heroPillLabel,
 } from "./hero-carousel";
 
 const TZ = "Europe/Stockholm";
@@ -37,13 +37,16 @@ function lineFor(
   todayDate: string,
 ): string | undefined {
   const [slide] = findHeroSlides([{ show: show(1), episodes }], TZ, todayDate);
-  return slide && heroDateLine(slide, todayDate);
+  return (
+    slide &&
+    `${heroPillLabel(slide, todayDate)} / ${heroEpisodeRange(slide.episodes)}`
+  );
 }
 
 describe("findHeroSlides: one slide per show (CRI-94)", () => {
   it("gives a single episode its own slide", () => {
     expect(lineFor([ep("2026-10-09", 2, 4)], "2026-10-04")).toBe(
-      "Fri 9 Oct · S2E4",
+      "Fri 9 Oct / S2E4",
     );
   });
 
@@ -56,34 +59,40 @@ describe("findHeroSlides: one slide per show (CRI-94)", () => {
     expect(slides).toHaveLength(1);
     expect(slides[0].episodes).toHaveLength(3);
     // Seen from two days before, so the range starts neither today nor tomorrow.
-    expect(heroDateLine(slides[0], "2026-10-03")).toBe("5–7 Oct · S23E156–158");
+    expect(heroPillLabel(slides[0], "2026-10-03")).toBe("Mon–Wed · 5–7 Oct");
   });
 
-  it('is still one slide when the first episode is tomorrow, and reads "Tomorrow–Wed"', () => {
-    expect(lineFor(daily, "2026-10-04")).toBe("Tomorrow–Wed · S23E156–158");
+  it('is still one slide when the first episode is tomorrow, and reads "Tomorrow–Wed · 5–7 Oct"', () => {
+    expect(lineFor(daily, "2026-10-04")).toBe(
+      "Tomorrow–Wed · 5–7 Oct / S23E156–158",
+    );
   });
 
-  it('reads "Today–Thu" when today is in the range', () => {
+  it('reads "Today–Thu · 5–8 Oct" when today is in the range', () => {
     const run = [...daily, ep("2026-10-08", 23, 159)];
-    expect(lineFor(run, "2026-10-05")).toBe("Today–Thu · S23E156–159");
+    expect(lineFor(run, "2026-10-05")).toBe(
+      "Today–Thu · 5–8 Oct / S23E156–159",
+    );
   });
 
   it("starts the range from today as days pass", () => {
-    expect(lineFor(daily, "2026-10-06")).toBe("Today–Wed · S23E157–158");
-    expect(lineFor(daily, "2026-10-07")).toBe("Wed 7 Oct · S23E158");
+    expect(lineFor(daily, "2026-10-06")).toBe(
+      "Today–Wed · 6–7 Oct / S23E157–158",
+    );
+    expect(lineFor(daily, "2026-10-07")).toBe("Today · Wed 7 Oct / S23E158");
     expect(lineFor(daily, "2026-10-08")).toBeUndefined();
   });
 
   it("spans a season boundary", () => {
     expect(
       lineFor([ep("2026-10-05", 1, 10), ep("2026-10-07", 2, 1)], "2026-10-04"),
-    ).toBe("Tomorrow–Wed · S1E10–S2E1");
+    ).toBe("Tomorrow–Wed · 5–7 Oct / S1E10–S2E1");
   });
 
   it("leaves out episodes beyond the 7-day window", () => {
     expect(
       lineFor([ep("2026-10-05", 1, 1), ep("2026-10-11", 1, 2)], "2026-10-04"),
-    ).toBe("Mon 5 Oct · S1E1");
+    ).toBe("Tomorrow · Mon 5 Oct / S1E1");
   });
 
   it("counts slides, not episodes: one per show, in date order", () => {

@@ -14,6 +14,7 @@ import { useFollowToggle } from "@/hooks/useFollowList";
 import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import type { PosterItem } from "@/logic/top-picks";
 import { t, type } from "@/theme/tokens";
+import { PosterDimOverlay } from "./PosterDim";
 
 // About 150 wide: two full cards and a peek of the third (CRI-127).
 export const POSTER_WIDTH = 150;
@@ -69,6 +70,9 @@ export function ShowCard({
           contentFit="cover"
           accessibilityIgnoresInvertColors
         />
+        {/* Home dims its posters at rest (CRI-124); under the edge and
+            the circle. */}
+        <PosterDimOverlay />
         <View style={styles.edge} pointerEvents="none" />
         <View style={styles.follow}>
           <PosterFollowCircle

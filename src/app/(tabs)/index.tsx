@@ -15,10 +15,18 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as SplashScreen from "expo-splash-screen";
+import {
+  useAnimatedRef,
+  useDerivedValue,
+  useScrollOffset,
+} from "react-native-reanimated";
 
 import { HeroPager } from "@/components/Hero/HeroPager";
 import { AddFirstShow } from "@/components/AddFirstShow";
 import { AiringThisWeekRow } from "@/components/AiringThisWeekRow";
+import { AppLogo } from "@/components/AppLogo";
+import { Header } from "@/components/Header";
+import { PosterDimContext } from "@/components/PosterDim";
 import { TopPicksRow } from "@/components/TopPicksRow";
 import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
@@ -30,8 +38,18 @@ import {
   heroPagerKey,
   type HeroSlide,
 } from "@/logic/hero-carousel";
+import { HEADER_BAR_HEIGHT } from "@/logic/header";
+import {
+  TAB_BAR_HEIGHT,
+  heroLayout,
+  posterDimAt,
+  posterDimEndScroll,
+} from "@/logic/hero-layout";
 import { updatedAgoLabel } from "@/logic/launch";
 import { t as tokens, type } from "@/theme/tokens";
+
+// The app logo's height in the header.
+const APP_LOGO_HEIGHT = 20;
 
 function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -108,6 +126,10 @@ export default function HomeScreen() {
   );
 
   const openSearch = useCallback(() => router.push("/search"), [router]);
+
+  // The header (logo) is shown over the hero only, for now (CRI-124).
+  const showsHero =
+    isReady && (heroSlides.length > 0 || state.kind === "next-day");
 
   // The outer ScrollView's raw vertical offset, native-driven, and how far
   // it's been pulled past its resting top (see pullDistance below) drive
@@ -219,96 +241,151 @@ export default function HomeScreen() {
     });
   }, [scrollY, pullRestOffsetY]);
 
+  // The posters in the rows are dimmed at rest and lighten as Home
+  // scrolls, gone once the first row's heading reaches the middle of the
+  // screen (CRI-124, an experiment). Reanimated reads the scroll offset
+  // on the UI thread.
+  const reanimatedScrollRef = useAnimatedRef();
+  const reanimatedScrollOffset = useScrollOffset(reanimatedScrollRef);
+  const dimEndScroll = posterDimEndScroll(
+    heroLayout(height, insets.top).heroHeight,
+    height,
+  );
+  const posterDim = useDerivedValue(() =>
+    posterDimAt(reanimatedScrollOffset.value, dimEndScroll),
+  );
+
+  // How far the page is scrolled from its resting top, negative during a
+  // pull: the header leaves with the content and stays put on a pull.
+  const scrollOffset = useMemo(
+    () => Animated.subtract(scrollY, pullRestOffsetY ?? 0),
+    [scrollY, pullRestOffsetY],
+  );
+
+  // The status bar scrim shows once the header has left with the scroll.
+  const statusBarScrimOpacity = useMemo(
+    () =>
+      scrollOffset.interpolate({
+        inputRange: [0, insets.top + HEADER_BAR_HEIGHT],
+        outputRange: [0, 1],
+        extrapolate: "clamp",
+      }),
+    [scrollOffset, insets.top],
+  );
+
   return (
     <View style={[styles.container, { backgroundColor: tokens.bg }]}>
-      <Animated.ScrollView
-        contentContainerStyle={styles.scrollContent}
-        contentInsetAdjustmentBehavior="never"
-        alwaysBounceVertical
-        showsVerticalScrollIndicator={false}
-        onScroll={handleOuterScroll}
-        scrollEventThrottle={16}
-        refreshControl={
-          <RefreshControl
-            testID="home-refresh-control"
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            // Kept purely as the gesture and threshold engine: it still
-            // owns the pull, the release-to-trigger feel and onRefresh, but
-            // its own indicator is hidden (tintColor transparent on iOS,
-            // colors empty-ish on Android) because it sits BELOW the pinned
-            // hero backdrop (a native ScrollView subview we can't restack).
-            // PullToRefreshIndicator below draws the visible spinner on top
-            // of the backdrop instead, driven by the same pull.
-            tintColor="transparent"
-            colors={["transparent"]}
-          />
-        }
-      >
-        {/* CRI-95: until cached shows or the first fetch are in, a quiet
+      <PosterDimContext.Provider value={posterDim}>
+        <Animated.ScrollView
+          ref={reanimatedScrollRef as never}
+          contentContainerStyle={styles.scrollContent}
+          contentInsetAdjustmentBehavior="never"
+          alwaysBounceVertical
+          showsVerticalScrollIndicator={false}
+          onScroll={handleOuterScroll}
+          scrollEventThrottle={16}
+          refreshControl={
+            <RefreshControl
+              testID="home-refresh-control"
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              // Kept purely as the gesture and threshold engine: it still
+              // owns the pull, the release-to-trigger feel and onRefresh, but
+              // its own indicator is hidden (tintColor transparent on iOS,
+              // colors empty-ish on Android) because it sits BELOW the pinned
+              // hero backdrop (a native ScrollView subview we can't restack).
+              // PullToRefreshIndicator below draws the visible spinner on top
+              // of the backdrop instead, driven by the same pull.
+              tintColor="transparent"
+              colors={["transparent"]}
+            />
+          }
+        >
+          {/* CRI-95: until cached shows or the first fetch are in, a quiet
             placeholder, never a flash of the empty or error state. */}
-        {!isReady ? (
-          <Text style={styles.quietLine}>Loading your shows…</Text>
-        ) : (
-          <>
-            {heroSlides.length > 0 && (
-              <HeroPager
-                // A new set of slides starts a fresh pager (heroPagerKey).
-                key={heroPagerKey(heroSlides)}
-                slides={heroSlides}
-                todayDate={todayDate}
-                pullDistance={pullDistance}
-              />
-            )}
+          {!isReady ? (
+            <Text style={styles.quietLine}>Loading your shows…</Text>
+          ) : (
+            <>
+              {heroSlides.length > 0 && (
+                <HeroPager
+                  // A new set of slides starts a fresh pager (heroPagerKey).
+                  key={heroPagerKey(heroSlides)}
+                  slides={heroSlides}
+                  todayDate={todayDate}
+                  pullDistance={pullDistance}
+                />
+              )}
 
-            {/* Nothing followed has an episode within the horizon: fall back
+              {/* Nothing followed has an episode within the horizon: fall back
               to the single nearest upcoming day, same as before the 7-day
               horizon. */}
-            {heroSlides.length === 0 && state.kind === "next-day" && (
-              <HeroPager
-                key={heroPagerKey(state.shows)}
-                slides={state.shows.map((show): HeroSlide => ({
-                  ...show,
-                  localDate: state.localDate,
-                  endDate: state.localDate,
-                }))}
-                todayDate={todayDate}
-                pullDistance={pullDistance}
-              />
-            )}
+              {heroSlides.length === 0 && state.kind === "next-day" && (
+                <HeroPager
+                  key={heroPagerKey(state.shows)}
+                  slides={state.shows.map((show): HeroSlide => ({
+                    ...show,
+                    localDate: state.localDate,
+                    endDate: state.localDate,
+                  }))}
+                  todayDate={todayDate}
+                  pullDistance={pullDistance}
+                />
+              )}
 
-            {state.kind === "empty-follow-list" && (
-              <AddFirstShow
-                onPress={openSearch}
-                testID="home-empty-state"
-                buttonTestID="home-add-show"
-              />
-            )}
+              {state.kind === "empty-follow-list" && (
+                <AddFirstShow
+                  onPress={openSearch}
+                  testID="home-empty-state"
+                  buttonTestID="home-add-show"
+                />
+              )}
 
-            {state.kind === "no-upcoming" && (
-              <Text style={styles.quietLine}>Nothing upcoming.</Text>
-            )}
+              {state.kind === "no-upcoming" && (
+                <Text style={styles.quietLine}>Nothing upcoming.</Text>
+              )}
 
-            {state.kind === "error" && (
-              <Text style={styles.quietLine}>
-                Couldn&apos;t load your shows. Pull to refresh.
-              </Text>
-            )}
+              {state.kind === "error" && (
+                <Text style={styles.quietLine}>
+                  Couldn&apos;t load your shows. Pull to refresh.
+                </Text>
+              )}
 
-            {state.kind === "loading" && (
-              <Text style={styles.quietLine}>Loading your shows…</Text>
-            )}
+              {state.kind === "loading" && (
+                <Text style={styles.quietLine}>Loading your shows…</Text>
+              )}
 
-            {/* FR-038, ADR 0016: hidden with an empty follow list. */}
-            {followedCount > 0 && (
-              <TopPicksRow followedShows={followedShowList} />
-            )}
-            {/* FR-039: always shown, also with an empty follow list. */}
-            <AiringThisWeekRow />
-            <View style={styles.tabBarClearance} />
-          </>
-        )}
-      </Animated.ScrollView>
+              {/* FR-038, ADR 0016: hidden with an empty follow list. */}
+              {followedCount > 0 && (
+                <TopPicksRow followedShows={followedShowList} />
+              )}
+              {/* FR-039: always shown, also with an empty follow list. */}
+              <AiringThisWeekRow />
+              <View style={styles.tabBarClearance} />
+            </>
+          )}
+        </Animated.ScrollView>
+      </PosterDimContext.Provider>
+
+      {showsHero && (
+        <Header
+          left={<AppLogo height={APP_LOGO_HEIGHT} color={tokens.ink} />}
+          scrollOffset={scrollOffset}
+        />
+      )}
+
+      {/* Under the status bar once the header has left: a light dark
+          gradient, no blur, so the clock and icons read over bright
+          posters while nothing is smeared (CRI-124). It fades in as the
+          header leaves. */}
+      <Animated.View
+        pointerEvents="none"
+        style={[
+          styles.statusBarScrim,
+          { height: insets.top, opacity: statusBarScrimOpacity },
+        ]}
+        testID="home-status-bar-scrim"
+      />
 
       <PullToRefreshIndicator
         pullDistance={pullDistance}
@@ -438,9 +515,17 @@ const styles = StyleSheet.create({
     fontSize: 15,
     paddingHorizontal: 32,
   },
-  // The rows clear the translucent tab bar (83) at the end of the page.
+  // The rows clear the translucent tab bar at the end of the page.
   tabBarClearance: {
-    height: 83 + tokens.space4,
+    height: TAB_BAR_HEIGHT + tokens.space4,
+  },
+  statusBarScrim: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    experimental_backgroundImage:
+      "linear-gradient(to bottom, rgba(11,12,15,0.55) 0%, rgba(11,12,15,0) 100%)",
   },
   pullIndicator: {
     position: "absolute",
