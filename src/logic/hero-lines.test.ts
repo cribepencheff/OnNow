@@ -1,11 +1,12 @@
-// The hero's date and title lines (FR-031, ADR 0015) and its "Open in"
-// slot, which falls back like Show detail when the TMDB lookup fails.
+// The hero's date pill and episode line (FR-031, ADR 0015, CRI-124) and its
+// "Open in" slot, which falls back like Show detail when the TMDB lookup fails.
 
 import type { TvMazeEpisode, TvMazeShow } from "@/api/tvmaze-types";
 import {
   heroAvailability,
-  heroDateLine,
+  heroEpisodeLine,
   heroEpisodeTitle,
+  heroPillLabel,
 } from "./hero-carousel";
 import { NOT_ON_TMDB } from "./streaming-service";
 
@@ -22,33 +23,56 @@ const episode = {
   name: "Blank Curtain",
 } as TvMazeEpisode;
 
-describe("heroDateLine (FR-031, ADR 0015)", () => {
-  it("is the date and the code, with no verb and no network", () => {
-    expect(
-      heroDateLine(
-        {
-          show: paramount,
-          episodes: [episode],
-          localDate: "2026-10-09",
-          endDate: "2026-10-09",
-        },
-        "2026-10-04",
-      ),
-    ).toBe("Fri 9 Oct · S2E4");
+function slide(localDate: string, endDate = localDate) {
+  return { show: paramount, episodes: [episode], localDate, endDate };
+}
+
+// 2026-10-04 is a Sunday.
+describe("heroPillLabel (FR-031, ADR 0015, CRI-124)", () => {
+  it('reads "Today" and the date on today\'s slide, in sentence case', () => {
+    expect(heroPillLabel(slide("2026-10-04"), "2026-10-04")).toBe(
+      "Today · Sun 4 Oct",
+    );
   });
 
-  it("uses the date on today's slide too; the badge says TODAY", () => {
+  it('reads "Tomorrow" and the date on tomorrow\'s slide', () => {
+    expect(heroPillLabel(slide("2026-10-05"), "2026-10-04")).toBe(
+      "Tomorrow · Mon 5 Oct",
+    );
+  });
+
+  it("is the date alone further ahead, with no verb and no network", () => {
+    expect(heroPillLabel(slide("2026-10-09"), "2026-10-04")).toBe("Fri 9 Oct");
+  });
+
+  it("names the days and the dates of a range", () => {
+    expect(heroPillLabel(slide("2026-10-09", "2026-10-15"), "2026-10-09")).toBe(
+      "Today–Thu · 9–15 Oct",
+    );
+    expect(heroPillLabel(slide("2026-10-07", "2026-10-09"), "2026-10-04")).toBe(
+      "Wed–Fri · 7–9 Oct",
+    );
+  });
+
+  it("adds the year when the range ends in another year", () => {
+    expect(heroPillLabel(slide("2026-12-30", "2027-01-02"), "2026-12-29")).toBe(
+      "Tomorrow–Sat · 30 Dec–2 Jan 2027",
+    );
+  });
+});
+
+describe("heroEpisodeLine (CRI-124)", () => {
+  it("is the code and the title on one line", () => {
+    expect(heroEpisodeLine([episode])).toBe("S2E4 · Blank Curtain");
+  });
+
+  it("gives the count when several episodes have no title", () => {
     expect(
-      heroDateLine(
-        {
-          show: paramount,
-          episodes: [episode],
-          localDate: "2026-10-04",
-          endDate: "2026-10-04",
-        },
-        "2026-10-04",
-      ),
-    ).toBe("Sun 4 Oct · S2E4");
+      heroEpisodeLine([
+        { ...episode, name: "TBA" },
+        { ...episode, number: 5, name: "TBA" },
+      ]),
+    ).toBe("S2E4–5 · 2 episodes");
   });
 });
 

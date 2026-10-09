@@ -30,6 +30,7 @@ import {
   heroPagerKey,
   type HeroSlide,
 } from "@/logic/hero-carousel";
+import { TAB_BAR_HEIGHT } from "@/logic/hero-layout";
 import { updatedAgoLabel } from "@/logic/launch";
 import { t as tokens, type } from "@/theme/tokens";
 
@@ -438,9 +439,9 @@ const styles = StyleSheet.create({
     fontSize: 15,
     paddingHorizontal: 32,
   },
-  // The rows clear the translucent tab bar (83) at the end of the page.
+  // The rows clear the translucent tab bar at the end of the page.
   tabBarClearance: {
-    height: 83 + tokens.space4,
+    height: TAB_BAR_HEIGHT + tokens.space4,
   },
   pullIndicator: {
     position: "absolute",

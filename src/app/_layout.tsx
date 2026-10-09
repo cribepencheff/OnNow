@@ -3,6 +3,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { Manrope_800ExtraBold, useFonts } from "@expo-google-fonts/manrope";
 
 import { setUpAppStateFocus } from "@/hooks/app-state-focus";
 import { releaseNavigation } from "@/hooks/navigation-lock";
@@ -20,6 +21,13 @@ export default function RootLayout() {
     const cap = setTimeout(() => SplashScreen.hide(), SPLASH_MAX_MS);
     return () => clearTimeout(cap);
   }, []);
+  // The button font trial (CRI-124, type.button in theme/tokens.ts). It is
+  // bundled, so this takes a moment under the splash; if it ever fails,
+  // the app still opens and the buttons fall back to the system font.
+  const [fontsLoaded, fontError] = useFonts({ Manrope_800ExtraBold });
+  if (!fontsLoaded && !fontError) {
+    return null;
+  }
 
   return (
     // Required by react-native-gesture-handler (Shows list's swipe to
