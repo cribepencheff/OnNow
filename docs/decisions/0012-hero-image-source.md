@@ -1,6 +1,6 @@
 # 0012. Hero image source: episode stills first
 
-Status: Accepted
+Status: Accepted; amendment proposed (CRI-124), awaiting the owner's approval
 
 ## Context
 The Home hero (direction B) shows one image per slide, behind the show
@@ -64,3 +64,34 @@ with `staleTime: Infinity` and a daily key, so changing the `ShowImages`
 shape left cached entries missing new fields and slides rendered black.
 The query key is versioned and must be bumped on any shape change. This
 belongs with the data-fetching decision (ADR 0009) rather than here.
+
+## Amendment (proposed): the highest-rated backdrop only (CRI-124, 2026-10-09)
+Status: Proposed
+
+### Context
+Stills were chosen so that several slides of one show would not look
+identical. Since CRI-94 the hero has one slide per show, so that reason no
+longer applies. Meanwhile stills have costs: an upcoming episode usually has
+none yet, so the hero mixed stills and backdrops; stills are screenshots,
+often lower resolution, framed for the episode rather than for a poster
+wall; and a still can give away something from an episode the user has not
+seen.
+
+### Decision
+The hero shows **the show's highest-rated backdrop**, by the rule above:
+textless backdrops first, then highest `vote_average`, with `vote_count` as
+the tie-break. No episode stills on the hero.
+
+### Consequences
+- One image per show, the same on every visit, curated, usually larger, and
+  never a spoiler.
+- The episode still lookup (`/tv/{id}/season/{s}/episode/{e}/images`, one
+  request per slide) and its code are removed; only the show images request
+  (backdrops and logo) remains. Show detail's own episode stills are not
+  affected.
+- The first consequence above ("a large share of slides show the show
+  backdrop") and the second (several slides sharing one backdrop) no longer
+  apply: every slide shows its show's backdrop, and a show has one slide.
+- The hero draws the backdrop over its upper part, mirrored and blurred
+  below (design system, Home refinement round); the image source does not
+  change that.
