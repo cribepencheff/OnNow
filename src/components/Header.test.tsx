@@ -27,4 +27,11 @@ describe("Header (CRI-124)", () => {
     await act(async () => scrollOffset.setValue(30));
     expect(screen.getByTestId("header-blur")).toBeTruthy();
   });
+
+  it("carries the top edge blur band when asked, and leaves without it otherwise", async () => {
+    const { rerender } = await render(<Header left={<Text>Logo</Text>} />);
+    expect(screen.queryByTestId("header-edge-blur")).toBeNull();
+    await rerender(<Header left={<Text>Logo</Text>} edgeBlur />);
+    expect(screen.getByTestId("header-edge-blur")).toBeTruthy();
+  });
 });

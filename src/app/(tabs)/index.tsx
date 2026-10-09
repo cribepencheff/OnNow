@@ -27,7 +27,6 @@ import { AiringThisWeekRow } from "@/components/AiringThisWeekRow";
 import { AppLogo } from "@/components/AppLogo";
 import { Header } from "@/components/Header";
 import { PosterDimContext } from "@/components/PosterDim";
-import { ProgressiveBlur } from "@/components/ProgressiveBlur";
 import { TopPicksRow } from "@/components/TopPicksRow";
 import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
@@ -39,6 +38,7 @@ import {
   heroPagerKey,
   type HeroSlide,
 } from "@/logic/hero-carousel";
+import { HEADER_BAR_HEIGHT } from "@/logic/header";
 import {
   TAB_BAR_HEIGHT,
   heroLayout,
@@ -50,8 +50,6 @@ import { t as tokens, type } from "@/theme/tokens";
 
 // The app logo's height in the header.
 const APP_LOGO_HEIGHT = 20;
-// The top edge blur band (CRI-124): gentle, so the status bar reads.
-const TOP_EDGE_BLUR_INTENSITY = 24;
 
 function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -264,6 +262,17 @@ export default function HomeScreen() {
     [scrollY, pullRestOffsetY],
   );
 
+  // The status bar scrim shows once the header has left with the scroll.
+  const statusBarScrimOpacity = useMemo(
+    () =>
+      scrollOffset.interpolate({
+        inputRange: [0, insets.top + HEADER_BAR_HEIGHT],
+        outputRange: [0, 1],
+        extrapolate: "clamp",
+      }),
+    [scrollOffset, insets.top],
+  );
+
   return (
     <View style={[styles.container, { backgroundColor: tokens.bg }]}>
       <PosterDimContext.Provider value={posterDim}>
@@ -361,20 +370,22 @@ export default function HomeScreen() {
       {showsHero && (
         <Header
           left={<AppLogo height={APP_LOGO_HEIGHT} color={tokens.ink} />}
+          edgeBlur
           scrollOffset={scrollOffset}
         />
       )}
 
-      {/* The top edge (CRI-124): a progressive blur from the top of the
-          screen, full to half the safe-area inset and clear by its end, so
-          it fits a notch, the Dynamic Island and the SE alike. The hero's
-          light top gradient under it keeps the status bar readable. */}
-      <ProgressiveBlur
-        intensity={TOP_EDGE_BLUR_INTENSITY}
-        fullAt={0.5}
-        strongAt="top"
-        style={[styles.topEdge, { height: insets.top }]}
-        testID="home-top-edge-blur"
+      {/* Under the status bar once the header has left: a light dark
+          gradient, no blur, so the clock and icons read over bright
+          posters while nothing is smeared (CRI-124). It fades in as the
+          header leaves. */}
+      <Animated.View
+        pointerEvents="none"
+        style={[
+          styles.statusBarScrim,
+          { height: insets.top, opacity: statusBarScrimOpacity },
+        ]}
+        testID="home-status-bar-scrim"
       />
 
       <PullToRefreshIndicator
@@ -509,11 +520,13 @@ const styles = StyleSheet.create({
   tabBarClearance: {
     height: TAB_BAR_HEIGHT + tokens.space4,
   },
-  topEdge: {
+  statusBarScrim: {
     position: "absolute",
     top: 0,
     left: 0,
     right: 0,
+    experimental_backgroundImage:
+      "linear-gradient(to bottom, rgba(11,12,15,0.55) 0%, rgba(11,12,15,0) 100%)",
   },
   pullIndicator: {
     position: "absolute",

@@ -41,29 +41,32 @@ export const CONTENT_GAP = t.space2;
 // the logo has room (owner, CRI-124).
 export const TITLE_GAP = t.space4;
 
-// Extra room above the sharp image, beyond the top safe area: a tuning
-// value (owner, CRI-124).
-export const IMAGE_TOP_EXTRA = 0;
-// How far below the image's top the top blur eases off: short, since faces
-// sit there; the mirror above is mostly under the status bar.
-export const TOP_BLUR_RAMP = 48;
+// A small margin between the header row (the logo) and the sharp image,
+// so heads sit clearly below the logo and the island (owner, CRI-124).
+export const IMAGE_TOP_MARGIN = 8;
+// The top blur, the bottom one flipped upwards: full from the top of the
+// screen down to this far above the image's top, then easing off to clear
+// this far into the image. Short into the image, since heads sit close to
+// its top edge.
+export const TOP_BLUR_FULL_ABOVE = 32;
+export const TOP_BLUR_INTO_IMAGE = 12;
 
 export interface HeroLayout {
   // The hero's own height.
   heroHeight: number;
-  // Where the sharp image starts: under the top safe area (status bar,
-  // notch or Dynamic Island), so faces and heads sit lower, clear of the
-  // top edge (owner, CRI-124). The logo row is not part of the offset: the
-  // logo sits at the side. Above it, the image mirrored upwards.
+  // Where the sharp image starts: below the header row (the safe area and
+  // the logo row) and a small margin, so faces and heads sit clearly below
+  // the logo and the island (owner, CRI-124). Above it, the image mirrored
+  // upwards and blurred.
   imageTop: number;
   // Where the sharp image ends (the bottom seam): the fixed bottom of the
   // title (logo) slot, the same on every slide, so the seam never moves.
   // Below it, to the hero's end, the image mirrored.
   imageHeight: number;
-  // How far down the top blur reaches: full from the top of the screen to
-  // imageTop, then easing off on the image itself, the bottom blur flipped
-  // upwards.
+  // How far down the top blur reaches (clear there), and where it stops
+  // being full: the bottom blur flipped upwards.
   topBlurHeight: number;
+  topBlurFullTo: number;
   // Where the progressive blur starts: the pill's top, on the image
   // itself, so it is already soft at the seam and the mirror's symmetry
   // does not read. It grows to full by the seam and stays full below.
@@ -114,9 +117,12 @@ export function heroLayout(windowHeight: number, topInset: number): HeroLayout {
     buttonHeight,
     openInMargin,
     dotsGap,
-    imageTop: topInset + IMAGE_TOP_EXTRA,
+    imageTop: topInset + HEADER_BAR_HEIGHT + IMAGE_TOP_MARGIN,
     imageHeight: contentTop + PILL_HEIGHT + TITLE_GAP + TITLE_BLOCK_HEIGHT,
-    topBlurHeight: topInset + IMAGE_TOP_EXTRA + TOP_BLUR_RAMP,
+    topBlurHeight:
+      topInset + HEADER_BAR_HEIGHT + IMAGE_TOP_MARGIN + TOP_BLUR_INTO_IMAGE,
+    topBlurFullTo:
+      topInset + HEADER_BAR_HEIGHT + IMAGE_TOP_MARGIN - TOP_BLUR_FULL_ABOVE,
     blurTop: contentTop,
     contentTop,
     dotsTop: contentTop + contentHeight + dotsGap,

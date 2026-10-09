@@ -71,18 +71,22 @@ describe("heroLayout (CRI-124)", () => {
     expect(imageHeight).toBe(contentTop + 26 + 16 + 88);
   });
 
-  // Faces and heads sit lower: the image starts under the top safe area.
+  // Faces and heads sit lower: the image starts below the header row
+  // (safe area and logo row) and a small margin.
   it.each([
     ["iPhone SE", 667, 20],
-    ["iPhone 16", 844, 47],
+    ["iPhone 17", 874, 62],
     ["iPhone 16 Pro Max", 956, 62],
   ])(
-    "starts the sharp image under the top safe area on %s, the seam and content where they were",
+    "starts the sharp image below the header row on %s, the seam and content where they were",
     (_name, windowHeight, topInset) => {
       const layout = heroLayout(windowHeight, topInset);
-      expect(layout.imageTop).toBe(topInset);
+      expect(layout.imageTop).toBe(topInset + HEADER_BAR_HEIGHT + 8);
+      // The blur is full above the seam and clear a little way into the
+      // image, never down at the content.
+      expect(layout.topBlurFullTo).toBeLessThan(layout.imageTop);
       expect(layout.topBlurHeight).toBeGreaterThan(layout.imageTop);
-      expect(layout.topBlurHeight).toBeLessThan(layout.contentTop);
+      expect(layout.topBlurHeight - layout.imageTop).toBeLessThanOrEqual(16);
       // Nothing below moves with the inset.
       const atZero = heroLayout(windowHeight, 0);
       expect(layout.imageHeight).toBe(atZero.imageHeight);
@@ -93,7 +97,7 @@ describe("heroLayout (CRI-124)", () => {
   it("has an image tall enough to mirror both ends", () => {
     for (const [windowHeight, inset] of [
       [667, 20],
-      [844, 47],
+      [874, 62],
       [956, 62],
     ]) {
       const { imageTop, imageHeight, heroHeight } = heroLayout(

@@ -189,8 +189,14 @@ describe("HomeScreen", () => {
     // Its right slot is empty for now: no search entry on Home while
     // shows are followed (FR-007).
     expect(screen.queryByRole("button", { name: "Search" })).toBeNull();
-    // The top edge blur band (CRI-124).
-    expect(screen.getByTestId("home-top-edge-blur")).toBeTruthy();
+    // The top edge blur band is part of the header (CRI-124); under the
+    // status bar, a plain scrim that only shows once the header has left.
+    expect(screen.getByTestId("header-edge-blur")).toBeTruthy();
+    expect(
+      StyleSheet.flatten(
+        screen.getByTestId("home-status-bar-scrim").props.style,
+      ).opacity,
+    ).toBe(0);
     // One slide: no page dots.
     expect(screen.queryByLabelText(/^Show \d+ of/)).toBeNull();
   });

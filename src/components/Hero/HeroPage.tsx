@@ -167,8 +167,14 @@ export const HeroPage = memo(function HeroPage({
   // per cell that would defeat this memo regardless of anything else.
   onBackdropLoad: (index: number) => void;
 }) {
-  const { heroHeight, imageTop, imageHeight, blurTop, topBlurHeight } =
-    useHeroLayout();
+  const {
+    heroHeight,
+    imageTop,
+    imageHeight,
+    blurTop,
+    topBlurHeight,
+    topBlurFullTo,
+  } = useHeroLayout();
   const router = useGuardedRouter();
   const show = item.show as TvMazeShowWithEmbeds;
   const { data: images, isLoading: imagesLoading } = useShowImages(
@@ -397,7 +403,7 @@ export const HeroPage = memo(function HeroPage({
                     }}
                     maskElement={
                       <ProgressiveMask
-                        fullAt={(topBlurHeight - imageTop) / topBlurHeight}
+                        fullAt={(topBlurHeight - topBlurFullTo) / topBlurHeight}
                         strongAt="top"
                       />
                     }
@@ -447,7 +453,11 @@ function ImageColumn({
       source={uri}
       style={[{ width, height: boxHeight }, flipped && styles.flipped]}
       contentFit="cover"
-      contentPosition="center"
+      // Anchored at the image's top edge: the box is shorter than the
+      // drawn image (it is drawn wide for the swipe's parallax), and many
+      // backdrops have little room above the heads, so the crop takes
+      // from the bottom, which the lower mirror covers anyway.
+      contentPosition="top"
       accessibilityIgnoresInvertColors
       blurRadius={blurRadius}
       onLoad={flipped ? undefined : onLoad}

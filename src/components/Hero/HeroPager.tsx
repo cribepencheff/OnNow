@@ -89,9 +89,9 @@ export function HeroPager({
   const { width } = useWindowDimensions();
   const {
     heroHeight,
-    imageTop,
     imageHeight,
     topBlurHeight,
+    topBlurFullTo,
     blurTop,
     fadeTop,
     topGradientHeight,
@@ -601,14 +601,14 @@ export function HeroPager({
           }}
         />
         {/* The top edge, the bottom's mirror and blur flipped upwards: full
-            from the top of the screen down to where the sharp image
-            starts, easing off a little way into it, so the mirror above it
-            does not read. Pinned with the backdrop, so a pull keeps it on
+            from the top of the screen to a little above where the sharp
+            image starts, clear a little way into it, so the mirror above
+            does not read and heads stay sharp. Pinned with the backdrop, so a pull keeps it on
             the image's top seam; over the light gradient. It blends into
             Home's own top edge band, which is clear by the same inset. */}
         <ProgressiveBlur
           intensity={MIRROR_BLUR_INTENSITY}
-          fullAt={(topBlurHeight - imageTop) / topBlurHeight}
+          fullAt={(topBlurHeight - topBlurFullTo) / topBlurHeight}
           strongAt="top"
           style={{
             position: "absolute",

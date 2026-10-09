@@ -3,7 +3,12 @@ import { fireEvent, render, screen } from "@testing-library/react-native";
 
 import type { TvMazeEpisode, TvMazeShow } from "@/api/tvmaze-types";
 import { useShowImages } from "@/hooks/useShowImages";
+import { HEADER_BAR_HEIGHT } from "@/logic/header";
+import { IMAGE_TOP_MARGIN } from "@/logic/hero-layout";
 import { HeroPage } from "./HeroPage";
+
+// Where the sharp image starts with Jest's zero safe-area inset.
+const IMAGE_TOP = HEADER_BAR_HEIGHT + IMAGE_TOP_MARGIN;
 
 jest.mock("expo-router", () => ({ useRouter: () => ({ push: jest.fn() }) }));
 jest.mock("@/hooks/useShowImages", () => ({ useShowImages: jest.fn() }));
@@ -94,7 +99,8 @@ describe("HeroPage mirror (CRI-124)", () => {
     const mirrorBox = StyleSheet.flatten(
       screen.getByTestId("hero-backdrop-mirror-box").props.style,
     );
-    expect(mirrorBox.top).toBe(sharpHeight);
+    // Jest's safe-area inset is 0: the image starts under the header row.
+    expect(mirrorBox.top).toBe(IMAGE_TOP + sharpHeight);
   });
 
   // The top edge, mirrored upwards: its bottom edge meets the image's top.
@@ -110,7 +116,6 @@ describe("HeroPage mirror (CRI-124)", () => {
     const topBox = StyleSheet.flatten(
       screen.getByTestId("hero-backdrop-top-mirror-box").props.style,
     );
-    // Jest's safe-area inset is 0, so the image starts at 0.
-    expect(topBox.top).toBe(-sharpHeight);
+    expect(topBox.top).toBe(IMAGE_TOP - sharpHeight);
   });
 });
