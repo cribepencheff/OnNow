@@ -37,8 +37,8 @@ first user is the author, who currently uses Next Episode.
   episode's title, or the count ("2 episodes") when a range starts with a
   placeholder title such as "Episode 9" or "TBA"; a single episode with a
   placeholder title reads "Title not announced" (FR-031). The IMDb rating sits in one chip at the right end of that line (ADR 0013), left out when there is none. No network: where to watch is "Open in". Tapping the card
-  opens Show detail (FR-030). A round search button at the top right,
-  in the header over the hero, opens Search (FR-007, CRI-124).
+  opens Show detail (FR-030). No search entry while shows are followed:
+  Search is reached from the Shows tab (FR-007).
 - **Empty week:** when nothing airs within the 7 days, the cards show the
   episodes of the next day with episodes,
   labelled with that day ("Tomorrow · Tue 22 Sep" or a date, with the year
@@ -156,9 +156,9 @@ first user is the author, who currently uses Next Episode.
 - **Job:** add series quickly. Without series there is no app.
 - **Needs:** find the right show, even when several share a name, and follow
   several in a row.
-- **Entry points:** the search button in Home's header, the search field
-  in Shows, the button on an empty Shows list, and "Add your first show" on
-  an empty Home. All open the same Search (FR-007).
+- **Entry points:** the search field in Shows, the button on an empty
+  Shows list, and "Add your first show" on an empty Home. All open the same
+  Search (FR-007).
 - **Presentation:** a sheet over the current view. Large search field on top
   with the keyboard already open. Results appear while typing, after a
   short pause (about 250 ms) so each keystroke is not a request. A clear
@@ -333,7 +333,7 @@ Reached from an icon. Territory and notifications.
 | FR-004 | Home shows followed series with an episode released today | PoC |
 | FR-005 | Home shows the slide count in the page dots, and each slide's day in a date pill ("Today · Fri 9 Oct", "Tomorrow · Sat 10 Oct", "Mon 12 Oct", "Today–Thu · 9–15 Oct"); the PoC used a label ("TODAY · 1/3") (CRI-124) | PoC, MVP |
 | FR-006 | When nothing airs within the hero's 7 days, Home shows the episodes of the next day with episodes | PoC, MVP |
-| FR-007 | Search opens as a sheet from the search field in Shows, from the button on an empty Shows list, and from "Add your first show" on an empty Home (FR-013), and from the round search button in the header over Home's hero (CRI-124; this replaces the earlier rule that Home has no search entry while shows are followed). The close button (X) or swipe down returns to where Search was opened | PoC, MVP |
+| FR-007 | Search opens as a sheet from the search field in Shows, from the button on an empty Shows list, and from "Add your first show" on an empty Home (FR-013). With shows followed, Home has no search entry. The close button (X) or swipe down returns to where Search was opened | PoC, MVP |
 | FR-008 | Calendar shows a month grid with days that have episodes marked, today preselected | PoC |
 | FR-009 | Selecting a day in Calendar lists that day's episodes | PoC |
 | FR-036 | Calendar swipes between months and shows a "Today" button when away from today | PoC |
