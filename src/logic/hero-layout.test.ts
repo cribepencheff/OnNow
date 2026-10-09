@@ -3,7 +3,11 @@
 import { HEADER_BAR_HEIGHT } from "./header";
 import {
   HERO_END_ABOVE_TAB_BAR,
+  POSTER_REST_DIM,
+  posterDimAt,
+  posterDimEndScroll,
   progressiveMaskStops,
+  reverseMaskStops,
   TAB_BAR_HEIGHT,
   heroImageSize,
   heroLayout,
@@ -121,5 +125,38 @@ describe("progressiveMaskStops (CRI-124)", () => {
     const alphas = colors.map((c) => Number(c.slice(11, -1)));
     expect([...alphas].sort((a, b) => a - b)).toEqual(alphas);
     expect([...locations].sort((a, b) => a - b)).toEqual(locations);
+  });
+});
+
+describe("reverseMaskStops (CRI-124)", () => {
+  it("is strong at the top and clear at the bottom", () => {
+    const { colors, locations } = reverseMaskStops(progressiveMaskStops(0.5));
+    expect(colors[0]).toBe("rgba(0,0,0,1)");
+    expect(locations[0]).toBe(0);
+    expect(colors[colors.length - 1]).toBe("rgba(0,0,0,0)");
+    expect(locations[locations.length - 1]).toBe(1);
+    expect([...locations].sort((a, b) => a - b)).toEqual(locations);
+  });
+});
+
+// The poster rows' dimming experiment (CRI-124).
+describe("posterDimAt (CRI-124)", () => {
+  const end = posterDimEndScroll(661, 844);
+
+  it("ends when the first row's heading reaches the middle of the screen", () => {
+    // Heading at 661 + 24 in the page; the middle of the screen at 422.
+    expect(end).toBe(661 + 24 - 422);
+  });
+
+  it("is full at rest and during a pull", () => {
+    expect(posterDimAt(0, end)).toBe(POSTER_REST_DIM);
+    expect(posterDimAt(-80, end)).toBe(POSTER_REST_DIM);
+  });
+
+  it("eases off as Home scrolls, and is gone at the end", () => {
+    expect(posterDimAt(end / 2, end)).toBeCloseTo(POSTER_REST_DIM / 2);
+    expect(posterDimAt(end / 4, end)).toBeGreaterThan(POSTER_REST_DIM / 2);
+    expect(posterDimAt(end, end)).toBe(0);
+    expect(posterDimAt(end * 3, end)).toBe(0);
   });
 });

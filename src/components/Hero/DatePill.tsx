@@ -3,18 +3,15 @@
 // it reads on bright and busy images. Sentence case ("Today · Fri 9 Oct").
 
 import { StyleSheet, Text, View } from "react-native";
-import { BlurView } from "expo-blur";
 
 import { PILL_HEIGHT } from "@/logic/hero-layout";
 import { t, type } from "@/theme/tokens";
+import { ImageControlMaterial } from "../ImageControlMaterial";
 
 export function DatePill({ label }: { label: string }) {
   return (
     <View style={styles.pill} testID="hero-date-pill">
-      {/* The blur first, the fill over it: a fill under the blur would be
-          blurred into a solid colour. */}
-      <BlurView intensity={30} tint="dark" style={StyleSheet.absoluteFill} />
-      <View style={[StyleSheet.absoluteFill, styles.fill]} />
+      <ImageControlMaterial />
       <Text style={styles.label} numberOfLines={1}>
         {label}
       </Text>
@@ -32,9 +29,6 @@ const styles = StyleSheet.create({
     borderColor: t.imageControlEdge,
     // Clips the blur to the pill's shape.
     overflow: "hidden",
-  },
-  fill: {
-    backgroundColor: t.imageControlBackdrop,
   },
   label: {
     ...type.meta,

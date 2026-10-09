@@ -155,3 +155,41 @@ export function progressiveMaskStops(fullAt: number): {
   }
   return { colors, locations };
 }
+
+// The same stops upside down: strong at the top, clear at the bottom (the
+// top edge blur band, CRI-124).
+export function reverseMaskStops({
+  colors,
+  locations,
+}: {
+  colors: string[];
+  locations: number[];
+}): { colors: string[]; locations: number[] } {
+  return {
+    colors: [...colors].reverse(),
+    locations: [...locations].reverse().map((at) => 1 - at),
+  };
+}
+
+// The poster rows under the hero are dimmed at rest, so the hero has more
+// weight (CRI-124, an experiment): this much black over each poster.
+export const POSTER_REST_DIM = 0.3;
+
+// How far Home is scrolled when the dimming is gone: when the first row's
+// heading (a section gap under the hero) reaches the middle of the screen.
+export function posterDimEndScroll(
+  heroHeight: number,
+  windowHeight: number,
+): number {
+  return Math.max(1, heroHeight + t.space6 - windowHeight / 2);
+}
+
+// The dimming at a scroll offset: full at rest and during a pull, easing
+// off to none at posterDimEndScroll.
+export function posterDimAt(scrollOffset: number, endScroll: number): number {
+  "worklet";
+  const progress = Math.min(Math.max(scrollOffset / endScroll, 0), 1);
+  // Eased at both ends (smoothstep): about half gone halfway.
+  const eased = progress * progress * (3 - 2 * progress);
+  return POSTER_REST_DIM * (1 - eased);
+}

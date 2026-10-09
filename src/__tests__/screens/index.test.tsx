@@ -186,6 +186,11 @@ describe("HomeScreen", () => {
     expect(screen.getByText("S1E1 · Episode")).toBeTruthy();
     // The header with the logo, over the hero (CRI-124).
     expect(screen.getByTestId("app-logo")).toBeTruthy();
+    // Its right slot: the search button opens Search (CRI-124, FR-007).
+    await fireEvent.press(screen.getByRole("button", { name: "Search" }));
+    expect(mockPush).toHaveBeenCalledWith("/search");
+    // The top edge blur band (CRI-124).
+    expect(screen.getByTestId("home-top-edge-blur")).toBeTruthy();
     // One slide: no page dots.
     expect(screen.queryByLabelText(/^Show \d+ of/)).toBeNull();
   });
@@ -579,6 +584,27 @@ describe("HomeScreen", () => {
     };
 
     afterEach(() => mockTopPicks.mockReturnValue([]));
+
+    // CRI-124 experiment: posters dimmed at rest, headings not; a dimmed
+    // poster still opens (the overlay takes no touches).
+    it("dims the posters at rest, not the heading, and keeps them tappable", async () => {
+      mockTopPicks.mockReturnValue([gangs]);
+      mockFollowedEpisodes({
+        followedShows: [{ show, episodes: [makeEpisode()] }],
+      });
+      await render(<HomeScreen />);
+
+      const dim = screen.getByTestId("poster-dim");
+      expect(StyleSheet.flatten(dim.props.style).opacity).toBeCloseTo(0.3);
+      expect(dim.props.pointerEvents).toBe("none");
+      await fireEvent.press(
+        screen.getByRole("button", { name: "Gangs of London" }),
+      );
+      expect(mockPush).toHaveBeenCalledWith({
+        pathname: "/show/[id]",
+        params: { id: 15299 },
+      });
+    });
 
     it("shows the row with its cards; a tap opens Show detail, the circle follows at once", async () => {
       mockTopPicks.mockReturnValue([gangs]);

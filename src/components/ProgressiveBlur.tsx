@@ -16,13 +16,21 @@ import MaskedView from "@react-native-masked-view/masked-view";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 
-import { progressiveMaskStops } from "@/logic/hero-layout";
+import { progressiveMaskStops, reverseMaskStops } from "@/logic/hero-layout";
 
 // The mask itself: what it covers shows from nothing at the top to fully
 // at `fullAt` (a fraction of its height), eased, then fully below
-// (progressiveMaskStops).
-export function ProgressiveMask({ fullAt }: { fullAt: number }) {
-  const { colors, locations } = progressiveMaskStops(fullAt);
+// (progressiveMaskStops); upside down with strongAt "top".
+export function ProgressiveMask({
+  fullAt,
+  strongAt = "bottom",
+}: {
+  fullAt: number;
+  strongAt?: "bottom" | "top";
+}) {
+  const stops = progressiveMaskStops(fullAt);
+  const { colors, locations } =
+    strongAt === "top" ? reverseMaskStops(stops) : stops;
   return (
     <LinearGradient
       colors={colors as [string, string, ...string[]]}
@@ -35,12 +43,17 @@ export function ProgressiveMask({ fullAt }: { fullAt: number }) {
 export function ProgressiveBlur({
   intensity,
   fullAt,
+  strongAt = "bottom",
   style,
   testID,
 }: {
   intensity: number;
-  // Where the blur reaches full strength, as a fraction of its height.
+  // Where the blur reaches full strength, as a fraction of its height,
+  // counted from its clear end.
   fullAt: number;
+  // Which end is blurred: the bottom (the hero's mirror) or the top (the
+  // screen's top edge band).
+  strongAt?: "bottom" | "top";
   style?: StyleProp<ViewStyle>;
   testID?: string;
 }) {
@@ -51,7 +64,7 @@ export function ProgressiveBlur({
     <MaskedView
       pointerEvents="none"
       style={style}
-      maskElement={<ProgressiveMask fullAt={fullAt} />}
+      maskElement={<ProgressiveMask fullAt={fullAt} strongAt={strongAt} />}
       testID={testID}
     >
       <BlurView
