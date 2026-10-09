@@ -1,64 +1,77 @@
 // One hero slide's own visuals: the backdrop (HeroPage, parallax/crossfade/
 // pull-to-refresh stretch) and the fixed text/logo/meta/Open-in overlay
 // (ContentLayer), both mounted per LOGICAL slide by HeroPager
-// (contentMountFrames, logic/hero-carousel.ts). Measurements are for a
-// 390 × 844 screen and scale with the screen height here.
+// (contentMountFrames, logic/hero-carousel.ts). The vertical layout comes
+// from heroLayout (logic/hero-layout.ts): every block has a fixed height,
+// so the content's position is computed and nothing moves per slide.
 
 import { memo, useCallback, useEffect, useMemo } from "react";
 import {
   Animated,
+  PixelRatio,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
   View,
   useWindowDimensions,
-  type LayoutChangeEvent,
 } from "react-native";
 import { Image } from "expo-image";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import MaskedView from "@react-native-masked-view/masked-view";
 
 import { IMAGE_BASE } from "@/api/tmdb-types";
 import type { TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 import { openExternalUrl, useGuardedRouter } from "@/hooks/useGuardedRouter";
 import { useStreamingService } from "@/hooks/useStreamingService";
-import { useEpisodeStill } from "@/hooks/useEpisodeStill";
 import { useShowImages } from "@/hooks/useShowImages";
-import { addDays } from "@/logic/local-date";
 import { openInAccessibilityLabel } from "@/logic/streaming-service";
-import { IMDB_CHIP_HEIGHT, ImdbRating } from "../ImdbRating";
+import { ImdbRating } from "../ImdbRating";
 import { PaidSubscriptionMarker } from "../PaidSubscriptionMarker";
+import { ProgressiveMask } from "../ProgressiveBlur";
+import { DatePill } from "./DatePill";
 import {
+  HERO_CONTENT_FADE_PAGES,
   HERO_CROSSFADE_FLOOR,
   HERO_PARALLAX_FACTOR,
   heroAvailability,
-  heroDateLine,
-  heroEpisodeTitle,
+  heroEpisodeLine,
+  heroPillLabel,
   type HeroAvailability,
   type HeroSlide,
 } from "@/logic/hero-carousel";
-import { REF_HEIGHT, t, type } from "@/theme/tokens";
+import {
+  CONTENT_GAP,
+  EPISODE_LINE_HEIGHT,
+  TITLE_GAP,
+  NOTE_LINE,
+  PILL_HEIGHT,
+  TITLE_BLOCK_HEIGHT,
+  heroImageSize,
+  heroLayout,
+} from "@/logic/hero-layout";
+import { t, type } from "@/theme/tokens";
 
-// Short screens (iPhone SE is 667pt tall) tighten the vertical gaps below
-// the meta line so the page dots clear the tab bar at rest. The threshold
-// sits between the SE (667) and the next size up (iPhone 12/13 mini at 812,
-// 12 Pro at 844), so every screen taller than the SE keeps the regular
-// values below and looks exactly as before.
-const SHORT_SCREEN_MAX_HEIGHT = 700;
+// How strongly Android blurs its copy of the image and the mirror at the
+// bottom, where the progressive BlurView does not run (ProgressiveBlur), in
+// the pixels of its small source (BLURRED_COPY_SIZE).
+const ANDROID_MIRROR_BLUR_RADIUS = 12;
+// How strongly the top edge's copy is blurred, on every platform, in the
+// pixels of its small source (BLURRED_COPY_SIZE): strong, so the mirror
+// above the seam reads as soft colour from the image.
+const TOP_MIRROR_BLUR_RADIUS = 12;
+// The blurred copies load a small version of the image: a blur radius
+// works in the source's own pixels, so on the full-size image even a large
+// radius stays sharp on screen; a small source blurs far more softly, and
+// is cheaper to decode.
+const BLURRED_COPY_SIZE = "w300";
 
-// Vertical layout of the content block's lower half. The Open-in button
-// block sits OPEN_IN_MARGIN below the meta line (on top of the content
-// block's own row gap), the button is BUTTON_HEIGHT tall (kept at/above the
-// 44pt minimum tap target even when tightened), and the page dots sit
-// DOTS_GAP below the button. Each has a tighter value used only on short
-// screens; the regular values reproduce today's layout exactly.
-const OPEN_IN_MARGIN = 8;
-const OPEN_IN_MARGIN_SHORT = 0;
-const BUTTON_HEIGHT = 52;
-const BUTTON_HEIGHT_SHORT = 44;
-const DOTS_GAP = 16;
-const DOTS_GAP_SHORT = 8;
-// One note line under the button, reserved on every slide so the dots stay
-// put: an add-on's "Requires hayu subscription" (CRI-101).
-const NOTE_LINE = 4 + type.meta.lineHeight;
+// The hero's layout for this screen (logic/hero-layout.ts).
+export function useHeroLayout() {
+  const { height } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  return heroLayout(height, insets.top);
+}
 
 function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -71,26 +84,23 @@ function deviceTimeZone(): string {
 // it).
 export function OpenInSlot({
   availability,
-  onLayout,
 }: {
   availability: HeroAvailability;
-  onLayout?: (event: LayoutChangeEvent) => void;
 }) {
-  const { height } = useWindowDimensions();
-  const isShort = height < SHORT_SCREEN_MAX_HEIGHT;
-  // On short screens the reserved slot sits closer to the meta line and the
-  // button/placeholder shrink to BUTTON_HEIGHT_SHORT (still >= 44); taller
-  // screens keep styles.openInSlot's own regular values.
-  const slotStyle = isShort
-    ? {
-        marginTop: OPEN_IN_MARGIN_SHORT,
-        height: BUTTON_HEIGHT_SHORT + NOTE_LINE,
-      }
-    : null;
-  const buttonHeightStyle = isShort ? { height: BUTTON_HEIGHT_SHORT } : null;
+  // On short screens the reserved slot sits closer to the episode line and
+  // the button/placeholder shrink to 44 (heroLayout).
+  const { buttonHeight, openInMargin } = useHeroLayout();
+  const slotStyle = {
+    marginTop: openInMargin,
+    height: buttonHeight + NOTE_LINE,
+  };
+  const buttonHeightStyle = { height: buttonHeight };
 
   return (
-    <View style={[styles.openInSlot, slotStyle]} onLayout={onLayout}>
+    // Fixed height across all four HeroAvailability states (button, loading
+    // placeholder, text note, or nothing for "none"), so the reserved space
+    // is constant and nothing below it shifts per slide.
+    <View style={slotStyle}>
       {availability.kind === "loading" && (
         <View style={[styles.buttonPlaceholder, buttonHeightStyle]} />
       )}
@@ -167,8 +177,14 @@ export const HeroPage = memo(function HeroPage({
   // per cell that would defeat this memo regardless of anything else.
   onBackdropLoad: (index: number) => void;
 }) {
-  const { height } = useWindowDimensions();
-  const scale = height / REF_HEIGHT;
+  const {
+    heroHeight,
+    imageTop,
+    imageHeight,
+    blurTop,
+    topBlurHeight,
+    topBlurFullTo,
+  } = useHeroLayout();
   const router = useGuardedRouter();
   const show = item.show as TvMazeShowWithEmbeds;
   const { data: images, isLoading: imagesLoading } = useShowImages(
@@ -176,26 +192,26 @@ export const HeroPage = memo(function HeroPage({
     deviceTimeZone(),
     todayDate,
   );
-  // The show's highest-rated backdrop (chooseHighestRatedBackdrop), used
-  // when the episode has no TMDB still of its own (displayPath below prefers
-  // the still). Nothing below this line (parallax, crossfade, pull-zoom,
-  // scrim) knows or cares which of the two it's showing.
-  const fallbackBackdropPath = images?.highestRatedBackdrop?.file_path;
-  const { data: episodeStill, isLoading: stillLoading } = useEpisodeStill(
-    show,
-    item.episodes[0],
-    deviceTimeZone(),
-    todayDate,
-  );
-  const displayPath = episodeStill?.filePath ?? fallbackBackdropPath;
-  const backdropHeight = 580 * scale;
+  // The show's highest-rated backdrop (chooseHighestRatedBackdrop:
+  // textless first, then vote_average, vote_count as tie-break), the same
+  // image on every visit to the slide (ADR 0012, amended for CRI-124).
+  // Nothing below this line (parallax, crossfade, pull-zoom, mirror, blur)
+  // depends on which image it is.
+  const displayPath = images?.highestRatedBackdrop?.file_path;
+  // The sharp image runs from under the top safe area down to the title
+  // slot's bottom (heroLayout), mirrored above and below it (Apple TV
+  // style); HeroPager's progressive blurs, one at each end for all slides,
+  // turn the mirrors soft. backdropHeight is the whole column's reach down
+  // to the bottom seam, which the pull stretch works on.
+  const backdropHeight = imageHeight;
+  const imageBoxHeight = imageHeight - imageTop;
   // Ready for auto-advance once the image loads, fails, or turns out not to
   // exist; a slide without an image must never hold the pager.
   const handleLoad = useCallback(
     () => onBackdropLoad(index),
     [onBackdropLoad, index],
   );
-  const noImage = !displayPath && !imagesLoading && !stillLoading;
+  const noImage = !displayPath && !imagesLoading;
   useEffect(() => {
     if (noImage) {
       onBackdropLoad(index);
@@ -213,6 +229,21 @@ export const HeroPage = memo(function HeroPage({
     ? width
     : width * (1 + 2 * HERO_PARALLAX_FACTOR);
   const backdropLeft = -((backdropWidth - width) / 2);
+  // Zoomed out to fit the box's height, centred: the image's bottom edge
+  // stays on the bottom seam and its top edge on imageTop, so more of its
+  // width shows. Never narrower than the screen.
+  const backdrop = images?.highestRatedBackdrop;
+  const aspectRatio =
+    backdrop && backdrop.height > 0 ? backdrop.width / backdrop.height : 16 / 9;
+  const columnWidth = Math.max(width, imageBoxHeight * aspectRatio);
+  const columnLeft = (backdropWidth - columnWidth) / 2;
+  // Sharp on this screen's pixels at the width the image is drawn
+  // (heroImageSize): "original" on today's phones.
+  const imageSize = heroImageSize(
+    columnWidth,
+    imageBoxHeight,
+    PixelRatio.get(),
+  );
 
   const translateX = reduceMotionEnabled
     ? 0
@@ -308,7 +339,7 @@ export const HeroPage = memo(function HeroPage({
       onPress={() =>
         router.push({ pathname: "/show/[id]", params: { id: show.id } })
       }
-      style={{ width, height, overflow: "visible" }}
+      style={{ width, height: heroHeight, overflow: "visible" }}
       testID="home-card"
     >
       <Animated.View
@@ -338,16 +369,82 @@ export const HeroPage = memo(function HeroPage({
                 transform: [{ translateX }],
               }}
             >
-              <Image
-                source={`${IMAGE_BASE}/w1280${displayPath}`}
-                style={{ width: backdropWidth, height: backdropHeight }}
-                contentFit="cover"
-                contentPosition="center"
-                accessibilityIgnoresInvertColors
+              <ImageColumn
+                uri={`${IMAGE_BASE}/${imageSize}${displayPath}`}
+                width={columnWidth}
+                left={columnLeft}
+                imageTop={imageTop}
+                boxHeight={imageBoxHeight}
                 onLoad={handleLoad}
-                onError={handleLoad}
-                testID="hero-backdrop-image"
               />
+              {/* Android has no progressive BlurView (ProgressiveBlur): a
+                  blurred copy of the column shows through the same eased
+                  mask instead, at the bottom. */}
+              {Platform.OS === "android" && (
+                <>
+                  <MaskedView
+                    pointerEvents="none"
+                    style={{
+                      position: "absolute",
+                      top: blurTop,
+                      left: 0,
+                      width: backdropWidth,
+                      height: heroHeight - blurTop,
+                    }}
+                    maskElement={
+                      <ProgressiveMask
+                        fullAt={
+                          (backdropHeight - blurTop) / (heroHeight - blurTop)
+                        }
+                      />
+                    }
+                  >
+                    <View
+                      style={{ position: "absolute", top: -blurTop, left: 0 }}
+                    >
+                      <ImageColumn
+                        uri={`${IMAGE_BASE}/${BLURRED_COPY_SIZE}${displayPath}`}
+                        width={columnWidth}
+                        left={columnLeft}
+                        imageTop={imageTop}
+                        boxHeight={imageBoxHeight}
+                        blurRadius={ANDROID_MIRROR_BLUR_RADIUS}
+                      />
+                    </View>
+                  </MaskedView>
+                </>
+              )}
+              {/* The top edge, on every platform: a blurred copy of the
+                  column (the image's own pixels, no tint) shows through an
+                  eased mask, fully blurred from the top of the screen down
+                  to the seam, so the mirror never reads, fading out a
+                  little way into the image, before the heads. A blur view
+                  here would lay iOS's dark material over the top. */}
+              <MaskedView
+                pointerEvents="none"
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: backdropWidth,
+                  height: topBlurHeight,
+                }}
+                maskElement={
+                  <ProgressiveMask
+                    fullAt={(topBlurHeight - topBlurFullTo) / topBlurHeight}
+                    strongAt="top"
+                  />
+                }
+              >
+                <ImageColumn
+                  uri={`${IMAGE_BASE}/${BLURRED_COPY_SIZE}${displayPath}`}
+                  width={columnWidth}
+                  left={columnLeft}
+                  imageTop={imageTop}
+                  boxHeight={imageBoxHeight}
+                  blurRadius={TOP_MIRROR_BLUR_RADIUS}
+                />
+              </MaskedView>
             </Animated.View>
           </Animated.View>
         )}
@@ -355,6 +452,72 @@ export const HeroPage = memo(function HeroPage({
     </Pressable>
   );
 });
+
+// One slide's image as a column: the sharp image from imageTop down
+// boxHeight, the same box flipped above it (its bottom edge continues the
+// image's top edge) and flipped below it (its top edge continues the
+// image's bottom edge). Positioned from the column's own top. Drawn once
+// sharp, and on Android once more, blurred, for the masked blur.
+function ImageColumn({
+  uri,
+  width,
+  left,
+  imageTop,
+  boxHeight,
+  blurRadius,
+  onLoad,
+}: {
+  uri: string;
+  width: number;
+  // From the left of the backdrop box: the column is centred in it.
+  left: number;
+  imageTop: number;
+  boxHeight: number;
+  blurRadius?: number;
+  // Only the sharp column reports its load (auto-advance waits for it).
+  onLoad?: () => void;
+}) {
+  const sharp = blurRadius === undefined;
+  const image = (flipped: boolean, testID?: string) => (
+    <Image
+      source={uri}
+      style={[{ width, height: boxHeight }, flipped && styles.flipped]}
+      contentFit="cover"
+      // Centred: anchoring the crop at the image's top edge kept more hair
+      // but moved faces down onto the pill (owner, CRI-124).
+      contentPosition="center"
+      accessibilityIgnoresInvertColors
+      blurRadius={blurRadius}
+      onLoad={flipped ? undefined : onLoad}
+      onError={flipped ? undefined : onLoad}
+      testID={sharp ? testID : undefined}
+    />
+  );
+  return (
+    <>
+      <View
+        pointerEvents="none"
+        testID={sharp ? "hero-backdrop-top-mirror-box" : undefined}
+        style={[styles.box, { top: imageTop - boxHeight, left, width }]}
+      >
+        {image(true, "hero-backdrop-top-mirror")}
+      </View>
+      <View
+        pointerEvents="none"
+        style={[styles.box, { top: imageTop, left, width }]}
+      >
+        {image(false, "hero-backdrop-image")}
+      </View>
+      <View
+        pointerEvents="none"
+        testID={sharp ? "hero-backdrop-mirror-box" : undefined}
+        style={[styles.box, { top: imageTop + boxHeight, left, width }]}
+      >
+        {image(true, "hero-backdrop-mirror")}
+      </View>
+    </>
+  );
+}
 
 // Fixed overlay, a sibling of the paging FlatList in HeroPager (like the
 // scrim and PageIndicator): shows one slide's text/logo/meta/Open-in
@@ -380,10 +543,9 @@ export const HeroPage = memo(function HeroPage({
 // often for reasons unrelated to any one mounted ContentLayer (each of
 // which runs its own useShowImages/useStreamingService), and every prop
 // here is already stable or stable-by-value across those re-renders
-// (logicalCrossfadePosition and pageCount from HeroPager's own memo;
-// badge is a freshly computed but value-equal string; onIndicatorAnchor
-// is a state setter), so this actually takes effect without needing any
-// further stabilizing, unlike HeroPage's onBackdropLoad did.
+// (logicalCrossfadePosition and pageCount from HeroPager's own memo), so
+// this actually takes effect without needing any further stabilizing,
+// unlike HeroPage's onBackdropLoad did.
 export const ContentLayer = memo(function ContentLayer({
   index,
   slide,
@@ -392,7 +554,6 @@ export const ContentLayer = memo(function ContentLayer({
   pageCount,
   reduceMotionEnabled,
   interactive,
-  onIndicatorAnchor,
 }: {
   index: number;
   slide: HeroSlide;
@@ -405,24 +566,10 @@ export const ContentLayer = memo(function ContentLayer({
   // (all layers are absoluteFill) and would otherwise be able to
   // intercept taps meant for the layer stacked beneath them.
   interactive: boolean;
-  onIndicatorAnchor: (y: number) => void;
 }) {
-  const { height } = useWindowDimensions();
-  const scale = height / REF_HEIGHT;
-  // Raised by the second meta line and the note line under the button, so
-  // the page dots stay where they were.
-  const contentTop = 452 * scale - type.meta.lineHeight - NOTE_LINE;
-  const isShort = height < SHORT_SCREEN_MAX_HEIGHT;
-  const dotsGap = isShort ? DOTS_GAP_SHORT : DOTS_GAP;
+  // Anchored so the page dots end just above the hero's end (heroLayout).
+  const { contentTop } = useHeroLayout();
   const show = slide.show as TvMazeShowWithEmbeds;
-  // Whether this slide's episode (or season drop) releases today or
-  // tomorrow in the user's local time zone. slide.localDate is already the
-  // airstamp resolved to a local date (findHeroSlides, local-date.ts), and
-  // todayDate is the same "today" the rest of the hero uses (useToday), so
-  // these are plain string compares against todayDate and the app's own
-  // addDays, not a fresh Date() comparison.
-  const isToday = slide.localDate === todayDate;
-  const isTomorrow = slide.localDate === addDays(todayDate, 1);
   // Shares its query key (show id + todayDate) with HeroPage's own call
   // for the same slide, so this never double-fetches: TanStack Query
   // serves both subscribers from the one cached result.
@@ -442,22 +589,11 @@ export const ContentLayer = memo(function ContentLayer({
   );
   const logo = images?.logo;
 
-  const handleButtonLayout = useCallback(
-    (event: LayoutChangeEvent) => {
-      const { y, height: buttonHeight } = event.nativeEvent.layout;
-      // Page dots sit DOTS_GAP below the slot, note line included (design
-      // system, tighter on short screens). The button's own y and
-      // measured height already reflect the tightened slot on short screens,
-      // and y is relative to `content`, itself offset from the slide's top
-      // by contentTop.
-      onIndicatorAnchor(contentTop + y + buttonHeight + dotsGap);
-    },
-    [contentTop, onIndicatorAnchor, dotsGap],
-  );
-
   // Full opacity centered on this layer's own fixed logical index, down to
-  // 0 by half a (logical) page away in either direction, the same
-  // triangular shape as HeroPage's backdropOpacity, just built from
+  // 0 already HERO_CONTENT_FADE_PAGES of a page away in either direction
+  // (CRI-124): a swipe fades the text out almost at once, so only the
+  // images move, and it fades back in as the slide lands. (This also
+  // keeps the pill's blur out of a long crossfade.) Built from
   // logicalCrossfadePosition (periodic) rather than scrollX directly: see
   // that value's own comment in HeroPager for why. wrapped shifts things
   // so the peak sits at pageCount / 2 instead of at this layer's own
@@ -480,7 +616,11 @@ export const ContentLayer = memo(function ContentLayer({
       pageCount,
     );
     return wrapped.interpolate({
-      inputRange: [pageCount / 2 - 0.5, pageCount / 2, pageCount / 2 + 0.5],
+      inputRange: [
+        pageCount / 2 - HERO_CONTENT_FADE_PAGES,
+        pageCount / 2,
+        pageCount / 2 + HERO_CONTENT_FADE_PAGES,
+      ],
       outputRange: [0, 1, 0],
       extrapolate: "clamp",
     });
@@ -497,22 +637,17 @@ export const ContentLayer = memo(function ContentLayer({
         style={[styles.content, { top: contentTop }]}
         pointerEvents="box-none"
       >
+        {/* The date pill, centred (CRI-124). The page dots give the
+            slide's place in the pager. */}
         <View
-          style={styles.badgeRow}
-          pointerEvents="box-none"
+          style={styles.pillRow}
+          pointerEvents="none"
           testID="hero-label-row"
         >
-          <View pointerEvents="none">
-            <Text style={styles.badge}>
-              <Text style={isToday ? styles.badgeToday : undefined}>
-                {isToday ? "TODAY" : isTomorrow ? "TOMORROW" : "UPCOMING"}
-              </Text>
-              {` · ${index + 1}/${pageCount}`}
-            </Text>
-          </View>
-          <ImdbRating show={show} textStyle={styles.badge} />
+          <DatePill label={heroPillLabel(slide, todayDate)} />
         </View>
-        <View pointerEvents="none" style={styles.passThrough}>
+        {/* TITLE_GAP above and below, on top of the row gap. */}
+        <View pointerEvents="none" style={styles.titleRoom}>
           <View style={styles.titleBlock} testID="hero-title-block">
             {logo ? (
               <Image
@@ -528,53 +663,71 @@ export const ContentLayer = memo(function ContentLayer({
               </Text>
             )}
           </View>
-          {/* Two fixed lines: date and code, then the episode title. */}
-          <View>
-            <Text style={styles.meta} numberOfLines={1}>
-              {heroDateLine(slide, todayDate)}
-            </Text>
-            <Text style={styles.meta} numberOfLines={1}>
-              {heroEpisodeTitle(slide.episodes) ?? " "}
-            </Text>
-          </View>
         </View>
-        <OpenInSlot availability={availability} onLayout={handleButtonLayout} />
+        {/* One fixed line, on the fade, no block behind it: the code and
+            the episode title, and the IMDb chip at its right end. Only the
+            chip takes touches. */}
+        <View
+          style={styles.episodeRow}
+          pointerEvents="box-none"
+          testID="hero-episode-row"
+        >
+          <Text
+            style={styles.episodeLine}
+            numberOfLines={1}
+            pointerEvents="none"
+          >
+            {heroEpisodeLine(slide.episodes)}
+          </Text>
+          <ImdbRating show={show} variant="chip" />
+        </View>
+        <OpenInSlot availability={availability} />
       </View>
     </Animated.View>
   );
 });
 
 const styles = StyleSheet.create({
+  // One box of the image column (ImageColumn).
+  box: {
+    position: "absolute",
+  },
+  // A mirror image: upside down, around its own centre.
+  flipped: {
+    transform: [{ scaleY: -1 }],
+  },
   content: {
     position: "absolute",
-    left: 24,
-    right: 24,
-    gap: 8,
+    // One screen margin on Home, the rows' too (CRI-124).
+    left: t.space4,
+    right: t.space4,
+    gap: CONTENT_GAP,
   },
-  // As tall as the IMDb chip, chip or not, so nothing below shifts per slide.
-  badgeRow: {
-    height: IMDB_CHIP_HEIGHT,
+  // As tall as the pill, so nothing below shifts per slide.
+  pillRow: {
+    height: PILL_HEIGHT,
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  // As tall as the IMDb chip, chip or not, so nothing below shifts.
+  episodeRow: {
+    height: EPISODE_LINE_HEIGHT,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    gap: CONTENT_GAP,
   },
-  // Keeps the content block's own row gap inside the pass-through group.
-  passThrough: {
-    gap: 8,
-  },
-  badge: {
-    ...type.label,
+  // Takes the room the chip leaves, cut with an ellipsis.
+  episodeLine: {
+    ...type.meta,
     color: t.inkMuted,
-    textTransform: "uppercase",
-  },
-  // "TODAY" eyebrow word: white, flagging a slide that airs today. The
-  // counter after it stays the muted badge grey (it inherits styles.badge).
-  badgeToday: {
-    color: t.ink,
+    flex: 1,
   },
   // One height for a logo and a text title, so nothing below shifts.
+  titleRoom: {
+    marginVertical: TITLE_GAP - CONTENT_GAP,
+  },
   titleBlock: {
-    height: 88,
+    height: TITLE_BLOCK_HEIGHT,
     justifyContent: "center",
   },
   logo: {
@@ -591,37 +744,22 @@ const styles = StyleSheet.create({
     lineHeight: 44,
     color: t.ink,
   },
-  meta: {
-    ...type.meta,
-    color: t.inkMuted,
-  },
-  // Fixed height across all four HeroAvailability states (button, loading
-  // placeholder, text note, or nothing for "none"), so the reserved space
-  // is constant and nothing below the Open-in slot shifts per slide.
-  openInSlot: {
-    // OPEN_IN_MARGIN on top of content's own 8 row gap = 16 below the meta
-    // line on regular screens (tightened on short, see OpenInSlot).
-    marginTop: OPEN_IN_MARGIN,
-    height: BUTTON_HEIGHT + NOTE_LINE,
-  },
   requires: {
     marginTop: 4,
   },
   button: {
-    height: BUTTON_HEIGHT,
     borderRadius: t.radiusPill,
     backgroundColor: t.ink,
     alignItems: "center",
     justifyContent: "center",
   },
+  // Manrope ExtraBold, a trial behind one token (type.button).
   buttonLabel: {
+    ...type.button,
     color: t.bg,
-    fontSize: 16,
-    fontWeight: "600",
   },
   // Lookup running: the button's own shape, quiet, no text or spinner.
   buttonPlaceholder: {
-    height: BUTTON_HEIGHT,
     borderRadius: t.radiusPill,
     backgroundColor: t.surfaceRaised,
   },

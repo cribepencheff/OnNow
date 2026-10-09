@@ -2,11 +2,12 @@
 // horizontally paging FlatList of HeroSlides, with a backdrop
 // parallax/crossfade per page (HeroPage) and a fixed text/logo/meta/
 // Open-in overlay (ContentLayer), both siblings of the paging list rather
-// than part of each slide. Measurements are for a 390 × 844 screen and
-// scale with the screen height here.
+// than part of each slide. The vertical layout comes from heroLayout
+// (logic/hero-layout.ts, through useHeroLayout).
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
+  AppState,
   Animated,
   FlatList,
   View,
@@ -14,10 +15,12 @@ import {
   type NativeScrollEvent,
   type NativeSyntheticEvent,
 } from "react-native";
+import { useIsFocused } from "expo-router";
 
 import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
 import {
   contentMountFrames,
+  flickReleaseTarget,
   isLoopWrapSlot,
   logicalToPhysical,
   loopSlideData,
@@ -25,8 +28,10 @@ import {
   physicalToLogical,
   type HeroSlide,
 } from "@/logic/hero-carousel";
-import { REF_HEIGHT } from "@/theme/tokens";
-import { ContentLayer, HeroPage } from "./HeroPage";
+import { topScrimGradient } from "@/logic/hero-layout";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ProgressiveBlur } from "../ProgressiveBlur";
+import { ContentLayer, HeroPage, useHeroLayout } from "./HeroPage";
 import { PageIndicator } from "./PageIndicator";
 
 // FlatList is VirtualizedList-based: native-driven onScroll (below, for the
@@ -40,6 +45,29 @@ const AnimatedFlatList = Animated.createAnimatedComponent(
 // One constant, easy to change: how long each slide dwells before the
 // carousel auto-advances to the next one.
 const AUTO_ADVANCE_MS = 6000;
+
+// The fade into bg from the pill's top to the hero's end, with the blur:
+// light down to the seam (about halfway), so the soft image keeps its own
+// tone around the title, then into solid bg towards the dots. Eased, so it
+// has no visible edge.
+const FADE_GRADIENT =
+  "linear-gradient(to bottom, rgba(11,12,15,0) 0%, rgba(11,12,15,0.1) 25%, rgba(11,12,15,0.22) 47%, rgba(11,12,15,0.48) 65%, rgba(11,12,15,0.8) 82%, rgba(11,12,15,1) 95%)";
+// How strong the blur over the mirror zone gets: the image reads as
+// almost one colour there.
+const MIRROR_BLUR_INTENSITY = 80;
+
+// Whether the app is in the foreground. Auto-advance pauses in the
+// background (CRI-124).
+function useAppActive(): boolean {
+  const [active, setActive] = useState(AppState.currentState !== "background");
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", (status) =>
+      setActive(status === "active"),
+    );
+    return () => subscription.remove();
+  }, []);
+  return active;
+}
 
 export function HeroPager({
   slides,
@@ -56,9 +84,25 @@ export function HeroPager({
   // don't reference it at all).
   pullDistance: Animated.AnimatedInterpolation<number>;
 }) {
-  const { width, height } = useWindowDimensions();
-  const scale = height / REF_HEIGHT;
+  const { width } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  const topScrim = useMemo(() => topScrimGradient(insets.top), [insets.top]);
+  const {
+    heroHeight,
+    imageHeight,
+    blurTop,
+    fadeTop,
+    topGradientHeight,
+    dotsTop,
+  } = useHeroLayout();
+  // The blur is full by the seam, so the mirror's symmetry does not read.
+  const blurFullAt = (imageHeight - blurTop) / (heroHeight - blurTop);
   const { reduceMotionEnabled, screenReaderEnabled } = useAccessibilityFlags();
+  // Auto-advance pauses, on the same slide, while Home is not the focused
+  // tab or the app is in the background, as it does under a finger
+  // (CRI-124).
+  const isFocused = useIsFocused();
+  const appActive = useAppActive();
   const pageCount = slides.length;
 
   // The FlatList's own data, padded for the loop (loopSlideData above);
@@ -70,7 +114,6 @@ export function HeroPager({
 
   const [pageIndex, setPageIndex] = useState(0);
   const [loadedPages, setLoadedPages] = useState<Set<number>>(new Set());
-  const [indicatorAnchorY, setIndicatorAnchorY] = useState<number | null>(null);
   const [touching, setTouching] = useState(false);
 
   const listRef = useRef<FlatList<HeroSlide>>(null);
@@ -345,7 +388,8 @@ export function HeroPager({
       pausedProgressRef.current = null;
     }
 
-    if (!canAutoAdvance || touching || !loadedPages.has(pageIndex)) {
+    const paused = touching || !isFocused || !appActive;
+    if (!canAutoAdvance || paused || !loadedPages.has(pageIndex)) {
       // Reads the current value (already frozen by the cleanup below, if
       // there was a running animation to freeze) rather than assuming
       // `startValue`, so repeated pauses without an intervening resume
@@ -372,6 +416,8 @@ export function HeroPager({
   }, [
     pageIndex,
     touching,
+    isFocused,
+    appActive,
     canAutoAdvance,
     loadedPages,
     pageCount,
@@ -411,14 +457,35 @@ export function HeroPager({
         setTouching(false);
         return;
       }
-      const target = pagingReleaseTarget(
+      // A short, fast flick changes slide even where UIKit's own paging
+      // would spring back (CRI-124): then the native target is replaced
+      // with the flick's, and the list scrolls there itself.
+      const flick = flickReleaseTarget(
         contentOffset.x,
         layoutMeasurement.width,
         physicalPageCount,
         dragStartPageRef.current,
         velocity?.x ?? 0,
-        targetContentOffset?.x ?? null,
       );
+      const target =
+        flick ??
+        pagingReleaseTarget(
+          contentOffset.x,
+          layoutMeasurement.width,
+          physicalPageCount,
+          dragStartPageRef.current,
+          velocity?.x ?? 0,
+          targetContentOffset?.x ?? null,
+        );
+      const nativeTarget =
+        targetContentOffset &&
+        Math.round(targetContentOffset.x / layoutMeasurement.width);
+      if (flick !== null && flick !== nativeTarget) {
+        listRef.current?.scrollToOffset({
+          offset: flick * layoutMeasurement.width,
+          animated: true,
+        });
+      }
       physicalIndexRef.current = target;
       setPageIndex(physicalToLogical(target, pageCount));
       setTouching(false);
@@ -471,7 +538,7 @@ export function HeroPager({
   );
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ height: heroHeight }}>
       <Animated.View
         style={{ flex: 1, transform: [{ translateY: pagerPinTranslateY }] }}
       >
@@ -518,23 +585,55 @@ export function HeroPager({
           onMomentumScrollEnd={handleScrollEnd}
           renderItem={renderItem}
         />
+        {/* Pinned with the backdrop, so it stays at the image's top during
+            a pull. */}
+        {/* Dark behind the status bar and the logo row, so the clock,
+            the icons and the logo read on bright images; over each slide's
+            image-toned top blur (HeroPage), and fading out below the logo
+            row (topScrimGradient). */}
+        <View
+          pointerEvents="none"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width,
+            height: topGradientHeight,
+            experimental_backgroundImage: topScrim,
+          }}
+          testID="hero-top-scrim"
+        />
       </Animated.View>
 
-      {/* Fixed overlay, a sibling of the paging FlatList like PageIndicator
-          below: horizontally uniform and always opaque, so it reads as one
-          continuous scrim rather than sliding or seaming with the swipe.
-          Fade from 280 to 580: transparent bg, 75% bg at the middle, solid
-          bg. */}
+      {/* Over the hero's lower part, once for all slides rather than per
+          slide, and not part of the pinned pager: on a pull the backdrop
+          stretches down from its pinned top, so its seam moves down with
+          the pull, as these do. First the progressive blur, which starts
+          at the pill's top on the image itself and is full by the seam, so
+          the mirror's symmetry does not read; then the fade into bg. Both horizontally uniform, so nothing slides or
+          seams with a swipe. One point past the end covers a rounding
+          seam. */}
+      <ProgressiveBlur
+        intensity={MIRROR_BLUR_INTENSITY}
+        fullAt={blurFullAt}
+        style={{
+          position: "absolute",
+          left: 0,
+          width,
+          top: blurTop,
+          height: heroHeight - blurTop,
+        }}
+        testID="hero-mirror-blur"
+      />
       <View
         pointerEvents="none"
         style={{
           position: "absolute",
           left: 0,
           width,
-          top: 280 * scale,
-          height: 301 * scale,
-          experimental_backgroundImage:
-            "linear-gradient(to bottom, rgba(11,12,15,0) 0%, rgba(11,12,15,0.75) 50%, rgba(11,12,15,1) 100%)",
+          top: fadeTop,
+          height: heroHeight - fadeTop + 1,
+          experimental_backgroundImage: FADE_GRADIENT,
         }}
       />
 
@@ -548,18 +647,17 @@ export function HeroPager({
           pageCount={pageCount}
           reduceMotionEnabled={reduceMotionEnabled}
           interactive={logicalIndex === pageIndex}
-          onIndicatorAnchor={setIndicatorAnchorY}
         />
       ))}
 
-      {pageCount > 1 && indicatorAnchorY !== null && (
+      {pageCount > 1 && (
         <PageIndicator
           count={pageCount}
           progressAnim={progressAnim}
           reduceMotionEnabled={reduceMotionEnabled}
           screenReaderEnabled={screenReaderEnabled}
           currentPage={pageIndex}
-          top={indicatorAnchorY}
+          top={dotsTop}
           width={width}
           // VoiceOver: auto-advance is off (canAutoAdvance already
           // excludes it), so swiping the indicator up or down is how a

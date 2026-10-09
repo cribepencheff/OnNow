@@ -15,6 +15,7 @@ import {
   isLoopWrapSlot,
   logicalToPhysical,
   loopSlideData,
+  flickReleaseTarget,
   pagingReleaseTarget,
   physicalToLogical,
   pullStretchTransform,
@@ -376,5 +377,46 @@ describe("heroPagerKey", () => {
       key,
     );
     expect(heroPagerKey([slide(2), slide(1), slide(3)])).not.toBe(key);
+  });
+});
+
+describe("flickReleaseTarget (CRI-124)", () => {
+  const PAGE_WIDTH = 390;
+
+  it("goes to the next slide on a short, fast flick", () => {
+    // 30pt from slide 2, released at 0.6 pt/ms.
+    expect(flickReleaseTarget(2 * PAGE_WIDTH + 30, PAGE_WIDTH, 5, 2, 0.6)).toBe(
+      3,
+    );
+  });
+
+  it("goes back on a short, fast flick the other way", () => {
+    expect(
+      flickReleaseTarget(2 * PAGE_WIDTH - 30, PAGE_WIDTH, 5, 2, -0.6),
+    ).toBe(1);
+  });
+
+  it("is not a flick when released slowly", () => {
+    expect(
+      flickReleaseTarget(2 * PAGE_WIDTH + 30, PAGE_WIDTH, 5, 2, 0.05),
+    ).toBeNull();
+  });
+
+  it("is not a flick when the finger barely moved", () => {
+    expect(
+      flickReleaseTarget(2 * PAGE_WIDTH + 4, PAGE_WIDTH, 5, 2, 0.6),
+    ).toBeNull();
+  });
+
+  it("is not a flick when released against the drag", () => {
+    expect(
+      flickReleaseTarget(2 * PAGE_WIDTH + 30, PAGE_WIDTH, 5, 2, -0.6),
+    ).toBeNull();
+  });
+
+  it("stays inside the list", () => {
+    expect(flickReleaseTarget(4 * PAGE_WIDTH + 30, PAGE_WIDTH, 5, 4, 0.6)).toBe(
+      4,
+    );
   });
 });

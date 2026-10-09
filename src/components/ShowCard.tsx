@@ -12,6 +12,7 @@ import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import type { PosterItem } from "@/logic/top-picks";
 import { t, type } from "@/theme/tokens";
 import { FollowCircle } from "./FollowCircle";
+import { PosterDimOverlay } from "./PosterDim";
 
 const POSTER_WIDTH = 112;
 const POSTER_HEIGHT = POSTER_WIDTH * 1.5;
@@ -57,6 +58,8 @@ export function ShowCard({
           contentFit="cover"
           accessibilityIgnoresInvertColors
         />
+        {/* Home dims its posters at rest (CRI-124); under the circle. */}
+        <PosterDimOverlay />
         <View style={styles.follow}>
           <FollowCircle
             followed={followed}

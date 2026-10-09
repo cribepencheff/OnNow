@@ -121,6 +121,8 @@ describe("SearchScreen", () => {
     expect(screen.getByTestId("airing-this-week-row")).toBeTruthy();
     expect(screen.getByText("Top picks for you")).toBeTruthy();
     expect(screen.getByText("Airing this week")).toBeTruthy();
+    // Only Home dims its posters (CRI-124).
+    expect(screen.queryAllByTestId("poster-dim")).toHaveLength(0);
 
     await unmount();
     client.unmount();
