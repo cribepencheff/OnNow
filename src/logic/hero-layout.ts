@@ -53,14 +53,16 @@ export const IMAGE_TOP_MARGIN = -15;
 export const TOP_BLUR_INTO_IMAGE = 40;
 // The dark gradient at the top (owner, CRI-124): behind the status bar and
 // the logo row, so the clock, the icons and the logo read on bright images,
-// over the image-toned top blur; it fades out this far below the logo row.
-export const TOP_SCRIM_FADE = 40;
+// over the image-toned top blur; it fades out this far below the logo row,
+// slowly and eased at both ends, so it has no visible lower edge (owner).
+export const TOP_SCRIM_FADE = 120;
+// The fade starts this far above the bottom of the logo row, so it darkens
+// less of the faces (owner). Eased, it is still near full behind the logo.
+export const TOP_SCRIM_FADE_LIFT = 25;
 // How dark it is (bg at this opacity): at the top of the screen, at the
-// bottom of the safe area, and at the bottom of the logo row. Matched to
-// the previous layers (a dark-tinted blur view, a 45% gradient and the
-// header's edge band) under the status bar, measured on screenshots, and
-// a little darker behind the logo for its contrast.
-export const TOP_SCRIM_ALPHA = { top: 0.55, safeArea: 0.45, logoRow: 0.42 };
+// bottom of the safe area, and where the fade starts. Half of the darkness
+// first matched to the previous layers (owner, CRI-124).
+export const TOP_SCRIM_ALPHA = { top: 0.275, safeArea: 0.225, logoRow: 0.21 };
 
 export interface HeroLayout {
   // The hero's own height.
@@ -136,7 +138,8 @@ export function heroLayout(windowHeight: number, topInset: number): HeroLayout {
     contentTop,
     dotsTop: contentTop + contentHeight + dotsGap,
     fadeTop: contentTop,
-    topGradientHeight: topInset + HEADER_BAR_HEIGHT + TOP_SCRIM_FADE,
+    topGradientHeight:
+      topInset + HEADER_BAR_HEIGHT - TOP_SCRIM_FADE_LIFT + TOP_SCRIM_FADE,
   };
 }
 
@@ -228,19 +231,30 @@ export function posterDimAt(scrollOffset: number, endScroll: number): number {
 }
 
 // The top gradient's stops (CSS, for experimental_backgroundImage): dark
-// behind the status bar and the logo row (TOP_SCRIM_ALPHA), then eased out
-// over TOP_SCRIM_FADE below the logo row.
+// behind the status bar and the logo row (TOP_SCRIM_ALPHA), then faded out
+// over TOP_SCRIM_FADE below the logo row along a smoothstep, flat where it
+// leaves the logo row and flat where it ends, so no edge shows.
+const TOP_SCRIM_FADE_STOPS = 10;
+
 export function topScrimGradient(topInset: number): string {
-  const height = topInset + HEADER_BAR_HEIGHT + TOP_SCRIM_FADE;
-  const at = (y: number) => `${((y / height) * 100).toFixed(1)}%`;
-  const bg = (alpha: number) => `rgba(11,12,15,${alpha})`;
-  const logoRowEnd = topInset + HEADER_BAR_HEIGHT;
+  const fadeStart = topInset + HEADER_BAR_HEIGHT - TOP_SCRIM_FADE_LIFT;
+  const height = fadeStart + TOP_SCRIM_FADE;
+  const stop = (alpha: number, y: number) =>
+    `rgba(11,12,15,${Number(alpha.toFixed(3))}) ${((y / height) * 100).toFixed(1)}%`;
   const stops = [
-    `${bg(TOP_SCRIM_ALPHA.top)} 0%`,
-    `${bg(TOP_SCRIM_ALPHA.safeArea)} ${at(topInset)}`,
-    `${bg(TOP_SCRIM_ALPHA.logoRow)} ${at(logoRowEnd)}`,
-    `${bg(0.12)} ${at(logoRowEnd + TOP_SCRIM_FADE / 2)}`,
-    `${bg(0)} 100%`,
+    stop(TOP_SCRIM_ALPHA.top, 0),
+    stop(TOP_SCRIM_ALPHA.safeArea, topInset),
+    stop(TOP_SCRIM_ALPHA.logoRow, fadeStart),
   ];
+  for (let k = 1; k <= TOP_SCRIM_FADE_STOPS; k += 1) {
+    const t = k / TOP_SCRIM_FADE_STOPS;
+    const eased = t * t * (3 - 2 * t);
+    stops.push(
+      stop(
+        TOP_SCRIM_ALPHA.logoRow * (1 - eased),
+        fadeStart + t * TOP_SCRIM_FADE,
+      ),
+    );
+  }
   return `linear-gradient(to bottom, ${stops.join(", ")})`;
 }

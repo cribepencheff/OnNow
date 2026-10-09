@@ -5,6 +5,7 @@ import {
   HERO_END_ABOVE_TAB_BAR,
   TOP_SCRIM_ALPHA,
   TOP_SCRIM_FADE,
+  TOP_SCRIM_FADE_LIFT,
   topScrimGradient,
   POSTER_REST_DIM,
   posterDimAt,
@@ -132,13 +133,39 @@ describe("heroLayout (CRI-124)", () => {
   // status bar and the logo row, and fades out below it.
   it("covers the status bar and the logo row, and fades out below it", () => {
     const { topGradientHeight } = heroLayout(874, 62);
-    expect(topGradientHeight).toBe(62 + HEADER_BAR_HEIGHT + TOP_SCRIM_FADE);
+    expect(topGradientHeight).toBe(
+      62 + HEADER_BAR_HEIGHT - TOP_SCRIM_FADE_LIFT + TOP_SCRIM_FADE,
+    );
     const css = topScrimGradient(62);
-    expect(css).toContain(`rgba(11,12,15,${TOP_SCRIM_ALPHA.top}) 0%`);
-    // The bottom of the logo row: 106 of 146.
-    expect(css).toContain(`rgba(11,12,15,${TOP_SCRIM_ALPHA.logoRow}) 72.6%`);
-    expect(css).toContain("rgba(11,12,15,0) 100%");
-    expect(TOP_SCRIM_ALPHA.logoRow).toBeGreaterThanOrEqual(0.3);
+    expect(css).toContain(`rgba(11,12,15,${TOP_SCRIM_ALPHA.top}) 0.0%`);
+    // Where the fade starts: above the bottom of the logo row, below the
+    // logo's top (12 under the safe area); eased, it is still near full
+    // behind the logo's bottom edge (32 under the safe area).
+    const fadeStartY = 62 + HEADER_BAR_HEIGHT - TOP_SCRIM_FADE_LIFT;
+    expect(fadeStartY).toBeGreaterThan(62 + 12);
+    const t = (62 + 32 - fadeStartY) / TOP_SCRIM_FADE;
+    const alphaAtLogoBottom =
+      TOP_SCRIM_ALPHA.logoRow * (1 - t * t * (3 - 2 * t));
+    expect(alphaAtLogoBottom).toBeGreaterThan(TOP_SCRIM_ALPHA.logoRow * 0.9);
+    const logoRowEnd = ((fadeStartY / topGradientHeight) * 100).toFixed(1);
+    expect(css).toContain(
+      `rgba(11,12,15,${TOP_SCRIM_ALPHA.logoRow}) ${logoRowEnd}%`,
+    );
+    expect(css).toContain("rgba(11,12,15,0) 100.0%");
+    expect(TOP_SCRIM_ALPHA.logoRow).toBeGreaterThan(0);
+  });
+
+  it("fades out slowly below the logo row, with no step anywhere", () => {
+    expect(TOP_SCRIM_FADE).toBeGreaterThanOrEqual(100);
+    const alphas = [
+      ...topScrimGradient(62).matchAll(/rgba\(11,12,15,([\d.]+)\)/g),
+    ].map((match) => Number(match[1]));
+    // From the logo row down: only ever lighter, in small steps.
+    const fade = alphas.slice(2);
+    for (let i = 1; i < fade.length; i += 1) {
+      expect(fade[i]).toBeLessThanOrEqual(fade[i - 1]);
+      expect(fade[i - 1] - fade[i]).toBeLessThan(0.08);
+    }
   });
 });
 
