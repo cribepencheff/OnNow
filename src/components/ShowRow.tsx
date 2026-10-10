@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: t.space2 + 4,
-    paddingHorizontal: t.space4,
+    paddingHorizontal: t.contentInset,
     gap: t.space2 + 4,
   },
   // No image: nothing, never a grey box (design system); the space stays
