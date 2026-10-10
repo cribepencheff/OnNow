@@ -281,6 +281,8 @@ describe("RowRefresh (CRI-123, CRI-127)", () => {
       expect(button.props.accessibilityState.busy).toBe(true);
       // A symmetrical spinner in the arrow's place, so it turns in place.
       expect(screen.getByTestId("refresh-spinner")).toBeTruthy();
+      // The label is hidden while it runs.
+      expect(screen.queryByText("Refresh")).toBeNull();
 
       await act(async () => jest.advanceTimersByTime(800));
       expect(
@@ -288,6 +290,7 @@ describe("RowRefresh (CRI-123, CRI-127)", () => {
           .busy,
       ).toBe(false);
       expect(screen.queryByTestId("refresh-spinner")).toBeNull();
+      expect(screen.getByText("Refresh")).toBeTruthy();
       await fireEvent.press(screen.getByRole("button", { name: "Refresh" }));
       expect(onPress).toHaveBeenCalledTimes(2);
     } finally {
