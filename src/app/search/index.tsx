@@ -30,7 +30,6 @@ import {
   SettledFollowedContext,
   useSettledFollowed,
 } from "@/hooks/useSettledFollowed";
-import { POSTER_ROW_TOP_MARGIN } from "@/logic/poster-snap";
 import { t, type } from "@/theme/tokens";
 
 // The pause in typing before a search is sent (PRD 5.4).
@@ -160,7 +159,6 @@ function BeforeTyping() {
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
     >
-      <View style={styles.rowsTop} />
       {followedCount > 0 && (
         <TopPicksRow
           followedShows={followedShowList}
@@ -200,10 +198,6 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     paddingVertical: 12,
     color: t.ink,
-  },
-  // Above the first row; between rows, the slot under a row (CRI-131).
-  rowsTop: {
-    height: POSTER_ROW_TOP_MARGIN,
   },
   resultsContent: {
     paddingBottom: t.space10,

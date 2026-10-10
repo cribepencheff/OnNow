@@ -52,7 +52,6 @@ import {
   posterDimEndScroll,
 } from "@/logic/hero-layout";
 import { updatedAgoLabel } from "@/logic/launch";
-import { POSTER_ROW_TOP_MARGIN } from "@/logic/poster-snap";
 import { t as tokens, type } from "@/theme/tokens";
 
 // How far Home must be scrolled down to count as away from its top
@@ -154,9 +153,8 @@ export default function HomeScreen() {
     loading: state.kind === "loading",
   };
   // "Airing this week"'s place among the page's children: after the top
-  // block, the space above the rows and "Top picks for you" (always
-  // mounted).
-  const airingIndex = Object.values(top).filter(Boolean).length + 2;
+  // block and "Top picks for you" (always mounted).
+  const airingIndex = Object.values(top).filter(Boolean).length + 1;
 
   // The header (logo) is shown over the hero only, for now (CRI-124).
   const showsHero =
@@ -404,9 +402,6 @@ export default function HomeScreen() {
                 <Text style={styles.quietLine}>Loading your shows…</Text>
               )}
 
-              {/* Above the first row; between rows, the slot under a row
-                  (CRI-131). */}
-              <View style={styles.rowsTop} />
               <SettledFollowedContext.Provider value={settledFollowed}>
                 {/* FR-038, ADR 0016, CRI-125: always mounted; it opens
                     when it has picks and is hidden otherwise
@@ -570,9 +565,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
   },
   // The rows clear the translucent tab bar at the end of the page.
-  rowsTop: {
-    height: POSTER_ROW_TOP_MARGIN,
-  },
   tabBarClearance: {
     height: TAB_BAR_HEIGHT + tokens.space4,
   },

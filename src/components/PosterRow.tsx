@@ -1,7 +1,6 @@
 // A poster row on Home, and in Search before typing (FR-038, FR-039,
-// FR-026). Its card strip has one fixed height in every state, and a slot
-// of fixed height is kept under it, so nothing on the page moves (CRI-110,
-// CRI-127, CRI-131). On a first load, with nothing cached, it shows
+// FR-026). Its card strip has one fixed height in every state, so nothing
+// on the page moves (CRI-110, CRI-127). On a first load, with nothing cached, it shows
 // skeleton cards of the real cards' exact size, which crossfade into the
 // cards (CRI-127). An empty row says why where its cards were (CRI-123).
 // Removed only when it has no cards and nothing to say, which means its
@@ -13,7 +12,9 @@
 // drag passes LOAD_MORE_PULL it gives a light haptic and asks for one more
 // batch (onLoadMore), once per drag. The batch comes in as skeleton cards
 // at the end, which crossfade into the new cards. At the end of the pool
-// there is no spinner, and "You're all caught up" fades in under the row.
+// there is no spinner, and "You're all caught up" fades in on the title
+// line, right-aligned: a passive status, muted and not tappable, which
+// truncates before the title does.
 // When cards are taken out (followed shows, on a return to the screen),
 // the strip keeps its first visible card first.
 
@@ -45,7 +46,11 @@ import {
   anchoredOffset,
   pastEnd,
 } from "@/logic/poster-batches";
-import { POSTER_CARD_GAP, posterSnapOffsets } from "@/logic/poster-snap";
+import {
+  POSTER_CARD_GAP,
+  POSTER_ROW_TOP_MARGIN,
+  posterSnapOffsets,
+} from "@/logic/poster-snap";
 import { t, type } from "@/theme/tokens";
 import {
   POSTER_HEIGHT,
@@ -62,9 +67,7 @@ const LOADING_MORE_SKELETON_COUNT = 2;
 
 const CROSSFADE_MS = 250;
 
-// The slot under a row's cards, where "You're all caught up" fades in: the
-// old Refresh control's size and place (CRI-131).
-export const ROW_END_SLOT_HEIGHT = 36;
+// Said on the title line at the end of the pool (CRI-131).
 export const CAUGHT_UP_TEXT = "You're all caught up";
 
 // The load more spinner's box, to the right of the last card.
@@ -72,16 +75,15 @@ const SPINNER_BOX = 40;
 
 const STRIDE = POSTER_WIDTH + POSTER_CARD_GAP;
 
-// A row's full height (CRI-125): the heading, the cards and the slot under
-// them, with the row's gap between them. Every part has a fixed size, so
+// A row's full height (CRI-125): the space above it, the heading and the
+// cards, with the row's gap between them. Every part has a fixed size, so
 // this is exact.
 export function posterRowHeight(withCaption: boolean): number {
   return (
+    POSTER_ROW_TOP_MARGIN +
     type.headline.lineHeight +
     t.space2 +
-    cardHeight(withCaption) +
-    t.space2 +
-    ROW_END_SLOT_HEIGHT
+    cardHeight(withCaption)
   );
 }
 
@@ -317,9 +319,22 @@ export function PosterRow({
       accessibilityElementsHidden={!isShown}
       importantForAccessibility={isShown ? "auto" : "no-hide-descendants"}
     >
-      <Text style={styles.heading} accessibilityRole="header">
-        {title}
-      </Text>
+      <View style={styles.titleLine}>
+        <Text style={styles.heading} accessibilityRole="header">
+          {title}
+        </Text>
+        {/* Always laid out, so the title line never changes; seen and read
+            only at the end of the pool. Plain text: nothing to tap. */}
+        <Animated.Text
+          style={[styles.caughtUp, { opacity: caughtUpOpacity }]}
+          numberOfLines={1}
+          testID={`${testID}-caught-up`}
+          accessibilityElementsHidden={!caughtUp}
+          importantForAccessibility={caughtUp ? "auto" : "no-hide-descendants"}
+        >
+          {CAUGHT_UP_TEXT}
+        </Animated.Text>
+      </View>
       <View
         style={fixedHeight}
         // Skeleton cards say nothing to a screen reader.
@@ -419,16 +434,6 @@ export function PosterRow({
           </Animated.View>
         )}
       </View>
-      <View style={styles.endSlot} testID={`${testID}-end-slot`}>
-        {caughtUp && (
-          <Animated.Text
-            style={[styles.caughtUp, { opacity: caughtUpOpacity }]}
-            testID={`${testID}-caught-up`}
-          >
-            {CAUGHT_UP_TEXT}
-          </Animated.Text>
-        )}
-      </View>
     </Animated.View>
   );
 }
@@ -461,12 +466,21 @@ function FadeInCard({
 
 const styles = StyleSheet.create({
   section: {
+    marginTop: POSTER_ROW_TOP_MARGIN,
     gap: t.space2,
   },
+  // The title left, the status right, on one baseline.
+  titleLine: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    gap: t.space4,
+    paddingHorizontal: t.space4,
+  },
+  // The title wins on a narrow screen: it never shrinks.
   heading: {
     ...type.headline,
     color: t.ink,
-    paddingHorizontal: t.space4,
+    flexShrink: 0,
   },
   cards: {
     paddingHorizontal: t.space4,
@@ -504,14 +518,12 @@ const styles = StyleSheet.create({
     color: t.inkMuted,
     textAlign: "center",
   },
-  // Quiet, like the meta line; where Refresh's label sat.
-  endSlot: {
-    height: ROW_END_SLOT_HEIGHT,
-    justifyContent: "center",
-    paddingHorizontal: t.space4,
-  },
+  // Quiet, like the meta line: smaller than the title, regular weight,
+  // muted. It takes what the title leaves and truncates first.
   caughtUp: {
     ...type.meta,
     color: t.inkMuted,
+    flex: 1,
+    textAlign: "right",
   },
 });

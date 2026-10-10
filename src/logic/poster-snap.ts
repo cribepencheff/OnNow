@@ -8,9 +8,8 @@
 export const POSTER_CARD_WIDTH = 150;
 // The screen margin either side of a row's strip.
 export const POSTER_ROW_MARGIN = 16;
-// The poster rows' spacing (owner, CRI-127): between cards, and above the
-// first row's heading. Between two rows, the slot under a row is the
-// space (CRI-131).
+// The poster rows' spacing (owner, CRI-127): between cards, and above a
+// row's heading, which is also the space between two rows (CRI-131).
 export const POSTER_CARD_GAP = 12;
 export const POSTER_ROW_TOP_MARGIN = 32;
 

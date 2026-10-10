@@ -3,12 +3,7 @@ import { fireEvent, render, screen } from "@testing-library/react-native";
 import * as Haptics from "expo-haptics";
 
 import { LOAD_MORE_PULL } from "@/logic/poster-batches";
-import {
-  CAUGHT_UP_TEXT,
-  PosterRow,
-  ROW_END_SLOT_HEIGHT,
-  posterRowHeight,
-} from "./PosterRow";
+import { CAUGHT_UP_TEXT, PosterRow, posterRowHeight } from "./PosterRow";
 import { POSTER_HEIGHT, cardHeight } from "./ShowCard";
 
 jest.mock("expo-haptics", () => ({
@@ -386,8 +381,8 @@ describe("PosterRow (FR-038, FR-039)", () => {
     });
   });
 
-  // CRI-131: the end of the pool is said in a slot that is always there.
-  describe("the slot under the row (CRI-131)", () => {
+  // CRI-131: the end of the pool is a passive status on the title line.
+  describe("the end of the pool (CRI-131)", () => {
     const row = (hasMore: boolean, isLoadingMore = false) => (
       <PosterRow
         title="Airing this week"
@@ -400,46 +395,59 @@ describe("PosterRow (FR-038, FR-039)", () => {
         <Text>Lanterns</Text>
       </PosterRow>
     );
+    const status = () =>
+      screen.getByTestId("row-caught-up", { includeHiddenElements: true });
 
-    it(`says "${CAUGHT_UP_TEXT}" at the end of the pool, in a slot of the same height`, async () => {
+    it(`says "${CAUGHT_UP_TEXT}" only at the end of the pool`, async () => {
       const { rerender } = await render(row(true));
-      const slotHeight = () =>
-        StyleSheet.flatten(screen.getByTestId("row-end-slot").props.style)
-          .height;
       expect(screen.queryByText(CAUGHT_UP_TEXT)).toBeNull();
-      expect(slotHeight()).toBe(ROW_END_SLOT_HEIGHT);
 
       await rerender(row(false, true));
       expect(screen.queryByText(CAUGHT_UP_TEXT)).toBeNull();
 
       await rerender(row(false));
       expect(screen.getByText(CAUGHT_UP_TEXT)).toBeTruthy();
-      expect(slotHeight()).toBe(ROW_END_SLOT_HEIGHT);
     });
 
-    it("keeps the slot while the first load's skeleton cards show", async () => {
-      await render(
-        <PosterRow
-          title="Airing this week"
-          isLoading
-          hasCards={false}
-          testID="row"
-        >
-          {null}
-        </PosterRow>,
+    it("sits on the title line, right-aligned on its baseline, laid out before it shows so the title never moves", async () => {
+      await render(row(true));
+      const line = status().parent;
+      expect(line).toBeTruthy();
+      expect(
+        screen.getByRole("header", { name: "Airing this week" }).parent,
+      ).toBe(status().parent);
+      const lineStyle = StyleSheet.flatten(
+        screen.getByRole("header").parent?.props.style,
       );
-      expect(
-        screen.getByTestId("row-end-slot", { includeHiddenElements: true }),
-      ).toBeTruthy();
-      expect(
-        screen.queryByText(CAUGHT_UP_TEXT, { includeHiddenElements: true }),
-      ).toBeNull();
+      expect(lineStyle.flexDirection).toBe("row");
+      expect(lineStyle.alignItems).toBe("baseline");
+      expect(StyleSheet.flatten(status().props.style).textAlign).toBe("right");
     });
 
-    it("counts the slot in the row's height", () => {
-      expect(posterRowHeight(false)).toBe(
-        25 + 8 + cardHeight(false) + 8 + ROW_END_SLOT_HEIGHT,
+    it("reads as passive status: muted, regular, smaller than the title, not a button", async () => {
+      await render(row(false));
+      const style = StyleSheet.flatten(status().props.style);
+      const titleStyle = StyleSheet.flatten(
+        screen.getByRole("header").props.style,
       );
+      expect(style.fontSize).toBeLessThan(titleStyle.fontSize as number);
+      expect(style.fontWeight).toBe("400");
+      expect(style.color).not.toBe(titleStyle.color);
+      expect(status().props.onPress).toBeUndefined();
+      expect(screen.queryByRole("button", { name: CAUGHT_UP_TEXT })).toBeNull();
+    });
+
+    it("truncates before the title does on a narrow screen", async () => {
+      await render(row(false));
+      expect(status().props.numberOfLines).toBe(1);
+      expect(StyleSheet.flatten(status().props.style).flex).toBe(1);
+      expect(
+        StyleSheet.flatten(screen.getByRole("header").props.style).flexShrink,
+      ).toBe(0);
+    });
+
+    it("leaves no slot under the row: the row is the space above, the heading and the cards", () => {
+      expect(posterRowHeight(false)).toBe(32 + 25 + 8 + cardHeight(false));
     });
   });
 });

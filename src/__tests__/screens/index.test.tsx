@@ -767,11 +767,10 @@ describe("HomeScreen", () => {
           contentInset: { top: 0, left: 0, bottom: 0, right: 0 },
         },
       });
-      // The hero, the space above the rows, "Top picks for you", then
-      // "Airing this week".
+      // The hero, "Top picks for you", then "Airing this week".
       expect(
         screen.getByTestId("home-scroll").props.maintainVisibleContentPosition,
-      ).toEqual({ minIndexForVisible: 3 });
+      ).toEqual({ minIndexForVisible: 2 });
     });
 
     it("is hidden when there is nothing to recommend", async () => {
