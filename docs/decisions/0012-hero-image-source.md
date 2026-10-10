@@ -1,6 +1,6 @@
 # 0012. Hero image source: episode stills first
 
-Status: Accepted; amendment proposed (CRI-124), awaiting the owner's approval
+Status: Accepted, amended (CRI-124)
 
 ## Context
 The Home hero (direction B) shows one image per slide, behind the show
@@ -65,8 +65,8 @@ shape left cached entries missing new fields and slides rendered black.
 The query key is versioned and must be bumped on any shape change. This
 belongs with the data-fetching decision (ADR 0009) rather than here.
 
-## Amendment (proposed): the highest-rated backdrop only (CRI-124, 2026-10-09)
-Status: Proposed
+## Amendment: the highest-rated backdrop only (CRI-124, 2026-10-09)
+Status: Accepted (approved with #71, 2026-10-10)
 
 ### Context
 Stills were chosen so that several slides of one show would not look
