@@ -2,13 +2,13 @@
 // "Refresh" while shows are left, "Start over" at the end of the row's
 // pool, nothing when the pool holds no more shows than the row shows. In a
 // slot of one fixed height, so the page never moves. While a refresh runs
-// its icon turns, at least one full turn even when the next batch is
-// already prepared, and further taps are ignored.
+// its icon gives way to a spinner (symmetrical, so it turns in place, which
+// the arrow does not), shown for at least one turn even when the next
+// batch is already prepared; further taps are ignored meanwhile.
 
 import { useEffect, useRef, useState } from "react";
 import {
-  Animated,
-  Easing,
+  ActivityIndicator,
   Pressable,
   StyleSheet,
   Text,
@@ -16,14 +16,15 @@ import {
 } from "react-native";
 import { SymbolView } from "expo-symbols";
 
-import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
 import type { BatchControl } from "@/logic/poster-batches";
 import { t, type } from "@/theme/tokens";
 
 // The slot's height in every state, so the page never moves.
 export const ROW_CONTROL_HEIGHT = 36;
-// One full turn of the icon.
-const TURN_MS = 700;
+// The shortest time the spinner shows: about one turn.
+const MIN_SPIN_MS = 700;
+// The icon's box: the spinner's size, so the label never moves.
+const ICON_BOX = 20;
 
 export function RowRefresh({
   control,
@@ -40,72 +41,35 @@ export function RowRefresh({
   refreshHint: string;
   testID: string;
 }) {
-  const { reduceMotionEnabled } = useAccessibilityFlags();
   // From the tap until onPress is done (the row's data checked for age),
   // before the next batch itself is loading (isRefreshing).
   const [pending, setPending] = useState(false);
-  // The icon is mid-turn; it finishes the turn it is on.
-  const [turning, setTurning] = useState(false);
-  const busy = pending || isRefreshing;
-  // Read when a turn ends, to decide whether to turn again.
-  const busyRef = useRef(busy);
-  useEffect(() => {
-    busyRef.current = busy;
-  }, [busy]);
-
-  const [rotation] = useState(() => new Animated.Value(0));
-  useEffect(() => {
-    if (!turning) {
-      return;
-    }
-    let stopped = false;
-    let turn: Animated.CompositeAnimation | null = null;
-    function turnOnce() {
-      rotation.setValue(0);
-      turn = Animated.timing(rotation, {
-        toValue: 1,
-        duration: TURN_MS,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      });
-      turn.start(({ finished }) => {
-        if (stopped) {
-          return;
-        }
-        if (finished && busyRef.current) {
-          turnOnce();
-        } else {
-          rotation.setValue(0);
-          setTurning(false);
-        }
-      });
-    }
-    turnOnce();
-    return () => {
-      stopped = true;
-      turn?.stop();
-    };
-  }, [turning, rotation]);
+  // The spinner's shortest showing has not passed yet.
+  const [minSpinning, setMinSpinning] = useState(false);
+  const minTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (minTimer.current) {
+        clearTimeout(minTimer.current);
+      }
+    },
+    [],
+  );
+  const spinning = pending || isRefreshing || minSpinning;
 
   if (control === null) {
     return <View style={styles.slot} testID={`${testID}-hidden`} />;
   }
 
   const startOver = control === "startOver";
-  const spin = rotation.interpolate({
-    inputRange: [0, 1],
-    // Start over turns back, the way its arrow points.
-    outputRange: ["0deg", startOver ? "-360deg" : "360deg"],
-  });
 
   async function handlePress() {
-    if (busy || turning) {
+    if (spinning) {
       return;
     }
     setPending(true);
-    if (!reduceMotionEnabled) {
-      setTurning(true);
-    }
+    setMinSpinning(true);
+    minTimer.current = setTimeout(() => setMinSpinning(false), MIN_SPIN_MS);
     try {
       await onPress();
     } finally {
@@ -121,27 +85,39 @@ export function RowRefresh({
         accessibilityHint={
           startOver ? "Shows the first ones again" : refreshHint
         }
-        accessibilityState={{ busy: busy || turning }}
+        accessibilityState={{ busy: spinning }}
         onPress={handlePress}
         hitSlop={8}
         style={styles.control}
         testID={testID}
       >
-        <Animated.View style={{ transform: [{ rotate: spin }] }}>
-          <SymbolView
-            name={
-              startOver
-                ? {
-                    ios: "arrow.counterclockwise",
-                    android: "restart_alt",
-                    web: "restart_alt",
-                  }
-                : { ios: "arrow.clockwise", android: "refresh", web: "refresh" }
-            }
-            tintColor={t.inkMuted}
-            size={14}
-          />
-        </Animated.View>
+        <View style={styles.icon}>
+          {spinning ? (
+            <ActivityIndicator
+              size="small"
+              color={t.inkMuted}
+              testID={`${testID}-spinner`}
+            />
+          ) : (
+            <SymbolView
+              name={
+                startOver
+                  ? {
+                      ios: "arrow.counterclockwise",
+                      android: "restart_alt",
+                      web: "restart_alt",
+                    }
+                  : {
+                      ios: "arrow.clockwise",
+                      android: "refresh",
+                      web: "refresh",
+                    }
+              }
+              tintColor={t.inkMuted}
+              size={14}
+            />
+          )}
+        </View>
         <Text style={styles.label}>{startOver ? "Start over" : "Refresh"}</Text>
       </Pressable>
     </View>
@@ -160,6 +136,12 @@ const styles = StyleSheet.create({
     gap: t.space2,
     height: ROW_CONTROL_HEIGHT,
     marginHorizontal: t.space4,
+  },
+  icon: {
+    width: ICON_BOX,
+    height: ICON_BOX,
+    alignItems: "center",
+    justifyContent: "center",
   },
   label: {
     ...type.meta,

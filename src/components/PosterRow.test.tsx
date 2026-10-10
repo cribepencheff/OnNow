@@ -99,7 +99,8 @@ describe("PosterRow (FR-038, FR-039)", () => {
 
     const strip = screen.getByTestId("row-cards");
     expect(strip.props.snapToOffsets[0]).toBe(0);
-    expect(strip.props.snapToOffsets[1]).toBe(158);
+    // A 150 card and the 12 gap (CRI-127).
+    expect(strip.props.snapToOffsets[1]).toBe(162);
     expect(strip.props.decelerationRate).toBe("fast");
   });
 
@@ -258,7 +259,7 @@ describe("RowRefresh (CRI-123, CRI-127)", () => {
     );
   });
 
-  it("ignores taps while a refresh runs, and turns at least one full turn", async () => {
+  it("ignores taps while a refresh runs, and shows a spinner for at least one turn", async () => {
     jest.useFakeTimers();
     try {
       const onPress = jest.fn(async () => {});
@@ -278,12 +279,15 @@ describe("RowRefresh (CRI-123, CRI-127)", () => {
       await fireEvent.press(button);
       expect(onPress).toHaveBeenCalledTimes(1);
       expect(button.props.accessibilityState.busy).toBe(true);
+      // A symmetrical spinner in the arrow's place, so it turns in place.
+      expect(screen.getByTestId("refresh-spinner")).toBeTruthy();
 
       await act(async () => jest.advanceTimersByTime(800));
       expect(
         screen.getByRole("button", { name: "Refresh" }).props.accessibilityState
           .busy,
       ).toBe(false);
+      expect(screen.queryByTestId("refresh-spinner")).toBeNull();
       await fireEvent.press(screen.getByRole("button", { name: "Refresh" }));
       expect(onPress).toHaveBeenCalledTimes(2);
     } finally {

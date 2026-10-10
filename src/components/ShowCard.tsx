@@ -20,6 +20,8 @@ import { PosterDimOverlay } from "./PosterDim";
 export const POSTER_WIDTH = 150;
 const POSTER_HEIGHT = POSTER_WIDTH * 1.5;
 const FOLLOW_CIRCLE_SIZE = 32;
+// How long a poster takes to fade in once loaded.
+const POSTER_FADE_IN_MS = 300;
 
 // Where a tap opens Show detail: on top of the tabs, or inside the Search
 // sheet with a back arrow to it (PRD 5.6).
@@ -68,6 +70,8 @@ export function ShowCard({
           source={`${IMAGE_BASE}/w500${card.posterPath}`}
           style={styles.poster}
           contentFit="cover"
+          // Fades in once loaded, also after the skeleton (CRI-127).
+          transition={POSTER_FADE_IN_MS}
           accessibilityIgnoresInvertColors
         />
         {/* Home dims its posters at rest (CRI-124); under the edge and
@@ -97,11 +101,10 @@ export function ShowCard({
   );
 }
 
-// The follow circle on a poster (CRI-127), Apple TV style. Not followed: a
-// translucent dark fill, no blur, a light hairline edge and a white plus.
-// Followed: a solid fill, the same as "Following" in Show detail, and a
-// white check. The icon is always white. (Search results and Shows keep
-// their own FollowCircle.)
+// The follow circle on a poster (CRI-127), Apple TV style: a translucent
+// dark fill, no blur, a light hairline edge, the same followed or not; a
+// white plus, or a white check once followed. (Search results and Shows
+// keep their own FollowCircle.)
 function PosterFollowCircle({
   followed,
   onPress,
@@ -128,12 +131,7 @@ function PosterFollowCircle({
       hitSlop={6}
       testID={testID}
     >
-      <View
-        style={[
-          styles.circle,
-          followed ? styles.circleFollowed : styles.circleNotFollowed,
-        ]}
-      >
+      <View style={styles.circle}>
         <SymbolView
           name={{
             ios: followed ? "checkmark" : "plus",
@@ -192,23 +190,16 @@ const styles = StyleSheet.create({
     top: t.space2,
     right: t.space2,
   },
+  // One material, followed or not; only the icon changes.
   circle: {
     width: FOLLOW_CIRCLE_SIZE,
     height: FOLLOW_CIRCLE_SIZE,
     borderRadius: FOLLOW_CIRCLE_SIZE / 2,
     borderWidth: StyleSheet.hairlineWidth,
+    borderColor: t.imageControlEdge,
+    backgroundColor: t.imageControlBackdrop,
     alignItems: "center",
     justifyContent: "center",
-  },
-  circleNotFollowed: {
-    backgroundColor: t.imageControlBackdrop,
-    borderColor: t.imageControlEdge,
-  },
-  // Show detail's "Following" fill; the edge matches it, so the circle
-  // keeps its size.
-  circleFollowed: {
-    backgroundColor: t.surfaceRaised,
-    borderColor: t.surfaceRaised,
   },
   name: {
     ...type.meta,

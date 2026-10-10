@@ -27,7 +27,12 @@ import {
 } from "react-native";
 
 import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
-import { posterSnapOffsets } from "@/logic/poster-snap";
+import {
+  POSTER_CARD_GAP,
+  POSTER_ROW_BOTTOM_SPACE,
+  POSTER_ROW_TOP_MARGIN,
+  posterSnapOffsets,
+} from "@/logic/poster-snap";
 import { t, type } from "@/theme/tokens";
 import { POSTER_WIDTH, SkeletonCard, cardHeight } from "./ShowCard";
 
@@ -161,7 +166,7 @@ export function PosterRow({
   const snapOffsets = posterSnapOffsets({
     count: Children.count(stripChildren),
     cardWidth: POSTER_WIDTH,
-    gap: t.space2,
+    gap: POSTER_CARD_GAP,
     margin: t.space4,
     viewportWidth,
   });
@@ -244,7 +249,8 @@ export function PosterRow({
 
 const styles = StyleSheet.create({
   section: {
-    marginTop: t.space6,
+    marginTop: POSTER_ROW_TOP_MARGIN,
+    marginBottom: POSTER_ROW_BOTTOM_SPACE,
     gap: t.space2,
   },
   heading: {
@@ -254,7 +260,7 @@ const styles = StyleSheet.create({
   },
   cards: {
     paddingHorizontal: t.space4,
-    gap: t.space2,
+    gap: POSTER_CARD_GAP,
   },
   empty: {
     alignItems: "center",

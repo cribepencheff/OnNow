@@ -3,6 +3,12 @@
 // the last card at the right margin. Offsets for ScrollView's
 // snapToOffsets.
 
+// The poster rows' spacing (owner, CRI-127): between cards, above a row's
+// heading, and below a row's control.
+export const POSTER_CARD_GAP = 12;
+export const POSTER_ROW_TOP_MARGIN = 32;
+export const POSTER_ROW_BOTTOM_SPACE = 12;
+
 export function posterSnapOffsets({
   count,
   cardWidth,
