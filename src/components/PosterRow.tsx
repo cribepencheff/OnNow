@@ -34,6 +34,7 @@ import {
   posterSnapOffsets,
 } from "@/logic/poster-snap";
 import { t, type } from "@/theme/tokens";
+import { ROW_CONTROL_HEIGHT } from "./RowRefresh";
 import { POSTER_WIDTH, SkeletonCard, cardHeight } from "./ShowCard";
 
 // Skeleton cards on a first load: two full and the peek of a third, as
@@ -48,6 +49,21 @@ interface Outgoing {
   children: ReactNode;
   // Where the old strip was scrolled to, so it fades out where it was.
   offset: number;
+}
+
+// A row's full height (CRI-125): the space above it, the heading, the
+// cards, the control under them and the space below, with the row's gap
+// between them. Every part has a fixed size, so this is exact.
+export function posterRowHeight(withCaption: boolean): number {
+  return (
+    POSTER_ROW_TOP_MARGIN +
+    type.headline.lineHeight +
+    t.space2 +
+    cardHeight(withCaption) +
+    t.space2 +
+    ROW_CONTROL_HEIGHT +
+    POSTER_ROW_BOTTOM_SPACE
+  );
 }
 
 export function PosterRow({

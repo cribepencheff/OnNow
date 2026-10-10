@@ -50,10 +50,11 @@ jest.mock("@/hooks/useAiringThisWeek", () => ({
 }));
 const mockTopPicks = jest.fn(() => [] as unknown[]);
 const mockRefreshTopPicks = jest.fn();
+const mockTopPicksLoading = jest.fn(() => false);
 jest.mock("@/hooks/useTopPicks", () => ({
   useTopPicks: () => ({
     cards: mockTopPicks(),
-    isLoading: false,
+    isLoading: mockTopPicksLoading(),
     refresh: mockRefreshTopPicks,
     isRefreshing: false,
   }),
@@ -651,6 +652,49 @@ describe("HomeScreen", () => {
       await render(<HomeScreen />);
 
       expect(screen.queryByText("Top picks for you")).toBeNull();
+    });
+
+    // CRI-125: when it gets picks it opens, skeleton cards first.
+    it("opens with skeleton cards while its first picks load (CRI-125)", async () => {
+      mockTopPicksLoading.mockReturnValue(true);
+      try {
+        mockFollowedEpisodes({
+          followedShows: [{ show, episodes: [makeEpisode()] }],
+        });
+        await render(<HomeScreen />);
+
+        expect(
+          screen.getByTestId("top-picks-row-skeleton", {
+            includeHiddenElements: true,
+          }),
+        ).toBeTruthy();
+      } finally {
+        mockTopPicksLoading.mockReturnValue(false);
+      }
+    });
+
+    // CRI-125: a row opening above keeps what is on screen in place, but
+    // only once Home is scrolled down; at its top the hero stays put.
+    it("anchors Airing this week while scrolled down, not at the top (CRI-125)", async () => {
+      // A show airing today: the hero, and nothing else at the top.
+      mockFollowedEpisodes({
+        followedShows: [{ show, episodes: [makeEpisode()] }],
+        showsWithEpisodeToday: [{ show, episodes: [makeEpisode()] }],
+      });
+      await render(<HomeScreen />);
+      const scroll = screen.getByTestId("home-scroll");
+      expect(scroll.props.maintainVisibleContentPosition).toBeUndefined();
+
+      await fireEvent.scroll(scroll, {
+        nativeEvent: {
+          contentOffset: { x: 0, y: 300 },
+          contentInset: { top: 0, left: 0, bottom: 0, right: 0 },
+        },
+      });
+      // The hero, "Top picks for you", then "Airing this week".
+      expect(
+        screen.getByTestId("home-scroll").props.maintainVisibleContentPosition,
+      ).toEqual({ minIndexForVisible: 2 });
     });
 
     it("is hidden when there is nothing to recommend", async () => {

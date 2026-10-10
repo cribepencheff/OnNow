@@ -1,6 +1,11 @@
 // Poster rows rest with a card at the left margin (CRI-127).
 
-import { posterSnapOffsets } from "./poster-snap";
+import {
+  MIN_AIRING_CARDS,
+  WIDEST_PHONE_WIDTH,
+  cardsInView,
+  posterSnapOffsets,
+} from "./poster-snap";
 
 const row = { cardWidth: 150, gap: 8, margin: 16, viewportWidth: 390 };
 
@@ -29,4 +34,18 @@ describe("posterSnapOffsets (CRI-127)", () => {
     expect(posterSnapOffsets({ ...row, count: 2 })).toEqual([0]);
     expect(posterSnapOffsets({ ...row, count: 0 })).toEqual([0]);
   });
+});
+
+// CRI-125: "Airing this week" never shows fewer cards than fit on the screen.
+describe("MIN_AIRING_CARDS (CRI-125)", () => {
+  it("counts a peeking card: two full cards and a peek is three", () => {
+    expect(cardsInView(390)).toBe(3);
+  });
+
+  it.each([375, 390, 393, 402, 430, WIDEST_PHONE_WIDTH])(
+    "is at least as many cards as a %ipt wide phone shows",
+    (width) => {
+      expect(MIN_AIRING_CARDS).toBeGreaterThanOrEqual(cardsInView(width));
+    },
+  );
 });

@@ -1,12 +1,15 @@
 // "Top picks for you" under the Home hero (FR-038, ADR 0016). A card
 // followed from the row stays, marked, until Refresh shows the next picks.
-// At the end of the picks the control reads "Start over"; the row is
-// empty, with a line saying so, only when every pick is followed
-// (CRI-123).
+// At the end of the picks the control reads "Start over". The row is
+// hidden when it has no picks to show; when it gets some (a follow from
+// "Airing this week", say) it opens with skeleton cards that then fill in
+// (CRI-125).
 
 import type { TvMazeShow } from "@/api/tvmaze-types";
 import { useTopPicks } from "@/hooks/useTopPicks";
-import { PosterRow } from "./PosterRow";
+import { isTopPicksShown } from "@/logic/top-picks";
+import { PosterRow, posterRowHeight } from "./PosterRow";
+import { RowPresence } from "./RowPresence";
 import { RowRefresh } from "./RowRefresh";
 import { ShowCard, type DetailPathname } from "./ShowCard";
 
@@ -17,42 +20,45 @@ export function TopPicksRow({
   followedShows: TvMazeShow[];
   detailPathname?: DetailPathname;
 }) {
-  const {
-    cards,
+  const { cards, isLoading, refresh, isRefreshing, control, batch } =
+    useTopPicks(followedShows);
+  const shown = isTopPicksShown({
+    followedCount: followedShows.length,
     isLoading,
-    refresh,
-    isRefreshing,
-    control,
-    allFollowed,
-    batch,
-  } = useTopPicks(followedShows);
+    hasCards: cards.length > 0,
+  });
 
   return (
-    <PosterRow
-      title="Top picks for you"
-      isLoading={isLoading}
-      hasCards={cards.length > 0}
-      emptyText={allFollowed ? "That's all for now" : null}
-      batch={batch}
-      testID="top-picks-row"
-      footer={
-        <RowRefresh
-          control={control}
-          onPress={refresh}
-          isRefreshing={isRefreshing}
-          refreshHint="Shows the next top picks"
-          testID="top-picks-refresh"
-        />
-      }
+    <RowPresence
+      shown={shown}
+      height={posterRowHeight(false)}
+      testID="top-picks-presence"
     >
-      {cards.map((card) => (
-        <ShowCard
-          key={card.tmdbId}
-          card={card}
-          testID="top-pick"
-          detailPathname={detailPathname}
-        />
-      ))}
-    </PosterRow>
+      <PosterRow
+        title="Top picks for you"
+        isLoading={isLoading}
+        hasCards={cards.length > 0}
+        batch={batch}
+        testID="top-picks-row"
+        footer={
+          <RowRefresh
+            control={control}
+            onPress={refresh}
+            isRefreshing={isRefreshing}
+            refreshHint="Shows the next top picks"
+            testID="top-picks-refresh"
+          />
+        }
+      >
+        {cards.map((card) => (
+          <ShowCard
+            key={card.tmdbId}
+            card={card}
+            testID="top-pick"
+            detailPathname={detailPathname}
+          />
+        ))}
+      </PosterRow>
+    </RowPresence>
   );
 }
