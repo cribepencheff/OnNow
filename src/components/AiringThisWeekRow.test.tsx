@@ -1,30 +1,33 @@
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
+import { LOAD_MORE_PULL } from "@/logic/poster-batches";
 import { AiringThisWeekRow } from "./AiringThisWeekRow";
+import { CAUGHT_UP_TEXT } from "./PosterRow";
 
-const mockRefresh = jest.fn();
+const mockLoadMore = jest.fn();
 let mockRow: {
-  cards?: unknown[];
-  control: "refresh" | "startOver";
-  isRefreshing: boolean;
+  isLoadingMore?: boolean;
+  hasMore?: boolean;
   allFollowed?: boolean;
-} = { control: "refresh", isRefreshing: false };
+  cards?: unknown[];
+} = {};
+// Ten cards: a strip longer than the screen.
+const mockTenCards = Array.from({ length: 10 }, (_, i) => ({
+  tmdbId: i + 1,
+  tvmazeId: i + 1001,
+  name: `Show ${i + 1}`,
+  posterPath: `/p${i + 1}.jpg`,
+  day: "Today",
+  date: "2026-10-05",
+}));
 jest.mock("@/hooks/useAiringThisWeek", () => ({
   useAiringThisWeek: () => ({
-    cards: [
-      {
-        tmdbId: 1,
-        tvmazeId: 1001,
-        name: "Lanterns",
-        posterPath: "/p1.jpg",
-        day: "Today",
-        date: "2026-10-05",
-      },
-    ],
+    cards: mockTenCards,
     isLoading: false,
-    refresh: mockRefresh,
+    isLoadingMore: false,
+    hasMore: true,
+    loadMore: mockLoadMore,
     allFollowed: false,
-    batch: 0,
     ...mockRow,
   }),
 }));
@@ -32,50 +35,66 @@ jest.mock("@/hooks/useFollowList", () => ({
   useFollowToggle: () => ({ followed: false, toggle: jest.fn() }),
 }));
 jest.mock("expo-router", () => ({ useRouter: () => ({ push: jest.fn() }) }));
+jest.mock("expo-haptics", () => ({
+  impactAsync: jest.fn(),
+  ImpactFeedbackStyle: { Light: "light" },
+}));
 
-// CRI-123: the same control as "Top picks for you": Refresh while shows
-// are left, Start over at the end, never gone.
-describe("AiringThisWeekRow Refresh (FR-039, CRI-123)", () => {
+const scrollTo = (x: number) => ({
+  nativeEvent: {
+    contentOffset: { x, y: 0 },
+    layoutMeasurement: { width: 390, height: 268 },
+    // 16 + 10 × 150 + 9 × 12 + 16.
+    contentSize: { width: 1640, height: 268 },
+  },
+});
+
+// CRI-131: no Refresh; a drag past the end loads more, appended.
+describe("AiringThisWeekRow loading more (FR-039, CRI-131)", () => {
   beforeEach(() => {
-    mockRefresh.mockClear();
-    mockRow = { control: "refresh", isRefreshing: false };
+    mockLoadMore.mockClear();
+    mockRow = {};
   });
 
-  it("shows Refresh while shows are left, and asks for the next ones", async () => {
+  it("has no Refresh or Start over control", async () => {
     await render(<AiringThisWeekRow />);
-
-    await fireEvent.press(screen.getByRole("button", { name: "Refresh" }));
-    expect(mockRefresh).toHaveBeenCalledTimes(1);
-  });
-
-  it('reads "Start over" at the end of the week\'s shows, in the same slot', async () => {
-    mockRow = { control: "startOver", isRefreshing: false };
-    await render(<AiringThisWeekRow />);
-
-    expect(screen.getByText("Lanterns")).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Refresh" })).toBeNull();
-    await fireEvent.press(screen.getByRole("button", { name: "Start over" }));
-    expect(mockRefresh).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole("button", { name: "Start over" })).toBeNull();
   });
 
-  it('says "That\'s all this week" only when every show is followed, keeping Start over', async () => {
-    mockRow = {
-      cards: [],
-      control: "startOver",
-      isRefreshing: false,
-      allFollowed: true,
-    };
+  it("asks for more when dragged past its end, not when swiped near it", async () => {
     await render(<AiringThisWeekRow />);
+    const strip = screen.getByTestId("airing-this-week-row-cards");
 
+    // The strip's end: 1640 - 390 = 1250.
+    await fireEvent(strip, "scrollBeginDrag");
+    await fireEvent.scroll(strip, scrollTo(1250));
+    expect(mockLoadMore).not.toHaveBeenCalled();
+
+    await fireEvent.scroll(strip, scrollTo(1250 + LOAD_MORE_PULL));
+    expect(mockLoadMore).toHaveBeenCalledTimes(1);
+  });
+
+  it(`says "${CAUGHT_UP_TEXT}" at the end of the week's shows, as Top picks does`, async () => {
+    mockRow = { hasMore: false };
+    await render(<AiringThisWeekRow />);
+    expect(screen.getByText(CAUGHT_UP_TEXT)).toBeTruthy();
+    // "Search more" is Top picks' only (CRI-131).
+    expect(screen.queryByText("Search more")).toBeNull();
+  });
+
+  it("shows skeleton cards at its end while more is on its way", async () => {
+    mockRow = { isLoadingMore: true };
+    await render(<AiringThisWeekRow />);
+    expect(screen.getByText("Show 10")).toBeTruthy();
+    expect(
+      screen.getAllByTestId("skeleton-card", { includeHiddenElements: true }),
+    ).toHaveLength(2);
+  });
+
+  it('says "That\'s all this week" only when every show is followed', async () => {
+    mockRow = { cards: [], allFollowed: true };
+    await render(<AiringThisWeekRow />);
     expect(screen.getByText("That's all this week")).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Start over" })).toBeTruthy();
-  });
-
-  it("is busy, not pressable, while the next shows load", async () => {
-    mockRow = { control: "refresh", isRefreshing: true };
-    await render(<AiringThisWeekRow />);
-
-    await fireEvent.press(screen.getByRole("button", { name: "Refresh" }));
-    expect(mockRefresh).not.toHaveBeenCalled();
   });
 });

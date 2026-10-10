@@ -1,8 +1,9 @@
 // The poster rows on Home and in Search (FR-038, FR-039, FR-026): walk a ranking in order from a start
-// position to the end, never wrapping (CRI-123: at the end the row offers
-// "Start over"), and check titles a few at a time until the row is full. Checking is the only network cost, so it stops as soon as it
+// position to the end, never wrapping (CRI-131: at the end the row ends),
+// and check titles a few at a time until the batch is full. Checking is the only network cost, so it stops as soon as it
 // can; the TVmaze client's rate limit holds whatever the batch size.
 
+import type { LocalDate } from "./local-date";
 import type { RankedRecommendation } from "./recommendations";
 
 export interface PosterItem {
@@ -93,6 +94,29 @@ export async function fillTopPicks<Extra = object>(
   }
   const hasMore = positions.some((index) => index >= nextStart);
   return { cards, nextStart, hasMore, followedSkipped };
+}
+
+// "Top picks for you" starts each day from a different part of its ranking
+// (CRI-131): the day's offset is a row's cap further on than the day
+// before's, wrapping round, so the shows past one day's cap lead the next.
+// The same all day, on Home and in Search; from the ranking already
+// fetched, so no fetch of its own.
+export function rotateForDay<Item>(
+  ranking: Item[],
+  todayDate: LocalDate,
+  step: number,
+): Item[] {
+  if (ranking.length === 0) {
+    return ranking;
+  }
+  const offset = (dayNumber(todayDate) * step) % ranking.length;
+  return [...ranking.slice(offset), ...ranking.slice(0, offset)];
+}
+
+// Days since 1970-01-01 of a local date.
+function dayNumber(localDate: LocalDate): number {
+  const [year, month, day] = localDate.split("-").map(Number);
+  return Math.round(Date.UTC(year, month - 1, day) / (24 * 60 * 60 * 1000));
 }
 
 // Whether "Top picks for you" is shown (CRI-125): hidden without followed

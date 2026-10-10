@@ -21,6 +21,8 @@ const mockBack = jest.fn();
 const mockPush = jest.fn();
 jest.mock("expo-router", () => ({
   useRouter: () => ({ back: mockBack, push: mockPush }),
+  useFocusEffect: (effect: () => void) =>
+    jest.requireActual("react").useEffect(effect, [effect]),
 }));
 
 // Home's poster rows before typing (FR-026), with their data mocked.
@@ -41,15 +43,25 @@ jest.mock("@/hooks/useTopPicks", () => ({
   useTopPicks: () => ({
     cards: [card(1)],
     isLoading: false,
-    refresh: jest.fn(),
-    isRefreshing: false,
+    isLoadingMore: false,
+    hasMore: false,
+    loadMore: jest.fn(),
   }),
 }));
+// Leaves out the shows Search settled as followed, as the real hook does.
 jest.mock("@/hooks/useAiringThisWeek", () => ({
-  useAiringThisWeek: () => ({
-    cards: [{ ...card(2), day: "Fri" }],
-    isLoading: false,
-  }),
+  useAiringThisWeek: () => {
+    const hidden = jest
+      .requireActual("@/hooks/useSettledFollowed")
+      .useHiddenFollowed();
+    return {
+      cards: [
+        { ...card(2), day: "Fri" },
+        { ...card(3), day: "Sat" },
+      ].filter((pick) => !hidden.has(pick.tvmazeId)),
+      isLoading: false,
+    };
+  },
 }));
 
 jest.mock("@/api/tvmaze-client", () => ({
@@ -128,6 +140,43 @@ describe("SearchScreen", () => {
     client.unmount();
   });
 
+  // CRI-131: shows followed before Search opened are out of its rows; one
+  // followed in Search stays, marked, while Search is open.
+  it("FR-026: before typing, leaves out shows followed before Search opened, and keeps one followed here (CRI-131)", async () => {
+    mockedGetFollowedIds.mockResolvedValue([1002]);
+    const client = createTestQueryClient();
+    const { unmount } = await render(<SearchScreen />, {
+      wrapper: wrapperWithQueryClient(client),
+    });
+
+    await waitFor(() => expect(screen.queryByText("Pick 2")).toBeNull());
+    expect(screen.getByText("Pick 3")).toBeTruthy();
+
+    await fireEvent.press(screen.getByTestId("airing-follow-1003"));
+    await waitFor(() => expect(mockedFollow).toHaveBeenCalledWith(1003));
+    expect(screen.getByText("Pick 3")).toBeTruthy();
+
+    await unmount();
+    client.unmount();
+  });
+
+  // CRI-131: Search is already open, so Top picks has no "Search more";
+  // and rows already at their end as Search opens say nothing of it.
+  it('FR-026: rows already at their end as Search opens show no end element, and never "Search more" (CRI-131)', async () => {
+    mockFollowedShows = [{ show: { id: 1, name: "MobLand" } }];
+    const client = createTestQueryClient();
+    const { unmount } = await render(<SearchScreen />, {
+      wrapper: wrapperWithQueryClient(client),
+    });
+
+    expect(screen.getByTestId("top-picks-row")).toBeTruthy();
+    expect(screen.queryByText("Search more")).toBeNull();
+    expect(screen.queryByText("All caught up")).toBeNull();
+
+    await unmount();
+    client.unmount();
+  });
+
   it("FR-026: before typing with an empty follow list, shows only Airing this week", async () => {
     const client = createTestQueryClient();
     const { unmount } = await render(<SearchScreen />, {
@@ -147,7 +196,7 @@ describe("SearchScreen", () => {
       wrapper: wrapperWithQueryClient(client),
     });
 
-    await fireEvent.press(screen.getByTestId("airing"));
+    await fireEvent.press(screen.getAllByTestId("airing")[0]);
 
     expect(mockPush).toHaveBeenCalledWith({
       pathname: "/search/show/[id]",

@@ -17,6 +17,7 @@ import {
   View,
 } from "react-native";
 import { SymbolView } from "expo-symbols";
+import { useFocusEffect } from "expo-router";
 
 import { AiringThisWeekRow } from "@/components/AiringThisWeekRow";
 import { CloseButton } from "@/components/CloseButton";
@@ -26,6 +27,11 @@ import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import { useSearchShows } from "@/hooks/useSearchShows";
+import { SettledDayContext, useSettledDay } from "@/hooks/useSettledDay";
+import {
+  SettledFollowedContext,
+  useSettledFollowed,
+} from "@/hooks/useSettledFollowed";
 import { t, type } from "@/theme/tokens";
 
 // The pause in typing before a search is sent (PRD 5.4).
@@ -33,6 +39,13 @@ const SEARCH_DELAY_MS = 250;
 
 export default function SearchScreen() {
   const router = useGuardedRouter();
+  // Shows followed before Search opened are left out of its rows; one
+  // followed here stays, marked, while Search is open (CRI-131).
+  const { hidden: settledFollowed } = useSettledFollowed();
+  // The day Top picks is ordered by, settled when Search opens or regains
+  // focus, never while the user is on the row (CRI-131).
+  const { day: settledDay, settle: settleDay } = useSettledDay();
+  useFocusEffect(settleDay);
   const [query, setQuery] = useState("");
 
   const searchedQuery = useDebouncedValue(query, SEARCH_DELAY_MS);
@@ -92,7 +105,11 @@ export default function SearchScreen() {
       </View>
 
       {query.trim().length === 0 ? (
-        <BeforeTyping />
+        <SettledDayContext.Provider value={settledDay}>
+          <SettledFollowedContext.Provider value={settledFollowed}>
+            <BeforeTyping />
+          </SettledFollowedContext.Provider>
+        </SettledDayContext.Provider>
       ) : (
         <FlatList
           testID="search-results"
@@ -131,7 +148,8 @@ export default function SearchScreen() {
 
 // Before typing (PRD 5.4, FR-026): Home's two poster rows as they are, the
 // same components and data. "Top picks for you" only with followed shows,
-// as on Home; its Refresh is shared with Home's row. A card opens Show
+// as on Home; the cards it has loaded are shared with Home's row
+// (CRI-131). A card opens Show
 // detail inside the sheet (PRD 5.6).
 function BeforeTyping() {
   const { followedShows, followedCount } = useFollowedEpisodes();
@@ -153,9 +171,10 @@ function BeforeTyping() {
         <TopPicksRow
           followedShows={followedShowList}
           detailPathname="/search/show/[id]"
+          quietEndOnArrival
         />
       )}
-      <AiringThisWeekRow detailPathname="/search/show/[id]" />
+      <AiringThisWeekRow detailPathname="/search/show/[id]" quietEndOnArrival />
     </ScrollView>
   );
 }

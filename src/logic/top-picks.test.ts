@@ -1,5 +1,5 @@
 import type { RankedRecommendation } from "./recommendations";
-import { fillTopPicks, isTopPicksShown } from "./top-picks";
+import { fillTopPicks, isTopPicksShown, rotateForDay } from "./top-picks";
 
 function ranking(
   ids: number[],
@@ -212,5 +212,30 @@ describe("isTopPicksShown (CRI-125)", () => {
     expect(
       isTopPicksShown({ followedCount: 2, isLoading: false, hasCards: false }),
     ).toBe(false);
+  });
+});
+
+// CRI-131: each day the row starts from a different part of the ranking,
+// so shows past one day's cap lead another day.
+describe("rotateForDay (CRI-131)", () => {
+  const ranking = Array.from({ length: 50 }, (_, i) => i);
+
+  it("starts each day a cap further on, wrapping round", () => {
+    const monday = rotateForDay(ranking, "2026-10-05", 28);
+    const tuesday = rotateForDay(ranking, "2026-10-06", 28);
+    expect(monday[0]).not.toBe(tuesday[0]);
+    expect((tuesday[0] - monday[0] + 50) % 50).toBe(28);
+  });
+
+  it("is the same all day, and keeps every show once, in rank order from its start", () => {
+    const first = rotateForDay(ranking, "2026-10-05", 28);
+    expect(rotateForDay(ranking, "2026-10-05", 28)).toEqual(first);
+    expect([...first].sort((a, b) => a - b)).toEqual(ranking);
+    const start = first[0];
+    expect(first.slice(0, 50 - start)).toEqual(ranking.slice(start));
+  });
+
+  it("leaves an empty ranking empty", () => {
+    expect(rotateForDay([], "2026-10-05", 28)).toEqual([]);
   });
 });

@@ -1,9 +1,15 @@
 import { StyleSheet, Text } from "react-native";
-import { act, fireEvent, render, screen } from "@testing-library/react-native";
+import { fireEvent, render, screen } from "@testing-library/react-native";
+import * as Haptics from "expo-haptics";
 
-import { PosterRow } from "./PosterRow";
-import { ROW_CONTROL_HEIGHT, RowRefresh } from "./RowRefresh";
-import { cardHeight } from "./ShowCard";
+import { LOAD_MORE_PULL } from "@/logic/poster-batches";
+import { CAUGHT_UP_TEXT, PosterRow, posterRowHeight } from "./PosterRow";
+import { POSTER_HEIGHT, cardHeight } from "./ShowCard";
+
+jest.mock("expo-haptics", () => ({
+  impactAsync: jest.fn(),
+  ImpactFeedbackStyle: { Light: "light" },
+}));
 
 const CARD_HEIGHT = cardHeight(false);
 
@@ -161,159 +167,375 @@ describe("PosterRow (FR-038, FR-039)", () => {
         hasCards={false}
         emptyText="That's all this week"
         testID="row"
-        footer={<Text>Start over</Text>}
       >
         {null}
       </PosterRow>,
     );
 
     expect(screen.getByText("That's all this week")).toBeTruthy();
-    expect(screen.getByText("Start over")).toBeTruthy();
     const empty = screen.getByTestId("row-empty");
     expect(StyleSheet.flatten(empty.props.style).height).toBe(CARD_HEIGHT);
   });
 
-  it("crossfades to a new batch: the old cards fade out over the new ones (CRI-123)", async () => {
-    const row = (batch: number, name: string) => (
+  // CRI-131: more cards are appended; earlier ones stay where they are.
+  it("appends more cards, earlier ones staying in place, without the first load's crossfade", async () => {
+    const row = (names: string[]) => (
       <PosterRow
         title="Airing this week"
         isLoading={false}
         hasCards
-        batch={batch}
         testID="row"
       >
-        <Text>{name}</Text>
+        {names.map((name) => (
+          <Text key={name}>{name}</Text>
+        ))}
       </PosterRow>
     );
-    const { rerender } = await render(row(0, "Lanterns"));
+    const { rerender } = await render(row(["Lanterns"]));
 
-    await rerender(row(1, "Scrubs"));
+    await rerender(row(["Lanterns", "Scrubs"]));
 
+    expect(screen.getByText("Lanterns")).toBeTruthy();
     expect(screen.getByText("Scrubs")).toBeTruthy();
-    const outgoing = screen.getByTestId("row-outgoing", {
-      includeHiddenElements: true,
-    });
-    expect(outgoing.props.pointerEvents).toBe("none");
     expect(
-      screen.getByText("Lanterns", { includeHiddenElements: true }),
-    ).toBeTruthy();
-    // Hidden from screen readers while it fades.
-    expect(screen.queryByText("Lanterns")).toBeNull();
+      screen.queryByTestId("row-outgoing", { includeHiddenElements: true }),
+    ).toBeNull();
   });
 
-  it("swaps at once with Reduce Motion on", async () => {
-    mockReduceMotion = true;
-    const row = (batch: number, name: string) => (
+  it("shows two skeleton cards at its end while more is on its way (CRI-131)", async () => {
+    await render(
       <PosterRow
         title="Airing this week"
         isLoading={false}
         hasCards
-        batch={batch}
+        isLoadingMore
         testID="row"
       >
-        <Text>{name}</Text>
+        <Text>Lanterns</Text>
+      </PosterRow>,
+    );
+
+    expect(screen.getByText("Lanterns")).toBeTruthy();
+    expect(
+      screen.getAllByTestId("skeleton-card", { includeHiddenElements: true }),
+    ).toHaveLength(2);
+  });
+
+  it("swaps the first skeleton for the cards at once with Reduce Motion on", async () => {
+    mockReduceMotion = true;
+    const row = (loading: boolean) => (
+      <PosterRow
+        title="Airing this week"
+        isLoading={loading}
+        hasCards={!loading}
+        testID="row"
+      >
+        {loading ? null : <Text>Lanterns</Text>}
       </PosterRow>
     );
-    const { rerender } = await render(row(0, "Lanterns"));
+    const { rerender } = await render(row(true));
 
-    await rerender(row(1, "Scrubs"));
+    await rerender(row(false));
 
-    expect(screen.getByText("Scrubs")).toBeTruthy();
+    expect(screen.getByText("Lanterns")).toBeTruthy();
     expect(
       screen.queryByTestId("row-outgoing", { includeHiddenElements: true }),
     ).toBeNull();
     mockReduceMotion = false;
   });
-});
 
-// CRI-123, CRI-127: one control slot under a row, never plain text; hidden
-// (its slot kept) when the pool holds no more shows than the row.
-describe("RowRefresh (CRI-123, CRI-127)", () => {
-  it('reads "Refresh" while shows are left', async () => {
-    await render(
-      <RowRefresh
-        control="refresh"
-        onPress={jest.fn(async () => {})}
-        isRefreshing={false}
-        refreshHint="Shows the next shows"
-        testID="refresh"
-      />,
+  // CRI-131: loading more is a deliberate drag past the row's end.
+  describe("drag past the end (CRI-131)", () => {
+    const names = ["Lanterns", "Scrubs", "Severance", "Andor"];
+    const row = (props: Partial<Parameters<typeof PosterRow>[0]> = {}) => (
+      <PosterRow
+        title="Top picks for you"
+        isLoading={false}
+        hasCards
+        hasMore
+        testID="row"
+        {...props}
+      >
+        {names.map((name) => (
+          <Text key={name}>{name}</Text>
+        ))}
+      </PosterRow>
     );
-    expect(screen.getByRole("button", { name: "Refresh" })).toBeTruthy();
-  });
+    // A strip 700 wide on a 390 screen: its end is at 310.
+    const scrollTo = (x: number) => ({
+      nativeEvent: {
+        contentOffset: { x, y: 0 },
+        layoutMeasurement: { width: 390, height: 300 },
+        contentSize: { width: 700, height: 300 },
+      },
+    });
+    const end = 310;
 
-  it("is hidden, its slot kept, when there is nothing more to show", async () => {
-    await render(
-      <RowRefresh
-        control={null}
-        onPress={jest.fn(async () => {})}
-        isRefreshing={false}
-        refreshHint="Shows the next shows"
-        testID="refresh"
-      />,
-    );
-    expect(screen.queryByRole("button")).toBeNull();
-    const slot = screen.getByTestId("refresh-hidden");
-    expect(StyleSheet.flatten(slot.props.style).height).toBe(
-      ROW_CONTROL_HEIGHT,
-    );
-  });
+    beforeEach(() => (Haptics.impactAsync as jest.Mock).mockClear());
 
-  it("ignores taps while a refresh runs, and shows a spinner for at least one turn", async () => {
-    jest.useFakeTimers();
-    try {
-      const onPress = jest.fn(async () => {});
-      await render(
-        <RowRefresh
-          control="refresh"
-          onPress={onPress}
-          isRefreshing={false}
-          refreshHint="Shows the next shows"
-          testID="refresh"
-        />,
+    it("loads one batch per drag once it passes the threshold, with a light haptic", async () => {
+      const onLoadMore = jest.fn();
+      await render(row({ onLoadMore }));
+      const strip = screen.getByTestId("row-cards");
+
+      await fireEvent(strip, "scrollBeginDrag");
+      await fireEvent.scroll(strip, scrollTo(end + LOAD_MORE_PULL - 1));
+      expect(onLoadMore).not.toHaveBeenCalled();
+      expect(Haptics.impactAsync).not.toHaveBeenCalled();
+
+      await fireEvent.scroll(strip, scrollTo(end + LOAD_MORE_PULL));
+      await fireEvent.scroll(strip, scrollTo(end + LOAD_MORE_PULL + 30));
+      expect(onLoadMore).toHaveBeenCalledTimes(1);
+      expect(Haptics.impactAsync).toHaveBeenCalledWith("light");
+
+      // The next drag loads the next one.
+      await fireEvent(strip, "scrollEndDrag");
+      await fireEvent(strip, "scrollBeginDrag");
+      await fireEvent.scroll(strip, scrollTo(end + LOAD_MORE_PULL));
+      expect(onLoadMore).toHaveBeenCalledTimes(2);
+    });
+
+    it("loads nothing from a swipe that only coasts past the end", async () => {
+      const onLoadMore = jest.fn();
+      await render(row({ onLoadMore }));
+      const strip = screen.getByTestId("row-cards");
+
+      await fireEvent(strip, "scrollBeginDrag");
+      await fireEvent(strip, "scrollEndDrag");
+      await fireEvent.scroll(strip, scrollTo(end + LOAD_MORE_PULL + 30));
+      expect(onLoadMore).not.toHaveBeenCalled();
+    });
+
+    it("loads nothing while a batch is on its way, or at the end of the pool", async () => {
+      const onLoadMore = jest.fn();
+      const { rerender } = await render(
+        row({ onLoadMore, isLoadingMore: true }),
       );
-      const button = screen.getByRole("button", { name: "Refresh" });
+      const drag = async () => {
+        const strip = screen.getByTestId("row-cards");
+        await fireEvent(strip, "scrollBeginDrag");
+        await fireEvent.scroll(strip, scrollTo(end + LOAD_MORE_PULL + 30));
+        await fireEvent(strip, "scrollEndDrag");
+      };
+      await drag();
+      await rerender(row({ onLoadMore, hasMore: false }));
+      await drag();
+      expect(onLoadMore).not.toHaveBeenCalled();
+      expect(Haptics.impactAsync).not.toHaveBeenCalled();
+    });
 
-      await fireEvent.press(button);
-      // The refresh itself is already done, but the turn is not.
-      await fireEvent.press(button);
-      expect(onPress).toHaveBeenCalledTimes(1);
-      expect(button.props.accessibilityState.busy).toBe(true);
-      // A symmetrical spinner in the arrow's place, so it turns in place.
-      expect(screen.getByTestId("refresh-spinner")).toBeTruthy();
-      // The label is hidden while it runs.
-      expect(screen.queryByText("Refresh")).toBeNull();
+    it("has a spinner right of the last card, centred on the poster, only while the pool has more", async () => {
+      const { rerender } = await render(row());
+      const spinner = screen.getByTestId("row-load-more", {
+        includeHiddenElements: true,
+      });
+      const style = StyleSheet.flatten(spinner.props.style);
+      expect(style.height).toBe(POSTER_HEIGHT);
+      expect(style.top).toBe(0);
+      expect(style.right).toBeLessThan(0);
 
-      await act(async () => jest.advanceTimersByTime(800));
+      await rerender(row({ isLoadingMore: true }));
       expect(
-        screen.getByRole("button", { name: "Refresh" }).props.accessibilityState
-          .busy,
-      ).toBe(false);
-      expect(screen.queryByTestId("refresh-spinner")).toBeNull();
-      expect(screen.getByText("Refresh")).toBeTruthy();
-      await fireEvent.press(screen.getByRole("button", { name: "Refresh" }));
-      expect(onPress).toHaveBeenCalledTimes(2);
-    } finally {
-      jest.useRealTimers();
-    }
+        screen.queryByTestId("row-load-more", { includeHiddenElements: true }),
+      ).toBeNull();
+      await rerender(row({ hasMore: false }));
+      expect(
+        screen.queryByTestId("row-load-more", { includeHiddenElements: true }),
+      ).toBeNull();
+    });
+
+    it("crossfades the skeleton cards at its end into the new cards", async () => {
+      const { rerender } = await render(row({ isLoadingMore: true }));
+      expect(
+        screen.getAllByTestId("skeleton-card", { includeHiddenElements: true }),
+      ).toHaveLength(2);
+
+      await rerender(
+        <PosterRow
+          title="Top picks for you"
+          isLoading={false}
+          hasCards
+          hasMore
+          testID="row"
+        >
+          {[...names, "Dune", "Pluribus"].map((name) => (
+            <Text key={name}>{name}</Text>
+          ))}
+        </PosterRow>,
+      );
+      expect(
+        screen.getByTestId("row-more-outgoing", {
+          includeHiddenElements: true,
+        }),
+      ).toBeTruthy();
+      // The new cards start transparent and fade in; earlier ones stay.
+      const opacityOf = (name: string) => {
+        let node = screen.getByText(name).parent;
+        while (node && StyleSheet.flatten(node.props.style)?.opacity == null) {
+          node = node.parent;
+        }
+        return StyleSheet.flatten(node?.props.style)?.opacity;
+      };
+      expect(opacityOf("Pluribus")).toBe(0);
+      expect(opacityOf("Lanterns")).toBe(1);
+    });
   });
 
-  it('reads "Start over" at the end of the pool, as a button in the same slot', async () => {
-    const onPress = jest.fn(async () => {});
-    await render(
-      <RowRefresh
-        control="startOver"
-        onPress={onPress}
-        isRefreshing={false}
-        refreshHint="Shows the next shows"
-        testID="refresh"
-      />,
+  // CRI-131: the end of the pool is a passive status on the title line.
+  describe("the end of the pool (CRI-131)", () => {
+    const row = (hasMore: boolean, isLoadingMore = false) => (
+      <PosterRow
+        title="Airing this week"
+        isLoading={false}
+        hasCards
+        hasMore={hasMore}
+        isLoadingMore={isLoadingMore}
+        testID="row"
+      >
+        <Text>Lanterns</Text>
+      </PosterRow>
     );
-    const button = screen.getByRole("button", { name: "Start over" });
-    await fireEvent.press(button);
-    expect(onPress).toHaveBeenCalledTimes(1);
-    expect(StyleSheet.flatten(button.props.style).height).toBe(
-      ROW_CONTROL_HEIGHT,
-    );
+    const status = () =>
+      screen.getByTestId("row-caught-up", { includeHiddenElements: true });
+
+    it(`says "${CAUGHT_UP_TEXT}" only at the end of the pool`, async () => {
+      const { rerender } = await render(row(true));
+      expect(screen.queryByText(CAUGHT_UP_TEXT)).toBeNull();
+
+      await rerender(row(false, true));
+      expect(screen.queryByText(CAUGHT_UP_TEXT)).toBeNull();
+
+      await rerender(row(false));
+      expect(screen.getByText(CAUGHT_UP_TEXT)).toBeTruthy();
+    });
+
+    it("sits on the title line, right-aligned on its baseline, laid out before it shows so the title never moves", async () => {
+      await render(row(true));
+      const line = status().parent;
+      expect(line).toBeTruthy();
+      expect(
+        screen.getByRole("header", { name: "Airing this week" }).parent,
+      ).toBe(status().parent);
+      const lineStyle = StyleSheet.flatten(
+        screen.getByRole("header").parent?.props.style,
+      );
+      expect(lineStyle.flexDirection).toBe("row");
+      expect(lineStyle.alignItems).toBe("baseline");
+      expect(StyleSheet.flatten(status().props.style).textAlign).toBe("right");
+    });
+
+    it("reads as passive status: muted, regular, smaller than the title, not a button", async () => {
+      await render(row(false));
+      const style = StyleSheet.flatten(status().props.style);
+      const titleStyle = StyleSheet.flatten(
+        screen.getByRole("header").props.style,
+      );
+      expect(style.fontSize).toBeLessThan(titleStyle.fontSize as number);
+      // The "Search more" pill's text size (CRI-131).
+      expect(style.fontSize).toBe(12);
+      expect(style.fontWeight).toBe("400");
+      expect(style.color).not.toBe(titleStyle.color);
+      expect(status().props.onPress).toBeUndefined();
+      expect(screen.queryByRole("button", { name: CAUGHT_UP_TEXT })).toBeNull();
+    });
+
+    it("truncates before the title does on a narrow screen", async () => {
+      await render(row(false));
+      expect(status().props.numberOfLines).toBe(1);
+      expect(StyleSheet.flatten(status().props.style).flex).toBe(1);
+      expect(
+        StyleSheet.flatten(screen.getByRole("header").props.style).flexShrink,
+      ).toBe(0);
+    });
+
+    it("with an end action, shows a pill to tap there instead, only at the end", async () => {
+      const onPress = jest.fn();
+      const withAction = (hasMore: boolean) => (
+        <PosterRow
+          title="Top picks for you"
+          isLoading={false}
+          hasCards
+          hasMore={hasMore}
+          endAction={{ label: "Search more", onPress }}
+          testID="row"
+        >
+          <Text>Lanterns</Text>
+        </PosterRow>
+      );
+      const { rerender } = await render(withAction(true));
+      expect(screen.queryByRole("button", { name: "Search more" })).toBeNull();
+
+      await rerender(withAction(false));
+      const pill = screen.getByRole("button", { name: "Search more" });
+      expect(screen.queryByText(CAUGHT_UP_TEXT)).toBeNull();
+      await fireEvent.press(pill);
+      expect(onPress).toHaveBeenCalledTimes(1);
+    });
+
+    it("keeps the pill small, within the title's line, centred on it, with a 44 hit area, the title still winning", async () => {
+      await render(
+        <PosterRow
+          title="Top picks for you"
+          isLoading={false}
+          hasCards
+          endAction={{ label: "Search more", onPress: jest.fn() }}
+          testID="row"
+        >
+          <Text>Lanterns</Text>
+        </PosterRow>,
+      );
+      const pill = screen.getByTestId("row-end-action");
+      const style = StyleSheet.flatten(pill.props.style);
+      // No taller than the title's line: the gap above the cards stays
+      // whole.
+      expect(style.height).toBeLessThanOrEqual(25);
+      expect(style.borderRadius).toBe(style.height / 2);
+      expect(style.height + 2 * pill.props.hitSlop).toBeGreaterThanOrEqual(44);
+      const slot = StyleSheet.flatten(pill.parent?.props.style);
+      expect(slot?.marginVertical ?? 0).toBe(0);
+      // Smaller than the status line's text, regular weight, no letter
+      // spacing to push it off centre.
+      const labelStyle = StyleSheet.flatten(
+        screen.getByText("Search more").props.style,
+      );
+      expect(labelStyle.fontSize).toBeLessThan(14);
+      expect(labelStyle.fontWeight).toBe("400");
+      expect(labelStyle.letterSpacing ?? 0).toBe(0);
+      const header = screen.getByRole("header");
+      expect(StyleSheet.flatten(header.parent?.props.style).alignItems).toBe(
+        "center",
+      );
+      expect(StyleSheet.flatten(header.props.style).flexShrink).toBe(0);
+      const label = screen.getByText("Search more");
+      expect(label.props.numberOfLines).toBe(1);
+    });
+
+    // CRI-131: in Search, which shares Home's rows, the end is said only
+    // when it is reached there.
+    it("with quietEndOnArrival, says nothing of an end the row arrived at, and says it when the end is reached", async () => {
+      const quiet = (hasMore: boolean) => (
+        <PosterRow
+          title="Airing this week"
+          isLoading={false}
+          hasCards
+          hasMore={hasMore}
+          quietEndOnArrival
+          testID="row"
+        >
+          <Text>Lanterns</Text>
+        </PosterRow>
+      );
+      const arrived = await render(quiet(false));
+      expect(screen.queryByText(CAUGHT_UP_TEXT)).toBeNull();
+      await arrived.unmount();
+
+      const { rerender } = await render(quiet(true));
+      await rerender(quiet(false));
+      expect(screen.getByText(CAUGHT_UP_TEXT)).toBeTruthy();
+    });
+
+    it("leaves no slot under the row: the row is the space above, the heading and the cards", () => {
+      expect(posterRowHeight(false)).toBe(32 + 25 + 8 + cardHeight(false));
+    });
   });
 });
