@@ -27,8 +27,9 @@ export const TITLE_BLOCK_HEIGHT = 88;
 // owner's request; 44 on short screens (still the minimum tap target).
 export const BUTTON_HEIGHT = 50;
 export const BUTTON_HEIGHT_SHORT = 44;
-// The episode line under the logo: its text and, at its right end, the
-// IMDb chip, which sets the height (ImdbRating's IMDB_CHIP_HEIGHT).
+// The episode line under the logo: its text and the IMDb chip after it,
+// centred together; the chip sets the height (ImdbRating's
+// IMDB_CHIP_HEIGHT).
 export const EPISODE_LINE_HEIGHT = 20;
 // One note line under the button, reserved on every slide so the dots stay
 // put: an add-on's "Requires hayu subscription" (CRI-101).

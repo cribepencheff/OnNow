@@ -230,7 +230,7 @@ describe("HomeScreen", () => {
     // CRI-124: the date pill, then the code and title on one line.
     expect(screen.getByText("Today · Mon 21 Sep")).toBeTruthy();
     expect(screen.getByText("Slow Horses")).toBeTruthy();
-    expect(screen.getByText("S1E1 · Episode")).toBeTruthy();
+    expect(screen.getByLabelText("S1E1 · Episode")).toBeTruthy();
     // The header with the logo, over the hero (CRI-124).
     expect(screen.getByTestId("app-logo")).toBeTruthy();
     // Its right slot is empty for now: no search entry on Home while
@@ -282,6 +282,85 @@ describe("HomeScreen", () => {
 
   // CRI-94: every slide's rows have one height whatever they hold, so the
   // pill row, title and episode line never jump between slides.
+  // Home polish: the logo and the episode line centred on the hero's axis,
+  // like the pill, the button and the dots.
+  it("centres the logo and the episode line with its IMDb chip as one group; only the episode title gives way", async () => {
+    const withChip = makeShow({
+      id: 1,
+      name: "MobLand",
+      externals: { tvrage: null, thetvdb: null, imdb: "tt31510819" },
+    });
+    const plain = makeShow({ id: 2, name: "Outside" });
+    (useShowImages as jest.Mock).mockImplementation((show) => ({
+      data: show.id === 1 ? { logo: { file_path: "/logo.png" } } : undefined,
+      isLoading: false,
+    }));
+    (useImdbRating as jest.Mock).mockImplementation((show) => ({
+      data: show.id === 1 ? "8.1" : undefined,
+      imdbId: show.externals?.imdb ?? null,
+    }));
+    mockFollowedEpisodes({
+      followedShows: [
+        { show: withChip, episodes: [makeEpisode()] },
+        { show: plain, episodes: [makeEpisode()] },
+      ],
+    });
+
+    try {
+      await render(<HomeScreen />);
+      const style = (view: { props: { style?: unknown } }) =>
+        (StyleSheet.flatten(view.props.style as never) ?? {}) as Record<
+          string,
+          unknown
+        >;
+
+      // The title block centres the logo, or the text title.
+      for (const block of screen.getAllByTestId("hero-title-block")) {
+        expect(style(block).alignItems).toBe("center");
+      }
+      // The logo image (the slide's own button shares the label).
+      const logo = screen
+        .getAllByLabelText("MobLand", { includeHiddenElements: true })
+        .find((view) => view.props.contentPosition !== undefined)!;
+      // expo-image's form of contentPosition="center".
+      expect(logo.props.contentPosition).toEqual({ top: "50%", left: "50%" });
+      expect(style(logo).width).toBe(240);
+      expect(style(logo).maxWidth).toBe("100%");
+      expect(style(screen.getByText("Outside")).textAlign).toBe("center");
+
+      // One centred group, a small gap apart, not pushed to the edges;
+      // with no rating, the line alone is centred.
+      const rows = screen.getAllByTestId("hero-episode-row");
+      for (const row of rows) {
+        expect(style(row).justifyContent).toBe("center");
+        expect(style(row).gap).toBe(8);
+      }
+      const lines = screen.getAllByTestId("hero-episode-line");
+      for (const line of lines) {
+        expect(style(line).flex).toBeUndefined();
+        expect(style(line).flexShrink).toBe(1);
+      }
+      // The code never gives way; the title does, with an ellipsis.
+      const code = within(lines[0]).getByText("S1E1 · ");
+      expect(style(code).flexShrink).toBe(0);
+      const title = within(lines[0]).getByText("Episode");
+      expect(title.props.numberOfLines).toBe(1);
+      expect(style(title).flexShrink).toBe(1);
+      // The chip keeps its width.
+      const chip = screen.getByTestId("imdb-rating");
+      expect(style(chip.parent!).flexShrink).toBe(0);
+    } finally {
+      (useShowImages as jest.Mock).mockImplementation(() => ({
+        data: undefined,
+        isLoading: false,
+        isError: false,
+      }));
+      (useImdbRating as jest.Mock).mockImplementation(() => ({
+        data: undefined,
+      }));
+    }
+  });
+
   it("gives the label row and title block one height with or without an IMDb chip and logo (CRI-94)", async () => {
     const withChip = makeShow({
       id: 1,
@@ -360,7 +439,7 @@ describe("HomeScreen", () => {
     await render(<HomeScreen />);
 
     expect(screen.getByText("Today · Mon 21 Sep")).toBeTruthy();
-    expect(screen.getByText("S1E1–3 · Episode")).toBeTruthy();
+    expect(screen.getByLabelText("S1E1–3 · Episode")).toBeTruthy();
     expect(screen.queryByLabelText(/^Show \d+ of/)).toBeNull();
   });
 
@@ -386,7 +465,7 @@ describe("HomeScreen", () => {
     // Network dropped from the meta line (94e72ad: "the network
     // contradicted the Open in button... the episode itself, not the
     // network, goes here instead").
-    expect(screen.getByText("S2E3 · Episode")).toBeTruthy();
+    expect(screen.getByLabelText("S2E3 · Episode")).toBeTruthy();
   });
 
   it("shows two cards labelled Tomorrow, counted 1 of 2 and 2 of 2, when two shows release on the next day with episodes (FR-006)", async () => {
@@ -438,7 +517,7 @@ describe("HomeScreen", () => {
     await render(<HomeScreen />);
 
     expect(screen.getByText("Thu 24 Sep")).toBeTruthy();
-    expect(screen.getByText("S1E1 · Episode")).toBeTruthy();
+    expect(screen.getByLabelText("S1E1 · Episode")).toBeTruthy();
   });
 
   // Unlike the hero's own 7-day horizon (see the FR-012-does-not-apply test
@@ -463,7 +542,7 @@ describe("HomeScreen", () => {
     await render(<HomeScreen />);
 
     expect(screen.getByText("Tomorrow · Tue 22 Sep")).toBeTruthy();
-    expect(screen.getByText("S1E1–3 · Episode")).toBeTruthy();
+    expect(screen.getByLabelText("S1E1–3 · Episode")).toBeTruthy();
   });
 
   // CRI-124: the hero advances by itself, but not while Home is out of
