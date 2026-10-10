@@ -431,6 +431,8 @@ describe("PosterRow (FR-038, FR-039)", () => {
         screen.getByRole("header").props.style,
       );
       expect(style.fontSize).toBeLessThan(titleStyle.fontSize as number);
+      // The "Search more" pill's text size (CRI-131).
+      expect(style.fontSize).toBe(12);
       expect(style.fontWeight).toBe("400");
       expect(style.color).not.toBe(titleStyle.color);
       expect(status().props.onPress).toBeUndefined();

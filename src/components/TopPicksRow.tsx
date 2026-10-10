@@ -23,8 +23,8 @@ export function TopPicksRow({
   followedShows: TvMazeShow[];
   detailPathname?: DetailPathname;
   // "Search more" at the end of the row, on Home (CRI-131). Without it
-  // (inside Search, already there) the row ends with "You're all caught
-  // up", as "Airing this week" does.
+  // (inside Search, already there) the row ends with "All caught up", as
+  // "Airing this week" does.
   onSearchMore?: () => void;
   // Inside Search: no end element if the row is already at its end there.
   quietEndOnArrival?: boolean;

@@ -171,7 +171,7 @@ describe("SearchScreen", () => {
 
     expect(screen.getByTestId("top-picks-row")).toBeTruthy();
     expect(screen.queryByText("Search more")).toBeNull();
-    expect(screen.queryByText("You're all caught up")).toBeNull();
+    expect(screen.queryByText("All caught up")).toBeNull();
 
     await unmount();
     client.unmount();

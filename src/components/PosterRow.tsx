@@ -14,7 +14,7 @@
 // at the end, which crossfade into the new cards. At the end of the pool
 // there is no spinner (the cap, MAX_ROW_CARDS, ends it the same way), and
 // the row's end element fades in on the title line, right-aligned: by
-// default "You're all caught up", a passive status, muted and not
+// default "All caught up", a passive status, muted and not
 // tappable; or, with endAction, a pill to tap ("Search more"). Either is
 // always laid out, so the title never shifts, and truncates before the
 // title does.
@@ -72,7 +72,15 @@ const LOADING_MORE_SKELETON_COUNT = 2;
 const CROSSFADE_MS = 250;
 
 // Said on the title line at the end of the pool (CRI-131).
-export const CAUGHT_UP_TEXT = "You're all caught up";
+export const CAUGHT_UP_TEXT = "All caught up";
+
+// The end element's text, status or pill label: small, regular weight
+// (CRI-131).
+const END_TEXT = {
+  fontSize: type.label.fontSize,
+  lineHeight: type.label.lineHeight,
+  fontWeight: "400",
+} as const;
 
 // The end pill: small, within the title's line, so the gap above the
 // cards stays whole; the card follow circle's material; a hit area of at
@@ -125,8 +133,8 @@ export function PosterRow({
   withCaption?: boolean;
   // Said where the cards were when there are none (CRI-123).
   emptyText?: string | null;
-  // A pill to tap at the end of the row, instead of "You're all caught
-  // up" (CRI-131).
+  // A pill to tap at the end of the row, instead of "All caught up"
+  // (CRI-131).
   endAction?: { label: string; onPress: () => void };
   // No end element when the row is already at its end as it first shows
   // its cards: in Search, which shares Home's rows, it is said only when
@@ -170,7 +178,7 @@ export function PosterRow({
     return () => fadeIn.stop();
   }, [isShown, reduceMotionEnabled, opacity]);
 
-  // "You're all caught up" fades in at the end of the pool.
+  // "All caught up" fades in at the end of the pool.
   const [caughtUpOpacity] = useState(
     () => new Animated.Value(caughtUp ? 1 : 0),
   );
@@ -600,13 +608,12 @@ const styles = StyleSheet.create({
   // The label's size, regular weight and no letter spacing: lighter than
   // the title, and centred in the pill.
   endPillLabel: {
-    fontSize: type.label.fontSize,
-    lineHeight: type.label.lineHeight,
-    fontWeight: "400",
+    ...END_TEXT,
     color: t.ink,
   },
+  // The pill label's size; muted, so it reads as status.
   caughtUp: {
-    ...type.meta,
+    ...END_TEXT,
     color: t.inkMuted,
     flex: 1,
     textAlign: "right",
