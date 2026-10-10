@@ -1,3 +1,4 @@
+import { StyleSheet } from "react-native";
 import { render, screen } from "@testing-library/react-native";
 
 import { OpenInSlot } from "./HeroPage";
@@ -43,5 +44,38 @@ describe("OpenInSlot (FR-014, CRI-90)", () => {
     expect(
       screen.getByRole("button", { name: "Open in Peacock" }),
     ).toBeTruthy();
+  });
+
+  // Home layout polish: centred like everything else in the hero's block.
+  it('centres "Unavailable in <region>"', async () => {
+    await render(
+      <OpenInSlot
+        availability={{ kind: "text", label: "Unavailable in SE" }}
+      />,
+    );
+
+    const note = screen.getByText("Unavailable in SE");
+    expect(StyleSheet.flatten(note.props.style).textAlign).toBe("center");
+  });
+
+  it("centres the Requires line under the button", async () => {
+    await render(
+      <OpenInSlot
+        availability={{
+          kind: "button",
+          link: {
+            service: "Prime Video",
+            url: "https://www.primevideo.com",
+            requires: "hayu",
+          },
+        }}
+      />,
+    );
+
+    let node = screen.getByText("Requires hayu subscription").parent;
+    while (node && StyleSheet.flatten(node.props.style)?.marginTop !== 4) {
+      node = node.parent;
+    }
+    expect(StyleSheet.flatten(node?.props.style).alignItems).toBe("center");
   });
 });

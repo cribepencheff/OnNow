@@ -36,6 +36,8 @@ import {
   HERO_PARALLAX_FACTOR,
   heroAvailability,
   heroEpisodeLine,
+  heroEpisodeRange,
+  heroEpisodeTitle,
   heroPillLabel,
   type HeroAvailability,
   type HeroSlide,
@@ -654,7 +656,7 @@ export const ContentLayer = memo(function ContentLayer({
                 source={`${IMAGE_BASE}/w500${logo.file_path}`}
                 style={styles.logo}
                 contentFit="contain"
-                contentPosition="left"
+                contentPosition="center"
                 accessibilityLabel={show.name}
               />
             ) : (
@@ -664,22 +666,33 @@ export const ContentLayer = memo(function ContentLayer({
             )}
           </View>
         </View>
-        {/* One fixed line, on the fade, no block behind it: the code and
-            the episode title, and the IMDb chip at its right end. Only the
-            chip takes touches. */}
+        {/* One fixed line, on the fade, no block behind it: the code, the
+            episode title and the IMDb chip, one group centred on the hero's
+            axis. Only the title gives way to a long line, with an ellipsis;
+            the code and the chip keep their width. Only the chip takes
+            touches. */}
         <View
           style={styles.episodeRow}
           pointerEvents="box-none"
           testID="hero-episode-row"
         >
-          <Text
+          <View
             style={styles.episodeLine}
-            numberOfLines={1}
             pointerEvents="none"
+            accessible
+            accessibilityLabel={heroEpisodeLine(slide.episodes)}
+            testID="hero-episode-line"
           >
-            {heroEpisodeLine(slide.episodes)}
-          </Text>
-          <ImdbRating show={show} variant="chip" />
+            <Text style={styles.episodeCode}>
+              {`${heroEpisodeRange(slide.episodes)} · `}
+            </Text>
+            <Text style={styles.episodeTitle} numberOfLines={1}>
+              {heroEpisodeTitle(slide.episodes)}
+            </Text>
+          </View>
+          <View style={styles.chip}>
+            <ImdbRating show={show} variant="chip" />
+          </View>
         </View>
         <OpenInSlot availability={availability} />
       </View>
@@ -698,9 +711,9 @@ const styles = StyleSheet.create({
   },
   content: {
     position: "absolute",
-    // One screen margin on Home, the rows' too (CRI-124).
-    left: t.space4,
-    right: t.space4,
+    // The content inset, as the rows under it.
+    left: t.contentInset,
+    right: t.contentInset,
     gap: CONTENT_GAP,
   },
   // As tall as the pill, so nothing below shifts per slide.
@@ -709,29 +722,54 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
   },
-  // As tall as the IMDb chip, chip or not, so nothing below shifts.
+  // One height, chip or not, so nothing below shifts. The line and the
+  // chip are one group, centred, a small gap apart, and read as one line:
+  // the chip's label sits on the episode text's baseline.
   episodeRow: {
     height: EPISODE_LINE_HEIGHT,
     flexDirection: "row",
-    alignItems: "center",
-    gap: CONTENT_GAP,
+    alignItems: "baseline",
+    justifyContent: "center",
+    gap: t.space2,
   },
-  // Takes the room the chip leaves, cut with an ellipsis.
+  // The code and the title, as wide as they need, giving way when the
+  // chip leaves less room.
   episodeLine: {
+    flexDirection: "row",
+    flexShrink: 1,
+    minWidth: 0,
+  },
+  // "S2E4 · ": never cut.
+  episodeCode: {
     ...type.meta,
     color: t.inkMuted,
-    flex: 1,
+    flexShrink: 0,
+  },
+  // The episode title: cut first, with an ellipsis.
+  episodeTitle: {
+    ...type.meta,
+    color: t.inkMuted,
+    flexShrink: 1,
+  },
+  // The IMDb chip: never cut.
+  chip: {
+    flexShrink: 0,
   },
   // One height for a logo and a text title, so nothing below shifts.
   titleRoom: {
     marginVertical: TITLE_GAP - CONTENT_GAP,
   },
+  // Centred on the hero's axis, like the pill, the button and the dots.
   titleBlock: {
     height: TITLE_BLOCK_HEIGHT,
     justifyContent: "center",
+    alignItems: "center",
   },
+  // At most 240 wide (narrower on a narrow hero), so a wide logo never
+  // runs edge to edge; a logo is fitted inside and centred.
   logo: {
     width: 240,
+    maxWidth: "100%",
     height: 88,
   },
   displayTitle: {
@@ -743,9 +781,12 @@ const styles = StyleSheet.create({
     fontSize: 40,
     lineHeight: 44,
     color: t.ink,
+    textAlign: "center",
   },
+  // Centred, as everything else in the block.
   requires: {
     marginTop: 4,
+    alignItems: "center",
   },
   button: {
     borderRadius: t.radiusPill,
@@ -770,5 +811,6 @@ const styles = StyleSheet.create({
   availabilityNote: {
     ...type.meta,
     color: t.inkMuted,
+    textAlign: "center",
   },
 });

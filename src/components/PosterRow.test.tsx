@@ -89,6 +89,33 @@ describe("PosterRow (FR-038, FR-039)", () => {
     expect(cardHeight(true)).toBeGreaterThan(CARD_HEIGHT);
   });
 
+  // Home layout polish: a row starts at the content inset and scrolls edge
+  // to edge.
+  it("starts its title and first card at the content inset, 24", async () => {
+    await render(
+      <PosterRow
+        title="Airing this week"
+        isLoading={false}
+        hasCards
+        testID="row"
+      >
+        <Text>Lanterns</Text>
+      </PosterRow>,
+    );
+    const strip = screen.getByTestId("row-cards");
+    expect(
+      StyleSheet.flatten(strip.props.contentContainerStyle).paddingHorizontal,
+    ).toBe(24);
+    // The strip itself is not inset: it runs to the screen's edges.
+    expect(
+      StyleSheet.flatten(strip.props.style).marginHorizontal,
+    ).toBeUndefined();
+    expect(
+      StyleSheet.flatten(screen.getByRole("header").parent?.props.style)
+        .paddingHorizontal,
+    ).toBe(24);
+  });
+
   it("rests with a card at the left margin after a swipe (CRI-127)", async () => {
     await render(
       <PosterRow

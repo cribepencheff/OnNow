@@ -52,6 +52,7 @@ import {
 } from "@/logic/poster-batches";
 import {
   POSTER_CARD_GAP,
+  POSTER_ROW_MARGIN,
   POSTER_ROW_TOP_MARGIN,
   posterSnapOffsets,
 } from "@/logic/poster-snap";
@@ -290,7 +291,7 @@ export function PosterRow({
     count: cardCount,
     cardWidth: POSTER_WIDTH,
     gap: POSTER_CARD_GAP,
-    margin: t.space4,
+    margin: POSTER_ROW_MARGIN,
     viewportWidth,
   });
 
@@ -463,7 +464,7 @@ export function PosterRow({
                       importantForAccessibility="no-hide-descendants"
                       style={[
                         styles.moreOutgoing,
-                        { left: t.space4 + moreFrom * STRIDE },
+                        { left: POSTER_ROW_MARGIN + moreFrom * STRIDE },
                         { opacity: moreFading },
                       ]}
                     >
@@ -542,7 +543,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "baseline",
     gap: t.space4,
-    paddingHorizontal: t.space4,
+    paddingHorizontal: t.contentInset,
   },
   // The title wins on a narrow screen: it never shrinks.
   heading: {
@@ -551,7 +552,7 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   cards: {
-    paddingHorizontal: t.space4,
+    paddingHorizontal: t.contentInset,
     gap: POSTER_CARD_GAP,
   },
   // The skeleton cards fading out, laid out as the strip was.
@@ -579,7 +580,7 @@ const styles = StyleSheet.create({
   empty: {
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: t.space4,
+    paddingHorizontal: t.contentInset,
   },
   emptyText: {
     ...type.body,

@@ -25,6 +25,12 @@ export const t = {
   space4: 16,
   space6: 24,
   space10: 40,
+  // The screen's side insets (owner, Home layout polish): the header's
+  // (Home's wordmark bar) and the content's (hero block, poster rows,
+  // Shows, Search, Calendar, Show detail). Two values on purpose: the
+  // header sits closer to the edge than the content under it.
+  headerInset: 16,
+  contentInset: 24,
   radiusSm: 10,
   radiusLg: 22,
   radiusPill: 999,
