@@ -12,9 +12,12 @@
 // drag passes LOAD_MORE_PULL it gives a light haptic and asks for one more
 // batch (onLoadMore), once per drag. The batch comes in as skeleton cards
 // at the end, which crossfade into the new cards. At the end of the pool
-// there is no spinner, and "You're all caught up" fades in on the title
-// line, right-aligned: a passive status, muted and not tappable, which
-// truncates before the title does.
+// there is no spinner (the cap, MAX_ROW_CARDS, ends it the same way), and
+// the row's end element fades in on the title line, right-aligned: by
+// default "You're all caught up", a passive status, muted and not
+// tappable; or, with endAction, a pill to tap ("Search more"). Either is
+// always laid out, so the title never shifts, and truncates before the
+// title does.
 // When cards are taken out (followed shows, on a return to the screen),
 // the strip keeps its first visible card first.
 
@@ -31,6 +34,7 @@ import {
 import {
   ActivityIndicator,
   Animated,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -70,6 +74,11 @@ const CROSSFADE_MS = 250;
 // Said on the title line at the end of the pool (CRI-131).
 export const CAUGHT_UP_TEXT = "You're all caught up";
 
+// The end pill: the card follow circle's height and material, with a hit
+// area of at least 44.
+const END_PILL_HEIGHT = 32;
+const END_PILL_HIT_SLOP = (44 - END_PILL_HEIGHT) / 2;
+
 // The load more spinner's box, to the right of the last card.
 const SPINNER_BOX = 40;
 
@@ -96,6 +105,7 @@ export function PosterRow({
   onLoadMore,
   withCaption = false,
   emptyText,
+  endAction,
   testID,
   children,
 }: {
@@ -113,6 +123,9 @@ export function PosterRow({
   withCaption?: boolean;
   // Said where the cards were when there are none (CRI-123).
   emptyText?: string | null;
+  // A pill to tap at the end of the row, instead of "You're all caught
+  // up" (CRI-131).
+  endAction?: { label: string; onPress: () => void };
   testID: string;
   children: ReactNode;
 }) {
@@ -319,21 +332,54 @@ export function PosterRow({
       accessibilityElementsHidden={!isShown}
       importantForAccessibility={isShown ? "auto" : "no-hide-descendants"}
     >
-      <View style={styles.titleLine}>
+      <View
+        style={[
+          styles.titleLine,
+          // Text sits on the title's baseline; a pill is centred on it.
+          { alignItems: endAction ? "center" : "baseline" },
+        ]}
+      >
         <Text style={styles.heading} accessibilityRole="header">
           {title}
         </Text>
-        {/* Always laid out, so the title line never changes; seen and read
-            only at the end of the pool. Plain text: nothing to tap. */}
-        <Animated.Text
-          style={[styles.caughtUp, { opacity: caughtUpOpacity }]}
-          numberOfLines={1}
-          testID={`${testID}-caught-up`}
-          accessibilityElementsHidden={!caughtUp}
-          importantForAccessibility={caughtUp ? "auto" : "no-hide-descendants"}
-        >
-          {CAUGHT_UP_TEXT}
-        </Animated.Text>
+        {/* Always laid out, so the title line never changes; seen, read
+            and (a pill) tapped only at the end of the row. */}
+        {endAction ? (
+          <Animated.View
+            style={[styles.endPillSlot, { opacity: caughtUpOpacity }]}
+            pointerEvents={caughtUp ? "auto" : "none"}
+            accessibilityElementsHidden={!caughtUp}
+            importantForAccessibility={
+              caughtUp ? "auto" : "no-hide-descendants"
+            }
+          >
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={endAction.label}
+              onPress={endAction.onPress}
+              disabled={!caughtUp}
+              hitSlop={END_PILL_HIT_SLOP}
+              style={styles.endPill}
+              testID={`${testID}-end-action`}
+            >
+              <Text style={styles.endPillLabel} numberOfLines={1}>
+                {endAction.label}
+              </Text>
+            </Pressable>
+          </Animated.View>
+        ) : (
+          <Animated.Text
+            style={[styles.caughtUp, { opacity: caughtUpOpacity }]}
+            numberOfLines={1}
+            testID={`${testID}-caught-up`}
+            accessibilityElementsHidden={!caughtUp}
+            importantForAccessibility={
+              caughtUp ? "auto" : "no-hide-descendants"
+            }
+          >
+            {CAUGHT_UP_TEXT}
+          </Animated.Text>
+        )}
       </View>
       <View
         style={fixedHeight}
@@ -520,6 +566,30 @@ const styles = StyleSheet.create({
   },
   // Quiet, like the meta line: smaller than the title, regular weight,
   // muted. It takes what the title leaves and truncates first.
+  // Takes what the title leaves, right-aligned. It is taller than the
+  // title's line, so it reaches over it equally above and below rather
+  // than making the line taller.
+  endPillSlot: {
+    flex: 1,
+    alignItems: "flex-end",
+    marginVertical: (type.headline.lineHeight - END_PILL_HEIGHT) / 2,
+  },
+  // The card follow circle's material, as a text pill: neutral, solid, no
+  // blur.
+  endPill: {
+    height: END_PILL_HEIGHT,
+    maxWidth: "100%",
+    paddingHorizontal: 12,
+    borderRadius: END_PILL_HEIGHT / 2,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: t.imageControlEdge,
+    backgroundColor: t.surfaceRaised,
+    justifyContent: "center",
+  },
+  endPillLabel: {
+    ...type.meta,
+    color: t.ink,
+  },
   caughtUp: {
     ...type.meta,
     color: t.inkMuted,

@@ -72,6 +72,7 @@ jest.mock("@/hooks/useAiringThisWeek", () => ({
 const mockTopPicks = jest.fn(() => [] as unknown[]);
 const mockLoadMoreTopPicks = jest.fn();
 const mockTopPicksLoading = jest.fn(() => false);
+const mockTopPicksHasMore = jest.fn(() => true);
 // Leaves out the shows Home has settled as followed, as the real hook does.
 jest.mock("@/hooks/useTopPicks", () => ({
   useTopPicks: () => ({
@@ -84,7 +85,7 @@ jest.mock("@/hooks/useTopPicks", () => ({
     ),
     isLoading: mockTopPicksLoading(),
     isLoadingMore: false,
-    hasMore: true,
+    hasMore: mockTopPicksHasMore(),
     loadMore: mockLoadMoreTopPicks,
   }),
 }));
@@ -719,6 +720,26 @@ describe("HomeScreen", () => {
         expect(screen.getByText("Andor")).toBeTruthy();
       } finally {
         mockFollowedIds = new Set();
+      }
+    });
+
+    // CRI-131: at its end, Top picks offers to search for more; Search's
+    // rows share Home's, so the same row and end are there.
+    it('opens Search from "Search more" at its end (CRI-131)', async () => {
+      mockTopPicks.mockReturnValue([gangs]);
+      mockTopPicksHasMore.mockReturnValue(false);
+      try {
+        mockFollowedEpisodes({
+          followedShows: [{ show, episodes: [makeEpisode()] }],
+        });
+        await render(<HomeScreen />);
+
+        await fireEvent.press(
+          screen.getByRole("button", { name: "Search more" }),
+        );
+        expect(mockPush).toHaveBeenCalledWith("/search");
+      } finally {
+        mockTopPicksHasMore.mockReturnValue(true);
       }
     });
 

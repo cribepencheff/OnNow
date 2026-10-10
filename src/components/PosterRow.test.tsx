@@ -446,6 +446,56 @@ describe("PosterRow (FR-038, FR-039)", () => {
       ).toBe(0);
     });
 
+    it("with an end action, shows a pill to tap there instead, only at the end", async () => {
+      const onPress = jest.fn();
+      const withAction = (hasMore: boolean) => (
+        <PosterRow
+          title="Top picks for you"
+          isLoading={false}
+          hasCards
+          hasMore={hasMore}
+          endAction={{ label: "Search more", onPress }}
+          testID="row"
+        >
+          <Text>Lanterns</Text>
+        </PosterRow>
+      );
+      const { rerender } = await render(withAction(true));
+      expect(screen.queryByRole("button", { name: "Search more" })).toBeNull();
+
+      await rerender(withAction(false));
+      const pill = screen.getByRole("button", { name: "Search more" });
+      expect(screen.queryByText(CAUGHT_UP_TEXT)).toBeNull();
+      await fireEvent.press(pill);
+      expect(onPress).toHaveBeenCalledTimes(1);
+    });
+
+    it("lays the pill out like the follow circle, centred on the title, with a 44 hit area, the title still winning", async () => {
+      await render(
+        <PosterRow
+          title="Top picks for you"
+          isLoading={false}
+          hasCards
+          endAction={{ label: "Search more", onPress: jest.fn() }}
+          testID="row"
+        >
+          <Text>Lanterns</Text>
+        </PosterRow>,
+      );
+      const pill = screen.getByTestId("row-end-action");
+      const style = StyleSheet.flatten(pill.props.style);
+      expect(style.height).toBe(32);
+      expect(style.borderRadius).toBe(16);
+      expect(32 + 2 * pill.props.hitSlop).toBeGreaterThanOrEqual(44);
+      const header = screen.getByRole("header");
+      expect(StyleSheet.flatten(header.parent?.props.style).alignItems).toBe(
+        "center",
+      );
+      expect(StyleSheet.flatten(header.props.style).flexShrink).toBe(0);
+      const label = screen.getByText("Search more");
+      expect(label.props.numberOfLines).toBe(1);
+    });
+
     it("leaves no slot under the row: the row is the space above, the heading and the cards", () => {
       expect(posterRowHeight(false)).toBe(32 + 25 + 8 + cardHeight(false));
     });

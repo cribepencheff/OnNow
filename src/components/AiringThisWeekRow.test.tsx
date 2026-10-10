@@ -79,6 +79,8 @@ describe("AiringThisWeekRow loading more (FR-039, CRI-131)", () => {
     mockRow = { hasMore: false };
     await render(<AiringThisWeekRow />);
     expect(screen.getByText(CAUGHT_UP_TEXT)).toBeTruthy();
+    // "Search more" is Top picks' only (CRI-131).
+    expect(screen.queryByText("Search more")).toBeNull();
   });
 
   it("shows skeleton cards at its end while more is on its way", async () => {

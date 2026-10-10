@@ -5,7 +5,11 @@ import { hasServiceInRegion } from "@/api/region-service";
 import { tmdbClient } from "@/api/tmdb-client";
 import { tvMazeClient } from "@/api/tvmaze-client";
 import { resolveTvMazeId } from "@/api/tvmaze-id";
-import { FIRST_BATCH_SIZE, MIN_LOAD_MORE_MS } from "@/logic/poster-batches";
+import {
+  FIRST_BATCH_SIZE,
+  MAX_ROW_CARDS,
+  MIN_LOAD_MORE_MS,
+} from "@/logic/poster-batches";
 import { MIN_AIRING_CARDS } from "@/logic/poster-snap";
 import { SettledFollowedContext } from "./useSettledFollowed";
 import { useAiringThisWeek } from "./useAiringThisWeek";
@@ -343,6 +347,34 @@ describe("useAiringThisWeek (FR-039, CRI-110)", () => {
       expect(result.current.isLoadingMore).toBe(false);
       expect(result.current.cards).toHaveLength(14);
       expect(ids(result.current.cards).slice(0, 2)).toEqual([201, 202]);
+      await unmount();
+      client.unmount();
+    });
+
+    // CRI-131: a row is for sampling: 10 and three drags of six.
+    it("never holds more than 28, ending there with the week's shows left", async () => {
+      const forty = Array.from({ length: 40 }, (_, i) => ({
+        id: 301 + i,
+        name: `Show ${301 + i}`,
+        poster_path: `/p${301 + i}.jpg`,
+        popularity: 100 - i,
+        genre_ids: [18],
+      }));
+      findAiringThisWeek.mockResolvedValue(forty);
+      const { result, unmount, client } = await renderRow();
+      await waitFor(() => expect(result.current.cards).toHaveLength(10));
+
+      for (const total of [16, 22, 28]) {
+        await act(async () => result.current.loadMore());
+        await waitFor(
+          () => expect(result.current.cards).toHaveLength(total),
+          slow,
+        );
+      }
+      expect(result.current.hasMore).toBe(false);
+      await act(async () => result.current.loadMore());
+      expect(result.current.isLoadingMore).toBe(false);
+      expect(result.current.cards).toHaveLength(MAX_ROW_CARDS);
       await unmount();
       client.unmount();
     });

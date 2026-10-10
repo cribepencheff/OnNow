@@ -2,8 +2,9 @@
 // (FR-038, FR-039, CRI-131). Loading more is a deliberate gesture: each
 // drag past the row's end loads one batch, appended, so earlier cards stay
 // where they are and nothing is ever replaced. Nothing is fetched ahead:
-// a batch is only fetched when a drag asks for it. When the pool is
-// exhausted the row ends, "You're all caught up".
+// a batch is only fetched when a drag asks for it. A row holds at most
+// MAX_ROW_CARDS: it is for sampling, not browsing. When the pool is
+// exhausted, or the cap reached, the row ends.
 
 import type { FilledPage, PosterItem } from "./top-picks";
 
@@ -11,6 +12,8 @@ import type { FilledPage, PosterItem } from "./top-picks";
 // (CRI-131).
 export const FIRST_BATCH_SIZE = 10;
 export const MORE_BATCH_SIZE = 6;
+// The most cards a row holds: the first batch and three drags (CRI-131).
+export const MAX_ROW_CARDS = FIRST_BATCH_SIZE + 3 * MORE_BATCH_SIZE;
 
 // The shortest time a new batch shows its skeleton cards, so it reads as
 // new content arriving, even when the fetch is quicker. The old Refresh
@@ -23,26 +26,35 @@ export const LOAD_MORE_PULL = 64;
 export interface Batch<Extra = object> extends FilledPage<Extra> {
   // Its place in the row: 0 for the first batch.
   index: number;
+  // Cards in the row up to and including this batch.
+  total: number;
   // No cards because every show is followed (not because there are none).
   // Only ever true of the first batch: the row is then empty.
   allFollowed: boolean;
 }
 
 // The batch after `previous` (or the first): from where it stopped, as
-// many as a batch at its place holds. Only asked for while the pool has
-// more (previous.hasMore), and never more than is left: a short last batch
-// is not topped up.
+// many as a batch at its place holds, up to the row's cap. Only asked for
+// while the pool has more (previous.hasMore), and never more than is left:
+// a short last batch is not topped up. At the cap the row has no more.
 export async function nextBatch<Extra = object>(
   previous: Batch<Extra> | undefined,
   fill: (start: number, size: number) => Promise<FilledPage<Extra>>,
 ): Promise<Batch<Extra>> {
+  const before = previous?.total ?? 0;
   const filled = await fill(
     previous ? previous.nextStart : 0,
-    previous ? MORE_BATCH_SIZE : FIRST_BATCH_SIZE,
+    Math.min(
+      previous ? MORE_BATCH_SIZE : FIRST_BATCH_SIZE,
+      MAX_ROW_CARDS - before,
+    ),
   );
+  const total = before + filled.cards.length;
   return {
     ...filled,
+    hasMore: filled.hasMore && total < MAX_ROW_CARDS,
     index: previous ? previous.index + 1 : 0,
+    total,
     allFollowed:
       !previous && filled.cards.length === 0 && filled.followedSkipped > 0,
   };

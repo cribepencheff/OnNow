@@ -1,5 +1,6 @@
 import {
   FIRST_BATCH_SIZE,
+  MAX_ROW_CARDS,
   MORE_BATCH_SIZE,
   anchoredOffset,
   nextBatch,
@@ -69,6 +70,48 @@ describe("nextBatch (FR-038, FR-039, CRI-131)", () => {
       filled([], { hasMore: false, followedSkipped: 2 }),
     );
     expect(later.allFollowed).toBe(false);
+  });
+});
+
+// CRI-131: a row is for sampling, not browsing.
+describe("the row's cap (CRI-131)", () => {
+  // A pool of 100 ids, filled exactly as asked.
+  const fill = jest.fn(async (start: number, size: number) =>
+    filled(
+      Array.from({ length: size }, (_, i) => start + i + 1),
+      { nextStart: start + size, hasMore: start + size < 100 },
+    ),
+  );
+
+  it("is 28: the first batch and three drags", () => {
+    expect(MAX_ROW_CARDS).toBe(28);
+  });
+
+  it("never lets a row grow past it, and ends the row there as at the end of the pool", async () => {
+    let batch = await nextBatch(undefined, fill);
+    const totals = [batch.total];
+    while (batch.hasMore) {
+      batch = await nextBatch(batch, fill);
+      totals.push(batch.total);
+    }
+    expect(totals).toEqual([10, 16, 22, 28]);
+    expect(batch.hasMore).toBe(false);
+    // Each batch asked for no more than the cap leaves.
+    expect(Math.max(...fill.mock.calls.map(([, size]) => size))).toBe(10);
+  });
+
+  it("asks only for what the cap leaves when earlier batches were short", async () => {
+    const previous = {
+      ...filled([1]),
+      index: 3,
+      total: 25,
+      allFollowed: false,
+    };
+    fill.mockClear();
+    const batch = await nextBatch(previous, fill);
+    expect(fill).toHaveBeenCalledWith(10, 3);
+    expect(batch.total).toBe(28);
+    expect(batch.hasMore).toBe(false);
   });
 });
 

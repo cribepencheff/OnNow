@@ -1,4 +1,4 @@
-import { Keyboard } from "react-native";
+import { Keyboard, TextInput } from "react-native";
 import {
   act,
   fireEvent,
@@ -153,6 +153,31 @@ describe("SearchScreen", () => {
     await fireEvent.press(screen.getByTestId("airing-follow-1003"));
     await waitFor(() => expect(mockedFollow).toHaveBeenCalledWith(1003));
     expect(screen.getByText("Pick 3")).toBeTruthy();
+
+    await unmount();
+    client.unmount();
+  });
+
+  // CRI-131: Search is already open, so "Search more" brings back the
+  // field and the keyboard rather than opening anything.
+  it('FR-026: "Search more" at the end of Top picks focuses the search field (CRI-131)', async () => {
+    mockFollowedShows = [{ show: { id: 1, name: "MobLand" } }];
+    const client = createTestQueryClient();
+    const { unmount } = await render(<SearchScreen />, {
+      wrapper: wrapperWithQueryClient(client),
+    });
+    const input = screen.getByTestId("search-input");
+    await fireEvent(input, "blur");
+    // React Native's test TextInput: focus() is a mock on its prototype.
+    const focus = jest.spyOn(
+      (TextInput as unknown as { prototype: { focus: () => void } }).prototype,
+      "focus",
+    );
+
+    await fireEvent.press(screen.getByRole("button", { name: "Search more" }));
+    expect(focus).toHaveBeenCalled();
+    expect(mockPush).not.toHaveBeenCalled();
+    focus.mockRestore();
 
     await unmount();
     client.unmount();

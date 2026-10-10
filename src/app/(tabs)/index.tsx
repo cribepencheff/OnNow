@@ -406,7 +406,10 @@ export default function HomeScreen() {
                 {/* FR-038, ADR 0016, CRI-125: always mounted; it opens
                     when it has picks and is hidden otherwise
                     (TopPicksRow). */}
-                <TopPicksRow followedShows={followedShowList} />
+                <TopPicksRow
+                  followedShows={followedShowList}
+                  onSearchMore={openSearch}
+                />
                 {/* FR-039: always shown, also with an empty follow list. */}
                 <AiringThisWeekRow />
               </SettledFollowedContext.Provider>

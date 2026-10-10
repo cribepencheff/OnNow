@@ -230,6 +230,55 @@ describe("useTopPicks (FR-038)", () => {
     client.unmount();
   });
 
+  // CRI-131: each day starts from a different part of the ranking, the
+  // same all day and on Home and in Search, with no fetch of its own.
+  describe("daily start (CRI-131)", () => {
+    // 60 titles: room for the day's offset to show.
+    const sixty = {
+      tvId: 500,
+      results: Array.from({ length: 60 }, (_, i) => ({
+        id: 101 + i,
+        name: `Pick ${101 + i}`,
+        poster_path: `/p${101 + i}.jpg`,
+      })),
+    };
+
+    async function firstCardsOn(day: string) {
+      jest.setSystemTime(new Date(`${day}T08:00:00Z`));
+      const client = createTestQueryClient();
+      const wrapper = wrapperWithQueryClient(client);
+      const home = await renderHook(() => useTopPicks([followedShow]), {
+        wrapper,
+      });
+      const search = await renderHook(() => useTopPicks([followedShow]), {
+        wrapper,
+      });
+      await waitFor(() => expect(home.result.current.cards).toHaveLength(10));
+      await waitFor(() => expect(search.result.current.cards).toHaveLength(10));
+      const cards = {
+        home: ids(home.result.current.cards),
+        search: ids(search.result.current.cards),
+      };
+      await home.unmount();
+      await search.unmount();
+      client.unmount();
+      return cards;
+    }
+
+    it("differs between days, is stable within a day, and is shared by Home and Search", async () => {
+      findRecommendations.mockResolvedValue(sixty);
+      const monday = await firstCardsOn("2026-10-05");
+      const mondayAgain = await firstCardsOn("2026-10-05");
+      const tuesday = await firstCardsOn("2026-10-06");
+
+      expect(monday.search).toEqual(monday.home);
+      expect(mondayAgain.home).toEqual(monday.home);
+      expect(tuesday.home[0]).not.toBe(monday.home[0]);
+      // The day's start comes from the day's one recommendations answer.
+      expect(findRecommendations).toHaveBeenCalledTimes(3);
+    });
+  });
+
   it("is empty without followed shows", async () => {
     const client = createTestQueryClient();
     const { result, unmount } = await renderHook(() => useTopPicks([]), {
