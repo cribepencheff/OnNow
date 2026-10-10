@@ -15,12 +15,17 @@ use, and so do a few friends.
   line and the service on each row (FR-010, FR-035)
 - Show detail view (FR-028 to FR-030)
 - "Top picks for you" under the Home hero, derived from the follow list
-  (FR-038, ADR 0016)
+  (FR-038, ADR 0016). Hidden when it has no picks to show (an empty follow
+  list, or every pick followed or without a service in the region). When
+  it gets picks, for example after a follow from "Airing this week", it
+  expands in with skeleton cards that then fill in, and what is on screen
+  stays in place.
 - "Airing this week" under it: shows on a streaming service in the user's
   region that would be in the hero if followed, by TMDB popularity,
   scripted and documentaries, followed shows left out, always shown
-  (FR-039, ADR 0016); both rows show only shows with a service in the
-  region
+  (FR-039, ADR 0016). It always has at least as many cards as fit on the
+  screen, enforced by a test, so later filtering cannot shrink it below
+  that. Both rows show only shows with a service in the region
 - "Open in [service]" with a menu for several services (FR-014, FR-015)
 - Territory setting and service availability (FR-016, FR-017)
 - Local notifications (FR-018)
