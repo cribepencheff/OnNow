@@ -4,6 +4,10 @@ import { hasServiceInRegion } from "@/api/region-service";
 import { tmdbClient } from "@/api/tmdb-client";
 import { resolveTvMazeId } from "@/api/tvmaze-id";
 import type { TvMazeShow } from "@/api/tvmaze-types";
+import { createElement, type ReactNode } from "react";
+
+import { MIN_LOAD_MORE_MS } from "@/logic/poster-batches";
+import { SettledFollowedContext } from "./useSettledFollowed";
 import { useTopPicks } from "./useTopPicks";
 import { createTestQueryClient, wrapperWithQueryClient } from "./test-utils";
 
@@ -54,10 +58,21 @@ describe("useTopPicks (FR-038)", () => {
   });
   afterEach(() => jest.useRealTimers());
 
-  async function renderRow() {
+  // `settled`: the shows followed when the screen last settled its rows.
+  async function renderRow(settled = { current: new Set<number>() }) {
     const client = createTestQueryClient();
+    const QueryWrapper = wrapperWithQueryClient(client);
     const rendered = await renderHook(() => useTopPicks([followedShow]), {
-      wrapper: wrapperWithQueryClient(client),
+      wrapper: ({ children }: { children: ReactNode }) =>
+        createElement(
+          QueryWrapper,
+          null,
+          createElement(
+            SettledFollowedContext.Provider,
+            { value: settled.current },
+            children,
+          ),
+        ),
     });
     return { ...rendered, client };
   }
@@ -69,29 +84,44 @@ describe("useTopPicks (FR-038)", () => {
     expect(ids(result.current.cards)).toEqual([
       101, 102, 103, 104, 105, 106, 107, 108, 109, 110,
     ]);
-    // Three at a time: at most two checks beyond the ten cards, before the
-    // next batch is prepared (CRI-127).
-    expect(resolve.mock.calls.map(([id]) => id).slice(0, 12)).toEqual([
+    // Three at a time: at most two checks beyond the ten cards, and
+    // nothing prepared ahead (CRI-131).
+    await act(async () => jest.advanceTimersByTime(MIN_LOAD_MORE_MS));
+    expect(resolve.mock.calls.map(([id]) => id)).toEqual([
       101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112,
     ]);
     await unmount();
     client.unmount();
   });
 
-  // CRI-127: loading more is near instant because the next batch was
-  // checked while the first was on screen; only one batch ahead.
-  it("prepares the next batch in the background, so loading more needs no new checks (CRI-131)", async () => {
+  // CRI-131: fewer fetches matter more than an instant batch.
+  it("fetches nothing ahead: the next batch is only checked when a drag asks for it (CRI-131)", async () => {
     const { result, unmount, client } = await renderRow();
     await waitFor(() => expect(result.current.cards).toHaveLength(10));
-    await waitFor(() =>
-      expect(resolve.mock.calls.map(([id]) => id)).toContain(114),
-    );
-    const checks = resolve.mock.calls.length;
+    await act(async () => jest.advanceTimersByTime(10 * MIN_LOAD_MORE_MS));
+    expect(resolve).toHaveBeenCalledTimes(12);
 
     await act(async () => result.current.loadMore());
     await waitFor(() => expect(result.current.cards).toHaveLength(14));
-    expect(ids(result.current.cards).slice(10)).toEqual([111, 112, 113, 114]);
-    expect(resolve.mock.calls.length).toBe(checks);
+    expect(resolve.mock.calls.map(([id]) => id)).toContain(114);
+    await unmount();
+    client.unmount();
+  });
+
+  // CRI-131: a new batch reads as new content arriving, never instant.
+  it("holds a new batch in skeleton cards for the shortest load time, however quick the fetch (CRI-131)", async () => {
+    const { result, unmount, client } = await renderRow();
+    await waitFor(() => expect(result.current.cards).toHaveLength(10));
+
+    await act(async () => result.current.loadMore());
+    // The checks are instant here; the batch still waits.
+    await act(async () => jest.advanceTimersByTime(MIN_LOAD_MORE_MS - 50));
+    expect(result.current.isLoadingMore).toBe(true);
+    expect(result.current.cards).toHaveLength(10);
+
+    await act(async () => jest.advanceTimersByTime(50));
+    expect(result.current.isLoadingMore).toBe(false);
+    expect(result.current.cards).toHaveLength(14);
     await unmount();
     client.unmount();
   });
@@ -109,7 +139,7 @@ describe("useTopPicks (FR-038)", () => {
     client.unmount();
   });
 
-  it("keeps a show followed from the row on the card, in place", async () => {
+  it("keeps a show followed from the row on the card, in place, until the rows are settled again (CRI-131)", async () => {
     const { result, rerender, unmount, client } = await renderRow();
     await waitFor(() => expect(result.current.cards).toHaveLength(10));
 
@@ -122,7 +152,26 @@ describe("useTopPicks (FR-038)", () => {
     client.unmount();
   });
 
-  it("appends the next picks without followed shows, then ends, never starting over, without a new fetch (CRI-131)", async () => {
+  it("leaves out a show followed when the rows were settled, the others staying in order (CRI-131)", async () => {
+    const settled = { current: new Set<number>() };
+    const { result, rerender, unmount, client } = await renderRow(settled);
+    await waitFor(() => expect(result.current.cards).toHaveLength(10));
+
+    // Home's tab selected again with 103 followed.
+    settled.current = new Set([1103]);
+    await rerender({});
+
+    expect(ids(result.current.cards)).toEqual([
+      101, 102, 104, 105, 106, 107, 108, 109, 110,
+    ]);
+    // Top picks has no minimum: nothing is loaded in its place.
+    await act(async () => jest.advanceTimersByTime(MIN_LOAD_MORE_MS));
+    expect(resolve).toHaveBeenCalledTimes(12);
+    await unmount();
+    client.unmount();
+  });
+
+  it("appends the next picks without followed shows, never more than are left, then ends, never starting over, without a new fetch (CRI-131)", async () => {
     const { result, rerender, unmount, client } = await renderRow();
     await waitFor(() => expect(result.current.cards).toHaveLength(10));
     expect(result.current.hasMore).toBe(true);

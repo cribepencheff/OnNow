@@ -1,8 +1,8 @@
 // "Top picks for you" under the Home hero (FR-038, ADR 0016). A card
-// followed from the row stays in it, marked. Swiped towards its end the
-// row loads the next picks and appends them; at the end of the picks it
-// simply ends (CRI-131). The row is
-// hidden when it has no picks to show; when it gets some (a follow from
+// followed from the row stays in it, marked, until Home's tab is selected
+// again. Dragged past its end the row loads the next picks and appends
+// them; at the end of the picks it says so (CRI-131). The row is hidden
+// when it has no picks to show; when it gets some (a follow from
 // "Airing this week", say) it opens with skeleton cards that then fill in
 // (CRI-125).
 
@@ -20,7 +20,7 @@ export function TopPicksRow({
   followedShows: TvMazeShow[];
   detailPathname?: DetailPathname;
 }) {
-  const { cards, isLoading, isLoadingMore, loadMore } =
+  const { cards, isLoading, isLoadingMore, hasMore, loadMore } =
     useTopPicks(followedShows);
   const shown = isTopPicksShown({
     followedCount: followedShows.length,
@@ -39,7 +39,8 @@ export function TopPicksRow({
         isLoading={isLoading}
         hasCards={cards.length > 0}
         isLoadingMore={isLoadingMore}
-        onNearEnd={loadMore}
+        hasMore={hasMore}
+        onLoadMore={loadMore}
         testID="top-picks-row"
       >
         {cards.map((card) => (

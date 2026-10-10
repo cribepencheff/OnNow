@@ -1,19 +1,20 @@
 // The batches behind a poster row, "Top picks for you" and "Airing this
 // week" (FR-038, FR-039, CRI-131). The row is every loaded batch, appended
-// in order: swiping towards its end loads the next one (loadMore), earlier
+// in order: each drag past its end loads one more (loadMore), earlier
 // cards stay where they are, and the row ends with the pool. A batch is
 // filled once and left alone, so following from the row never reshuffles
 // it. How many batches are loaded lives in the query cache, so Home's and
-// Search's rows grow together (FR-026).
+// Search's rows grow together (FR-026), and a tab switch keeps them; the
+// cache key holds the launch, so the next launch starts from the first
+// batch again.
 //
-// The next batch is prepared in the background as soon as the last one is
-// in, so it is usually ready before the swipe gets there (CRI-127). Only
-// one batch ahead, never the whole pool: each batch checks its shows
-// online (a TVmaze id, a service in the region), and that is the row's
-// whole network cost (CRI-107). One batch is fetched at a time: the next
-// is only asked for once the last is in, and loadMore moves on one batch
-// at most, however fast the swipe.
+// Nothing is fetched ahead: a batch is only fetched when a drag asks for
+// it. Each batch checks its shows online (a TVmaze id, a service in the
+// region), and that is the row's whole network cost (CRI-107). One batch
+// is fetched at a time: loadMore moves on one batch at most, and not at
+// all while the last one is still on its way, however often it is asked.
 
+import { useEffect, useRef, useState } from "react";
 import {
   useQueries,
   useQuery,
@@ -21,19 +22,25 @@ import {
   type QueryKey,
 } from "@tanstack/react-query";
 
-import { nextBatch, rowCards, type Batch } from "@/logic/poster-batches";
+import {
+  MIN_LOAD_MORE_MS,
+  nextBatch,
+  rowCards,
+  visibleCards,
+  type Batch,
+} from "@/logic/poster-batches";
 import type { FilledPage, PosterItem } from "@/logic/top-picks";
 
 export interface PosterBatches<Extra> {
   cards: (PosterItem & Extra)[];
   // No batch yet: the row shows skeleton cards (CRI-127).
   isLoading: boolean;
-  // The row asked for more and it is still on its way: skeleton cards at
-  // its end (CRI-131).
+  // A drag asked for more and it is still on its way: skeleton cards at
+  // the row's end (CRI-131).
   isLoadingMore: boolean;
   // The pool has more than the row holds.
   hasMore: boolean;
-  // Load the next batch; the row calls it when swiped near its end.
+  // Load the next batch; the row calls it on a drag past its end.
   loadMore: () => void;
   // Empty because every show is followed.
   allFollowed: boolean;
@@ -44,7 +51,8 @@ export function usePosterBatches<Extra = object>({
   pageIndexKey,
   enabled,
   fill,
-  isFollowed,
+  hidden,
+  minCards,
 }: {
   // The cache key of a batch by its place in the row.
   pageKey: (index: number) => QueryKey;
@@ -52,8 +60,12 @@ export function usePosterBatches<Extra = object>({
   pageIndexKey: QueryKey;
   // Whether the row's sources are in, so a batch can be filled.
   enabled: boolean;
-  fill: (start: number) => Promise<FilledPage<Extra>>;
-  isFollowed: (tvmazeId: number) => boolean;
+  fill: (start: number, size: number) => Promise<FilledPage<Extra>>;
+  // Shows followed when the screen last settled the rows: left out
+  // (visibleCards).
+  hidden: ReadonlySet<number>;
+  // The fewest cards the row shows while the pool has more (CRI-125).
+  minCards?: number;
 }): PosterBatches<Extra> {
   const queryClient = useQueryClient();
   const { data: lastIndex = 0 } = useQuery({
@@ -85,22 +97,37 @@ export function usePosterBatches<Extra = object>({
       queryFn: () => fetchPage(index),
     })),
   });
-  const batches = pages
-    .map((page) => page.data)
-    .filter((batch): batch is Batch<Extra> => batch !== undefined);
   const last = pages[lastIndex]?.data;
 
-  // One batch ahead, once the last is in and the pool has more.
-  useQuery({
-    queryKey: pageKey(lastIndex + 1),
-    enabled: enabled && last?.hasMore === true,
-    staleTime: Infinity,
-    queryFn: () => fetchPage(lastIndex + 1),
-  });
+  // A new batch shows its skeleton cards for at least MIN_LOAD_MORE_MS,
+  // however quick the fetch: it reads as new content arriving.
+  const [holding, setHolding] = useState(false);
+  const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (holdTimer.current) {
+        clearTimeout(holdTimer.current);
+      }
+    },
+    [],
+  );
+
+  const isLoadingMore =
+    lastIndex > 0 &&
+    !pages[lastIndex]?.isError &&
+    (last === undefined || holding);
+  // While the new batch is held back, the row shows the ones before it.
+  const shownPages = isLoadingMore ? pages.slice(0, lastIndex) : pages;
+  const batches = shownPages
+    .map((page) => page.data)
+    .filter((batch): batch is Batch<Extra> => batch !== undefined);
+  const hasMore = !isLoadingMore && (last?.hasMore ?? false);
+  const isLoading = pages[0]?.data === undefined && !pages[0]?.isError;
 
   function loadMore(): void {
-    // Judged against the cache, not this render: a fast swipe can ask
-    // again before the row has redrawn, and must not skip a batch ahead.
+    // Judged against the cache, not this render: a fast drag can ask again
+    // before the row has redrawn, and must not skip a batch ahead. While
+    // the last batch is on its way (not in the cache), nothing happens.
     const current = queryClient.getQueryData<number>(pageIndexKey) ?? 0;
     if (current !== lastIndex) {
       return;
@@ -109,22 +136,48 @@ export function usePosterBatches<Extra = object>({
     if (!lastBatch?.hasMore) {
       return;
     }
-    // The batch prepared ahead is filled again when it holds a show
-    // followed since: a new batch leaves followed shows out.
-    const nextKey = pageKey(current + 1);
-    const prepared = queryClient.getQueryData<Batch<Extra>>(nextKey);
-    if (prepared?.cards.some((card) => isFollowed(card.tvmazeId))) {
-      queryClient.removeQueries({ queryKey: nextKey, exact: true });
-    }
     queryClient.setQueryData<number>(pageIndexKey, current + 1);
+    setHolding(true);
+    if (holdTimer.current) {
+      clearTimeout(holdTimer.current);
+    }
+    holdTimer.current = setTimeout(() => setHolding(false), MIN_LOAD_MORE_MS);
   }
 
-  return {
+  // Whether more can come in place of the cards left out: a batch on its
+  // way counts.
+  const poolHasMore = isLoadingMore || (last?.hasMore ?? false);
+  const cards = visibleCards({
     cards: rowCards(batches),
-    isLoading: pages[0]?.data === undefined && !pages[0]?.isError,
-    isLoadingMore:
-      lastIndex > 0 && last === undefined && !pages[lastIndex]?.isError,
-    hasMore: last?.hasMore ?? false,
+    hidden,
+    minCards,
+    hasMore: poolHasMore,
+  });
+
+  // A row with a minimum that has fallen under it (followed shows left
+  // out) loads one more batch in their place (CRI-125).
+  const underMinimum =
+    minCards !== undefined &&
+    !isLoading &&
+    !isLoadingMore &&
+    hasMore &&
+    cards.length < minCards;
+  useEffect(() => {
+    if (!underMinimum) {
+      return;
+    }
+    // Once this render is done: loading more sets state.
+    const load = setTimeout(loadMore, 0);
+    return () => clearTimeout(load);
+    // loadMore judges against the cache, so its identity does not matter.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [underMinimum]);
+
+  return {
+    cards,
+    isLoading,
+    isLoadingMore,
+    hasMore,
     loadMore,
     allFollowed: batches[0]?.allFollowed ?? false,
   };

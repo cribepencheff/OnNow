@@ -2,14 +2,14 @@
 // for the region and the week in popularity order (kept a day); each must
 // have a service in the region, the same rule as "Open in", and TVmaze
 // decides: a show is kept only if it would be in the hero if followed, with
-// its day on the card (CRI-110). The ten are shown by air date, Today
-// first (CRI-122) within each batch. A batch is filled once and left
-// alone, so following from the row keeps the card. Swiping towards the
-// row's end appends the next batch from where the last one stopped,
-// without followed shows; at the end of the week's shows the row ends
-// (CRI-131). The batches, the next one prepared ahead, and the count shared
-// with Search's row (FR-026) are usePosterBatches', as for "Top picks for
-// you".
+// its day on the card (CRI-110). Each batch is shown by air date, Today
+// first (CRI-122). A batch is filled once and left alone, so following
+// from the row keeps the card. A drag past the row's end appends the next
+// batch from where the last one stopped, without followed shows; at the
+// end of the week's shows the row ends (CRI-131). The row never holds
+// fewer cards than fit on the screen while the week has more (CRI-125).
+// The batches, and the count shared with Search's row (FR-026), are
+// usePosterBatches', as for "Top picks for you".
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -26,12 +26,13 @@ import {
 } from "@/logic/airing-this-week";
 import { HOME_HERO_HORIZON_DAYS } from "@/logic/hero-carousel";
 import { addDays, type LocalDate } from "@/logic/local-date";
+import { MIN_AIRING_CARDS } from "@/logic/poster-snap";
 import { fillTopPicks, type PosterItem } from "@/logic/top-picks";
 import { useFollowList } from "./useFollowList";
 import { usePosterBatches, type PosterBatches } from "./usePosterBatches";
 import { useRegion } from "./useRegion";
+import { useHiddenFollowed } from "./useSettledFollowed";
 import { useToday } from "./useToday";
-import { ROW_SIZE } from "./useTopPicks";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 // A show's type and nearby episodes, asked again after six hours.
@@ -52,6 +53,7 @@ function deviceTimeZone(): string {
 export function useAiringThisWeek(): PosterBatches<AiringExtra> {
   const queryClient = useQueryClient();
   const { followedIds, isLoaded } = useFollowList();
+  const hidden = useHiddenFollowed();
   const { region } = useRegion();
   const todayDate = useToday();
   const timeZone = deviceTimeZone();
@@ -78,20 +80,21 @@ export function useAiringThisWeek(): PosterBatches<AiringExtra> {
     ],
     pageIndexKey: PAGE_INDEX_KEY,
     enabled: isLoaded && region !== undefined && candidates.data !== undefined,
-    fill: (start) => fillAiring(start),
-    isFollowed: (tvmazeId) => followedIds.has(tvmazeId),
+    fill: (start, size) => fillAiring(start, size),
+    hidden,
+    minCards: MIN_AIRING_CARDS,
   });
 
-  async function fillAiring(start: number) {
-    const filled = await fillWeek(start);
+  async function fillAiring(start: number, size: number) {
+    const filled = await fillWeek(start, size);
     return { ...filled, cards: byAiringDate(filled.cards) };
   }
 
-  function fillWeek(start: number) {
+  function fillWeek(start: number, size: number) {
     return fillTopPicks(
       airingThisWeek(candidates.data ?? []),
       start,
-      ROW_SIZE,
+      size,
       resolveTvMazeId,
       (tvmazeId) => followedIds.has(tvmazeId),
       async (tvmazeId, tmdbId) => {

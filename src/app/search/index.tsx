@@ -26,6 +26,11 @@ import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import { useSearchShows } from "@/hooks/useSearchShows";
+import {
+  SettledFollowedContext,
+  useSettledFollowed,
+} from "@/hooks/useSettledFollowed";
+import { POSTER_ROW_TOP_MARGIN } from "@/logic/poster-snap";
 import { t, type } from "@/theme/tokens";
 
 // The pause in typing before a search is sent (PRD 5.4).
@@ -33,6 +38,9 @@ const SEARCH_DELAY_MS = 250;
 
 export default function SearchScreen() {
   const router = useGuardedRouter();
+  // Shows followed before Search opened are left out of its rows; one
+  // followed here stays, marked, while Search is open (CRI-131).
+  const { hidden: settledFollowed } = useSettledFollowed();
   const [query, setQuery] = useState("");
 
   const searchedQuery = useDebouncedValue(query, SEARCH_DELAY_MS);
@@ -92,7 +100,9 @@ export default function SearchScreen() {
       </View>
 
       {query.trim().length === 0 ? (
-        <BeforeTyping />
+        <SettledFollowedContext.Provider value={settledFollowed}>
+          <BeforeTyping />
+        </SettledFollowedContext.Provider>
       ) : (
         <FlatList
           testID="search-results"
@@ -150,6 +160,7 @@ function BeforeTyping() {
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
     >
+      <View style={styles.rowsTop} />
       {followedCount > 0 && (
         <TopPicksRow
           followedShows={followedShowList}
@@ -189,6 +200,10 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     paddingVertical: 12,
     color: t.ink,
+  },
+  // Above the first row; between rows, the slot under a row (CRI-131).
+  rowsTop: {
+    height: POSTER_ROW_TOP_MARGIN,
   },
   resultsContent: {
     paddingBottom: t.space10,

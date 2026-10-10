@@ -1,11 +1,10 @@
 // "Top picks for you" (FR-038, ADR 0016). TMDB's recommendations per
 // followed show are kept a day; a page of cards is filled once from their
 // ranking (fillTopPicks), only titles with a service in the region, and
-// then left alone, so following from the row never reshuffles it. Swiping
-// towards the row's end appends the next batch, without followed shows; at
-// the end of the ranking the row ends (CRI-131). The batches, the next one
-// prepared ahead, and the count shared with Search's row (FR-026) are
-// usePosterBatches'.
+// then left alone, so following from the row never reshuffles it. A drag
+// past the row's end appends the next batch, without followed shows; at
+// the end of the ranking the row ends (CRI-131). The batches, and the
+// count shared with Search's row (FR-026), are usePosterBatches'.
 
 import { useQueries } from "@tanstack/react-query";
 
@@ -20,11 +19,11 @@ import type { TvMazeShow } from "@/api/tvmaze-types";
 import { rankRecommendations } from "@/logic/recommendations";
 import { fillTopPicks } from "@/logic/top-picks";
 import { useFollowList } from "./useFollowList";
+import { useHiddenFollowed } from "./useSettledFollowed";
 import { usePosterBatches, type PosterBatches } from "./usePosterBatches";
 import { useRegion } from "./useRegion";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
-export const ROW_SIZE = 10;
 const RECOMMENDATIONS_KEY = ["recommendations", "v1"];
 // Pages belong to one launch: the next launch starts from the top again.
 const LAUNCH = Date.now();
@@ -40,6 +39,7 @@ export function useTopPicks(
   followedShows: TvMazeShow[],
 ): PosterBatches<object> {
   const { followedIds } = useFollowList();
+  const hidden = useHiddenFollowed();
   const { region } = useRegion();
   const answers = useQueries({
     queries: followedShows.map((show) => ({
@@ -57,7 +57,7 @@ export function useTopPicks(
     pageKey: (index) => ["topPicksPage", "v2", LAUNCH, region, index],
     pageIndexKey: PAGE_INDEX_KEY,
     enabled: settled,
-    fill: (start) => {
+    fill: (start, size) => {
       const found = answers.map((query) => query.data).filter(isFound);
       const ranking = rankRecommendations(
         found.map(({ results }) => results),
@@ -67,13 +67,13 @@ export function useTopPicks(
       return fillTopPicks(
         ranking,
         start,
-        ROW_SIZE,
+        size,
         resolveTvMazeId,
         (tvmazeId) => followedIds.has(tvmazeId),
         async (tvmazeId, tmdbId) =>
           (await hasServiceInRegion(tvmazeId, tmdbId, region!)) ? {} : null,
       );
     },
-    isFollowed: (tvmazeId) => followedIds.has(tvmazeId),
+    hidden,
   });
 }

@@ -46,11 +46,20 @@ jest.mock("@/hooks/useTopPicks", () => ({
     loadMore: jest.fn(),
   }),
 }));
+// Leaves out the shows Search settled as followed, as the real hook does.
 jest.mock("@/hooks/useAiringThisWeek", () => ({
-  useAiringThisWeek: () => ({
-    cards: [{ ...card(2), day: "Fri" }],
-    isLoading: false,
-  }),
+  useAiringThisWeek: () => {
+    const hidden = jest
+      .requireActual("@/hooks/useSettledFollowed")
+      .useHiddenFollowed();
+    return {
+      cards: [
+        { ...card(2), day: "Fri" },
+        { ...card(3), day: "Sat" },
+      ].filter((pick) => !hidden.has(pick.tvmazeId)),
+      isLoading: false,
+    };
+  },
 }));
 
 jest.mock("@/api/tvmaze-client", () => ({
@@ -129,6 +138,26 @@ describe("SearchScreen", () => {
     client.unmount();
   });
 
+  // CRI-131: shows followed before Search opened are out of its rows; one
+  // followed in Search stays, marked, while Search is open.
+  it("FR-026: before typing, leaves out shows followed before Search opened, and keeps one followed here (CRI-131)", async () => {
+    mockedGetFollowedIds.mockResolvedValue([1002]);
+    const client = createTestQueryClient();
+    const { unmount } = await render(<SearchScreen />, {
+      wrapper: wrapperWithQueryClient(client),
+    });
+
+    await waitFor(() => expect(screen.queryByText("Pick 2")).toBeNull());
+    expect(screen.getByText("Pick 3")).toBeTruthy();
+
+    await fireEvent.press(screen.getByTestId("airing-follow-1003"));
+    await waitFor(() => expect(mockedFollow).toHaveBeenCalledWith(1003));
+    expect(screen.getByText("Pick 3")).toBeTruthy();
+
+    await unmount();
+    client.unmount();
+  });
+
   it("FR-026: before typing with an empty follow list, shows only Airing this week", async () => {
     const client = createTestQueryClient();
     const { unmount } = await render(<SearchScreen />, {
@@ -148,7 +177,7 @@ describe("SearchScreen", () => {
       wrapper: wrapperWithQueryClient(client),
     });
 
-    await fireEvent.press(screen.getByTestId("airing"));
+    await fireEvent.press(screen.getAllByTestId("airing")[0]);
 
     expect(mockPush).toHaveBeenCalledWith({
       pathname: "/search/show/[id]",

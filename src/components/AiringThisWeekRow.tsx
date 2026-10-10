@@ -1,9 +1,9 @@
 // "Airing this week" on Home (FR-039, ADR 0016): shows on a service in the
 // region that would be in the hero if followed, by popularity, followed
 // shows left out, each with its day. Always shown; a card followed from
-// the row stays in it, marked. Swiped towards its end the row loads the
-// next shows and appends them; at the end of the week's shows it simply
-// ends (CRI-131). The row is empty, with a line saying so, only when every
+// the row stays in it, marked, until Home's tab is selected again. Dragged
+// past its end the row loads the next shows and appends them; at the end
+// of the week's shows it says so (CRI-131). The row is empty, with a line saying so, only when every
 // show is followed (CRI-123).
 
 import { useAiringThisWeek } from "@/hooks/useAiringThisWeek";
@@ -15,7 +15,7 @@ export function AiringThisWeekRow({
 }: {
   detailPathname?: DetailPathname;
 } = {}) {
-  const { cards, isLoading, isLoadingMore, loadMore, allFollowed } =
+  const { cards, isLoading, isLoadingMore, hasMore, loadMore, allFollowed } =
     useAiringThisWeek();
 
   return (
@@ -27,7 +27,8 @@ export function AiringThisWeekRow({
       withCaption
       emptyText={allFollowed ? "That's all this week" : null}
       isLoadingMore={isLoadingMore}
-      onNearEnd={loadMore}
+      hasMore={hasMore}
+      onLoadMore={loadMore}
       testID="airing-this-week-row"
     >
       {cards.map((card) => (

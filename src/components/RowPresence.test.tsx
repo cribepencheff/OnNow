@@ -73,9 +73,10 @@ describe("RowPresence (CRI-125)", () => {
 
 describe("posterRowHeight (CRI-125)", () => {
   it("adds up the row's fixed parts", () => {
-    // The space above, the heading, the gap and the cards (CRI-131: no
-    // control under them).
-    expect(posterRowHeight(false)).toBe(32 + 25 + 8 + cardHeight(false));
+    // The heading, the cards and the slot under them, with the row's gap
+    // between them (CRI-131: the space above the first row is the
+    // screen's).
+    expect(posterRowHeight(false)).toBe(25 + 8 + cardHeight(false) + 8 + 36);
     expect(posterRowHeight(true) - posterRowHeight(false)).toBe(
       cardHeight(true) - cardHeight(false),
     );

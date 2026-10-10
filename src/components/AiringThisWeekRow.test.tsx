@@ -1,10 +1,13 @@
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
+import { LOAD_MORE_PULL } from "@/logic/poster-batches";
 import { AiringThisWeekRow } from "./AiringThisWeekRow";
+import { CAUGHT_UP_TEXT } from "./PosterRow";
 
 const mockLoadMore = jest.fn();
 let mockRow: {
   isLoadingMore?: boolean;
+  hasMore?: boolean;
   allFollowed?: boolean;
   cards?: unknown[];
 } = {};
@@ -32,6 +35,10 @@ jest.mock("@/hooks/useFollowList", () => ({
   useFollowToggle: () => ({ followed: false, toggle: jest.fn() }),
 }));
 jest.mock("expo-router", () => ({ useRouter: () => ({ push: jest.fn() }) }));
+jest.mock("expo-haptics", () => ({
+  impactAsync: jest.fn(),
+  ImpactFeedbackStyle: { Light: "light" },
+}));
 
 const scrollTo = (x: number) => ({
   nativeEvent: {
@@ -42,7 +49,7 @@ const scrollTo = (x: number) => ({
   },
 });
 
-// CRI-131: no Refresh; swiping near the end loads more, appended.
+// CRI-131: no Refresh; a drag past the end loads more, appended.
 describe("AiringThisWeekRow loading more (FR-039, CRI-131)", () => {
   beforeEach(() => {
     mockLoadMore.mockClear();
@@ -55,16 +62,23 @@ describe("AiringThisWeekRow loading more (FR-039, CRI-131)", () => {
     expect(screen.queryByRole("button", { name: "Start over" })).toBeNull();
   });
 
-  it("asks for more when swiped near its end, not at its start", async () => {
+  it("asks for more when dragged past its end, not when swiped near it", async () => {
     await render(<AiringThisWeekRow />);
     const strip = screen.getByTestId("airing-this-week-row-cards");
 
-    await fireEvent.scroll(strip, scrollTo(0));
+    // The strip's end: 1640 - 390 = 1250.
+    await fireEvent(strip, "scrollBeginDrag");
+    await fireEvent.scroll(strip, scrollTo(1250));
     expect(mockLoadMore).not.toHaveBeenCalled();
 
-    // Three cards (3 × 162 = 486) from the end: 1640 - 390 - 486 = 764.
-    await fireEvent.scroll(strip, scrollTo(800));
-    expect(mockLoadMore).toHaveBeenCalled();
+    await fireEvent.scroll(strip, scrollTo(1250 + LOAD_MORE_PULL));
+    expect(mockLoadMore).toHaveBeenCalledTimes(1);
+  });
+
+  it(`says "${CAUGHT_UP_TEXT}" at the end of the week's shows, as Top picks does`, async () => {
+    mockRow = { hasMore: false };
+    await render(<AiringThisWeekRow />);
+    expect(screen.getByText(CAUGHT_UP_TEXT)).toBeTruthy();
   });
 
   it("shows skeleton cards at its end while more is on its way", async () => {

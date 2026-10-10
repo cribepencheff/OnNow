@@ -1,11 +1,24 @@
 // The batches of a poster row, "Top picks for you" and "Airing this week"
-// (FR-038, FR-039, CRI-131). A row loads more as it is swiped towards its
-// end: each batch continues where the last one stopped and is appended, so
-// earlier cards stay where they are and nothing is ever replaced. When the
-// pool is exhausted the row simply ends. The next batch is prepared one
-// ahead (CRI-127), so it is usually ready before the swipe gets there.
+// (FR-038, FR-039, CRI-131). Loading more is a deliberate gesture: each
+// drag past the row's end loads one batch, appended, so earlier cards stay
+// where they are and nothing is ever replaced. Nothing is fetched ahead:
+// a batch is only fetched when a drag asks for it. When the pool is
+// exhausted the row ends, "You're all caught up".
 
 import type { FilledPage, PosterItem } from "./top-picks";
+
+// The first batch fills the row; each drag past the end adds a smaller one
+// (CRI-131).
+export const FIRST_BATCH_SIZE = 10;
+export const MORE_BATCH_SIZE = 6;
+
+// The shortest time a new batch shows its skeleton cards, so it reads as
+// new content arriving, even when the fetch is quicker. The old Refresh
+// spinner's shortest turn.
+export const MIN_LOAD_MORE_MS = 700;
+
+// How far a row must be dragged past its end to load more.
+export const LOAD_MORE_PULL = 64;
 
 export interface Batch<Extra = object> extends FilledPage<Extra> {
   // Its place in the row: 0 for the first batch.
@@ -15,13 +28,18 @@ export interface Batch<Extra = object> extends FilledPage<Extra> {
   allFollowed: boolean;
 }
 
-// The batch after `previous` (or the first): from where it stopped. Only
-// asked for while the pool has more (previous.hasMore).
+// The batch after `previous` (or the first): from where it stopped, as
+// many as a batch at its place holds. Only asked for while the pool has
+// more (previous.hasMore), and never more than is left: a short last batch
+// is not topped up.
 export async function nextBatch<Extra = object>(
   previous: Batch<Extra> | undefined,
-  fill: (start: number) => Promise<FilledPage<Extra>>,
+  fill: (start: number, size: number) => Promise<FilledPage<Extra>>,
 ): Promise<Batch<Extra>> {
-  const filled = await fill(previous ? previous.nextStart : 0);
+  const filled = await fill(
+    previous ? previous.nextStart : 0,
+    previous ? MORE_BATCH_SIZE : FIRST_BATCH_SIZE,
+  );
   return {
     ...filled,
     index: previous ? previous.index + 1 : 0,
@@ -50,21 +68,73 @@ export function rowCards<Card extends PosterItem>(
   return cards;
 }
 
-// How many cards before the end a row starts loading its next batch: a few,
-// so it is usually in before the swipe gets there.
-export const LOAD_MORE_AHEAD_CARDS = 3;
+// The cards shown, without the shows that were followed when the screen
+// last settled them (a return to the Home tab): a show followed from the
+// row stays until then, so the follow can be undone (CRI-131). A row with
+// a minimum ("Airing this week", CRI-125) keeps them while hiding them
+// would take it under that minimum and the pool has nothing more to load
+// in their place.
+export function visibleCards<Card extends PosterItem>({
+  cards,
+  hidden,
+  minCards = 0,
+  hasMore,
+}: {
+  cards: Card[];
+  hidden: ReadonlySet<number>;
+  minCards?: number;
+  hasMore: boolean;
+}): Card[] {
+  const visible = cards.filter((card) => !hidden.has(card.tvmazeId));
+  return visible.length < minCards && !hasMore ? cards : visible;
+}
 
-// Whether a row's strip is scrolled within `aheadWidth` of its end.
-export function isNearEnd({
+// How far a row's strip is dragged past its end, or 0. A strip shorter
+// than the screen ends at the screen's edge.
+export function pastEnd({
   offsetX,
   viewportWidth,
   contentWidth,
-  aheadWidth,
 }: {
   offsetX: number;
   viewportWidth: number;
   contentWidth: number;
-  aheadWidth: number;
-}): boolean {
-  return offsetX + viewportWidth >= contentWidth - aheadWidth;
+}): number {
+  return Math.max(
+    0,
+    offsetX + viewportWidth - Math.max(contentWidth, viewportWidth),
+  );
+}
+
+// Where a row's strip rests once cards before or at its first visible card
+// were taken out (followed shows, CRI-131): with the same card first, or,
+// when that one went, the next card that stayed. null when the strip need
+// not move. `stride` is a card and its gap; a strip always rests with a
+// card at the left margin.
+export function anchoredOffset({
+  previousKeys,
+  keys,
+  offsetX,
+  stride,
+  maxOffset,
+}: {
+  previousKeys: readonly string[];
+  keys: readonly string[];
+  offsetX: number;
+  stride: number;
+  maxOffset: number;
+}): number | null {
+  const firstVisible = Math.round(offsetX / stride);
+  const remaining = new Set(keys);
+  const anchor = previousKeys
+    .slice(firstVisible)
+    .find((key) => remaining.has(key));
+  if (anchor === undefined) {
+    return null;
+  }
+  const offset = Math.min(
+    keys.indexOf(anchor) * stride,
+    Math.max(0, maxOffset),
+  );
+  return offset === offsetX ? null : offset;
 }

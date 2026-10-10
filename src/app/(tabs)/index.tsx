@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as SplashScreen from "expo-splash-screen";
+import { useScrollToTop } from "expo-router";
 import {
   useAnimatedRef,
   useDerivedValue,
@@ -31,6 +32,11 @@ import { TopPicksRow } from "@/components/TopPicksRow";
 import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useGuardedRouter } from "@/hooks/useGuardedRouter";
+import {
+  SettledFollowedContext,
+  useSettledFollowed,
+} from "@/hooks/useSettledFollowed";
+import { useTabReturn } from "@/hooks/useTabReturn";
 import { useToday } from "@/hooks/useToday";
 import { deriveHomeViewState } from "@/logic/home";
 import {
@@ -46,6 +52,7 @@ import {
   posterDimEndScroll,
 } from "@/logic/hero-layout";
 import { updatedAgoLabel } from "@/logic/launch";
+import { POSTER_ROW_TOP_MARGIN } from "@/logic/poster-snap";
 import { t as tokens, type } from "@/theme/tokens";
 
 // How far Home must be scrolled down to count as away from its top
@@ -131,6 +138,12 @@ export default function HomeScreen() {
 
   const openSearch = useCallback(() => router.push("/search"), [router]);
 
+  // Shows followed from the rows stay in them, marked, while the user
+  // stays on Home, so a follow can be undone; they go when Home's tab is
+  // selected again after another tab (CRI-131).
+  const { hidden: settledFollowed, settle } = useSettledFollowed();
+  useTabReturn(settle);
+
   // What sits at the top of the page, above the rows: one of these.
   const top = {
     heroPager: heroSlides.length > 0,
@@ -141,8 +154,9 @@ export default function HomeScreen() {
     loading: state.kind === "loading",
   };
   // "Airing this week"'s place among the page's children: after the top
-  // block and "Top picks for you" (always mounted).
-  const airingIndex = Object.values(top).filter(Boolean).length + 1;
+  // block, the space above the rows and "Top picks for you" (always
+  // mounted).
+  const airingIndex = Object.values(top).filter(Boolean).length + 2;
 
   // The header (logo) is shown over the hero only, for now (CRI-124).
   const showsHero =
@@ -267,6 +281,9 @@ export default function HomeScreen() {
   // screen (CRI-124, an experiment). Reanimated reads the scroll offset
   // on the UI thread.
   const reanimatedScrollRef = useAnimatedRef();
+  // iOS convention (CRI-131): tapping Home while on Home scrolls back to
+  // the hero; the rows keep their own positions.
+  useScrollToTop(reanimatedScrollRef as never);
   const reanimatedScrollOffset = useScrollOffset(reanimatedScrollRef);
   const dimEndScroll = posterDimEndScroll(
     heroLayout(height, insets.top).heroHeight,
@@ -387,11 +404,17 @@ export default function HomeScreen() {
                 <Text style={styles.quietLine}>Loading your shows…</Text>
               )}
 
-              {/* FR-038, ADR 0016, CRI-125: always mounted; it opens when
-                  it has picks and is hidden otherwise (TopPicksRow). */}
-              <TopPicksRow followedShows={followedShowList} />
-              {/* FR-039: always shown, also with an empty follow list. */}
-              <AiringThisWeekRow />
+              {/* Above the first row; between rows, the slot under a row
+                  (CRI-131). */}
+              <View style={styles.rowsTop} />
+              <SettledFollowedContext.Provider value={settledFollowed}>
+                {/* FR-038, ADR 0016, CRI-125: always mounted; it opens
+                    when it has picks and is hidden otherwise
+                    (TopPicksRow). */}
+                <TopPicksRow followedShows={followedShowList} />
+                {/* FR-039: always shown, also with an empty follow list. */}
+                <AiringThisWeekRow />
+              </SettledFollowedContext.Provider>
               <View style={styles.tabBarClearance} />
             </>
           )}
@@ -547,6 +570,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
   },
   // The rows clear the translucent tab bar at the end of the page.
+  rowsTop: {
+    height: POSTER_ROW_TOP_MARGIN,
+  },
   tabBarClearance: {
     height: TAB_BAR_HEIGHT + tokens.space4,
   },

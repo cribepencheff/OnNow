@@ -22,9 +22,30 @@ import type { TvMazeEpisode, TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 
 const mockPush = jest.fn();
 const mockIsFocused = jest.fn(() => true);
+const mockScrollToTop = jest.fn();
+// The tab navigator Home sits in: Home is tab 0. A test selects a tab and
+// sends Home's blur and focus events, as switching tabs does.
+let mockTabIndex = 0;
+const mockNavListeners: Record<string, (() => void)[]> = {};
+const mockNavigation = {
+  getState: () => ({
+    index: mockTabIndex,
+    routes: [{ key: "index-1" }, { key: "calendar-1" }],
+  }),
+  addListener: (event: string, listener: () => void) => {
+    (mockNavListeners[event] ??= []).push(listener);
+    return () => {
+      mockNavListeners[event] = mockNavListeners[event].filter(
+        (other) => other !== listener,
+      );
+    };
+  },
+};
 jest.mock("expo-router", () => ({
   useRouter: () => ({ push: mockPush }),
   useIsFocused: () => mockIsFocused(),
+  useNavigation: () => mockNavigation,
+  useScrollToTop: (ref: unknown) => mockScrollToTop(ref),
 }));
 
 jest.mock("expo-splash-screen", () => ({
@@ -51,9 +72,16 @@ jest.mock("@/hooks/useAiringThisWeek", () => ({
 const mockTopPicks = jest.fn(() => [] as unknown[]);
 const mockLoadMoreTopPicks = jest.fn();
 const mockTopPicksLoading = jest.fn(() => false);
+// Leaves out the shows Home has settled as followed, as the real hook does.
 jest.mock("@/hooks/useTopPicks", () => ({
   useTopPicks: () => ({
-    cards: mockTopPicks(),
+    cards: (mockTopPicks() as { tvmazeId: number }[]).filter(
+      (card) =>
+        !jest
+          .requireActual("@/hooks/useSettledFollowed")
+          .useHiddenFollowed()
+          .has(card.tvmazeId),
+    ),
     isLoading: mockTopPicksLoading(),
     isLoadingMore: false,
     hasMore: true,
@@ -61,8 +89,11 @@ jest.mock("@/hooks/useTopPicks", () => ({
   }),
 }));
 const mockFollow = jest.fn();
+let mockFollowedIds = new Set<number>();
 jest.mock("@/hooks/useFollowList", () =>
   jest.requireActual("@/hooks/test-follow-list-mock").followListMock(() => ({
+    followedIds: mockFollowedIds,
+    isLoaded: true,
     isFollowed: () => false,
     follow: mockFollow,
     unfollow: jest.fn(),
@@ -636,8 +667,8 @@ describe("HomeScreen", () => {
       });
     });
 
-    // CRI-131: no Refresh; the row loads more as it is swiped.
-    it("has no Refresh control, and asks for more near its end (CRI-131)", async () => {
+    // CRI-131: no Refresh; a drag past the row's end loads more.
+    it("has no Refresh control, and asks for more when dragged past its end (CRI-131)", async () => {
       mockTopPicks.mockReturnValue([gangs]);
       mockFollowedEpisodes({
         followedShows: [{ show, episodes: [makeEpisode()] }],
@@ -645,14 +676,50 @@ describe("HomeScreen", () => {
       await render(<HomeScreen />);
 
       expect(screen.queryByRole("button", { name: "Refresh" })).toBeNull();
-      await fireEvent.scroll(screen.getByTestId("top-picks-row-cards"), {
+      const strip = screen.getByTestId("top-picks-row-cards");
+      await fireEvent(strip, "scrollBeginDrag");
+      // One card, shorter than the screen: its end is the screen's edge.
+      await fireEvent.scroll(strip, {
         nativeEvent: {
-          contentOffset: { x: 0, y: 0 },
+          contentOffset: { x: 64, y: 0 },
           layoutMeasurement: { width: 390, height: 252 },
           contentSize: { width: 182, height: 252 },
         },
       });
-      expect(mockLoadMoreTopPicks).toHaveBeenCalled();
+      expect(mockLoadMoreTopPicks).toHaveBeenCalledTimes(1);
+    });
+
+    // CRI-131: a follow from the row can be undone while the user stays on
+    // Home; the card goes once Home's tab is selected again.
+    it("keeps a followed card while on Home, also past Show detail, and takes it out on a return from another tab (CRI-131)", async () => {
+      const other = { ...gangs, tvmazeId: 1, tmdbId: 2, name: "Andor" };
+      mockTopPicks.mockReturnValue([gangs, other]);
+      mockFollowedEpisodes({
+        followedShows: [{ show, episodes: [makeEpisode()] }],
+      });
+      const { rerender } = await render(<HomeScreen />);
+      const leaveAndReturn = async (tabIndex: number) => {
+        mockTabIndex = tabIndex;
+        await act(async () => mockNavListeners.blur?.forEach((l) => l()));
+        mockTabIndex = 0;
+        await act(async () => mockNavListeners.focus?.forEach((l) => l()));
+      };
+
+      // Followed from the row: the follow list changes, Home redraws.
+      mockFollowedIds = new Set([15299]);
+      await rerender(<HomeScreen />);
+      try {
+        // Show detail pushed over Home and closed: still the same visit.
+        await leaveAndReturn(0);
+        expect(screen.getByText("Gangs of London")).toBeTruthy();
+
+        // Calendar, then Home again.
+        await leaveAndReturn(1);
+        expect(screen.queryByText("Gangs of London")).toBeNull();
+        expect(screen.getByText("Andor")).toBeTruthy();
+      } finally {
+        mockFollowedIds = new Set();
+      }
     });
 
     it("is hidden when the follow list is empty", async () => {
@@ -700,10 +767,11 @@ describe("HomeScreen", () => {
           contentInset: { top: 0, left: 0, bottom: 0, right: 0 },
         },
       });
-      // The hero, "Top picks for you", then "Airing this week".
+      // The hero, the space above the rows, "Top picks for you", then
+      // "Airing this week".
       expect(
         screen.getByTestId("home-scroll").props.maintainVisibleContentPosition,
-      ).toEqual({ minIndexForVisible: 2 });
+      ).toEqual({ minIndexForVisible: 3 });
     });
 
     it("is hidden when there is nothing to recommend", async () => {
@@ -714,6 +782,17 @@ describe("HomeScreen", () => {
 
       expect(screen.queryByTestId("top-picks-row")).toBeNull();
     });
+  });
+
+  // CRI-131: iOS convention, tapping Home while on Home scrolls to the
+  // hero (useScrollToTop: only when Home is the focused tab).
+  it("scrolls back to the hero on a tap of the Home tab (CRI-131)", async () => {
+    mockFollowedEpisodes({ followedCount: 0 });
+    await render(<HomeScreen />);
+    const ref = mockScrollToTop.mock.calls.at(-1)?.[0] as {
+      current: unknown;
+    };
+    expect(ref.current).toBeTruthy();
   });
 
   // FR-039: always shown, also with an empty follow list.
