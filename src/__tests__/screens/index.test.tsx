@@ -350,8 +350,8 @@ describe("HomeScreen", () => {
       const chip = screen.getByTestId("imdb-rating");
       expect(style(chip.parent!).flexShrink).toBe(0);
 
-      // One line: the chip's label is the episode text's size, on its
-      // baseline, and the chip no taller than the text's line.
+      // One line: the chip's label, smaller as fits a chip, on the episode
+      // text's baseline, and the chip no taller than the text's line.
       for (const row of rows) {
         expect(style(row).alignItems).toBe("baseline");
       }
@@ -360,13 +360,11 @@ describe("HomeScreen", () => {
       expect(IMDB_CHIP_HEIGHT).toBeLessThanOrEqual(
         episodeText.lineHeight as number,
       );
-      expect(style(chip).alignItems).toBe("baseline");
-      expect(style(within(chip).getByText("IMDb")).fontSize).toBe(
-        episodeText.fontSize,
-      );
-      expect(style(within(chip).getByText("8.1")).fontSize).toBe(
-        episodeText.fontSize,
-      );
+      for (const label of ["IMDb", "8.1"]) {
+        expect(
+          style(within(chip).getByText(label)).fontSize as number,
+        ).toBeLessThan(episodeText.fontSize as number);
+      }
     } finally {
       (useShowImages as jest.Mock).mockImplementation(() => ({
         data: undefined,

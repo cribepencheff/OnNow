@@ -16,11 +16,12 @@ import { imdbTitleUrl } from "@/logic/imdb-rating";
 import { t, type } from "@/theme/tokens";
 
 // The chip's height: the episode line's own line height, so it never
-// stands taller than the line it sits on (Home hero). Its label is the
-// episode text's size, on a slightly tighter line, so it fits inside the
-// outline with almost no padding.
+// stands taller than the line it sits on (Home hero). Its label is smaller
+// than the episode text, as fits a chip, and sits on the episode text's
+// baseline (the hero's episode row aligns them).
 export const IMDB_CHIP_HEIGHT = type.meta.lineHeight;
-const CHIP_TEXT_LINE_HEIGHT = IMDB_CHIP_HEIGHT - 2;
+const CHIP_FONT_SIZE = 12;
+const CHIP_TEXT_LINE_HEIGHT = 14;
 // The IMDb mark's line height in Show detail (the "mark" variant).
 const MARK_LINE_HEIGHT = 14;
 
@@ -78,7 +79,7 @@ const styles = StyleSheet.create({
   // episode line. The date pill's edge (image-control-edge, a hairline).
   chip: {
     flexDirection: "row",
-    alignItems: "baseline",
+    alignItems: "center",
     justifyContent: "center",
     gap: 4,
     height: IMDB_CHIP_HEIGHT,
@@ -87,11 +88,12 @@ const styles = StyleSheet.create({
     borderColor: t.imageControlEdge,
     borderRadius: 8,
   },
-  // The episode line's colour and size, so the two read as one line;
-  // Medium, so the chip still reads as its own thing.
+  // The episode line's colour, smaller, as fits a chip; Medium, since
+  // regular reads thin that small.
   chipMark: {
     ...type.meta,
     fontWeight: "500",
+    fontSize: CHIP_FONT_SIZE,
     lineHeight: CHIP_TEXT_LINE_HEIGHT,
     color: t.inkMuted,
   },
@@ -99,6 +101,7 @@ const styles = StyleSheet.create({
   chipRating: {
     ...type.meta,
     fontWeight: "500",
+    fontSize: CHIP_FONT_SIZE,
     lineHeight: CHIP_TEXT_LINE_HEIGHT,
     color: t.inkMuted,
     fontVariant: ["tabular-nums"],
