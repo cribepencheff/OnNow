@@ -221,8 +221,8 @@ describe("posterDimAt (CRI-124)", () => {
   const end = posterDimEndScroll(661, 844);
 
   it("ends when the first row's heading reaches the middle of the screen", () => {
-    // Heading at 661 + 24 in the page; the middle of the screen at 422.
-    expect(end).toBe(661 + 24 - 422);
+    // Heading at 661 + 32 in the page; the middle of the screen at 422.
+    expect(end).toBe(661 + 32 - 422);
   });
 
   it("is full at rest and during a pull", () => {

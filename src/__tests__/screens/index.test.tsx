@@ -14,6 +14,7 @@ import {
 import * as SplashScreen from "expo-splash-screen";
 import HomeScreen from "@/app/(tabs)/index";
 import { IMDB_CHIP_HEIGHT } from "@/components/ImdbRating";
+import { POSTER_REST_DIM } from "@/logic/hero-layout";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useImdbRating } from "@/hooks/useImdbRating";
 import { useShowImages } from "@/hooks/useShowImages";
@@ -600,7 +601,9 @@ describe("HomeScreen", () => {
       await render(<HomeScreen />);
 
       const dim = screen.getByTestId("poster-dim");
-      expect(StyleSheet.flatten(dim.props.style).opacity).toBeCloseTo(0.3);
+      expect(StyleSheet.flatten(dim.props.style).opacity).toBeCloseTo(
+        POSTER_REST_DIM,
+      );
       expect(dim.props.pointerEvents).toBe("none");
       await fireEvent.press(
         screen.getByRole("button", { name: "Gangs of London" }),

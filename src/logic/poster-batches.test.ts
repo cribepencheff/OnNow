@@ -1,4 +1,4 @@
-import { nextBatch, type Batch } from "./poster-batches";
+import { nextBatch, rowControl, type Batch } from "./poster-batches";
 import type { FilledPage } from "./top-picks";
 
 function filled(
@@ -88,5 +88,58 @@ describe("nextBatch (FR-038, FR-039, CRI-123)", () => {
     );
     expect(batch.cards).toEqual([]);
     expect(batch.allFollowed).toBe(false);
+  });
+});
+
+// CRI-127: Refresh is hidden when the pool holds no more shows than the row
+// shows; the batch prepared one ahead tells that early.
+describe("rowControl (FR-038, FR-039, CRI-127)", () => {
+  async function first(overrides: Partial<FilledPage> = {}) {
+    return nextBatch(undefined, async () => filled([1, 2], overrides));
+  }
+
+  it("has no control before the first batch", () => {
+    expect(rowControl(undefined, undefined)).toBeNull();
+  });
+
+  it("offers Refresh while shows are left", async () => {
+    const current = await first();
+    expect(rowControl(current, undefined)).toBe("refresh");
+    const next = await nextBatch(current, async () => filled([3]));
+    expect(rowControl(current, next)).toBe("refresh");
+  });
+
+  it("is hidden when the first batch is the whole pool", async () => {
+    expect(rowControl(await first({ hasMore: false }), undefined)).toBeNull();
+  });
+
+  it("is hidden when the next batch would bring nothing new after the first", async () => {
+    const current = await first();
+    const next = await nextBatch(current, async () =>
+      filled([], { hasMore: false }),
+    );
+    expect(rowControl(current, next)).toBeNull();
+  });
+
+  it("reads Start over at once when the next batch would bring nothing new later on", async () => {
+    const current = await nextBatch(await first(), async () => filled([3]));
+    const next = await nextBatch(current, async () =>
+      filled([], { hasMore: false }),
+    );
+    expect(rowControl(current, next)).toBe("startOver");
+  });
+
+  it("reads Start over at the end of a pool larger than the row", async () => {
+    const last = await nextBatch(await first(), async () =>
+      filled([3], { hasMore: false }),
+    );
+    expect(rowControl(last, undefined)).toBe("startOver");
+  });
+
+  it("is hidden when every show is followed", async () => {
+    const empty = await nextBatch(undefined, async () =>
+      filled([], { hasMore: false, followedSkipped: 4 }),
+    );
+    expect(rowControl(empty, undefined)).toBeNull();
   });
 });

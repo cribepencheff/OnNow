@@ -4,16 +4,11 @@
 // then left alone, so following from the row never reshuffles it. Refresh
 // fills the next page, without followed shows; at the end of the ranking
 // the control reads "Start over" and goes back to the top, minus followed
-// shows (logic/poster-batches.ts, CRI-123). The page number is shared
-// by every row on screen, so Refresh in Search also moves Home's row
-// (FR-026).
+// shows (logic/poster-batches.ts, CRI-123). The batches, the next one
+// prepared ahead, and the page number shared with Search's row (FR-026)
+// are usePosterBatches'.
 
-import {
-  keepPreviousData,
-  useQueries,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useQueries } from "@tanstack/react-query";
 
 import {
   tmdbClient,
@@ -24,13 +19,9 @@ import { hasServiceInRegion } from "@/api/region-service";
 import { resolveTvMazeId } from "@/api/tvmaze-id";
 import type { TvMazeShow } from "@/api/tvmaze-types";
 import { rankRecommendations } from "@/logic/recommendations";
-import {
-  nextBatch,
-  type Batch,
-  type BatchControl,
-} from "@/logic/poster-batches";
-import { fillTopPicks, type PosterItem } from "@/logic/top-picks";
+import { fillTopPicks } from "@/logic/top-picks";
 import { useFollowList } from "./useFollowList";
+import { usePosterBatches, type PosterBatches } from "./usePosterBatches";
 import { useRegion } from "./useRegion";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -46,20 +37,9 @@ function isFound(data: unknown): data is TmdbRecommendations {
   return typeof data === "object" && data !== null;
 }
 
-export function useTopPicks(followedShows: TvMazeShow[]): {
-  cards: PosterItem[];
-  // No page yet: the row keeps its space (CRI-110).
-  isLoading: boolean;
-  refresh: () => Promise<void>;
-  isRefreshing: boolean;
-  // "Refresh" or "Start over" (CRI-123).
-  control: BatchControl;
-  // Empty because every pick is followed.
-  allFollowed: boolean;
-  // Which batch is on screen; a new one crossfades in.
-  batch: number;
-} {
-  const queryClient = useQueryClient();
+export function useTopPicks(
+  followedShows: TvMazeShow[],
+): PosterBatches<object> {
   const { followedIds } = useFollowList();
   const { region } = useRegion();
   const answers = useQueries({
@@ -74,62 +54,28 @@ export function useTopPicks(followedShows: TvMazeShow[]): {
     followedShows.length > 0 &&
     answers.every((query) => !query.isLoading);
 
-  const { data: pageIndex = 0 } = useQuery({
-    queryKey: PAGE_INDEX_KEY,
-    queryFn: () => 0,
-    initialData: 0,
-    staleTime: Infinity,
-  });
-  const page = useQuery({
-    queryKey: ["topPicksPage", "v2", LAUNCH, region, pageIndex],
+  return usePosterBatches({
+    pageKey: (index) => ["topPicksPage", "v2", LAUNCH, region, index],
+    pageIndexKey: PAGE_INDEX_KEY,
     enabled: settled,
-    staleTime: Infinity,
-    placeholderData: keepPreviousData,
-    queryFn: async (): Promise<Batch> => {
+    fill: (start) => {
       const found = answers.map((query) => query.data).filter(isFound);
       const ranking = rankRecommendations(
         found.map(({ results }) => results),
         new Set(found.map(({ tvId }) => tvId)),
         Infinity,
       );
-      const previous = queryClient.getQueryData<Batch>([
-        "topPicksPage",
-        "v2",
-        LAUNCH,
-        region,
-        pageIndex - 1,
-      ]);
-      return nextBatch(previous, (start) =>
-        fillTopPicks(
-          ranking,
-          start,
-          ROW_SIZE,
-          resolveTvMazeId,
-          (tvmazeId) => followedIds.has(tvmazeId),
-          async (tvmazeId, tmdbId) =>
-            (await hasServiceInRegion(tvmazeId, tmdbId, region!)) ? {} : null,
-        ),
+      return fillTopPicks(
+        ranking,
+        start,
+        ROW_SIZE,
+        resolveTvMazeId,
+        (tvmazeId) => followedIds.has(tvmazeId),
+        async (tvmazeId, tmdbId) =>
+          (await hasServiceInRegion(tvmazeId, tmdbId, region!)) ? {} : null,
       );
     },
+    isFollowed: (tvmazeId) => followedIds.has(tvmazeId),
+    source: { queryKey: RECOMMENDATIONS_KEY, maxAgeMs: DAY_MS },
   });
-
-  // Daily data is fetched again only when a day old, judged now rather
-  // than at the last render; then the next page.
-  async function refresh(): Promise<void> {
-    await queryClient.refetchQueries({
-      queryKey: RECOMMENDATIONS_KEY,
-      predicate: (query) => query.isStaleByTime(DAY_MS),
-    });
-    queryClient.setQueryData<number>(PAGE_INDEX_KEY, (index = 0) => index + 1);
-  }
-
-  return {
-    cards: page.data?.cards ?? [],
-    isLoading: page.data === undefined && !page.isError,
-    refresh,
-    isRefreshing: page.isFetching,
-    control: page.data?.control ?? "refresh",
-    allFollowed: page.data?.allFollowed ?? false,
-    batch: page.data?.index ?? 0,
-  };
 }

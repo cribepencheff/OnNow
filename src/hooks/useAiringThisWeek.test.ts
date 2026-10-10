@@ -78,10 +78,10 @@ describe("useAiringThisWeek (FR-039, CRI-110)", () => {
 
     await waitFor(() => expect(result.current).toHaveLength(10));
     expect(result.current[0]).toMatchObject({ tmdbId: 201, day: "Fri" });
-    // Three at a time: at most two checks beyond the ten cards.
-    expect(resolve.mock.calls.length).toBeLessThanOrEqual(12);
-    expect(resolve.mock.calls.map(([id]) => id).slice(0, 10)).toEqual([
-      201, 202, 203, 204, 205, 206, 207, 208, 209, 210,
+    // Three at a time: at most two checks beyond the ten cards, before the
+    // next batch is prepared (CRI-127).
+    expect(resolve.mock.calls.map(([id]) => id).slice(0, 12)).toEqual([
+      201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212,
     ]);
     await unmount();
     client.unmount();
@@ -217,6 +217,62 @@ describe("useAiringThisWeek (FR-039, CRI-110)", () => {
     client.unmount();
   });
 
+  // CRI-127: the next batch is checked while the first is on screen, so
+  // Refresh is near instant; never more than one batch ahead.
+  describe("the next batch prepared ahead (CRI-127)", () => {
+    // 30 candidates: room for three batches.
+    const thirty = Array.from({ length: 30 }, (_, i) => ({
+      id: 201 + i,
+      name: `Show ${201 + i}`,
+      poster_path: `/p${201 + i}.jpg`,
+      popularity: 100 - i,
+      genre_ids: [18],
+    }));
+    const checked = () => resolve.mock.calls.map(([id]) => id as number);
+
+    it("checks the next batch without a tap, and only that one", async () => {
+      findAiringThisWeek.mockResolvedValue(thirty);
+      const { result, unmount, client } = await renderRow();
+      await waitFor(() => expect(result.current.cards).toHaveLength(10));
+
+      // The second batch is 211–220, its checks end with 222.
+      await waitFor(() => expect(checked()).toContain(222));
+      expect(Math.max(...checked())).toBe(222);
+
+      await act(() => result.current.refresh());
+      await waitFor(() =>
+        expect(ids(result.current.cards)).toEqual([
+          211, 212, 213, 214, 215, 216, 217, 218, 219, 220,
+        ]),
+      );
+      // 215 was checked once, ahead, not again on Refresh.
+      expect(checked().filter((id) => id === 215)).toHaveLength(1);
+      // Then the third batch is prepared.
+      await waitFor(() => expect(checked()).toContain(230));
+      await unmount();
+      client.unmount();
+    });
+
+    it("checks the prepared batch again when a show in it was followed since", async () => {
+      findAiringThisWeek.mockResolvedValue(thirty);
+      const { result, rerender, unmount, client } = await renderRow();
+      await waitFor(() => expect(result.current.cards).toHaveLength(10));
+      await waitFor(() => expect(checked()).toContain(222));
+
+      // 213 followed from Show detail, after it was prepared.
+      mockFollowed = { ids: new Set([1213]), isLoaded: true };
+      await rerender({});
+      await act(() => result.current.refresh());
+      await waitFor(() =>
+        expect(ids(result.current.cards)).toEqual([
+          211, 212, 214, 215, 216, 217, 218, 219, 220, 221,
+        ]),
+      );
+      await unmount();
+      client.unmount();
+    });
+  });
+
   // CRI-123: Refresh and Start over, as on "Top picks for you".
   describe("Refresh and Start over (CRI-123)", () => {
     it("shows the next most popular shows, without followed ones", async () => {
@@ -258,7 +314,7 @@ describe("useAiringThisWeek (FR-039, CRI-110)", () => {
       client.unmount();
     });
 
-    it('says "all followed" only when every show is followed', async () => {
+    it('says "all followed" only when every show is followed, with no control (CRI-127)', async () => {
       mockFollowed = {
         ids: new Set(onTheAir.map((show) => show.id + 1000)),
         isLoaded: true,
@@ -268,20 +324,22 @@ describe("useAiringThisWeek (FR-039, CRI-110)", () => {
       await waitFor(() => expect(result.current.isLoading).toBe(false));
       expect(result.current.cards).toEqual([]);
       expect(result.current.allFollowed).toBe(true);
-      expect(result.current.control).toBe("startOver");
+      expect(result.current.control).toBeNull();
       await unmount();
       client.unmount();
     });
 
-    it('keeps the row and reads "Start over" when the shows left are all left out', async () => {
+    // CRI-127: the row is then the whole pool, so Start over would show
+    // the same shows: the control is hidden, known from the batch prepared
+    // ahead, without a tap.
+    it("keeps the row and hides the control when the shows left are all left out", async () => {
       getWeekInfo.mockImplementation(async (tvmazeId: number) =>
         tvmazeId > 1210 ? null : airsFriday,
       );
       const { result, unmount, client } = await renderRow();
       await waitFor(() => expect(result.current.cards).toHaveLength(10));
 
-      await act(() => result.current.refresh());
-      await waitFor(() => expect(result.current.control).toBe("startOver"));
+      await waitFor(() => expect(result.current.control).toBeNull());
       expect(result.current.batch).toBe(0);
       expect(ids(result.current.cards)).toEqual([
         201, 202, 203, 204, 205, 206, 207, 208, 209, 210,

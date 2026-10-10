@@ -5,6 +5,7 @@
 
 import { t, type } from "@/theme/tokens";
 import { HEADER_BAR_HEIGHT } from "./header";
+import { POSTER_ROW_TOP_MARGIN } from "./poster-snap";
 
 // The translucent tab bar's height (app/(tabs)/_layout.tsx).
 export const TAB_BAR_HEIGHT = 83;
@@ -209,15 +210,16 @@ export function reverseMaskStops({
 
 // The poster rows under the hero are dimmed at rest, so the hero has more
 // weight (CRI-124, an experiment): this much black over each poster.
-export const POSTER_REST_DIM = 0.3;
+export const POSTER_REST_DIM = 0.4;
 
 // How far Home is scrolled when the dimming is gone: when the first row's
-// heading (a section gap under the hero) reaches the middle of the screen.
+// heading (POSTER_ROW_TOP_MARGIN under the hero) reaches the middle of the
+// screen.
 export function posterDimEndScroll(
   heroHeight: number,
   windowHeight: number,
 ): number {
-  return Math.max(1, heroHeight + t.space6 - windowHeight / 2);
+  return Math.max(1, heroHeight + POSTER_ROW_TOP_MARGIN - windowHeight / 2);
 }
 
 // The dimming at a scroll offset: full at rest and during a pull, easing
