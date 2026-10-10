@@ -31,7 +31,7 @@ import { PosterDimContext } from "@/components/PosterDim";
 import { TopPicksRow } from "@/components/TopPicksRow";
 import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
-import { useGuardedRouter } from "@/hooks/useGuardedRouter";
+import { useOpenSearch } from "@/hooks/useOpenSearch";
 import {
   SettledFollowedContext,
   useSettledFollowed,
@@ -67,7 +67,6 @@ function deviceTimeZone(): string {
 }
 
 export default function HomeScreen() {
-  const router = useGuardedRouter();
   const { width, height, fontScale } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const { reduceMotionEnabled } = useAccessibilityFlags();
@@ -143,7 +142,7 @@ export default function HomeScreen() {
     [followedShows],
   );
 
-  const openSearch = useCallback(() => router.push("/search"), [router]);
+  const openSearch = useOpenSearch();
 
   // Shows followed from the rows stay in them, marked, while the user
   // stays on Home, so a follow can be undone; they go when Home's tab is

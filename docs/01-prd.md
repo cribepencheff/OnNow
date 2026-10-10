@@ -37,8 +37,8 @@ first user is the author, who currently uses Next Episode.
   episode's title, or the count ("2 episodes") when a range starts with a
   placeholder title such as "Episode 9" or "TBA"; a single episode with a
   placeholder title reads "Title not announced" (FR-031). The IMDb rating sits in one chip after that line, the two centred together as one line (ADR 0013); without a rating the line alone is centred. No network: where to watch is "Open in". Tapping the card
-  opens Show detail (FR-030). No search entry while shows are followed:
-  Search is reached from the Shows tab (FR-007).
+  opens Show detail (FR-030). No search entry on Home while shows are
+  followed: Search is its own tab (FR-007).
 - **Empty week:** when nothing airs within the 7 days, the cards show the
   episodes of the next day with episodes,
   labelled with that day ("Tomorrow · Tue 22 Sep" or a date, with the year
@@ -146,8 +146,8 @@ first user is the author, who currently uses Next Episode.
 - **Needs:** see that the list is right, unfollow, and reach search.
 - **Concept:** the list of followed series with their status, and swipe to
   unfollow. A search field on top opens Search (5.4).
-- **Search field:** always visible at the top. Tapping it opens the Search
-  sheet with the keyboard open (FR-007). It does not filter the list.
+- **Search field:** always visible at the top. Tapping it goes to the
+  Search tab with the keyboard open (FR-007). It does not filter the list.
 - **Two segments (FR-010):** "Active" and "Inactive", each header with its
   count. Alphabetical by title within each. Both are always open, and each
   header stays at the top while its rows scroll. A segment without shows
@@ -177,23 +177,23 @@ first user is the author, who currently uses Next Episode.
 - **Job:** add series quickly. Without series there is no app.
 - **Needs:** find the right show, even when several share a name, and follow
   several in a row.
-- **Entry points:** the search field in Shows, the button on an empty
-  Shows list, and "Add your first show" on an empty Home. All open the same
-  Search (FR-007).
-- **Presentation:** a sheet over the current view. Large search field on top
-  with the keyboard already open. Results appear while typing, after a
+- **Entry points:** the Search tab, the search field in Shows, the button
+  on an empty Shows list, "Add your first show" on an empty Home, and
+  "Search more" on "Top picks for you". All go to the same Search tab
+  (FR-007).
+- **Presentation:** a tab of its own, the last in the tab bar. Large search
+  field on top with the keyboard already open. Results appear while typing, after a
   short pause (about 250 ms) so each keystroke is not a request. A clear
   button (X) inside the field empties it, the same on iOS and Android.
 - **Scope:** Search finds every show in TVmaze. It is not filtered by
   region or by show type: talk shows, reality and shows unavailable in the
   user's region are all found. Each show appears once.
-- **Leaving:** a round close button (X) at the top right, next to the search
-  field, or swipe the sheet down. The close button is always visible, also
-  while the keyboard is open (references: Next Episode's search, current iOS
-  sheets). Both return to where you came from, so from Home you are back on
-  Home with the new shows in place. There is no "Cancel": following is saved
-  immediately, the close button only closes.
-- **Keyboard:** open on entry. Following a show keeps it open, so several
+- **Leaving:** another tab, as anywhere else (references: Instagram's
+  search tab). There is no close button and no "Cancel": following is saved
+  immediately. What was typed stays until the field is cleared.
+- **Keyboard:** open on entry, from every entry point, also when Search's
+  tab is tapped while Search is open. Coming back from a Show detail opened
+  in Search does not open it. Leaving Search closes it. Following a show keeps it open, so several
   shows can be followed in a row. Dragging the results or pressing the
   return key ("Search") closes it. Autocorrect and spell check are off, so
   original titles are not rewritten.
@@ -327,15 +327,14 @@ per season come in the MVP.
 ### 5.6 Navigation rules
 - **Going deeper gives a back arrow.** Views pushed on top of another (Show
   detail) have a back arrow top left and support the edge swipe back.
-- **Opening something on top gives a close button.** Sheets (Search) close
-  with a round close button (X) at the top right or a swipe down.
-- **Inside a sheet, going deeper gives only a back arrow.** Show detail
+- **Inside Search, going deeper gives only a back arrow.** Show detail
   opened from Search (a result or a poster card) has a back arrow to Search
-  and no close button. Swiping the sheet down still closes all of Search.
+  and no close button, with the tab bar still in view (CRI-133).
 - **Tapping the current tab goes back to its start (iOS convention).**
   With a view pushed on top of Home, tapping Home first goes back to Home;
   on Home itself it scrolls back to the hero. The poster rows keep their
-  own positions (CRI-131).
+  own positions (CRI-131). On Search it goes back to the results
+  and opens the keyboard (CRI-133).
 
 ### 5.7 Fixed defaults
 These are decisions, not settings. They match how the first user has set up
@@ -365,7 +364,7 @@ Reached from an icon. Territory and notifications.
 | FR-004 | Home shows followed series with an episode released today | PoC |
 | FR-005 | Home shows the slide count in the page dots, and each slide's day in a date pill ("Today · Fri 9 Oct", "Tomorrow · Sat 10 Oct", "Mon 12 Oct", "Today–Thu · 9–15 Oct"); the PoC used a label ("TODAY · 1/3") (CRI-124) | PoC, MVP |
 | FR-006 | When nothing airs within the hero's 7 days, Home shows the episodes of the next day with episodes | PoC, MVP |
-| FR-007 | Search opens as a sheet from the search field in Shows, from the button on an empty Shows list, and from "Add your first show" on an empty Home (FR-013). With shows followed, Home has no search entry. The close button (X) or swipe down returns to where Search was opened | PoC, MVP |
+| FR-007 | Search is a tab of its own, the last in the tab bar (CRI-133). The search field in Shows, the button on an empty Shows list, "Add your first show" on an empty Home (FR-013) and "Search more" go to it, and every entry opens it with the keyboard up. With shows followed, Home has no search entry of its own | PoC, MVP |
 | FR-008 | Calendar shows a month grid with days that have episodes marked, today preselected | PoC |
 | FR-009 | Selecting a day in Calendar lists that day's episodes | PoC |
 | FR-036 | Calendar swipes between months and shows a "Today" button when away from today | PoC |

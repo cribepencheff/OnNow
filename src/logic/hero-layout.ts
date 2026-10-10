@@ -6,9 +6,10 @@
 import { t, type } from "@/theme/tokens";
 import { HEADER_BAR_HEIGHT } from "./header";
 import { POSTER_ROW_TOP_MARGIN } from "./poster-snap";
+import { TAB_BAR_HEIGHT } from "./tab-bar";
 
-// The translucent tab bar's height (app/(tabs)/_layout.tsx).
-export const TAB_BAR_HEIGHT = 83;
+// The space the floating tab bar covers (logic/tab-bar.ts).
+export { TAB_BAR_HEIGHT };
 
 // The hero ends this far above the tab bar, so the first row's heading and
 // the top of its posters show below it (the owner's sketch, CRI-124).

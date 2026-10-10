@@ -15,6 +15,7 @@ import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import type { PosterItem } from "@/logic/top-picks";
 import { POSTER_CARD_WIDTH } from "@/logic/poster-snap";
 import { t, type } from "@/theme/tokens";
+import { followSymbol } from "./followSymbols";
 import { PosterDimOverlay } from "./PosterDim";
 
 // About 150 wide: two full cards and a peek of the third (CRI-127).
@@ -134,11 +135,7 @@ function PosterFollowCircle({
     >
       <View style={styles.circle}>
         <SymbolView
-          name={{
-            ios: followed ? "checkmark" : "plus",
-            android: followed ? "check" : "add",
-            web: followed ? "check" : "add",
-          }}
+          name={followSymbol(followed)}
           tintColor="#FFFFFF"
           size={15}
         />

@@ -64,10 +64,6 @@ export default function RootLayout() {
               headerBackButtonDisplayMode: "minimal",
             }}
           />
-          <Stack.Screen
-            name="search"
-            options={{ presentation: "modal", headerShown: false }}
-          />
         </Stack>
       </PersistQueryClientProvider>
     </GestureHandlerRootView>
