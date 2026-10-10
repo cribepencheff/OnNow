@@ -9,7 +9,7 @@ let mockRow: {
   cards?: unknown[];
 } = {};
 // Ten cards: a strip longer than the screen.
-const tenCards = Array.from({ length: 10 }, (_, i) => ({
+const mockTenCards = Array.from({ length: 10 }, (_, i) => ({
   tmdbId: i + 1,
   tvmazeId: i + 1001,
   name: `Show ${i + 1}`,
@@ -19,7 +19,7 @@ const tenCards = Array.from({ length: 10 }, (_, i) => ({
 }));
 jest.mock("@/hooks/useAiringThisWeek", () => ({
   useAiringThisWeek: () => ({
-    cards: tenCards,
+    cards: mockTenCards,
     isLoading: false,
     isLoadingMore: false,
     hasMore: true,
