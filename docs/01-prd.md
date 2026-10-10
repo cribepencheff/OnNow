@@ -52,16 +52,14 @@ first user is the author, who currently uses Next Episode.
   language. The cards are built from the app's existing components and design system
   tokens: a poster, the show's name, and the Search follow circle, which
   follows at once; tapping a card opens Show detail. A show followed from
-  the row stays in it, marked as followed. A "Refresh" control under the
-  row drops followed shows and shows the next ones in rank order (11–20,
-  then 21–30), with no new TMDB fetch unless the day's data is stale.
-  When the list runs out, the control reads "Start over" and goes back to
-  the first picks, minus followed shows (CRI-123). Refresh is hidden when
-  the picks are no more than the row shows. Hidden when it has no picks to
+  the row stays in it, marked as followed. Swiping towards the end of the
+  row loads the next picks in rank order (11–20, then 21–30), without
+  followed shows, and appends them (CRI-131). When the list runs out, the
+  row simply ends. Hidden when it has no picks to
   show: an empty follow list, or every pick followed or without a service
   in the region; when it gets picks it expands in with skeleton cards,
   and what is on screen stays in place. The same row appears in Search before typing (FR-026), and
-  Refresh there moves this row too.
+  what it has loaded there is loaded on Home too.
 - **Second row:** "Airing this week" (FR-039, ADR 0016): candidates from
   TMDB discover for the user's region and the week (on a streaming service
   there, an episode within the 7 days), in TMDB's popularity order, soaps
@@ -75,27 +73,26 @@ first user is the author, who currently uses Next Episode.
   the hero's words ("Today", "Tomorrow", then the weekday, "Fri"). The
   cards are in date order: what airs today first, then tomorrow, then the
   following weekdays, and the more popular show first within a day
-  (CRI-122). A show followed from the row stays in it, marked as
-  followed, until Refresh. The same "Refresh" control as "Top picks for
-  you" fills the row with the next most popular shows not yet followed
-  (11–20, then 21–30). At the end of the week's shows the control reads
-  "Start over" and goes back to the first shows, minus followed shows
-  (CRI-123).
+  (CRI-122) within each batch. A show followed from the row stays in it,
+  marked as followed. As on "Top picks for you", swiping towards the end of
+  the row appends the next most popular shows not yet followed (11–20,
+  then 21–30); at the end of the week's shows the row ends (CRI-131).
   Always shown, also with an empty follow list, when it is the first row
   under the hero. The same row appears in Search before typing (FR-026).
   No all-time charts, and no trending without a time link, on Home.
-- **Both poster rows (CRI-123, CRI-127):** the control under a row is a
-  button: "Refresh" while shows are left, "Start over" at the end. It is
-  hidden when the row's pool holds no more shows than the row shows. While
-  a refresh runs its icon turns (at least one full turn) and further taps
-  are ignored; the next batch is prepared in the background, one batch
-  ahead, so Refresh is near instant. "Airing this week" is empty only when
-  every show in it is followed; then it says so where its cards were
+- **Both poster rows (CRI-123, CRI-127, CRI-131):** no control under a
+  row. Swiping within a few cards of its end loads the next batch and
+  appends it; earlier cards stay where they are and nothing is ever
+  replaced, so no batch can be lost to a tap. The next batch is prepared
+  in the background, one batch ahead, so it is usually there in time;
+  while it is still on its way, skeleton cards in the real cards' size wait
+  at the end. Only one batch is fetched at a time, however fast the swipe.
+  When the pool runs out the row ends. "Airing this week" is empty only
+  when every show in it is followed; then it says so where its cards were
   ("That's all this week"). "Top picks for you" is hidden instead. On
   first load, before anything is cached, a row shows skeleton cards of
-  exactly the real cards' size. The row and the control keep one fixed
-  height in every state, and a new batch crossfades in, scrolled to its
-  start.
+  exactly the real cards' size. A row keeps one fixed height in every
+  state.
 
 ### 5.2 Calendar
 - **Job:** give an overview backwards and forwards in time.
@@ -197,10 +194,10 @@ first user is the author, who currently uses Next Episode.
   that cache keep it within TVmaze's rate limit (NFR-005).
 - **Before typing (FR-026):** Home's two poster rows, reused as they are:
   the same component, titles and data (5.1, FR-038, FR-039).
-  "Top picks for you" and "Airing this week", each with its "Refresh"
-  control. With an empty follow list, only "Airing this week", as on Home.
-  Both are region filtered as on Home. Refresh is shared with Home:
-  refreshing a row in Search also moves the same row on Home. The poster rows
+  "Top picks for you" and "Airing this week". With an empty follow list,
+  only "Airing this week", as on Home. Both are region filtered as on Home.
+  What a row has loaded is shared with Home: loading more in Search also
+  grows the same row on Home (CRI-131). The poster rows
   deliberately look different from search results.
 - **Edge cases:** no results gives a short hint to try the original title.
   A show without an image gets no poster, as everywhere in the app (design
@@ -338,8 +335,8 @@ Reached from an icon. Territory and notifications.
 | FR-009 | Selecting a day in Calendar lists that day's episodes | PoC |
 | FR-036 | Calendar swipes between months and shows a "Today" button when away from today | PoC |
 | FR-037 | Specials are never shown, only regular episodes. No setting | PoC |
-| FR-038 | Under the hero, Home shows one row, "Top picks for you": TMDB recommendations for each followed show, followed shows removed, ranked by how many followed shows recommend the same title, cached for a day, only shows with at least one streaming service in the user's region (subscription, free or ads, add-on channels included; pay-TV never counts, the same rule as "Open in"), not filtered by origin country or language. The cards are built from the app's existing components and design system tokens; each follows at once from its circle and opens Show detail on a tap, and a show followed from the row stays in it, marked as followed. A "Refresh" control under the row drops followed shows and shows the next ones in rank order (11–20, then 21–30), with no new TMDB fetch unless the day's data is stale; when the list runs out it reads "Start over" and goes back to the first picks, minus followed shows (CRI-123); Refresh is hidden when the picks are no more than the row shows. Hidden when it has no picks to show: an empty follow list (ADR 0016), or every pick followed or without a service in the region; when it gets picks it expands in with skeleton cards, and what is on screen stays in place | MVP |
-| FR-039 | Under "Top picks for you", Home shows "Airing this week": candidates from TMDB discover for the user's region and the week (on a streaming service there, an episode within the 7 days, soaps excluded) in TMDB's popularity order, kept only when the show has a streaming service in the region by the same rule as "Open in", TVmaze has an episode within the hero's 7 days (it would be in the hero if followed) and TVmaze's type is scripted, animation or documentary (no reality, talk, news, game shows, sports or soaps), not filtered by origin country or language, followed shows left out, each card with the next episode's air date ("Today", "Tomorrow", "Fri"), the cards in date order with Today first and popularity order within a day (CRI-122), following at once from its circle and opening Show detail; a show followed from the row stays in it, marked as followed, until a "Refresh" control fills the row with the next most popular shows not yet followed; at the end of the week's shows it reads "Start over" (CRI-123); Refresh is hidden when the week's shows are no more than the row shows. Always shown, also with an empty follow list (ADR 0016), with at least as many cards as fit on the screen | MVP |
+| FR-038 | Under the hero, Home shows one row, "Top picks for you": TMDB recommendations for each followed show, followed shows removed, ranked by how many followed shows recommend the same title, cached for a day, only shows with at least one streaming service in the user's region (subscription, free or ads, add-on channels included; pay-TV never counts, the same rule as "Open in"), not filtered by origin country or language. The cards are built from the app's existing components and design system tokens; each follows at once from its circle and opens Show detail on a tap, and a show followed from the row stays in it, marked as followed. Swiping towards the end of the row loads the next picks in rank order (11–20, then 21–30), without followed shows, and appends them; when the list runs out the row ends (CRI-131). Hidden when it has no picks to show: an empty follow list (ADR 0016), or every pick followed or without a service in the region; when it gets picks it expands in with skeleton cards, and what is on screen stays in place | MVP |
+| FR-039 | Under "Top picks for you", Home shows "Airing this week": candidates from TMDB discover for the user's region and the week (on a streaming service there, an episode within the 7 days, soaps excluded) in TMDB's popularity order, kept only when the show has a streaming service in the region by the same rule as "Open in", TVmaze has an episode within the hero's 7 days (it would be in the hero if followed) and TVmaze's type is scripted, animation or documentary (no reality, talk, news, game shows, sports or soaps), not filtered by origin country or language, followed shows left out, each card with the next episode's air date ("Today", "Tomorrow", "Fri"), the cards in date order with Today first and popularity order within a day (CRI-122), following at once from its circle and opening Show detail; a show followed from the row stays in it, marked as followed; swiping towards the end of the row appends the next most popular shows not yet followed, and at the end of the week's shows the row ends (CRI-131). Always shown, also with an empty follow list (ADR 0016), with at least as many cards as fit on the screen | MVP |
 | FR-010 | Shows lists followed series in two segments with counts, "Active" (airing, including an episode out today with nothing dated after it and a next episode listed without an airstamp; a dated next season; a next season listed without a date) and "Inactive" (between seasons, future uncertain, ended), alphabetical within each, both always open, each header sticky while its rows scroll, a segment without shows left out. Each row: poster, title, Show detail's status line (FR-035) and the service slot, "On [service]" or plain "Unavailable", nothing when TMDB does not know the show (CRI-97, CRI-102). With no followed shows, a button opens Search | PoC, MVP |
 | FR-011 | Data refreshes on app start when stale, and on pull to refresh | PoC |
 | FR-012 | Several episodes of one show on the same day appear as one item. On the Home hero, all of a show's episodes within the 7 days are one slide with a date and episode range (CRI-94) | PoC, MVP |
@@ -356,7 +353,7 @@ Reached from an icon. Territory and notifications.
 | FR-023 | Android widget | After MVP |
 | FR-024 | Search results show poster, title, a meta line with year and genres, Show detail's status line (FR-025), the service slot (FR-027) and a follow circle at the right edge. PoC: year and status, and a two line summary. MVP: no summary, no TVmaze status in the meta line and no IMDb rating (the rating is in Show detail only). Results appear after a short pause in typing (about 250 ms), each show once, and are not filtered by region or show type. A clear button (X) inside the field on iOS and Android | PoC, MVP |
 | FR-025 | After following, the result row shows the next episode or "No date yet" (PoC). MVP: every result row shows Show detail's status line, followed or not, the same as the Shows row (FR-035), from the cached show lookup | PoC, MVP |
-| FR-026 | Before the user types, Search shows Home's rows as they are: "Top picks for you" with its shared Refresh (FR-038), then "Airing this week" with its shared Refresh (FR-039); only "Airing this week" when the follow list is empty. Region filtered as on Home (CRI-98) | MVP |
+| FR-026 | Before the user types, Search shows Home's rows as they are: "Top picks for you" (FR-038), then "Airing this week" (FR-039), each sharing what it has loaded with Home; only "Airing this week" when the follow list is empty. Region filtered as on Home (CRI-98) | MVP |
 | FR-027 | Search results and Shows rows show the services that carry the show in the user's territory, or plain "Unavailable" when there is none, and nothing when TMDB does not know the show; the row does not name the region, unlike Show detail (CRI-91, CRI-97, CRI-102) | MVP |
 | FR-028 | Show detail view with image, title, year, status, service, summary, next and latest episode. PoC shows the network instead of the service. MVP: a meta line with the premiere year, the first origin country from TMDB and up to three genres from TVmaze ("2026 · Philippines · Drama, Thriller"), any missing part left out; the country is the show's origin, kept on purpose, and the original network stays out of the UI. MVP adds the IMDb rating from OMDb (ADR 0013) | PoC, MVP |
 | FR-029 | Show detail has a "Follow" / "Following" toggle button and, followed or not, "Open in [service]" as a full button when the show has a service in the user's territory (CRI-86). PoC: "Follow", and a quiet "Following" that unfollows; "Open in [service]" only when followed, for the show's Swedish service (FR-014); the service list in the user's territory is MVP | PoC, MVP |
