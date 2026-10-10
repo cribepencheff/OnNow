@@ -36,7 +36,7 @@ first user is the author, who currently uses Next Episode.
   range, "S23E156–158", "S1E10–S2E1" across seasons) and the first
   episode's title, or the count ("2 episodes") when a range starts with a
   placeholder title such as "Episode 9" or "TBA"; a single episode with a
-  placeholder title reads "Title not announced" (FR-031). The IMDb rating sits in one chip at the right end of that line (ADR 0013), left out when there is none. No network: where to watch is "Open in". Tapping the card
+  placeholder title reads "Title not announced" (FR-031). The IMDb rating sits in one chip after that line, the two centred together as one line (ADR 0013); without a rating the line alone is centred. No network: where to watch is "Open in". Tapping the card
   opens Show detail (FR-030). No search entry while shows are followed:
   Search is reached from the Shows tab (FR-007).
 - **Empty week:** when nothing airs within the 7 days, the cards show the
