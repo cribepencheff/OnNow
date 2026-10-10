@@ -4,6 +4,11 @@ import { hasServiceInRegion } from "@/api/region-service";
 import { tmdbClient } from "@/api/tmdb-client";
 import { resolveTvMazeId } from "@/api/tvmaze-id";
 import type { TvMazeShow } from "@/api/tvmaze-types";
+import { createElement, type ReactNode } from "react";
+
+import { MIN_LOAD_MORE_MS } from "@/logic/poster-batches";
+import { SettledDayContext } from "./useSettledDay";
+import { SettledFollowedContext } from "./useSettledFollowed";
 import { useTopPicks } from "./useTopPicks";
 import { createTestQueryClient, wrapperWithQueryClient } from "./test-utils";
 
@@ -54,10 +59,21 @@ describe("useTopPicks (FR-038)", () => {
   });
   afterEach(() => jest.useRealTimers());
 
-  async function renderRow() {
+  // `settled`: the shows followed when the screen last settled its rows.
+  async function renderRow(settled = { current: new Set<number>() }) {
     const client = createTestQueryClient();
+    const QueryWrapper = wrapperWithQueryClient(client);
     const rendered = await renderHook(() => useTopPicks([followedShow]), {
-      wrapper: wrapperWithQueryClient(client),
+      wrapper: ({ children }: { children: ReactNode }) =>
+        createElement(
+          QueryWrapper,
+          null,
+          createElement(
+            SettledFollowedContext.Provider,
+            { value: settled.current },
+            children,
+          ),
+        ),
     });
     return { ...rendered, client };
   }
@@ -69,30 +85,44 @@ describe("useTopPicks (FR-038)", () => {
     expect(ids(result.current.cards)).toEqual([
       101, 102, 103, 104, 105, 106, 107, 108, 109, 110,
     ]);
-    // Three at a time: at most two checks beyond the ten cards, before the
-    // next batch is prepared (CRI-127).
-    expect(resolve.mock.calls.map(([id]) => id).slice(0, 12)).toEqual([
+    // Three at a time: at most two checks beyond the ten cards, and
+    // nothing prepared ahead (CRI-131).
+    await act(async () => jest.advanceTimersByTime(MIN_LOAD_MORE_MS));
+    expect(resolve.mock.calls.map(([id]) => id)).toEqual([
       101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112,
     ]);
     await unmount();
     client.unmount();
   });
 
-  // CRI-127: Refresh is near instant because the next batch was checked
-  // while the first was on screen; only one batch ahead.
-  it("prepares the next batch in the background, so Refresh needs no new checks", async () => {
+  // CRI-131: fewer fetches matter more than an instant batch.
+  it("fetches nothing ahead: the next batch is only checked when a drag asks for it (CRI-131)", async () => {
     const { result, unmount, client } = await renderRow();
     await waitFor(() => expect(result.current.cards).toHaveLength(10));
-    await waitFor(() =>
-      expect(resolve.mock.calls.map(([id]) => id)).toContain(114),
-    );
-    const checks = resolve.mock.calls.length;
+    await act(async () => jest.advanceTimersByTime(10 * MIN_LOAD_MORE_MS));
+    expect(resolve).toHaveBeenCalledTimes(12);
 
-    await act(() => result.current.refresh());
-    await waitFor(() =>
-      expect(ids(result.current.cards)).toEqual([111, 112, 113, 114]),
-    );
-    expect(resolve.mock.calls.length).toBe(checks);
+    await act(async () => result.current.loadMore());
+    await waitFor(() => expect(result.current.cards).toHaveLength(14));
+    expect(resolve.mock.calls.map(([id]) => id)).toContain(114);
+    await unmount();
+    client.unmount();
+  });
+
+  // CRI-131: a new batch reads as new content arriving, never instant.
+  it("holds a new batch in skeleton cards for the shortest load time, however quick the fetch (CRI-131)", async () => {
+    const { result, unmount, client } = await renderRow();
+    await waitFor(() => expect(result.current.cards).toHaveLength(10));
+
+    await act(async () => result.current.loadMore());
+    // The checks are instant here; the batch still waits.
+    await act(async () => jest.advanceTimersByTime(MIN_LOAD_MORE_MS - 50));
+    expect(result.current.isLoadingMore).toBe(true);
+    expect(result.current.cards).toHaveLength(10);
+
+    await act(async () => jest.advanceTimersByTime(50));
+    expect(result.current.isLoadingMore).toBe(false);
+    expect(result.current.cards).toHaveLength(14);
     await unmount();
     client.unmount();
   });
@@ -110,7 +140,7 @@ describe("useTopPicks (FR-038)", () => {
     client.unmount();
   });
 
-  it("keeps a show followed from the row on the card, in place", async () => {
+  it("keeps a show followed from the row on the card, in place, until the rows are settled again (CRI-131)", async () => {
     const { result, rerender, unmount, client } = await renderRow();
     await waitFor(() => expect(result.current.cards).toHaveLength(10));
 
@@ -123,27 +153,43 @@ describe("useTopPicks (FR-038)", () => {
     client.unmount();
   });
 
-  it('Refresh shows the next ones, then "Start over" goes back to the top, without followed shows or a new fetch (CRI-123)', async () => {
+  it("leaves out a show followed when the rows were settled, the others staying in order (CRI-131)", async () => {
+    const settled = { current: new Set<number>() };
+    const { result, rerender, unmount, client } = await renderRow(settled);
+    await waitFor(() => expect(result.current.cards).toHaveLength(10));
+
+    // Home's tab selected again with 103 followed.
+    settled.current = new Set([1103]);
+    await rerender({});
+
+    expect(ids(result.current.cards)).toEqual([
+      101, 102, 104, 105, 106, 107, 108, 109, 110,
+    ]);
+    // Top picks has no minimum: nothing is loaded in its place.
+    await act(async () => jest.advanceTimersByTime(MIN_LOAD_MORE_MS));
+    expect(resolve).toHaveBeenCalledTimes(12);
+    await unmount();
+    client.unmount();
+  });
+
+  it("appends the next picks without followed shows, never more than are left, then ends, never starting over, without a new fetch (CRI-131)", async () => {
     const { result, rerender, unmount, client } = await renderRow();
     await waitFor(() => expect(result.current.cards).toHaveLength(10));
-    expect(result.current.control).toBe("refresh");
+    expect(result.current.hasMore).toBe(true);
 
+    // 103 followed from the row: it stays on its card.
     mockFollowed = new Set([1, 1103]);
     await rerender({});
-    await act(() => result.current.refresh());
+    await act(async () => result.current.loadMore());
 
-    await waitFor(() =>
-      expect(ids(result.current.cards)).toEqual([111, 112, 113, 114]),
-    );
-    expect(result.current.control).toBe("startOver");
+    await waitFor(() => expect(result.current.cards).toHaveLength(14));
+    expect(ids(result.current.cards)).toEqual([
+      101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114,
+    ]);
+    expect(result.current.hasMore).toBe(false);
 
-    await act(() => result.current.refresh());
-    await waitFor(() =>
-      expect(ids(result.current.cards)).toEqual([
-        101, 102, 104, 105, 106, 107, 108, 109, 110, 111,
-      ]),
-    );
-    expect(result.current.control).toBe("refresh");
+    await act(async () => result.current.loadMore());
+    expect(result.current.cards).toHaveLength(14);
     expect(findRecommendations).toHaveBeenCalledTimes(1);
     await unmount();
     client.unmount();
@@ -159,13 +205,12 @@ describe("useTopPicks (FR-038)", () => {
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     expect(result.current.cards).toEqual([]);
     expect(result.current.allFollowed).toBe(true);
-    // Nothing to refresh to (CRI-127).
-    expect(result.current.control).toBeNull();
+    expect(result.current.hasMore).toBe(false);
     await unmount();
     client.unmount();
   });
 
-  it("shares Refresh between Home and Search: both rows move to the next picks (FR-026)", async () => {
+  it("grows Home's and Search's rows together (FR-026)", async () => {
     const client = createTestQueryClient();
     const wrapper = wrapperWithQueryClient(client);
     const home = await renderHook(() => useTopPicks([followedShow]), {
@@ -177,24 +222,113 @@ describe("useTopPicks (FR-038)", () => {
     await waitFor(() => expect(home.result.current.cards).toHaveLength(10));
     await waitFor(() => expect(search.result.current.cards).toHaveLength(10));
 
-    await act(() => search.result.current.refresh());
+    await act(async () => search.result.current.loadMore());
 
-    const next = [111, 112, 113, 114];
-    await waitFor(() => expect(ids(search.result.current.cards)).toEqual(next));
-    await waitFor(() => expect(ids(home.result.current.cards)).toEqual(next));
+    await waitFor(() => expect(search.result.current.cards).toHaveLength(14));
+    await waitFor(() => expect(home.result.current.cards).toHaveLength(14));
     await home.unmount();
     await search.unmount();
     client.unmount();
   });
 
-  it("Refresh fetches recommendations again only once they are a day old", async () => {
-    const { result, unmount, client } = await renderRow();
+  // CRI-131: each day starts from a different part of the ranking, the
+  // same all day and on Home and in Search, with no fetch of its own.
+  describe("daily start (CRI-131)", () => {
+    // 60 titles: room for the day's offset to show.
+    const sixty = {
+      tvId: 500,
+      results: Array.from({ length: 60 }, (_, i) => ({
+        id: 101 + i,
+        name: `Pick ${101 + i}`,
+        poster_path: `/p${101 + i}.jpg`,
+      })),
+    };
+
+    async function firstCardsOn(day: string) {
+      jest.setSystemTime(new Date(`${day}T08:00:00Z`));
+      const client = createTestQueryClient();
+      const wrapper = wrapperWithQueryClient(client);
+      const home = await renderHook(() => useTopPicks([followedShow]), {
+        wrapper,
+      });
+      const search = await renderHook(() => useTopPicks([followedShow]), {
+        wrapper,
+      });
+      await waitFor(() => expect(home.result.current.cards).toHaveLength(10));
+      await waitFor(() => expect(search.result.current.cards).toHaveLength(10));
+      const cards = {
+        home: ids(home.result.current.cards),
+        search: ids(search.result.current.cards),
+      };
+      await home.unmount();
+      await search.unmount();
+      client.unmount();
+      return cards;
+    }
+
+    it("differs between days, is stable within a day, and is shared by Home and Search", async () => {
+      findRecommendations.mockResolvedValue(sixty);
+      const monday = await firstCardsOn("2026-10-05");
+      const mondayAgain = await firstCardsOn("2026-10-05");
+      const tuesday = await firstCardsOn("2026-10-06");
+
+      expect(monday.search).toEqual(monday.home);
+      expect(mondayAgain.home).toEqual(monday.home);
+      expect(tuesday.home[0]).not.toBe(monday.home[0]);
+      // The day's start comes from the day's one recommendations answer.
+      expect(findRecommendations).toHaveBeenCalledTimes(3);
+    });
+  });
+
+  // CRI-131: a new day never moves the row under the user's finger; it
+  // takes effect when the screen settles on it (focus, pull to refresh),
+  // from the first batch of the new day's order.
+  it("keeps the day's order past midnight until its screen settles on the new day, then starts over from its first batch", async () => {
+    const sixty = {
+      tvId: 500,
+      results: Array.from({ length: 60 }, (_, i) => ({
+        id: 101 + i,
+        name: `Pick ${101 + i}`,
+        poster_path: `/p${101 + i}.jpg`,
+      })),
+    };
+    findRecommendations.mockResolvedValue(sixty);
+    jest.setSystemTime(new Date("2026-10-05T21:00:00Z"));
+    const day = { current: "2026-10-05" };
+    const client = createTestQueryClient();
+    const QueryWrapper = wrapperWithQueryClient(client);
+    const { result, rerender, unmount } = await renderHook(
+      () => useTopPicks([followedShow]),
+      {
+        wrapper: ({ children }: { children: ReactNode }) =>
+          createElement(
+            QueryWrapper,
+            null,
+            createElement(
+              SettledDayContext.Provider,
+              { value: day.current },
+              children,
+            ),
+          ),
+      },
+    );
     await waitFor(() => expect(result.current.cards).toHaveLength(10));
+    await act(async () => result.current.loadMore());
+    await act(async () => jest.advanceTimersByTime(MIN_LOAD_MORE_MS));
+    await waitFor(() => expect(result.current.cards).toHaveLength(16));
+    const monday = ids(result.current.cards);
 
-    jest.setSystemTime(new Date("2026-10-06T08:00:01Z"));
-    await act(() => result.current.refresh());
+    // Midnight passes on the clock while the user is on the row.
+    jest.setSystemTime(new Date("2026-10-06T08:00:00Z"));
+    await act(async () => jest.advanceTimersByTime(60_000));
+    await rerender({});
+    expect(ids(result.current.cards)).toEqual(monday);
 
-    await waitFor(() => expect(findRecommendations).toHaveBeenCalledTimes(2));
+    // The screen regains focus: the new day's order, from its first batch.
+    day.current = "2026-10-06";
+    await rerender({});
+    await waitFor(() => expect(result.current.cards).toHaveLength(10));
+    expect(ids(result.current.cards)[0]).not.toBe(monday[0]);
     await unmount();
     client.unmount();
   });

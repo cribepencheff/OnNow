@@ -4,7 +4,6 @@ import { StyleSheet, Text } from "react-native";
 import { act, render, screen } from "@testing-library/react-native";
 
 import { posterRowHeight } from "./PosterRow";
-import { ROW_CONTROL_HEIGHT } from "./RowRefresh";
 import { RowPresence } from "./RowPresence";
 import { cardHeight } from "./ShowCard";
 
@@ -74,9 +73,9 @@ describe("RowPresence (CRI-125)", () => {
 
 describe("posterRowHeight (CRI-125)", () => {
   it("adds up the row's fixed parts", () => {
-    expect(posterRowHeight(false)).toBe(
-      32 + 25 + 8 + cardHeight(false) + 8 + ROW_CONTROL_HEIGHT + 12,
-    );
+    // The space above, the heading, the gap and the cards (CRI-131: no
+    // slot under them; the end of the pool is said on the title line).
+    expect(posterRowHeight(false)).toBe(32 + 25 + 8 + cardHeight(false));
     expect(posterRowHeight(true) - posterRowHeight(false)).toBe(
       cardHeight(true) - cardHeight(false),
     );

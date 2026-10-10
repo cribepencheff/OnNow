@@ -8,6 +8,9 @@
 //   );
 
 type FollowList = {
+  // For hooks that read the list itself (useSettledFollowed).
+  followedIds?: Set<number>;
+  isLoaded?: boolean;
   isFollowed: (showId: number) => boolean;
   follow: (showId: number) => unknown;
   unfollow: (showId: number) => unknown;

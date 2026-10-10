@@ -8,11 +8,10 @@
 export const POSTER_CARD_WIDTH = 150;
 // The screen margin either side of a row's strip.
 export const POSTER_ROW_MARGIN = 16;
-// The poster rows' spacing (owner, CRI-127): between cards, above a row's
-// heading, and below a row's control.
+// The poster rows' spacing (owner, CRI-127): between cards, and above a
+// row's heading, which is also the space between two rows (CRI-131).
 export const POSTER_CARD_GAP = 12;
 export const POSTER_ROW_TOP_MARGIN = 32;
-export const POSTER_ROW_BOTTOM_SPACE = 12;
 
 // The widest phone the app is laid out for (iPhone Pro Max, 440).
 export const WIDEST_PHONE_WIDTH = 440;

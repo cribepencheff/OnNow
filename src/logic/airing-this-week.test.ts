@@ -4,7 +4,6 @@ import {
   byAiringDate,
   firstEpisodeDayThisWeek,
   isAiringType,
-  topUpToMinimum,
   weekDayWord,
 } from "./airing-this-week";
 
@@ -166,28 +165,5 @@ describe("byAiringDate (FR-039, CRI-122)", () => {
     ];
     byAiringDate(cards);
     expect(cards[0].name).toBe("MobLand");
-  });
-});
-
-// CRI-125: a short batch is topped up from the top of the week's shows.
-describe("topUpToMinimum (CRI-125)", () => {
-  const card = (tmdbId: number) => ({ tmdbId });
-
-  it("leaves a batch alone when it has enough", () => {
-    const cards = [card(1), card(2), card(3)];
-    expect(topUpToMinimum(cards, [card(9)], 3)).toBe(cards);
-  });
-
-  it("adds the first shows it does not have yet, up to the minimum", () => {
-    expect(
-      topUpToMinimum([card(11)], [card(11), card(1), card(2), card(3)], 3),
-    ).toEqual([card(11), card(1), card(2)]);
-  });
-
-  it("adds what there is when the week has fewer shows", () => {
-    expect(topUpToMinimum([card(11)], [card(1)], 3)).toEqual([
-      card(11),
-      card(1),
-    ]);
   });
 });
