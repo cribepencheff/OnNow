@@ -22,9 +22,11 @@ import {
   byAiringDate,
   firstEpisodeDayThisWeek,
   isAiringType,
+  topUpToMinimum,
   weekDayWord,
 } from "@/logic/airing-this-week";
 import { HOME_HERO_HORIZON_DAYS } from "@/logic/hero-carousel";
+import { MIN_AIRING_CARDS } from "@/logic/poster-snap";
 import { addDays, type LocalDate } from "@/logic/local-date";
 import { fillTopPicks, type PosterItem } from "@/logic/top-picks";
 import { useFollowList } from "./useFollowList";
@@ -84,7 +86,27 @@ export function useAiringThisWeek(): PosterBatches<AiringExtra> {
   });
 
   async function fillAiring(start: number) {
-    const filled = await fillTopPicks(
+    const filled = await fillWeek(start);
+    // Never a short row (CRI-125): a short last batch of the week is
+    // topped up from its first shows, so the row always holds as many cards
+    // as fit on the screen. A batch with none at all is the end of the
+    // week's shows, which nextBatch handles (the row keeps its cards).
+    const short =
+      start > 0 &&
+      filled.cards.length > 0 &&
+      filled.cards.length < MIN_AIRING_CARDS;
+    const cards = short
+      ? topUpToMinimum(
+          filled.cards,
+          (await fillWeek(0)).cards,
+          MIN_AIRING_CARDS,
+        )
+      : filled.cards;
+    return { ...filled, cards: byAiringDate(cards) };
+  }
+
+  function fillWeek(start: number) {
+    return fillTopPicks(
       airingThisWeek(candidates.data ?? []),
       start,
       ROW_SIZE,
@@ -109,7 +131,6 @@ export function useAiringThisWeek(): PosterBatches<AiringExtra> {
         return word ? { day: word, date: day } : null;
       },
     );
-    return { ...filled, cards: byAiringDate(filled.cards) };
   }
 
   return batches;

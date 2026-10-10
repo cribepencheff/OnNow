@@ -118,7 +118,13 @@ export function RowRefresh({
             />
           )}
         </View>
-        <Text style={styles.label}>{startOver ? "Start over" : "Refresh"}</Text>
+        {/* Only the spinner while it runs; the button keeps its name for
+            screen readers. */}
+        {!spinning && (
+          <Text style={styles.label}>
+            {startOver ? "Start over" : "Refresh"}
+          </Text>
+        )}
       </Pressable>
     </View>
   );

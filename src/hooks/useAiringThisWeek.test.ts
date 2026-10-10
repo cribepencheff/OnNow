@@ -4,6 +4,7 @@ import { hasServiceInRegion } from "@/api/region-service";
 import { tmdbClient } from "@/api/tmdb-client";
 import { tvMazeClient } from "@/api/tvmaze-client";
 import { resolveTvMazeId } from "@/api/tvmaze-id";
+import { MIN_AIRING_CARDS } from "@/logic/poster-snap";
 import { useAiringThisWeek } from "./useAiringThisWeek";
 import { createTestQueryClient, wrapperWithQueryClient } from "./test-utils";
 
@@ -271,6 +272,35 @@ describe("useAiringThisWeek (FR-039, CRI-110)", () => {
       await unmount();
       client.unmount();
     });
+  });
+
+  // CRI-125: the row never holds fewer cards than fit on the screen, so a
+  // short last batch of the week is topped up from its first shows.
+  describe("never a short row (CRI-125)", () => {
+    it.each([1, 2])(
+      "tops up a last batch of %i up to MIN_AIRING_CARDS",
+      async (left) => {
+        // Only `left` of the shows after the first batch are kept.
+        getWeekInfo.mockImplementation(async (tvmazeId: number) =>
+          tvmazeId > 1210 + left ? null : airsFriday,
+        );
+        const { result, unmount, client } = await renderRow();
+        await waitFor(() => expect(result.current.cards).toHaveLength(10));
+
+        await act(() => result.current.refresh());
+        await waitFor(() => expect(result.current.batch).toBe(1));
+        expect(result.current.cards.length).toBeGreaterThanOrEqual(
+          MIN_AIRING_CARDS,
+        );
+        // Its own shows first, then the top of the week.
+        expect(ids(result.current.cards)).toEqual(
+          expect.arrayContaining([211]),
+        );
+        expect(ids(result.current.cards)).toContain(201);
+        await unmount();
+        client.unmount();
+      },
+    );
   });
 
   // CRI-123: Refresh and Start over, as on "Top picks for you".
