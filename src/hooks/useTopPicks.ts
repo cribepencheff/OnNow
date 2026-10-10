@@ -25,7 +25,7 @@ import { useFollowList } from "./useFollowList";
 import { useHiddenFollowed } from "./useSettledFollowed";
 import { usePosterBatches, type PosterBatches } from "./usePosterBatches";
 import { useRegion } from "./useRegion";
-import { useToday } from "./useToday";
+import { useRowDay } from "./useSettledDay";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const RECOMMENDATIONS_KEY = ["recommendations", "v1"];
@@ -43,7 +43,9 @@ export function useTopPicks(
   const { followedIds } = useFollowList();
   const hidden = useHiddenFollowed();
   const { region } = useRegion();
-  const todayDate = useToday();
+  // The day its screen settled on, not the live clock: a new day never
+  // moves the row under the user's finger (useSettledDay).
+  const todayDate = useRowDay();
   const answers = useQueries({
     queries: followedShows.map((show) => ({
       queryKey: [...RECOMMENDATIONS_KEY, show.id],

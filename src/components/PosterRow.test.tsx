@@ -491,11 +491,14 @@ describe("PosterRow (FR-038, FR-039)", () => {
       expect(style.height + 2 * pill.props.hitSlop).toBeGreaterThanOrEqual(44);
       const slot = StyleSheet.flatten(pill.parent?.props.style);
       expect(slot?.marginVertical ?? 0).toBe(0);
-      // Smaller text than the status line's.
-      expect(
-        StyleSheet.flatten(screen.getByText("Search more").props.style)
-          .fontSize,
-      ).toBeLessThan(14);
+      // Smaller than the status line's text, regular weight, no letter
+      // spacing to push it off centre.
+      const labelStyle = StyleSheet.flatten(
+        screen.getByText("Search more").props.style,
+      );
+      expect(labelStyle.fontSize).toBeLessThan(14);
+      expect(labelStyle.fontWeight).toBe("400");
+      expect(labelStyle.letterSpacing ?? 0).toBe(0);
       const header = screen.getByRole("header");
       expect(StyleSheet.flatten(header.parent?.props.style).alignItems).toBe(
         "center",
@@ -503,6 +506,30 @@ describe("PosterRow (FR-038, FR-039)", () => {
       expect(StyleSheet.flatten(header.props.style).flexShrink).toBe(0);
       const label = screen.getByText("Search more");
       expect(label.props.numberOfLines).toBe(1);
+    });
+
+    // CRI-131: in Search, which shares Home's rows, the end is said only
+    // when it is reached there.
+    it("with quietEndOnArrival, says nothing of an end the row arrived at, and says it when the end is reached", async () => {
+      const quiet = (hasMore: boolean) => (
+        <PosterRow
+          title="Airing this week"
+          isLoading={false}
+          hasCards
+          hasMore={hasMore}
+          quietEndOnArrival
+          testID="row"
+        >
+          <Text>Lanterns</Text>
+        </PosterRow>
+      );
+      const arrived = await render(quiet(false));
+      expect(screen.queryByText(CAUGHT_UP_TEXT)).toBeNull();
+      await arrived.unmount();
+
+      const { rerender } = await render(quiet(true));
+      await rerender(quiet(false));
+      expect(screen.getByText(CAUGHT_UP_TEXT)).toBeTruthy();
     });
 
     it("leaves no slot under the row: the row is the space above, the heading and the cards", () => {

@@ -12,8 +12,11 @@ import { ShowCard, type DetailPathname } from "./ShowCard";
 
 export function AiringThisWeekRow({
   detailPathname,
+  quietEndOnArrival,
 }: {
   detailPathname?: DetailPathname;
+  // Inside Search: no end element if the row is already at its end there.
+  quietEndOnArrival?: boolean;
 } = {}) {
   const { cards, isLoading, isLoadingMore, hasMore, loadMore, allFollowed } =
     useAiringThisWeek();
@@ -29,6 +32,7 @@ export function AiringThisWeekRow({
       isLoadingMore={isLoadingMore}
       hasMore={hasMore}
       onLoadMore={loadMore}
+      quietEndOnArrival={quietEndOnArrival}
       testID="airing-this-week-row"
     >
       {cards.map((card) => (

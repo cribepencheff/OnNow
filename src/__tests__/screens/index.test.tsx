@@ -41,11 +41,18 @@ const mockNavigation = {
     };
   },
 };
+// useFocusEffect: runs on mount, as on a first focus; a test calls the
+// latest callback again to refocus Home.
+let mockFocusEffect: () => void = () => {};
 jest.mock("expo-router", () => ({
   useRouter: () => ({ push: mockPush }),
   useIsFocused: () => mockIsFocused(),
   useNavigation: () => mockNavigation,
   useScrollToTop: (ref: unknown) => mockScrollToTop(ref),
+  useFocusEffect: (effect: () => void) => {
+    mockFocusEffect = effect;
+    jest.requireActual("react").useEffect(effect, [effect]);
+  },
 }));
 
 jest.mock("expo-splash-screen", () => ({
@@ -73,9 +80,14 @@ const mockTopPicks = jest.fn(() => [] as unknown[]);
 const mockLoadMoreTopPicks = jest.fn();
 const mockTopPicksLoading = jest.fn(() => false);
 const mockTopPicksHasMore = jest.fn(() => true);
-// Leaves out the shows Home has settled as followed, as the real hook does.
+// Leaves out the shows Home has settled as followed, as the real hook does,
+// and notes the day it is ordered by.
+const mockTopPicksDay = jest.fn();
 jest.mock("@/hooks/useTopPicks", () => ({
   useTopPicks: () => ({
+    _day: mockTopPicksDay(
+      jest.requireActual("@/hooks/useSettledDay").useRowDay(),
+    ),
     cards: (mockTopPicks() as { tvmazeId: number }[]).filter(
       (card) =>
         !jest
@@ -688,6 +700,39 @@ describe("HomeScreen", () => {
         },
       });
       expect(mockLoadMoreTopPicks).toHaveBeenCalledTimes(1);
+    });
+
+    // CRI-131: a new day never moves the row under the user's finger.
+    it("orders Top picks by a new day only once Home regains focus or is pulled to refresh (CRI-131)", async () => {
+      jest.useFakeTimers({ now: new Date("2026-10-05T20:00:00Z") });
+      const day = () => mockTopPicksDay.mock.calls.at(-1)?.[0];
+      try {
+        mockFollowedEpisodes({
+          followedShows: [{ show, episodes: [makeEpisode()] }],
+        });
+        const { rerender } = await render(<HomeScreen />);
+        const monday = day();
+
+        // Past midnight on the clock, Home still on screen.
+        jest.setSystemTime(new Date("2026-10-06T20:00:00Z"));
+        await act(async () => jest.advanceTimersByTime(60_000));
+        await rerender(<HomeScreen />);
+        expect(day()).toBe(monday);
+
+        // Home regains focus.
+        await act(async () => mockFocusEffect());
+        const tuesday = day();
+        expect(tuesday).not.toBe(monday);
+
+        // A pull settles it too.
+        jest.setSystemTime(new Date("2026-10-07T20:00:00Z"));
+        await act(async () => {
+          void refreshControlProps().onRefresh?.();
+        });
+        expect(day()).not.toBe(tuesday);
+      } finally {
+        jest.useRealTimers();
+      }
     });
 
     // CRI-131: a follow from the row can be undone while the user stays on

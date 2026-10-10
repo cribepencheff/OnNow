@@ -18,6 +18,7 @@ export function TopPicksRow({
   followedShows,
   detailPathname,
   onSearchMore,
+  quietEndOnArrival,
 }: {
   followedShows: TvMazeShow[];
   detailPathname?: DetailPathname;
@@ -25,6 +26,8 @@ export function TopPicksRow({
   // (inside Search, already there) the row ends with "You're all caught
   // up", as "Airing this week" does.
   onSearchMore?: () => void;
+  // Inside Search: no end element if the row is already at its end there.
+  quietEndOnArrival?: boolean;
 }) {
   const { cards, isLoading, isLoadingMore, hasMore, loadMore } =
     useTopPicks(followedShows);
@@ -50,6 +53,7 @@ export function TopPicksRow({
         endAction={
           onSearchMore && { label: "Search more", onPress: onSearchMore }
         }
+        quietEndOnArrival={quietEndOnArrival}
         testID="top-picks-row"
       >
         {cards.map((card) => (

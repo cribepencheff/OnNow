@@ -21,6 +21,8 @@ const mockBack = jest.fn();
 const mockPush = jest.fn();
 jest.mock("expo-router", () => ({
   useRouter: () => ({ back: mockBack, push: mockPush }),
+  useFocusEffect: (effect: () => void) =>
+    jest.requireActual("react").useEffect(effect, [effect]),
 }));
 
 // Home's poster rows before typing (FR-026), with their data mocked.
@@ -158,21 +160,18 @@ describe("SearchScreen", () => {
     client.unmount();
   });
 
-  // CRI-131: Search is already open, so Top picks has no "Search more"
-  // there; it ends as "Airing this week" does.
-  it('FR-026: Top picks ends with "You\'re all caught up" in Search, never "Search more" (CRI-131)', async () => {
+  // CRI-131: Search is already open, so Top picks has no "Search more";
+  // and rows already at their end as Search opens say nothing of it.
+  it('FR-026: rows already at their end as Search opens show no end element, and never "Search more" (CRI-131)', async () => {
     mockFollowedShows = [{ show: { id: 1, name: "MobLand" } }];
     const client = createTestQueryClient();
     const { unmount } = await render(<SearchScreen />, {
       wrapper: wrapperWithQueryClient(client),
     });
 
+    expect(screen.getByTestId("top-picks-row")).toBeTruthy();
     expect(screen.queryByText("Search more")).toBeNull();
-    expect(
-      within(screen.getByTestId("top-picks-row")).getByText(
-        "You're all caught up",
-      ),
-    ).toBeTruthy();
+    expect(screen.queryByText("You're all caught up")).toBeNull();
 
     await unmount();
     client.unmount();

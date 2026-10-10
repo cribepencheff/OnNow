@@ -17,6 +17,7 @@ import {
   View,
 } from "react-native";
 import { SymbolView } from "expo-symbols";
+import { useFocusEffect } from "expo-router";
 
 import { AiringThisWeekRow } from "@/components/AiringThisWeekRow";
 import { CloseButton } from "@/components/CloseButton";
@@ -26,6 +27,7 @@ import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import { useSearchShows } from "@/hooks/useSearchShows";
+import { SettledDayContext, useSettledDay } from "@/hooks/useSettledDay";
 import {
   SettledFollowedContext,
   useSettledFollowed,
@@ -40,6 +42,10 @@ export default function SearchScreen() {
   // Shows followed before Search opened are left out of its rows; one
   // followed here stays, marked, while Search is open (CRI-131).
   const { hidden: settledFollowed } = useSettledFollowed();
+  // The day Top picks is ordered by, settled when Search opens or regains
+  // focus, never while the user is on the row (CRI-131).
+  const { day: settledDay, settle: settleDay } = useSettledDay();
+  useFocusEffect(settleDay);
   const [query, setQuery] = useState("");
 
   const searchedQuery = useDebouncedValue(query, SEARCH_DELAY_MS);
@@ -99,9 +105,11 @@ export default function SearchScreen() {
       </View>
 
       {query.trim().length === 0 ? (
-        <SettledFollowedContext.Provider value={settledFollowed}>
-          <BeforeTyping />
-        </SettledFollowedContext.Provider>
+        <SettledDayContext.Provider value={settledDay}>
+          <SettledFollowedContext.Provider value={settledFollowed}>
+            <BeforeTyping />
+          </SettledFollowedContext.Provider>
+        </SettledDayContext.Provider>
       ) : (
         <FlatList
           testID="search-results"
@@ -163,9 +171,10 @@ function BeforeTyping() {
         <TopPicksRow
           followedShows={followedShowList}
           detailPathname="/search/show/[id]"
+          quietEndOnArrival
         />
       )}
-      <AiringThisWeekRow detailPathname="/search/show/[id]" />
+      <AiringThisWeekRow detailPathname="/search/show/[id]" quietEndOnArrival />
     </ScrollView>
   );
 }

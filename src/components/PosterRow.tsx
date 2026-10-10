@@ -107,6 +107,7 @@ export function PosterRow({
   withCaption = false,
   emptyText,
   endAction,
+  quietEndOnArrival = false,
   testID,
   children,
 }: {
@@ -127,6 +128,10 @@ export function PosterRow({
   // A pill to tap at the end of the row, instead of "You're all caught
   // up" (CRI-131).
   endAction?: { label: string; onPress: () => void };
+  // No end element when the row is already at its end as it first shows
+  // its cards: in Search, which shares Home's rows, it is said only when
+  // the end is reached there (CRI-131).
+  quietEndOnArrival?: boolean;
   testID: string;
   children: ReactNode;
 }) {
@@ -137,7 +142,15 @@ export function PosterRow({
   const showSkeleton = isLoading && !hasCards;
   const isShown = hasCards || Boolean(emptyText) || showSkeleton;
   const canLoadMore = hasCards && !showSkeleton && hasMore && !isLoadingMore;
-  const caughtUp = hasCards && !isLoading && !isLoadingMore && !hasMore;
+  const atEnd = hasCards && !isLoading && !isLoadingMore && !hasMore;
+  // Whether the row was at its end as it first showed its cards; noticed
+  // while rendering, like the crossfades below.
+  const [endOnArrival, setEndOnArrival] = useState<boolean | null>(null);
+  if (endOnArrival === null && hasCards && !showSkeleton) {
+    setEndOnArrival(atEnd);
+  }
+  // The end element shows at the end, unless the row arrived there.
+  const caughtUp = atEnd && !(quietEndOnArrival && endOnArrival === true);
   const [opacity] = useState(() => new Animated.Value(isShown ? 1 : 0));
 
   useEffect(() => {
@@ -584,8 +597,12 @@ const styles = StyleSheet.create({
     backgroundColor: t.surfaceRaised,
     justifyContent: "center",
   },
+  // The label's size, regular weight and no letter spacing: lighter than
+  // the title, and centred in the pill.
   endPillLabel: {
-    ...type.label,
+    fontSize: type.label.fontSize,
+    lineHeight: type.label.lineHeight,
+    fontWeight: "400",
     color: t.ink,
   },
   caughtUp: {

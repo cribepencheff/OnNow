@@ -15,7 +15,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as SplashScreen from "expo-splash-screen";
-import { useScrollToTop } from "expo-router";
+import { useFocusEffect, useScrollToTop } from "expo-router";
 import {
   useAnimatedRef,
   useDerivedValue,
@@ -36,6 +36,7 @@ import {
   SettledFollowedContext,
   useSettledFollowed,
 } from "@/hooks/useSettledFollowed";
+import { SettledDayContext, useSettledDay } from "@/hooks/useSettledDay";
 import { useTabReturn } from "@/hooks/useTabReturn";
 import { useToday } from "@/hooks/useToday";
 import { deriveHomeViewState } from "@/logic/home";
@@ -88,7 +89,14 @@ export default function HomeScreen() {
   // stays silent, so the hero never moves. Held for the whole refetch call.
   const [refreshing, setRefreshing] = useState(false);
 
+  // The day Top picks is ordered by: a new day takes effect when Home
+  // regains focus or on a pull, never while the user is on the row
+  // (CRI-131).
+  const { day: settledDay, settle: settleDay } = useSettledDay();
+  useFocusEffect(settleDay);
+
   const handleRefresh = useCallback(async () => {
+    settleDay();
     setRefreshing(true);
     try {
       await refetch();
@@ -96,7 +104,7 @@ export default function HomeScreen() {
       setRefreshing(false);
       setNow(Date.now());
     }
-  }, [refetch]);
+  }, [refetch, settleDay]);
 
   // CRI-95: hide the splash once there is something to show.
   useEffect(() => {
@@ -402,17 +410,19 @@ export default function HomeScreen() {
                 <Text style={styles.quietLine}>Loading your shows…</Text>
               )}
 
-              <SettledFollowedContext.Provider value={settledFollowed}>
-                {/* FR-038, ADR 0016, CRI-125: always mounted; it opens
+              <SettledDayContext.Provider value={settledDay}>
+                <SettledFollowedContext.Provider value={settledFollowed}>
+                  {/* FR-038, ADR 0016, CRI-125: always mounted; it opens
                     when it has picks and is hidden otherwise
                     (TopPicksRow). */}
-                <TopPicksRow
-                  followedShows={followedShowList}
-                  onSearchMore={openSearch}
-                />
-                {/* FR-039: always shown, also with an empty follow list. */}
-                <AiringThisWeekRow />
-              </SettledFollowedContext.Provider>
+                  <TopPicksRow
+                    followedShows={followedShowList}
+                    onSearchMore={openSearch}
+                  />
+                  {/* FR-039: always shown, also with an empty follow list. */}
+                  <AiringThisWeekRow />
+                </SettledFollowedContext.Provider>
+              </SettledDayContext.Provider>
               <View style={styles.tabBarClearance} />
             </>
           )}

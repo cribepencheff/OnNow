@@ -7,6 +7,7 @@ import type { TvMazeShow } from "@/api/tvmaze-types";
 import { createElement, type ReactNode } from "react";
 
 import { MIN_LOAD_MORE_MS } from "@/logic/poster-batches";
+import { SettledDayContext } from "./useSettledDay";
 import { SettledFollowedContext } from "./useSettledFollowed";
 import { useTopPicks } from "./useTopPicks";
 import { createTestQueryClient, wrapperWithQueryClient } from "./test-utils";
@@ -277,6 +278,59 @@ describe("useTopPicks (FR-038)", () => {
       // The day's start comes from the day's one recommendations answer.
       expect(findRecommendations).toHaveBeenCalledTimes(3);
     });
+  });
+
+  // CRI-131: a new day never moves the row under the user's finger; it
+  // takes effect when the screen settles on it (focus, pull to refresh),
+  // from the first batch of the new day's order.
+  it("keeps the day's order past midnight until its screen settles on the new day, then starts over from its first batch", async () => {
+    const sixty = {
+      tvId: 500,
+      results: Array.from({ length: 60 }, (_, i) => ({
+        id: 101 + i,
+        name: `Pick ${101 + i}`,
+        poster_path: `/p${101 + i}.jpg`,
+      })),
+    };
+    findRecommendations.mockResolvedValue(sixty);
+    jest.setSystemTime(new Date("2026-10-05T21:00:00Z"));
+    const day = { current: "2026-10-05" };
+    const client = createTestQueryClient();
+    const QueryWrapper = wrapperWithQueryClient(client);
+    const { result, rerender, unmount } = await renderHook(
+      () => useTopPicks([followedShow]),
+      {
+        wrapper: ({ children }: { children: ReactNode }) =>
+          createElement(
+            QueryWrapper,
+            null,
+            createElement(
+              SettledDayContext.Provider,
+              { value: day.current },
+              children,
+            ),
+          ),
+      },
+    );
+    await waitFor(() => expect(result.current.cards).toHaveLength(10));
+    await act(async () => result.current.loadMore());
+    await act(async () => jest.advanceTimersByTime(MIN_LOAD_MORE_MS));
+    await waitFor(() => expect(result.current.cards).toHaveLength(16));
+    const monday = ids(result.current.cards);
+
+    // Midnight passes on the clock while the user is on the row.
+    jest.setSystemTime(new Date("2026-10-06T08:00:00Z"));
+    await act(async () => jest.advanceTimersByTime(60_000));
+    await rerender({});
+    expect(ids(result.current.cards)).toEqual(monday);
+
+    // The screen regains focus: the new day's order, from its first batch.
+    day.current = "2026-10-06";
+    await rerender({});
+    await waitFor(() => expect(result.current.cards).toHaveLength(10));
+    expect(ids(result.current.cards)[0]).not.toBe(monday[0]);
+    await unmount();
+    client.unmount();
   });
 
   it("is empty without followed shows", async () => {
