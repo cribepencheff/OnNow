@@ -7,15 +7,11 @@
 // the row keeps the card. Refresh fills the next page from where the last
 // one stopped, without followed shows; at the end of the week's shows the
 // control reads "Start over" and goes back to the first batch, minus
-// followed shows (logic/poster-batches.ts, CRI-123). The page
-// number is shared by every row on screen, so Refresh in Search also moves
-// Home's row (FR-026), as for "Top picks for you".
+// followed shows (logic/poster-batches.ts, CRI-123). The batches, the
+// next one prepared ahead, and the page number shared with Search's row
+// (FR-026) are usePosterBatches', as for "Top picks for you".
 
-import {
-  keepPreviousData,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { hasServiceInRegion } from "@/api/region-service";
 import { tmdbClient } from "@/api/tmdb-client";
@@ -30,13 +26,9 @@ import {
 } from "@/logic/airing-this-week";
 import { HOME_HERO_HORIZON_DAYS } from "@/logic/hero-carousel";
 import { addDays, type LocalDate } from "@/logic/local-date";
-import {
-  nextBatch,
-  type Batch,
-  type BatchControl,
-} from "@/logic/poster-batches";
 import { fillTopPicks, type PosterItem } from "@/logic/top-picks";
 import { useFollowList } from "./useFollowList";
+import { usePosterBatches, type PosterBatches } from "./usePosterBatches";
 import { useRegion } from "./useRegion";
 import { useToday } from "./useToday";
 import { ROW_SIZE } from "./useTopPicks";
@@ -57,19 +49,7 @@ function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
 }
 
-export function useAiringThisWeek(): {
-  cards: AiringPick[];
-  // No page yet: the row keeps its space (CRI-110).
-  isLoading: boolean;
-  refresh: () => Promise<void>;
-  isRefreshing: boolean;
-  // "Refresh" or "Start over" (CRI-123).
-  control: BatchControl;
-  // Empty because every show this week is followed.
-  allFollowed: boolean;
-  // Which batch is on screen; a new one crossfades in.
-  batch: number;
-} {
+export function useAiringThisWeek(): PosterBatches<AiringExtra> {
   const queryClient = useQueryClient();
   const { followedIds, isLoaded } = useFollowList();
   const { region } = useRegion();
@@ -87,30 +67,20 @@ export function useAiringThisWeek(): {
     staleTime: DAY_MS,
     queryFn: () => tmdbClient.findAiringThisWeek(week),
   });
-  const { data: pageIndex = 0 } = useQuery({
-    queryKey: PAGE_INDEX_KEY,
-    queryFn: () => 0,
-    initialData: 0,
-    staleTime: Infinity,
-  });
-  const pageKey = (index: number) => [
-    "airingThisWeekPage",
-    "v6",
-    LAUNCH,
-    region,
-    todayDate,
-    index,
-  ];
-  const page = useQuery({
-    queryKey: pageKey(pageIndex),
+  const batches = usePosterBatches<AiringExtra>({
+    pageKey: (index) => [
+      "airingThisWeekPage",
+      "v6",
+      LAUNCH,
+      region,
+      todayDate,
+      index,
+    ],
+    pageIndexKey: PAGE_INDEX_KEY,
     enabled: isLoaded && region !== undefined && candidates.data !== undefined,
-    staleTime: Infinity,
-    placeholderData: keepPreviousData,
-    queryFn: (): Promise<Batch<AiringExtra>> =>
-      nextBatch(
-        queryClient.getQueryData<Batch<AiringExtra>>(pageKey(pageIndex - 1)),
-        (start) => fillAiring(start),
-      ),
+    fill: (start) => fillAiring(start),
+    isFollowed: (tvmazeId) => followedIds.has(tvmazeId),
+    source: { queryKey: CANDIDATES_KEY, maxAgeMs: DAY_MS },
   });
 
   async function fillAiring(start: number) {
@@ -142,24 +112,5 @@ export function useAiringThisWeek(): {
     return { ...filled, cards: byAiringDate(filled.cards) };
   }
 
-  // Refresh and Start over alike. The week's candidates are fetched again
-  // only when a day old, judged now rather than at the last render; then
-  // the next batch.
-  async function refresh(): Promise<void> {
-    await queryClient.refetchQueries({
-      queryKey: CANDIDATES_KEY,
-      predicate: (query) => query.isStaleByTime(DAY_MS),
-    });
-    queryClient.setQueryData<number>(PAGE_INDEX_KEY, (index = 0) => index + 1);
-  }
-
-  return {
-    cards: page.data?.cards ?? [],
-    isLoading: page.data === undefined && !page.isError,
-    refresh,
-    isRefreshing: page.isFetching,
-    control: page.data?.control ?? "refresh",
-    allFollowed: page.data?.allFollowed ?? false,
-    batch: page.data?.index ?? 0,
-  };
+  return batches;
 }

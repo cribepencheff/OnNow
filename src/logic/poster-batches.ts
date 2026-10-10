@@ -3,7 +3,8 @@
 // stopped, while shows are left ("Refresh"); at the end of the pool the
 // row offers "Start over", which begins again at the top, minus the shows
 // followed meanwhile. The row is empty only when every show in it is
-// followed.
+// followed. The next batch is prepared one ahead (CRI-127), which also tells
+// early whether the pool holds anything beyond what is on screen.
 
 import type { FilledPage } from "./top-picks";
 
@@ -36,4 +37,24 @@ export async function nextBatch<Extra = object>(
     control: filled.hasMore ? "refresh" : "startOver",
     allFollowed: filled.cards.length === 0 && filled.followedSkipped > 0,
   };
+}
+
+// The control under the row (CRI-127): null (hidden) when the pool holds no
+// more shows than the row shows, since Start over would only show the same
+// ones again. `next` is the batch prepared one ahead, when there is one: a
+// next batch with nothing new (nextBatch keeps the same batch) means the
+// end of the pool is already reached, so the control reads "Start over"
+// at once rather than after a Refresh that brings nothing.
+export function rowControl<Extra>(
+  current: Batch<Extra> | undefined,
+  next: Batch<Extra> | undefined,
+): BatchControl | null {
+  if (!current) {
+    return null;
+  }
+  const atEnd = !current.hasMore || next?.index === current.index;
+  if (!atEnd) {
+    return "refresh";
+  }
+  return current.index === 0 ? null : "startOver";
 }
