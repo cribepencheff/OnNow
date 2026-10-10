@@ -1,5 +1,5 @@
 import type { RankedRecommendation } from "./recommendations";
-import { fillTopPicks } from "./top-picks";
+import { fillTopPicks, isTopPicksShown } from "./top-picks";
 
 function ranking(
   ids: number[],
@@ -188,5 +188,29 @@ describe("fillTopPicks to the end of the ranking (FR-038, FR-039, CRI-123)", () 
     expect(page.cards).toEqual([]);
     expect(page.hasMore).toBe(false);
     expect(resolve).not.toHaveBeenCalled();
+  });
+});
+
+// CRI-125: "Top picks for you" is hidden when it has no picks to show.
+describe("isTopPicksShown (CRI-125)", () => {
+  it("is hidden without followed shows", () => {
+    expect(
+      isTopPicksShown({ followedCount: 0, isLoading: true, hasCards: true }),
+    ).toBe(false);
+  });
+
+  it("is shown, with skeleton cards, while its first batch loads", () => {
+    expect(
+      isTopPicksShown({ followedCount: 1, isLoading: true, hasCards: false }),
+    ).toBe(true);
+  });
+
+  it("is shown with picks, hidden when the batch has none", () => {
+    expect(
+      isTopPicksShown({ followedCount: 2, isLoading: false, hasCards: true }),
+    ).toBe(true);
+    expect(
+      isTopPicksShown({ followedCount: 2, isLoading: false, hasCards: false }),
+    ).toBe(false);
   });
 });

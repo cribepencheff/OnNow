@@ -94,3 +94,22 @@ export async function fillTopPicks<Extra = object>(
   const hasMore = positions.some((index) => index >= nextStart);
   return { cards, nextStart, hasMore, followedSkipped };
 }
+
+// Whether "Top picks for you" is shown (CRI-125): hidden without followed
+// shows, shown (with skeleton cards) while its first batch loads, and
+// hidden when that batch has no picks to show (none with a service in the
+// region, or every pick followed).
+export function isTopPicksShown({
+  followedCount,
+  isLoading,
+  hasCards,
+}: {
+  followedCount: number;
+  isLoading: boolean;
+  hasCards: boolean;
+}): boolean {
+  if (followedCount === 0) {
+    return false;
+  }
+  return isLoading || hasCards;
+}

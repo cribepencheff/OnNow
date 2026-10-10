@@ -48,6 +48,10 @@ import {
 import { updatedAgoLabel } from "@/logic/launch";
 import { t as tokens, type } from "@/theme/tokens";
 
+// How far Home must be scrolled down to count as away from its top
+// (maintainVisibleContentPosition below).
+const SCROLLED_DOWN_MIN = 8;
+
 // The app logo's height in the header.
 const APP_LOGO_HEIGHT = 20;
 
@@ -127,6 +131,19 @@ export default function HomeScreen() {
 
   const openSearch = useCallback(() => router.push("/search"), [router]);
 
+  // What sits at the top of the page, above the rows: one of these.
+  const top = {
+    heroPager: heroSlides.length > 0,
+    nextDayPager: heroSlides.length === 0 && state.kind === "next-day",
+    addFirstShow: state.kind === "empty-follow-list",
+    noUpcoming: state.kind === "no-upcoming",
+    error: state.kind === "error",
+    loading: state.kind === "loading",
+  };
+  // "Airing this week"'s place among the page's children: after the top
+  // block and "Top picks for you" (always mounted).
+  const airingIndex = Object.values(top).filter(Boolean).length + 1;
+
   // The header (logo) is shown over the hero only, for now (CRI-124).
   const showsHero =
     isReady && (heroSlides.length > 0 || state.kind === "next-day");
@@ -177,11 +194,15 @@ export default function HomeScreen() {
   // rather than a ref reached through Animated.event(...) during render
   // (which the react-hooks/refs lint rule flags).
   const [pullRestOffsetY, setPullRestOffsetY] = useState<number | null>(null);
+  const [scrolledDown, setScrolledDown] = useState(false);
 
   const handlePullRestOffsetCapture = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
       const { contentInset, contentOffset } = event.nativeEvent;
       const candidate = -contentInset.top;
+      // Scrolled down into the page, not at its top (or pulled): only then
+      // does a row opening above keep what is on screen in place.
+      setScrolledDown(contentOffset.y > candidate + SCROLLED_DOWN_MIN);
       // Skip samples taken mid-pull (offset pulled above the resting top):
       // read the baseline only from a settled position (at the top or
       // scrolled down into content), where contentInset.top is its true
@@ -278,6 +299,15 @@ export default function HomeScreen() {
       <PosterDimContext.Provider value={posterDim}>
         <Animated.ScrollView
           ref={reanimatedScrollRef as never}
+          testID="home-scroll"
+          // When "Top picks for you" opens above "Airing this week" (a
+          // follow from an Airing card, say), what is on screen stays in
+          // place while scrolled down: the page keeps "Airing this week"
+          // where it is (CRI-125). At the top of the page the hero stays
+          // put instead, and the row opens below it.
+          maintainVisibleContentPosition={
+            scrolledDown ? { minIndexForVisible: airingIndex } : undefined
+          }
           contentContainerStyle={styles.scrollContent}
           contentInsetAdjustmentBehavior="never"
           alwaysBounceVertical
@@ -307,7 +337,7 @@ export default function HomeScreen() {
             <Text style={styles.quietLine}>Loading your shows…</Text>
           ) : (
             <>
-              {heroSlides.length > 0 && (
+              {top.heroPager && (
                 <HeroPager
                   // A new set of slides starts a fresh pager (heroPagerKey).
                   key={heroPagerKey(heroSlides)}
@@ -320,6 +350,8 @@ export default function HomeScreen() {
               {/* Nothing followed has an episode within the horizon: fall back
               to the single nearest upcoming day, same as before the 7-day
               horizon. */}
+              {/* The same condition as top.nextDayPager, written out so
+                  TypeScript knows state has its shows here. */}
               {heroSlides.length === 0 && state.kind === "next-day" && (
                 <HeroPager
                   key={heroPagerKey(state.shows)}
@@ -333,7 +365,7 @@ export default function HomeScreen() {
                 />
               )}
 
-              {state.kind === "empty-follow-list" && (
+              {top.addFirstShow && (
                 <AddFirstShow
                   onPress={openSearch}
                   testID="home-empty-state"
@@ -341,24 +373,23 @@ export default function HomeScreen() {
                 />
               )}
 
-              {state.kind === "no-upcoming" && (
+              {top.noUpcoming && (
                 <Text style={styles.quietLine}>Nothing upcoming.</Text>
               )}
 
-              {state.kind === "error" && (
+              {top.error && (
                 <Text style={styles.quietLine}>
                   Couldn&apos;t load your shows. Pull to refresh.
                 </Text>
               )}
 
-              {state.kind === "loading" && (
+              {top.loading && (
                 <Text style={styles.quietLine}>Loading your shows…</Text>
               )}
 
-              {/* FR-038, ADR 0016: hidden with an empty follow list. */}
-              {followedCount > 0 && (
-                <TopPicksRow followedShows={followedShowList} />
-              )}
+              {/* FR-038, ADR 0016, CRI-125: always mounted; it opens when
+                  it has picks and is hidden otherwise (TopPicksRow). */}
+              <TopPicksRow followedShows={followedShowList} />
               {/* FR-039: always shown, also with an empty follow list. */}
               <AiringThisWeekRow />
               <View style={styles.tabBarClearance} />

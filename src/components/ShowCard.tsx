@@ -13,11 +13,12 @@ import { IMAGE_BASE } from "@/api/tmdb-types";
 import { useFollowToggle } from "@/hooks/useFollowList";
 import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import type { PosterItem } from "@/logic/top-picks";
+import { POSTER_CARD_WIDTH } from "@/logic/poster-snap";
 import { t, type } from "@/theme/tokens";
 import { PosterDimOverlay } from "./PosterDim";
 
 // About 150 wide: two full cards and a peek of the third (CRI-127).
-export const POSTER_WIDTH = 150;
+export const POSTER_WIDTH = POSTER_CARD_WIDTH;
 const POSTER_HEIGHT = POSTER_WIDTH * 1.5;
 const FOLLOW_CIRCLE_SIZE = 32;
 // How long a poster takes to fade in once loaded.
