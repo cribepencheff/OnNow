@@ -1,4 +1,4 @@
-import { Keyboard, TextInput } from "react-native";
+import { Keyboard } from "react-native";
 import {
   act,
   fireEvent,
@@ -158,26 +158,21 @@ describe("SearchScreen", () => {
     client.unmount();
   });
 
-  // CRI-131: Search is already open, so "Search more" brings back the
-  // field and the keyboard rather than opening anything.
-  it('FR-026: "Search more" at the end of Top picks focuses the search field (CRI-131)', async () => {
+  // CRI-131: Search is already open, so Top picks has no "Search more"
+  // there; it ends as "Airing this week" does.
+  it('FR-026: Top picks ends with "You\'re all caught up" in Search, never "Search more" (CRI-131)', async () => {
     mockFollowedShows = [{ show: { id: 1, name: "MobLand" } }];
     const client = createTestQueryClient();
     const { unmount } = await render(<SearchScreen />, {
       wrapper: wrapperWithQueryClient(client),
     });
-    const input = screen.getByTestId("search-input");
-    await fireEvent(input, "blur");
-    // React Native's test TextInput: focus() is a mock on its prototype.
-    const focus = jest.spyOn(
-      (TextInput as unknown as { prototype: { focus: () => void } }).prototype,
-      "focus",
-    );
 
-    await fireEvent.press(screen.getByRole("button", { name: "Search more" }));
-    expect(focus).toHaveBeenCalled();
-    expect(mockPush).not.toHaveBeenCalled();
-    focus.mockRestore();
+    expect(screen.queryByText("Search more")).toBeNull();
+    expect(
+      within(screen.getByTestId("top-picks-row")).getByText(
+        "You're all caught up",
+      ),
+    ).toBeTruthy();
 
     await unmount();
     client.unmount();

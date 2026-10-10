@@ -470,7 +470,7 @@ describe("PosterRow (FR-038, FR-039)", () => {
       expect(onPress).toHaveBeenCalledTimes(1);
     });
 
-    it("lays the pill out like the follow circle, centred on the title, with a 44 hit area, the title still winning", async () => {
+    it("keeps the pill small, within the title's line, centred on it, with a 44 hit area, the title still winning", async () => {
       await render(
         <PosterRow
           title="Top picks for you"
@@ -484,9 +484,18 @@ describe("PosterRow (FR-038, FR-039)", () => {
       );
       const pill = screen.getByTestId("row-end-action");
       const style = StyleSheet.flatten(pill.props.style);
-      expect(style.height).toBe(32);
-      expect(style.borderRadius).toBe(16);
-      expect(32 + 2 * pill.props.hitSlop).toBeGreaterThanOrEqual(44);
+      // No taller than the title's line: the gap above the cards stays
+      // whole.
+      expect(style.height).toBeLessThanOrEqual(25);
+      expect(style.borderRadius).toBe(style.height / 2);
+      expect(style.height + 2 * pill.props.hitSlop).toBeGreaterThanOrEqual(44);
+      const slot = StyleSheet.flatten(pill.parent?.props.style);
+      expect(slot?.marginVertical ?? 0).toBe(0);
+      // Smaller text than the status line's.
+      expect(
+        StyleSheet.flatten(screen.getByText("Search more").props.style)
+          .fontSize,
+      ).toBeLessThan(14);
       const header = screen.getByRole("header");
       expect(StyleSheet.flatten(header.parent?.props.style).alignItems).toBe(
         "center",

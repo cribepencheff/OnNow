@@ -74,9 +74,10 @@ const CROSSFADE_MS = 250;
 // Said on the title line at the end of the pool (CRI-131).
 export const CAUGHT_UP_TEXT = "You're all caught up";
 
-// The end pill: the card follow circle's height and material, with a hit
-// area of at least 44.
-const END_PILL_HEIGHT = 32;
+// The end pill: small, within the title's line, so the gap above the
+// cards stays whole; the card follow circle's material; a hit area of at
+// least 44.
+const END_PILL_HEIGHT = 22;
 const END_PILL_HIT_SLOP = (44 - END_PILL_HEIGHT) / 2;
 
 // The load more spinner's box, to the right of the last card.
@@ -566,20 +567,17 @@ const styles = StyleSheet.create({
   },
   // Quiet, like the meta line: smaller than the title, regular weight,
   // muted. It takes what the title leaves and truncates first.
-  // Takes what the title leaves, right-aligned. It is taller than the
-  // title's line, so it reaches over it equally above and below rather
-  // than making the line taller.
+  // Takes what the title leaves, right-aligned.
   endPillSlot: {
     flex: 1,
     alignItems: "flex-end",
-    marginVertical: (type.headline.lineHeight - END_PILL_HEIGHT) / 2,
   },
   // The card follow circle's material, as a text pill: neutral, solid, no
   // blur.
   endPill: {
     height: END_PILL_HEIGHT,
     maxWidth: "100%",
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
     borderRadius: END_PILL_HEIGHT / 2,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: t.imageControlEdge,
@@ -587,7 +585,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   endPillLabel: {
-    ...type.meta,
+    ...type.label,
     color: t.ink,
   },
   caughtUp: {

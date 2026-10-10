@@ -6,7 +6,7 @@
 // a short pause in typing, and a clear button (X) inside the field empties
 // it, the same on iOS and Android (PRD 5.4).
 
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   FlatList,
   Pressable,
@@ -41,7 +41,6 @@ export default function SearchScreen() {
   // followed here stays, marked, while Search is open (CRI-131).
   const { hidden: settledFollowed } = useSettledFollowed();
   const [query, setQuery] = useState("");
-  const inputRef = useRef<TextInput>(null);
 
   const searchedQuery = useDebouncedValue(query, SEARCH_DELAY_MS);
   const { data: results, isFetching } = useSearchShows(searchedQuery);
@@ -58,7 +57,6 @@ export default function SearchScreen() {
             size={16}
           />
           <TextInput
-            ref={inputRef}
             autoFocus
             value={query}
             onChangeText={setQuery}
@@ -102,9 +100,7 @@ export default function SearchScreen() {
 
       {query.trim().length === 0 ? (
         <SettledFollowedContext.Provider value={settledFollowed}>
-          {/* "Search more" at the end of Top picks: Search is already
-              open, so it brings back the field and the keyboard. */}
-          <BeforeTyping onSearchMore={() => inputRef.current?.focus()} />
+          <BeforeTyping />
         </SettledFollowedContext.Provider>
       ) : (
         <FlatList
@@ -147,7 +143,7 @@ export default function SearchScreen() {
 // as on Home; the cards it has loaded are shared with Home's row
 // (CRI-131). A card opens Show
 // detail inside the sheet (PRD 5.6).
-function BeforeTyping({ onSearchMore }: { onSearchMore: () => void }) {
+function BeforeTyping() {
   const { followedShows, followedCount } = useFollowedEpisodes();
   const followedShowList = useMemo(
     () => followedShows.map(({ show }) => show),
@@ -167,7 +163,6 @@ function BeforeTyping({ onSearchMore }: { onSearchMore: () => void }) {
         <TopPicksRow
           followedShows={followedShowList}
           detailPathname="/search/show/[id]"
-          onSearchMore={onSearchMore}
         />
       )}
       <AiringThisWeekRow detailPathname="/search/show/[id]" />
