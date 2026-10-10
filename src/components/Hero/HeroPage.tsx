@@ -711,9 +711,9 @@ const styles = StyleSheet.create({
   },
   content: {
     position: "absolute",
-    // One screen margin on Home, the rows' too (CRI-124).
-    left: t.space4,
-    right: t.space4,
+    // The content inset, as the rows under it.
+    left: t.contentInset,
+    right: t.contentInset,
     gap: CONTENT_GAP,
   },
   // As tall as the pill, so nothing below shifts per slide.
@@ -722,12 +722,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
   },
-  // As tall as the IMDb chip, chip or not, so nothing below shifts. The
-  // line and the chip are one group, centred, a small gap apart.
+  // One height, chip or not, so nothing below shifts. The line and the
+  // chip are one group, centred, a small gap apart, and read as one line:
+  // the chip's label sits on the episode text's baseline.
   episodeRow: {
     height: EPISODE_LINE_HEIGHT,
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "baseline",
     justifyContent: "center",
     gap: t.space2,
   },
@@ -782,8 +783,10 @@ const styles = StyleSheet.create({
     color: t.ink,
     textAlign: "center",
   },
+  // Centred, as everything else in the block.
   requires: {
     marginTop: 4,
+    alignItems: "center",
   },
   button: {
     borderRadius: t.radiusPill,
@@ -808,5 +811,6 @@ const styles = StyleSheet.create({
   availabilityNote: {
     ...type.meta,
     color: t.inkMuted,
+    textAlign: "center",
   },
 });

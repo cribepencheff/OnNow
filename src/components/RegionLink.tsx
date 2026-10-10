@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     ...type.meta,
     textAlign: "center",
     color: t.inkMuted,
-    paddingHorizontal: t.space4,
+    paddingHorizontal: t.contentInset,
     paddingTop: t.space6,
     paddingBottom: t.space2,
   },

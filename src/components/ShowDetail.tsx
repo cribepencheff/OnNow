@@ -491,8 +491,8 @@ const styles = StyleSheet.create({
   },
   heroContent: {
     position: "absolute",
-    left: 16,
-    right: 16,
+    left: t.contentInset,
+    right: t.contentInset,
     bottom: 16,
     gap: 8,
   },
@@ -537,7 +537,7 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
   },
   section: {
-    paddingHorizontal: 16,
+    paddingHorizontal: t.contentInset,
     paddingTop: 20,
     gap: 6,
   },
@@ -611,7 +611,7 @@ const styles = StyleSheet.create({
     color: t.ink,
   },
   tabs: {
-    paddingHorizontal: 16,
+    paddingHorizontal: t.contentInset,
     paddingTop: 24,
     gap: 8,
   },
@@ -647,7 +647,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-    paddingHorizontal: 16,
+    paddingHorizontal: t.contentInset,
     paddingVertical: 10,
   },
   episodeToday: {

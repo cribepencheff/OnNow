@@ -15,10 +15,14 @@ import { useImdbRating } from "@/hooks/useImdbRating";
 import { imdbTitleUrl } from "@/logic/imdb-rating";
 import { t, type } from "@/theme/tokens";
 
-// The mark's fixed height: line height, padding and border. The Home hero
-// reserves it on every slide.
+// The chip's height: the episode line's own line height, so it never
+// stands taller than the line it sits on (Home hero). Its label is the
+// episode text's size, on a slightly tighter line, so it fits inside the
+// outline with almost no padding.
+export const IMDB_CHIP_HEIGHT = type.meta.lineHeight;
+const CHIP_TEXT_LINE_HEIGHT = IMDB_CHIP_HEIGHT - 2;
+// The IMDb mark's line height in Show detail (the "mark" variant).
 const MARK_LINE_HEIGHT = 14;
-export const IMDB_CHIP_HEIGHT = MARK_LINE_HEIGHT + 2 * 2 + 2 * 1;
 
 export function ImdbRating({
   show,
@@ -70,12 +74,12 @@ export function ImdbRating({
 }
 
 const styles = StyleSheet.create({
-  // One outline around the mark and the rating, the same height as the
-  // mark alone: line height, padding and border. The date pill's edge
-  // (image-control-edge, a hairline).
+  // One outline around the mark and the rating, no taller than the
+  // episode line. The date pill's edge (image-control-edge, a hairline).
   chip: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "baseline",
+    justifyContent: "center",
     gap: 4,
     height: IMDB_CHIP_HEIGHT,
     paddingHorizontal: 7,
@@ -83,21 +87,19 @@ const styles = StyleSheet.create({
     borderColor: t.imageControlEdge,
     borderRadius: 8,
   },
-  // The episode line's colour at about 85% of its size (12 to its 14), as
-  // in the owner's sketch; Medium, since regular reads thin that small.
+  // The episode line's colour and size, so the two read as one line;
+  // Medium, so the chip still reads as its own thing.
   chipMark: {
     ...type.meta,
     fontWeight: "500",
-    fontSize: 12,
-    lineHeight: MARK_LINE_HEIGHT,
+    lineHeight: CHIP_TEXT_LINE_HEIGHT,
     color: t.inkMuted,
   },
   // Tabular figures, so the chip keeps its width from slide to slide.
   chipRating: {
     ...type.meta,
     fontWeight: "500",
-    fontSize: 12,
-    lineHeight: MARK_LINE_HEIGHT,
+    lineHeight: CHIP_TEXT_LINE_HEIGHT,
     color: t.inkMuted,
     fontVariant: ["tabular-nums"],
   },

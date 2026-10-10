@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: t.space2,
-    marginHorizontal: t.space4,
+    marginHorizontal: t.contentInset,
     marginBottom: t.space2,
     paddingHorizontal: t.space4,
     paddingVertical: 12,
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
   },
   segmentHeader: {
     backgroundColor: t.bg,
-    paddingHorizontal: t.space4,
+    paddingHorizontal: t.contentInset,
     paddingTop: t.space6,
     paddingBottom: t.space2,
   },
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
   // Inset to the text column, as on iOS lists.
   separator: {
     height: StyleSheet.hairlineWidth,
-    marginLeft: t.space4 + 60 + t.space2 + 4,
+    marginLeft: t.contentInset + 60 + t.space2 + 4,
     backgroundColor: t.hairline,
   },
   quietLine: {

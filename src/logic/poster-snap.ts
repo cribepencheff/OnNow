@@ -3,11 +3,13 @@
 // the last card at the right margin. Offsets for ScrollView's
 // snapToOffsets.
 
+import { t } from "@/theme/tokens";
+
 // A poster card's width: about 150, two full cards and a peek of the third
 // (CRI-127).
 export const POSTER_CARD_WIDTH = 150;
-// The screen margin either side of a row's strip.
-export const POSTER_ROW_MARGIN = 16;
+// The screen margin either side of a row's strip: the content inset.
+export const POSTER_ROW_MARGIN = t.contentInset;
 // The poster rows' spacing (owner, CRI-127): between cards, and above a
 // row's heading, which is also the space between two rows (CRI-131).
 export const POSTER_CARD_GAP = 12;

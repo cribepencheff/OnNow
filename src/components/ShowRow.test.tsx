@@ -1,4 +1,4 @@
-import { Text } from "react-native";
+import { StyleSheet, Text } from "react-native";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
 import { ShowRow, ShowRowLine } from "./ShowRow";
@@ -23,6 +23,28 @@ describe("ShowRow", () => {
     expect(screen.getByText("Slow Horses")).toBeTruthy();
     expect(screen.getByText("S6E2 · Hello Goodbye")).toBeTruthy();
     expect(screen.getByText("circle")).toBeTruthy();
+  });
+
+  // Home layout polish: Shows and Search rows at the content inset.
+  it("is inset by the content inset, 24", async () => {
+    await render(
+      <ShowRow
+        title="Slow Horses"
+        posterUri="https://static.tvmaze.com/poster.jpg"
+        accessibilityLabel="Slow Horses"
+        testID="row"
+      >
+        <ShowRowLine>S6E2 · Hello Goodbye</ShowRowLine>
+      </ShowRow>,
+    );
+    let node = screen.getByText("Slow Horses").parent;
+    while (
+      node &&
+      StyleSheet.flatten(node.props.style)?.paddingHorizontal === undefined
+    ) {
+      node = node.parent;
+    }
+    expect(StyleSheet.flatten(node?.props.style).paddingHorizontal).toBe(24);
   });
 
   it("is one button for screen readers, with the label it is given (NFR-008)", async () => {

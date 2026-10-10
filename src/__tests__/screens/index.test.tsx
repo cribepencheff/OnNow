@@ -14,7 +14,7 @@ import {
 import * as SplashScreen from "expo-splash-screen";
 import HomeScreen from "@/app/(tabs)/index";
 import { IMDB_CHIP_HEIGHT } from "@/components/ImdbRating";
-import { POSTER_REST_DIM } from "@/logic/hero-layout";
+import { EPISODE_LINE_HEIGHT, POSTER_REST_DIM } from "@/logic/hero-layout";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useImdbRating } from "@/hooks/useImdbRating";
 import { useShowImages } from "@/hooks/useShowImages";
@@ -349,6 +349,24 @@ describe("HomeScreen", () => {
       // The chip keeps its width.
       const chip = screen.getByTestId("imdb-rating");
       expect(style(chip.parent!).flexShrink).toBe(0);
+
+      // One line: the chip's label is the episode text's size, on its
+      // baseline, and the chip no taller than the text's line.
+      for (const row of rows) {
+        expect(style(row).alignItems).toBe("baseline");
+      }
+      const episodeText = style(code);
+      expect(style(chip).height).toBe(IMDB_CHIP_HEIGHT);
+      expect(IMDB_CHIP_HEIGHT).toBeLessThanOrEqual(
+        episodeText.lineHeight as number,
+      );
+      expect(style(chip).alignItems).toBe("baseline");
+      expect(style(within(chip).getByText("IMDb")).fontSize).toBe(
+        episodeText.fontSize,
+      );
+      expect(style(within(chip).getByText("8.1")).fontSize).toBe(
+        episodeText.fontSize,
+      );
     } finally {
       (useShowImages as jest.Mock).mockImplementation(() => ({
         data: undefined,
@@ -396,12 +414,12 @@ describe("HomeScreen", () => {
         screen
           .getAllByTestId(testID)
           .map((view) => StyleSheet.flatten(view.props.style).height);
-      // The pill's height, and the episode line as tall as the IMDb chip,
-      // chip or not (CRI-124).
+      // The pill's height, and the episode line one height, chip or not
+      // (CRI-124).
       expect(heights("hero-label-row")).toEqual([26, 26]);
       expect(heights("hero-episode-row")).toEqual([
-        IMDB_CHIP_HEIGHT,
-        IMDB_CHIP_HEIGHT,
+        EPISODE_LINE_HEIGHT,
+        EPISODE_LINE_HEIGHT,
       ]);
       // "IMDb 8.1" in one chip, on the episode line.
       const withChipRows = screen

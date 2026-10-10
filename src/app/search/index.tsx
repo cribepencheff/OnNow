@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: t.space2 + 4,
-    marginHorizontal: t.space4,
+    marginHorizontal: t.contentInset,
     marginBottom: t.space2 + 4,
   },
   searchField: {

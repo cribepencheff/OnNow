@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
     gap: t.space2,
     paddingTop: t.space2,
     paddingBottom: t.space2,
-    paddingHorizontal: t.space4,
+    paddingHorizontal: t.contentInset,
     backgroundColor: t.bg,
   },
   monthTitle: {
@@ -391,7 +391,7 @@ const styles = StyleSheet.create({
   // Inset to the text column, as on iOS lists (as in Shows).
   separator: {
     height: StyleSheet.hairlineWidth,
-    marginLeft: t.space4 + 60 + t.space2 + 4,
+    marginLeft: t.contentInset + 60 + t.space2 + 4,
     backgroundColor: t.hairline,
   },
 });

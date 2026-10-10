@@ -18,7 +18,7 @@ import { t, type } from "@/theme/tokens";
 
 // Shared between the weekday header row and the grid itself, so the two
 // stay aligned.
-export const GRID_HORIZONTAL_PADDING = t.space4;
+export const GRID_HORIZONTAL_PADDING = t.contentInset;
 
 interface MonthPageProps {
   yearMonth: YearMonth;
