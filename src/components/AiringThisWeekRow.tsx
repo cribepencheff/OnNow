@@ -1,13 +1,13 @@
 // "Airing this week" on Home (FR-039, ADR 0016): shows on a service in the
 // region that would be in the hero if followed, by popularity, followed
 // shows left out, each with its day. Always shown; a card followed from
-// the row stays, marked, until Refresh shows the next shows. At the end of
-// the week's shows the control reads "Start over"; the row is empty, with
-// a line saying so, only when every show is followed (CRI-123).
+// the row stays in it, marked. Swiped towards its end the row loads the
+// next shows and appends them; at the end of the week's shows it simply
+// ends (CRI-131). The row is empty, with a line saying so, only when every
+// show is followed (CRI-123).
 
 import { useAiringThisWeek } from "@/hooks/useAiringThisWeek";
 import { PosterRow } from "./PosterRow";
-import { RowRefresh } from "./RowRefresh";
 import { ShowCard, type DetailPathname } from "./ShowCard";
 
 export function AiringThisWeekRow({
@@ -15,15 +15,8 @@ export function AiringThisWeekRow({
 }: {
   detailPathname?: DetailPathname;
 } = {}) {
-  const {
-    cards,
-    isLoading,
-    refresh,
-    isRefreshing,
-    control,
-    allFollowed,
-    batch,
-  } = useAiringThisWeek();
+  const { cards, isLoading, isLoadingMore, loadMore, allFollowed } =
+    useAiringThisWeek();
 
   return (
     <PosterRow
@@ -33,17 +26,9 @@ export function AiringThisWeekRow({
       // The day on its own second line (CRI-127).
       withCaption
       emptyText={allFollowed ? "That's all this week" : null}
-      batch={batch}
+      isLoadingMore={isLoadingMore}
+      onNearEnd={loadMore}
       testID="airing-this-week-row"
-      footer={
-        <RowRefresh
-          control={control}
-          onPress={refresh}
-          isRefreshing={isRefreshing}
-          refreshHint="Shows the next shows airing this week"
-          testID="airing-refresh"
-        />
-      }
     >
       {cards.map((card) => (
         <ShowCard

@@ -1,12 +1,11 @@
 // "Top picks for you" (FR-038, ADR 0016). TMDB's recommendations per
 // followed show are kept a day; a page of cards is filled once from their
 // ranking (fillTopPicks), only titles with a service in the region, and
-// then left alone, so following from the row never reshuffles it. Refresh
-// fills the next page, without followed shows; at the end of the ranking
-// the control reads "Start over" and goes back to the top, minus followed
-// shows (logic/poster-batches.ts, CRI-123). The batches, the next one
-// prepared ahead, and the page number shared with Search's row (FR-026)
-// are usePosterBatches'.
+// then left alone, so following from the row never reshuffles it. Swiping
+// towards the row's end appends the next batch, without followed shows; at
+// the end of the ranking the row ends (CRI-131). The batches, the next one
+// prepared ahead, and the count shared with Search's row (FR-026) are
+// usePosterBatches'.
 
 import { useQueries } from "@tanstack/react-query";
 
@@ -76,6 +75,5 @@ export function useTopPicks(
       );
     },
     isFollowed: (tvmazeId) => followedIds.has(tvmazeId),
-    source: { queryKey: RECOMMENDATIONS_KEY, maxAgeMs: DAY_MS },
   });
 }

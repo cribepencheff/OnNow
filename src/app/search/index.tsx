@@ -131,7 +131,8 @@ export default function SearchScreen() {
 
 // Before typing (PRD 5.4, FR-026): Home's two poster rows as they are, the
 // same components and data. "Top picks for you" only with followed shows,
-// as on Home; its Refresh is shared with Home's row. A card opens Show
+// as on Home; the cards it has loaded are shared with Home's row
+// (CRI-131). A card opens Show
 // detail inside the sheet (PRD 5.6).
 function BeforeTyping() {
   const { followedShows, followedCount } = useFollowedEpisodes();

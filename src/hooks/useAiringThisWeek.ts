@@ -3,13 +3,13 @@
 // have a service in the region, the same rule as "Open in", and TVmaze
 // decides: a show is kept only if it would be in the hero if followed, with
 // its day on the card (CRI-110). The ten are shown by air date, Today
-// first (CRI-122). A page is filled once and left alone, so following from
-// the row keeps the card. Refresh fills the next page from where the last
-// one stopped, without followed shows; at the end of the week's shows the
-// control reads "Start over" and goes back to the first batch, minus
-// followed shows (logic/poster-batches.ts, CRI-123). The batches, the
-// next one prepared ahead, and the page number shared with Search's row
-// (FR-026) are usePosterBatches', as for "Top picks for you".
+// first (CRI-122) within each batch. A batch is filled once and left
+// alone, so following from the row keeps the card. Swiping towards the
+// row's end appends the next batch from where the last one stopped,
+// without followed shows; at the end of the week's shows the row ends
+// (CRI-131). The batches, the next one prepared ahead, and the count shared
+// with Search's row (FR-026) are usePosterBatches', as for "Top picks for
+// you".
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -22,11 +22,9 @@ import {
   byAiringDate,
   firstEpisodeDayThisWeek,
   isAiringType,
-  topUpToMinimum,
   weekDayWord,
 } from "@/logic/airing-this-week";
 import { HOME_HERO_HORIZON_DAYS } from "@/logic/hero-carousel";
-import { MIN_AIRING_CARDS } from "@/logic/poster-snap";
 import { addDays, type LocalDate } from "@/logic/local-date";
 import { fillTopPicks, type PosterItem } from "@/logic/top-picks";
 import { useFollowList } from "./useFollowList";
@@ -82,27 +80,11 @@ export function useAiringThisWeek(): PosterBatches<AiringExtra> {
     enabled: isLoaded && region !== undefined && candidates.data !== undefined,
     fill: (start) => fillAiring(start),
     isFollowed: (tvmazeId) => followedIds.has(tvmazeId),
-    source: { queryKey: CANDIDATES_KEY, maxAgeMs: DAY_MS },
   });
 
   async function fillAiring(start: number) {
     const filled = await fillWeek(start);
-    // Never a short row (CRI-125): a short last batch of the week is
-    // topped up from its first shows, so the row always holds as many cards
-    // as fit on the screen. A batch with none at all is the end of the
-    // week's shows, which nextBatch handles (the row keeps its cards).
-    const short =
-      start > 0 &&
-      filled.cards.length > 0 &&
-      filled.cards.length < MIN_AIRING_CARDS;
-    const cards = short
-      ? topUpToMinimum(
-          filled.cards,
-          (await fillWeek(0)).cards,
-          MIN_AIRING_CARDS,
-        )
-      : filled.cards;
-    return { ...filled, cards: byAiringDate(cards) };
+    return { ...filled, cards: byAiringDate(filled.cards) };
   }
 
   function fillWeek(start: number) {

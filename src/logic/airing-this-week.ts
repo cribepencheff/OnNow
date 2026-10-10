@@ -107,20 +107,3 @@ export function firstEpisodeDayThisWeek(
     .sort();
   return days[0] ?? null;
 }
-
-// A short batch topped up to the minimum (CRI-125): the cards it has, then
-// cards from the top of the week's shows that it does not have yet, until
-// it holds `minimum`. Never fewer than the minimum when the week has that
-// many shows to give, whatever later filters leave out of one batch.
-export function topUpToMinimum<Card extends { tmdbId: number }>(
-  cards: Card[],
-  fromTop: Card[],
-  minimum: number,
-): Card[] {
-  if (cards.length >= minimum) {
-    return cards;
-  }
-  const have = new Set(cards.map((card) => card.tmdbId));
-  const extra = fromTop.filter((card) => !have.has(card.tmdbId));
-  return [...cards, ...extra.slice(0, minimum - cards.length)];
-}

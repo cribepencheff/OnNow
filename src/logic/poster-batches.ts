@@ -1,60 +1,70 @@
 // The batches of a poster row, "Top picks for you" and "Airing this week"
-// (FR-038, FR-039, CRI-123). Each batch continues where the last one
-// stopped, while shows are left ("Refresh"); at the end of the pool the
-// row offers "Start over", which begins again at the top, minus the shows
-// followed meanwhile. The row is empty only when every show in it is
-// followed. The next batch is prepared one ahead (CRI-127), which also tells
-// early whether the pool holds anything beyond what is on screen.
+// (FR-038, FR-039, CRI-131). A row loads more as it is swiped towards its
+// end: each batch continues where the last one stopped and is appended, so
+// earlier cards stay where they are and nothing is ever replaced. When the
+// pool is exhausted the row simply ends. The next batch is prepared one
+// ahead (CRI-127), so it is usually ready before the swipe gets there.
 
-import type { FilledPage } from "./top-picks";
-
-export type BatchControl = "refresh" | "startOver";
+import type { FilledPage, PosterItem } from "./top-picks";
 
 export interface Batch<Extra = object> extends FilledPage<Extra> {
-  // Which batch is on screen; a new one crossfades in.
+  // Its place in the row: 0 for the first batch.
   index: number;
-  control: BatchControl;
   // No cards because every show is followed (not because there are none).
+  // Only ever true of the first batch: the row is then empty.
   allFollowed: boolean;
 }
 
+// The batch after `previous` (or the first): from where it stopped. Only
+// asked for while the pool has more (previous.hasMore).
 export async function nextBatch<Extra = object>(
   previous: Batch<Extra> | undefined,
   fill: (start: number) => Promise<FilledPage<Extra>>,
 ): Promise<Batch<Extra>> {
-  const start = previous?.hasMore ? previous.nextStart : 0;
-  const filled = await fill(start);
-
-  // Every show left was left out by the checks: this was the end of the
-  // pool. The row keeps its cards and offers to start over.
-  if (filled.cards.length === 0 && start > 0 && previous) {
-    return { ...previous, hasMore: false, control: "startOver" };
-  }
-
+  const filled = await fill(previous ? previous.nextStart : 0);
   return {
     ...filled,
     index: previous ? previous.index + 1 : 0,
-    control: filled.hasMore ? "refresh" : "startOver",
-    allFollowed: filled.cards.length === 0 && filled.followedSkipped > 0,
+    allFollowed:
+      !previous && filled.cards.length === 0 && filled.followedSkipped > 0,
   };
 }
 
-// The control under the row (CRI-127): null (hidden) when the pool holds no
-// more shows than the row shows, since Start over would only show the same
-// ones again. `next` is the batch prepared one ahead, when there is one: a
-// next batch with nothing new (nextBatch keeps the same batch) means the
-// end of the pool is already reached, so the control reads "Start over"
-// at once rather than after a Refresh that brings nothing.
-export function rowControl<Extra>(
-  current: Batch<Extra> | undefined,
-  next: Batch<Extra> | undefined,
-): BatchControl | null {
-  if (!current) {
-    return null;
+// The row's cards: every loaded batch, in order, each show once. Batches
+// never overlap in the ranking, but the data a later batch is filled from
+// can be fetched again meanwhile (a new day), so a show is kept at its
+// first place rather than shown twice.
+export function rowCards<Card extends PosterItem>(
+  batches: { cards: Card[] }[],
+): Card[] {
+  const seen = new Set<number>();
+  const cards: Card[] = [];
+  for (const batch of batches) {
+    for (const card of batch.cards) {
+      if (!seen.has(card.tmdbId)) {
+        seen.add(card.tmdbId);
+        cards.push(card);
+      }
+    }
   }
-  const atEnd = !current.hasMore || next?.index === current.index;
-  if (!atEnd) {
-    return "refresh";
-  }
-  return current.index === 0 ? null : "startOver";
+  return cards;
+}
+
+// How many cards before the end a row starts loading its next batch: a few,
+// so it is usually in before the swipe gets there.
+export const LOAD_MORE_AHEAD_CARDS = 3;
+
+// Whether a row's strip is scrolled within `aheadWidth` of its end.
+export function isNearEnd({
+  offsetX,
+  viewportWidth,
+  contentWidth,
+  aheadWidth,
+}: {
+  offsetX: number;
+  viewportWidth: number;
+  contentWidth: number;
+  aheadWidth: number;
+}): boolean {
+  return offsetX + viewportWidth >= contentWidth - aheadWidth;
 }

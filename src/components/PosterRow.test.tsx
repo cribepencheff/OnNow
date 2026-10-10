@@ -1,8 +1,7 @@
 import { StyleSheet, Text } from "react-native";
-import { act, fireEvent, render, screen } from "@testing-library/react-native";
+import { render, screen } from "@testing-library/react-native";
 
 import { PosterRow } from "./PosterRow";
-import { ROW_CONTROL_HEIGHT, RowRefresh } from "./RowRefresh";
 import { cardHeight } from "./ShowCard";
 
 const CARD_HEIGHT = cardHeight(false);
@@ -161,159 +160,80 @@ describe("PosterRow (FR-038, FR-039)", () => {
         hasCards={false}
         emptyText="That's all this week"
         testID="row"
-        footer={<Text>Start over</Text>}
       >
         {null}
       </PosterRow>,
     );
 
     expect(screen.getByText("That's all this week")).toBeTruthy();
-    expect(screen.getByText("Start over")).toBeTruthy();
     const empty = screen.getByTestId("row-empty");
     expect(StyleSheet.flatten(empty.props.style).height).toBe(CARD_HEIGHT);
   });
 
-  it("crossfades to a new batch: the old cards fade out over the new ones (CRI-123)", async () => {
-    const row = (batch: number, name: string) => (
+  // CRI-131: more cards are appended; earlier ones stay where they are.
+  it("appends more cards, earlier ones staying in place, with no crossfade", async () => {
+    const row = (names: string[]) => (
       <PosterRow
         title="Airing this week"
         isLoading={false}
         hasCards
-        batch={batch}
         testID="row"
       >
-        <Text>{name}</Text>
+        {names.map((name) => (
+          <Text key={name}>{name}</Text>
+        ))}
       </PosterRow>
     );
-    const { rerender } = await render(row(0, "Lanterns"));
+    const { rerender } = await render(row(["Lanterns"]));
 
-    await rerender(row(1, "Scrubs"));
+    await rerender(row(["Lanterns", "Scrubs"]));
 
-    expect(screen.getByText("Scrubs")).toBeTruthy();
-    const outgoing = screen.getByTestId("row-outgoing", {
-      includeHiddenElements: true,
-    });
-    expect(outgoing.props.pointerEvents).toBe("none");
-    expect(
-      screen.getByText("Lanterns", { includeHiddenElements: true }),
-    ).toBeTruthy();
-    // Hidden from screen readers while it fades.
-    expect(screen.queryByText("Lanterns")).toBeNull();
-  });
-
-  it("swaps at once with Reduce Motion on", async () => {
-    mockReduceMotion = true;
-    const row = (batch: number, name: string) => (
-      <PosterRow
-        title="Airing this week"
-        isLoading={false}
-        hasCards
-        batch={batch}
-        testID="row"
-      >
-        <Text>{name}</Text>
-      </PosterRow>
-    );
-    const { rerender } = await render(row(0, "Lanterns"));
-
-    await rerender(row(1, "Scrubs"));
-
+    expect(screen.getByText("Lanterns")).toBeTruthy();
     expect(screen.getByText("Scrubs")).toBeTruthy();
     expect(
       screen.queryByTestId("row-outgoing", { includeHiddenElements: true }),
     ).toBeNull();
+  });
+
+  it("shows two skeleton cards at its end while more is on its way (CRI-131)", async () => {
+    await render(
+      <PosterRow
+        title="Airing this week"
+        isLoading={false}
+        hasCards
+        isLoadingMore
+        testID="row"
+      >
+        <Text>Lanterns</Text>
+      </PosterRow>,
+    );
+
+    expect(screen.getByText("Lanterns")).toBeTruthy();
+    expect(
+      screen.getAllByTestId("skeleton-card", { includeHiddenElements: true }),
+    ).toHaveLength(2);
+  });
+
+  it("swaps the first skeleton for the cards at once with Reduce Motion on", async () => {
+    mockReduceMotion = true;
+    const row = (loading: boolean) => (
+      <PosterRow
+        title="Airing this week"
+        isLoading={loading}
+        hasCards={!loading}
+        testID="row"
+      >
+        {loading ? null : <Text>Lanterns</Text>}
+      </PosterRow>
+    );
+    const { rerender } = await render(row(true));
+
+    await rerender(row(false));
+
+    expect(screen.getByText("Lanterns")).toBeTruthy();
+    expect(
+      screen.queryByTestId("row-outgoing", { includeHiddenElements: true }),
+    ).toBeNull();
     mockReduceMotion = false;
-  });
-});
-
-// CRI-123, CRI-127: one control slot under a row, never plain text; hidden
-// (its slot kept) when the pool holds no more shows than the row.
-describe("RowRefresh (CRI-123, CRI-127)", () => {
-  it('reads "Refresh" while shows are left', async () => {
-    await render(
-      <RowRefresh
-        control="refresh"
-        onPress={jest.fn(async () => {})}
-        isRefreshing={false}
-        refreshHint="Shows the next shows"
-        testID="refresh"
-      />,
-    );
-    expect(screen.getByRole("button", { name: "Refresh" })).toBeTruthy();
-  });
-
-  it("is hidden, its slot kept, when there is nothing more to show", async () => {
-    await render(
-      <RowRefresh
-        control={null}
-        onPress={jest.fn(async () => {})}
-        isRefreshing={false}
-        refreshHint="Shows the next shows"
-        testID="refresh"
-      />,
-    );
-    expect(screen.queryByRole("button")).toBeNull();
-    const slot = screen.getByTestId("refresh-hidden");
-    expect(StyleSheet.flatten(slot.props.style).height).toBe(
-      ROW_CONTROL_HEIGHT,
-    );
-  });
-
-  it("ignores taps while a refresh runs, and shows a spinner for at least one turn", async () => {
-    jest.useFakeTimers();
-    try {
-      const onPress = jest.fn(async () => {});
-      await render(
-        <RowRefresh
-          control="refresh"
-          onPress={onPress}
-          isRefreshing={false}
-          refreshHint="Shows the next shows"
-          testID="refresh"
-        />,
-      );
-      const button = screen.getByRole("button", { name: "Refresh" });
-
-      await fireEvent.press(button);
-      // The refresh itself is already done, but the turn is not.
-      await fireEvent.press(button);
-      expect(onPress).toHaveBeenCalledTimes(1);
-      expect(button.props.accessibilityState.busy).toBe(true);
-      // A symmetrical spinner in the arrow's place, so it turns in place.
-      expect(screen.getByTestId("refresh-spinner")).toBeTruthy();
-      // The label is hidden while it runs.
-      expect(screen.queryByText("Refresh")).toBeNull();
-
-      await act(async () => jest.advanceTimersByTime(800));
-      expect(
-        screen.getByRole("button", { name: "Refresh" }).props.accessibilityState
-          .busy,
-      ).toBe(false);
-      expect(screen.queryByTestId("refresh-spinner")).toBeNull();
-      expect(screen.getByText("Refresh")).toBeTruthy();
-      await fireEvent.press(screen.getByRole("button", { name: "Refresh" }));
-      expect(onPress).toHaveBeenCalledTimes(2);
-    } finally {
-      jest.useRealTimers();
-    }
-  });
-
-  it('reads "Start over" at the end of the pool, as a button in the same slot', async () => {
-    const onPress = jest.fn(async () => {});
-    await render(
-      <RowRefresh
-        control="startOver"
-        onPress={onPress}
-        isRefreshing={false}
-        refreshHint="Shows the next shows"
-        testID="refresh"
-      />,
-    );
-    const button = screen.getByRole("button", { name: "Start over" });
-    await fireEvent.press(button);
-    expect(onPress).toHaveBeenCalledTimes(1);
-    expect(StyleSheet.flatten(button.props.style).height).toBe(
-      ROW_CONTROL_HEIGHT,
-    );
   });
 });

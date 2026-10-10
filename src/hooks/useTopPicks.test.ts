@@ -78,9 +78,9 @@ describe("useTopPicks (FR-038)", () => {
     client.unmount();
   });
 
-  // CRI-127: Refresh is near instant because the next batch was checked
-  // while the first was on screen; only one batch ahead.
-  it("prepares the next batch in the background, so Refresh needs no new checks", async () => {
+  // CRI-127: loading more is near instant because the next batch was
+  // checked while the first was on screen; only one batch ahead.
+  it("prepares the next batch in the background, so loading more needs no new checks (CRI-131)", async () => {
     const { result, unmount, client } = await renderRow();
     await waitFor(() => expect(result.current.cards).toHaveLength(10));
     await waitFor(() =>
@@ -88,10 +88,9 @@ describe("useTopPicks (FR-038)", () => {
     );
     const checks = resolve.mock.calls.length;
 
-    await act(() => result.current.refresh());
-    await waitFor(() =>
-      expect(ids(result.current.cards)).toEqual([111, 112, 113, 114]),
-    );
+    await act(async () => result.current.loadMore());
+    await waitFor(() => expect(result.current.cards).toHaveLength(14));
+    expect(ids(result.current.cards).slice(10)).toEqual([111, 112, 113, 114]);
     expect(resolve.mock.calls.length).toBe(checks);
     await unmount();
     client.unmount();
@@ -123,27 +122,24 @@ describe("useTopPicks (FR-038)", () => {
     client.unmount();
   });
 
-  it('Refresh shows the next ones, then "Start over" goes back to the top, without followed shows or a new fetch (CRI-123)', async () => {
+  it("appends the next picks without followed shows, then ends, never starting over, without a new fetch (CRI-131)", async () => {
     const { result, rerender, unmount, client } = await renderRow();
     await waitFor(() => expect(result.current.cards).toHaveLength(10));
-    expect(result.current.control).toBe("refresh");
+    expect(result.current.hasMore).toBe(true);
 
+    // 103 followed from the row: it stays on its card.
     mockFollowed = new Set([1, 1103]);
     await rerender({});
-    await act(() => result.current.refresh());
+    await act(async () => result.current.loadMore());
 
-    await waitFor(() =>
-      expect(ids(result.current.cards)).toEqual([111, 112, 113, 114]),
-    );
-    expect(result.current.control).toBe("startOver");
+    await waitFor(() => expect(result.current.cards).toHaveLength(14));
+    expect(ids(result.current.cards)).toEqual([
+      101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114,
+    ]);
+    expect(result.current.hasMore).toBe(false);
 
-    await act(() => result.current.refresh());
-    await waitFor(() =>
-      expect(ids(result.current.cards)).toEqual([
-        101, 102, 104, 105, 106, 107, 108, 109, 110, 111,
-      ]),
-    );
-    expect(result.current.control).toBe("refresh");
+    await act(async () => result.current.loadMore());
+    expect(result.current.cards).toHaveLength(14);
     expect(findRecommendations).toHaveBeenCalledTimes(1);
     await unmount();
     client.unmount();
@@ -159,13 +155,12 @@ describe("useTopPicks (FR-038)", () => {
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     expect(result.current.cards).toEqual([]);
     expect(result.current.allFollowed).toBe(true);
-    // Nothing to refresh to (CRI-127).
-    expect(result.current.control).toBeNull();
+    expect(result.current.hasMore).toBe(false);
     await unmount();
     client.unmount();
   });
 
-  it("shares Refresh between Home and Search: both rows move to the next picks (FR-026)", async () => {
+  it("grows Home's and Search's rows together (FR-026)", async () => {
     const client = createTestQueryClient();
     const wrapper = wrapperWithQueryClient(client);
     const home = await renderHook(() => useTopPicks([followedShow]), {
@@ -177,25 +172,12 @@ describe("useTopPicks (FR-038)", () => {
     await waitFor(() => expect(home.result.current.cards).toHaveLength(10));
     await waitFor(() => expect(search.result.current.cards).toHaveLength(10));
 
-    await act(() => search.result.current.refresh());
+    await act(async () => search.result.current.loadMore());
 
-    const next = [111, 112, 113, 114];
-    await waitFor(() => expect(ids(search.result.current.cards)).toEqual(next));
-    await waitFor(() => expect(ids(home.result.current.cards)).toEqual(next));
+    await waitFor(() => expect(search.result.current.cards).toHaveLength(14));
+    await waitFor(() => expect(home.result.current.cards).toHaveLength(14));
     await home.unmount();
     await search.unmount();
-    client.unmount();
-  });
-
-  it("Refresh fetches recommendations again only once they are a day old", async () => {
-    const { result, unmount, client } = await renderRow();
-    await waitFor(() => expect(result.current.cards).toHaveLength(10));
-
-    jest.setSystemTime(new Date("2026-10-06T08:00:01Z"));
-    await act(() => result.current.refresh());
-
-    await waitFor(() => expect(findRecommendations).toHaveBeenCalledTimes(2));
-    await unmount();
     client.unmount();
   });
 

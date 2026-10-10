@@ -1,6 +1,6 @@
 // The poster rows on Home and in Search (FR-038, FR-039, FR-026): walk a ranking in order from a start
-// position to the end, never wrapping (CRI-123: at the end the row offers
-// "Start over"), and check titles a few at a time until the row is full. Checking is the only network cost, so it stops as soon as it
+// position to the end, never wrapping (CRI-131: at the end the row ends),
+// and check titles a few at a time until the batch is full. Checking is the only network cost, so it stops as soon as it
 // can; the TVmaze client's rate limit holds whatever the batch size.
 
 import type { RankedRecommendation } from "./recommendations";

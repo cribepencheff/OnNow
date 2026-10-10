@@ -1,6 +1,7 @@
 // "Top picks for you" under the Home hero (FR-038, ADR 0016). A card
-// followed from the row stays, marked, until Refresh shows the next picks.
-// At the end of the picks the control reads "Start over". The row is
+// followed from the row stays in it, marked. Swiped towards its end the
+// row loads the next picks and appends them; at the end of the picks it
+// simply ends (CRI-131). The row is
 // hidden when it has no picks to show; when it gets some (a follow from
 // "Airing this week", say) it opens with skeleton cards that then fill in
 // (CRI-125).
@@ -10,7 +11,6 @@ import { useTopPicks } from "@/hooks/useTopPicks";
 import { isTopPicksShown } from "@/logic/top-picks";
 import { PosterRow, posterRowHeight } from "./PosterRow";
 import { RowPresence } from "./RowPresence";
-import { RowRefresh } from "./RowRefresh";
 import { ShowCard, type DetailPathname } from "./ShowCard";
 
 export function TopPicksRow({
@@ -20,7 +20,7 @@ export function TopPicksRow({
   followedShows: TvMazeShow[];
   detailPathname?: DetailPathname;
 }) {
-  const { cards, isLoading, refresh, isRefreshing, control, batch } =
+  const { cards, isLoading, isLoadingMore, loadMore } =
     useTopPicks(followedShows);
   const shown = isTopPicksShown({
     followedCount: followedShows.length,
@@ -38,17 +38,9 @@ export function TopPicksRow({
         title="Top picks for you"
         isLoading={isLoading}
         hasCards={cards.length > 0}
-        batch={batch}
+        isLoadingMore={isLoadingMore}
+        onNearEnd={loadMore}
         testID="top-picks-row"
-        footer={
-          <RowRefresh
-            control={control}
-            onPress={refresh}
-            isRefreshing={isRefreshing}
-            refreshHint="Shows the next top picks"
-            testID="top-picks-refresh"
-          />
-        }
       >
         {cards.map((card) => (
           <ShowCard

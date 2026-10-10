@@ -41,8 +41,9 @@ jest.mock("@/hooks/useTopPicks", () => ({
   useTopPicks: () => ({
     cards: [card(1)],
     isLoading: false,
-    refresh: jest.fn(),
-    isRefreshing: false,
+    isLoadingMore: false,
+    hasMore: false,
+    loadMore: jest.fn(),
   }),
 }));
 jest.mock("@/hooks/useAiringThisWeek", () => ({

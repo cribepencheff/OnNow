@@ -49,14 +49,15 @@ jest.mock("@/hooks/useAiringThisWeek", () => ({
   useAiringThisWeek: () => ({ cards: mockAiring(), isLoading: false }),
 }));
 const mockTopPicks = jest.fn(() => [] as unknown[]);
-const mockRefreshTopPicks = jest.fn();
+const mockLoadMoreTopPicks = jest.fn();
 const mockTopPicksLoading = jest.fn(() => false);
 jest.mock("@/hooks/useTopPicks", () => ({
   useTopPicks: () => ({
     cards: mockTopPicks(),
     isLoading: mockTopPicksLoading(),
-    refresh: mockRefreshTopPicks,
-    isRefreshing: false,
+    isLoadingMore: false,
+    hasMore: true,
+    loadMore: mockLoadMoreTopPicks,
   }),
 }));
 const mockFollow = jest.fn();
@@ -635,15 +636,23 @@ describe("HomeScreen", () => {
       });
     });
 
-    it("has a Refresh control under the row for the next picks", async () => {
+    // CRI-131: no Refresh; the row loads more as it is swiped.
+    it("has no Refresh control, and asks for more near its end (CRI-131)", async () => {
       mockTopPicks.mockReturnValue([gangs]);
       mockFollowedEpisodes({
         followedShows: [{ show, episodes: [makeEpisode()] }],
       });
       await render(<HomeScreen />);
 
-      await fireEvent.press(screen.getByRole("button", { name: "Refresh" }));
-      expect(mockRefreshTopPicks).toHaveBeenCalled();
+      expect(screen.queryByRole("button", { name: "Refresh" })).toBeNull();
+      await fireEvent.scroll(screen.getByTestId("top-picks-row-cards"), {
+        nativeEvent: {
+          contentOffset: { x: 0, y: 0 },
+          layoutMeasurement: { width: 390, height: 252 },
+          contentSize: { width: 182, height: 252 },
+        },
+      });
+      expect(mockLoadMoreTopPicks).toHaveBeenCalled();
     });
 
     it("is hidden when the follow list is empty", async () => {
