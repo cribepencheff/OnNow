@@ -1,7 +1,8 @@
 // The tab bar's icons (CRI-133), Instagram style: soft, rounded white
 // outlines of even weight (round caps and joins), drawn on a 24 viewBox
 // with the tabBarIconStroke and shown at tabBarIconSize. The active tab's
-// icon is drawn filled. The app's other icons are SF Symbols; these are
+// icon is drawn filled, except Search's, which stays an outline (a filled
+// magnifier reads as a lollipop). The app's other icons are SF Symbols; these are
 // drawn so the four share one stroke and the active ones can fill.
 
 import { useId } from "react";
@@ -112,18 +113,14 @@ export function MyShowsIcon({ active }: TabIconProps) {
 }
 
 // A magnifier with a large circle and a short handle, so it reads soft.
-// Shifted to sit centred in the 24 box like the other three.
-export function SearchIcon({ active }: TabIconProps) {
+// Shifted to sit centred in the 24 box like the other three. Always an
+// outline: active, only the pill behind it marks it (the one exception to
+// "active is filled").
+export function SearchIcon(_props: TabIconProps) {
   return (
     <TabSvg>
       <G translate="1.25, 1.25">
-        <Circle
-          cx="10"
-          cy="10"
-          r="7.5"
-          fill={active ? t.ink : "none"}
-          {...stroke}
-        />
+        <Circle cx="10" cy="10" r="7.5" fill="none" {...stroke} />
         <Line x1="15.3" y1="15.3" x2="19" y2="19" {...stroke} />
       </G>
     </TabSvg>

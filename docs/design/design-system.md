@@ -74,11 +74,12 @@ Refinement round (2026-10-09, CRI-124, CRI-127), replacing the measurements abov
 
 ## Tab bar (CRI-133, Instagram style)
 
-- A floating pill, fully rounded (`radius-pill`), centred, its top 83 above the bottom of the screen, so content still clears the same 83 and scrolls visibly behind it.
+- A floating pill, fully rounded (`radius-pill`), centred, `tab-bar-bottom-gap` above the bottom of the screen. Content scrolls visibly behind it and ends above it (89 from the bottom). Home's hero is tied to the screen, not to the bar: it ends 183 above the bottom, as in the sketch.
 - Material: `tab-bar-background` over a background blur (`tab-bar-blur`), edged with a `tab-bar-edge` hairline (`tab-bar-edge-width`). `tab-bar-padding` inside, `tab-bar-gap` between the tabs.
-- Four tabs, icon only, no labels: Home, Calendar, My shows, Search. Their names are the accessibility labels.
+- Four tabs, icon only, no labels: Home, Calendar, My shows, Search. Their names are the accessibility labels. Every tab is the same size (`tab-bar-tab-width` × `tab-bar-tab-height`), active or not.
 - Icons: soft, rounded, even-weight `ink` outlines, `tab-bar-icon-stroke` on a 24 viewBox with round caps and joins, drawn at `tab-bar-icon-size`. Home is a house with no roof overhang and a small door notch; Calendar a rounded square (corner 4) with two nubs and a header line; My shows a squircle (corner 6) with the follow check; Search a magnifier with a large circle (radius 7.5) and a short handle.
-- Active tab: its icon filled in `ink` (Calendar's header line and the check cut out or dark), on a wide `tab-bar-active-pill`, 9 × 23 padding against 8 × 12 for the others. No accent anywhere in the bar.
+- Active tab: a wide `tab-bar-active-pill` filling its slot, which slides from the old tab to the new one on `tab-bar-spring`. Home, Calendar and My shows draw their icon filled in `ink` (Calendar's header line cut out, the check dark). Search is the exception: it stays an outline, with only the pill behind it, since a filled magnifier reads as a lollipop. No accent anywhere in the bar.
+- Touch: a pressed icon shrinks to `tab-bar-press-scale` and springs back on release, the bar's only size change; it never changes size on scroll. A tab change gives a `tab-bar-haptic`.
 - Tapping the active tab scrolls its view to the top (Home to the hero), or, on Search, goes back to the results and opens the keyboard.
 
 Open questions: whether "+" stays quiet (current proposal) and how to find the "newest" backdrop (the TMDB image list has no upload date; to be checked in the prototype).

@@ -44,14 +44,28 @@ export const t = {
   // Its hairline edge, drawn 0.5 wide.
   tabBarEdge: "rgba(255, 255, 255, 0.14)",
   tabBarEdgeWidth: 0.5,
-  // The wide light-grey pill behind the active tab's filled icon.
+  // The wide light-grey pill behind the active tab's icon. It slides from
+  // tab to tab on tabBarSpring.
   tabBarActivePill: "rgba(255, 255, 255, 0.16)",
   // The icons: drawn on a 24 viewBox with this stroke, shown this size.
   tabBarIconStroke: 2,
-  tabBarIconSize: 28,
+  tabBarIconSize: 30,
+  // Every tab's slot, active or not: the active pill fills it, so it is
+  // wider than tall. Active and inactive tabs are the same size.
+  tabBarTabWidth: 76,
+  tabBarTabHeight: 54,
   // Space inside the bar, and between its tabs.
   tabBarPadding: 7,
   tabBarGap: 6,
+  // The gap under the bar, above the bottom of the screen.
+  tabBarBottomGap: 20,
+  // A pressed tab's icon shrinks to this and springs back on release: the
+  // bar's only size change.
+  tabBarPressScale: 0.86,
+  // The spring of the sliding pill and of the press.
+  tabBarSpring: { damping: 18, stiffness: 220, mass: 0.8 },
+  // The haptic on a tab change: expo-haptics' ImpactFeedbackStyle.Light.
+  tabBarHaptic: "light",
 } as const;
 
 // Trial (CRI-124): button labels in Manrope ExtraBold, loaded in

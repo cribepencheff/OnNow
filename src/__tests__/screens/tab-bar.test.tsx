@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import * as Haptics from "expo-haptics";
 import {
   fireEvent,
   renderRouter,
@@ -31,7 +32,7 @@ describe("Floating tab bar (real navigation)", () => {
     expect(screen.queryByText("My shows")).toBeNull();
   });
 
-  it("marks the active tab and draws it on the wide light-grey pill, no accent", async () => {
+  it("marks the active tab with the sliding light-grey pill, no accent, all tabs the same size", async () => {
     const rendered = renderRouter("src/app", { initialUrl: "/calendar" });
     await rendered;
 
@@ -42,14 +43,34 @@ describe("Floating tab bar (real navigation)", () => {
       selected: false,
     });
 
+    // No standing size difference: only the pill marks the active tab.
     const activeStyle = StyleSheet.flatten(active.props.style);
-    expect(activeStyle.backgroundColor).toBe(t.tabBarActivePill);
-    expect(activeStyle.paddingHorizontal).toBeGreaterThan(
-      activeStyle.paddingVertical,
+    const inactiveStyle = StyleSheet.flatten(inactive.props.style);
+    expect(activeStyle).toEqual(inactiveStyle);
+    expect(activeStyle.backgroundColor).toBeUndefined();
+
+    // The pill is the full size of a tab, so wider than tall.
+    const pillStyle = StyleSheet.flatten(
+      screen.getByTestId("tab-bar-pill").props.style,
     );
-    expect(
-      StyleSheet.flatten(inactive.props.style).backgroundColor,
-    ).toBeUndefined();
+    expect(pillStyle.backgroundColor).toBe(t.tabBarActivePill);
+    expect(pillStyle.height).toBe(t.tabBarTabHeight);
+    expect(t.tabBarTabWidth).toBeGreaterThan(t.tabBarTabHeight);
+  });
+
+  it("gives a light haptic on a tab change, not on a tap on the active tab", async () => {
+    const haptic = jest.spyOn(Haptics, "impactAsync");
+    const rendered = renderRouter("src/app", { initialUrl: "/calendar" });
+    await rendered;
+
+    await fireEvent.press(screen.getByTestId("tab-calendar"));
+    expect(haptic).not.toHaveBeenCalled();
+
+    await fireEvent.press(screen.getByTestId("tab-shows"));
+    expect(haptic).toHaveBeenCalledTimes(1);
+    expect(haptic).toHaveBeenCalledWith(Haptics.ImpactFeedbackStyle.Light);
+
+    haptic.mockRestore();
   });
 
   it("opens the Search screen directly from its tab, in typing mode", async () => {

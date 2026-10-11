@@ -11,9 +11,12 @@ import { TAB_BAR_HEIGHT } from "./tab-bar";
 // The space the floating tab bar covers (logic/tab-bar.ts).
 export { TAB_BAR_HEIGHT };
 
-// The hero ends this far above the tab bar, so the first row's heading and
-// the top of its posters show below it (the owner's sketch, CRI-124).
-export const HERO_END_ABOVE_TAB_BAR = 100;
+// The hero ends this far above the bottom of the screen, so the first
+// row's heading and the top of its posters show below it, over the tab
+// bar (the owner's sketch, CRI-124: 100 above the 83 the old bar covered).
+// Tied to the screen, not to the tab bar's size, so the sketch's positions
+// hold when the bar changes (CRI-133).
+export const HERO_END_FROM_BOTTOM = 183;
 
 // Short screens (iPhone SE is 667pt tall) tighten the gaps around the
 // button. The threshold sits between the SE (667) and the next size up
@@ -110,7 +113,7 @@ export function heroLayout(windowHeight: number, topInset: number): HeroLayout {
   const openInMargin = isShort ? 0 : 8;
   // Tight under the note line, which is often empty (the owner's sketch).
   const dotsGap = isShort ? 4 : 6;
-  const heroHeight = windowHeight - TAB_BAR_HEIGHT - HERO_END_ABOVE_TAB_BAR;
+  const heroHeight = windowHeight - HERO_END_FROM_BOTTOM;
 
   // Pill row, logo box, episode line, then the "Open in" slot with its
   // note line, with the content's row gap between them.
