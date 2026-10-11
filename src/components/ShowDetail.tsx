@@ -43,11 +43,13 @@ import {
   type SeasonTab,
 } from "@/logic/show-detail";
 import { showState, showStateLabel } from "@/logic/show-state";
+import { TAB_BAR_HEIGHT } from "@/logic/tab-bar";
 import {
   availabilityText,
   openInAccessibilityLabel,
   openInLink,
 } from "@/logic/streaming-service";
+import { followSymbol } from "./followSymbols";
 import { ImdbRating } from "./ImdbRating";
 import { OmdbCredit } from "./OmdbCredit";
 import { PaidSubscriptionMarker } from "./PaidSubscriptionMarker";
@@ -59,7 +61,15 @@ function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
 }
 
-export function ShowDetail({ showId }: { showId: number }) {
+export function ShowDetail({
+  showId,
+  overTabBar = false,
+}: {
+  showId: number;
+  // Inside the Search tab the tab bar stays over the bottom of the view,
+  // so the content ends above it (CRI-133).
+  overTabBar?: boolean;
+}) {
   const { data: show, isLoading } = useShow(showId);
 
   if (!show) {
@@ -70,10 +80,16 @@ export function ShowDetail({ showId }: { showId: number }) {
     );
   }
 
-  return <ShowDetailContent show={show} />;
+  return <ShowDetailContent show={show} overTabBar={overTabBar} />;
 }
 
-function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
+function ShowDetailContent({
+  show,
+  overTabBar,
+}: {
+  show: TvMazeShowWithEmbeds;
+  overTabBar: boolean;
+}) {
   const todayDate = useToday();
   const timeZone = deviceTimeZone();
 
@@ -100,7 +116,10 @@ function ShowDetailContent({ show }: { show: TvMazeShowWithEmbeds }) {
   return (
     <ScrollView
       style={styles.screen}
-      contentContainerStyle={styles.scrollContent}
+      contentContainerStyle={[
+        styles.scrollContent,
+        overTabBar && styles.scrollContentOverTabBar,
+      ]}
     >
       <View style={styles.hero} testID="show-detail-hero">
         <Image
@@ -273,11 +292,7 @@ function FollowToggle({ showId }: { showId: number }) {
     >
       {/* The same symbols as the follow circle in Search. */}
       <SymbolView
-        name={{
-          ios: followed ? "checkmark" : "plus",
-          android: followed ? "check" : "add",
-          web: followed ? "check" : "add",
-        }}
+        name={followSymbol(followed)}
         tintColor={followed ? t.ink : t.onAccent}
         size={16}
       />
@@ -474,6 +489,9 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 32,
+  },
+  scrollContentOverTabBar: {
+    paddingBottom: TAB_BAR_HEIGHT + 32,
   },
   hero: {
     position: "relative",

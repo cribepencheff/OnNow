@@ -54,12 +54,10 @@ import {
   type ShowEpisodesToday,
 } from "@/logic/episodes-today";
 import type { LocalDate } from "@/logic/local-date";
+import { TAB_BAR_HEIGHT } from "@/logic/tab-bar";
 import { t, type } from "@/theme/tokens";
 
 const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-// The translucent tab bar's height: the day list clears it (as in Shows).
-const TAB_BAR_HEIGHT = 83;
 
 function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;

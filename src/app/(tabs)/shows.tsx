@@ -1,7 +1,7 @@
 // Shows (PRD 5.3, FR-002, FR-010, FR-035): the followed shows in two
 // segments, Active and Inactive, each row with Show detail's status line
-// and its service, swipe to unfollow, and a search field that opens Search
-// (the same sheet as Home's "+"), in the design system's dark tokens.
+// and its service, swipe to unfollow, and a search field that goes to the
+// Search tab in typing mode (CRI-133), in the design system's dark tokens.
 
 import { useCallback, useMemo, useState } from "react";
 import {
@@ -21,13 +21,12 @@ import { TvMazeCredit } from "@/components/TvMazeCredit";
 import { afterThisFrame, useFollowActions } from "@/hooks/useFollowList";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useGuardedRouter } from "@/hooks/useGuardedRouter";
+import { useOpenSearch } from "@/hooks/useOpenSearch";
 import { useToday } from "@/hooks/useToday";
 import { splitBySegment, type ShowsSegment } from "@/logic/shows-list";
 import { showState, showStateLabel } from "@/logic/show-state";
+import { TAB_BAR_HEIGHT } from "@/logic/tab-bar";
 import { t, type } from "@/theme/tokens";
-
-// The translucent tab bar's height (tabs layout): the list ends above it.
-const TAB_BAR_HEIGHT = 83;
 
 const NONE_LEAVING: ReadonlySet<number> = new Set();
 
@@ -97,7 +96,7 @@ export default function ShowsScreen() {
     .filter((key) => segments[key].length > 0)
     .map((key) => ({ key, data: segments[key] }));
 
-  const openSearch = useCallback(() => router.push("/search"), [router]);
+  const openSearch = useOpenSearch();
 
   return (
     <View style={styles.container}>

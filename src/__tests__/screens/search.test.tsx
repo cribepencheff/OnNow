@@ -1,4 +1,4 @@
-import { Keyboard } from "react-native";
+import { Keyboard, TextInput } from "react-native";
 import {
   act,
   fireEvent,
@@ -8,10 +8,14 @@ import {
   within,
 } from "@testing-library/react-native";
 
-import SearchScreen from "@/app/search";
+import SearchScreen from "@/app/(tabs)/search";
 import { tvMazeClient } from "@/api/tvmaze-client";
 import { follow, getFollowedIds, unfollow } from "@/storage/follow-list";
 import searchSlowHorsesFixture from "@/api/fixtures/search-slow-horses.json";
+import {
+  requestSearchFocus,
+  takeSearchFocusRequest,
+} from "@/hooks/search-focus";
 import {
   createTestQueryClient,
   wrapperWithQueryClient,
@@ -19,8 +23,28 @@ import {
 
 const mockBack = jest.fn();
 const mockPush = jest.fn();
+// Search's screen in the tab's stack: its focus and blur events, sent by
+// the tests (CRI-133).
+const mockNavigation = {
+  focused: true,
+  listeners: new Map<string, Set<() => void>>(),
+  addListener(type: string, listener: () => void) {
+    const forType = this.listeners.get(type) ?? new Set<() => void>();
+    this.listeners.set(type, forType);
+    forType.add(listener);
+    return () => forType.delete(listener);
+  },
+  isFocused() {
+    return this.focused;
+  },
+  emit(type: "focus" | "blur") {
+    this.focused = type === "focus";
+    this.listeners.get(type)?.forEach((listener) => listener());
+  },
+};
 jest.mock("expo-router", () => ({
   useRouter: () => ({ back: mockBack, push: mockPush }),
+  useNavigation: () => mockNavigation,
   useFocusEffect: (effect: () => void) =>
     jest.requireActual("react").useEffect(effect, [effect]),
 }));
@@ -98,6 +122,9 @@ describe("SearchScreen", () => {
   beforeEach(() => {
     mockBack.mockClear();
     mockPush.mockClear();
+    mockNavigation.focused = true;
+    mockNavigation.listeners.clear();
+    takeSearchFocusRequest();
     mockFollowedShows = [];
     mockedSearchShows.mockReset();
     mockedGetFollowedIds.mockReset().mockResolvedValue([]);
@@ -190,7 +217,7 @@ describe("SearchScreen", () => {
     client.unmount();
   });
 
-  it("FR-026, PRD 5.6: a card opens Show detail inside the sheet", async () => {
+  it("FR-026, PRD 5.6: a card opens Show detail inside Search", async () => {
     const client = createTestQueryClient();
     const { unmount } = await render(<SearchScreen />, {
       wrapper: wrapperWithQueryClient(client),
@@ -413,7 +440,8 @@ describe("SearchScreen", () => {
     client.unmount();
   });
 
-  it("FR-007: renders a Close button at the top, next to the search field, and no Done", async () => {
+  // CRI-133: Search is a tab, so there is nothing to close.
+  it("FR-007: has the search field at the top, and no Close or Done", async () => {
     const client = createTestQueryClient();
     const { unmount } = await render(<SearchScreen />, {
       wrapper: wrapperWithQueryClient(client),
@@ -421,24 +449,99 @@ describe("SearchScreen", () => {
 
     const header = within(screen.getByTestId("search-header"));
     expect(header.getByLabelText("Search shows")).toBeTruthy();
-    expect(header.getByRole("button", { name: "Close" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Close" })).toBeNull();
     expect(screen.queryByRole("button", { name: "Done" })).toBeNull();
 
     await unmount();
     client.unmount();
   });
 
-  it("FR-007: closes the sheet when Close is pressed", async () => {
-    const client = createTestQueryClient();
-    const { unmount } = await render(<SearchScreen />, {
-      wrapper: wrapperWithQueryClient(client),
+  describe("typing mode on entry (CRI-133)", () => {
+    let focusSpy: jest.SpyInstance;
+    let blurSpy: jest.SpyInstance;
+    beforeEach(() => {
+      focusSpy = jest.spyOn(TextInput.prototype, "focus");
+      blurSpy = jest.spyOn(TextInput.prototype, "blur");
+    });
+    afterEach(() => {
+      focusSpy.mockRestore();
+      blurSpy.mockRestore();
     });
 
-    fireEvent.press(screen.getByRole("button", { name: "Close" }));
+    it("FR-001: opens with the field focused on the first visit", async () => {
+      const client = createTestQueryClient();
+      const { unmount } = await render(<SearchScreen />, {
+        wrapper: wrapperWithQueryClient(client),
+      });
 
-    expect(mockBack).toHaveBeenCalledTimes(1);
+      expect(screen.getByTestId("search-input").props.autoFocus).toBe(true);
 
-    await unmount();
-    client.unmount();
+      await unmount();
+      client.unmount();
+    });
+
+    it("focuses the field when Search is opened again from elsewhere (its tab, Shows' field, Search more)", async () => {
+      const client = createTestQueryClient();
+      const { unmount } = await render(<SearchScreen />, {
+        wrapper: wrapperWithQueryClient(client),
+      });
+      await act(() => mockNavigation.emit("blur"));
+      focusSpy.mockClear();
+
+      // The request is made before the switch (useOpenSearch, tabPress).
+      await act(() => requestSearchFocus());
+      expect(focusSpy).not.toHaveBeenCalled();
+      await act(() => mockNavigation.emit("focus"));
+
+      expect(focusSpy).toHaveBeenCalledTimes(1);
+
+      await unmount();
+      client.unmount();
+    });
+
+    it("focuses the field at once on a tap on the Search tab while on Search", async () => {
+      const client = createTestQueryClient();
+      const { unmount } = await render(<SearchScreen />, {
+        wrapper: wrapperWithQueryClient(client),
+      });
+      focusSpy.mockClear();
+
+      await act(() => requestSearchFocus());
+
+      expect(focusSpy).toHaveBeenCalledTimes(1);
+
+      await unmount();
+      client.unmount();
+    });
+
+    it("PRD 5.6: does not focus the field coming back from a Show detail opened in Search", async () => {
+      const client = createTestQueryClient();
+      const { unmount } = await render(<SearchScreen />, {
+        wrapper: wrapperWithQueryClient(client),
+      });
+      await act(() => mockNavigation.emit("blur"));
+      focusSpy.mockClear();
+
+      await act(() => mockNavigation.emit("focus"));
+
+      expect(focusSpy).not.toHaveBeenCalled();
+
+      await unmount();
+      client.unmount();
+    });
+
+    it("closes the keyboard when Search is left", async () => {
+      const client = createTestQueryClient();
+      const { unmount } = await render(<SearchScreen />, {
+        wrapper: wrapperWithQueryClient(client),
+      });
+
+      await act(() => mockNavigation.emit("blur"));
+
+      expect(blurSpy).toHaveBeenCalled();
+
+      await unmount();
+      client.unmount();
+    });
   });
 });

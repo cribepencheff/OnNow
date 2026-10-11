@@ -8,7 +8,7 @@ On Now is a stripped, cinematic iOS app that answers one question in two seconds
 
 ## Colour
 
-- Paint every screen `bg`. Put cards, rows, sheets and the tab bar on `surface`; the search field, season tabs and quiet round buttons on `surface-raised`.
+- Paint every screen `bg`. Put cards, rows and sheets on `surface`; the search field, season tabs and quiet round buttons on `surface-raised`.
 - Use `bg-tint` only for large ambient areas, like the glow behind the Home hero. It is the hint of colour, not a surface for content.
 - Set text in `ink`, meta lines in `ink-muted`, and upcoming episodes and data credits in `ink-subtle`. All three hold 4.5:1 on every ground above.
 - Over a show image, make the primary action a white pill: `ink` fill with `bg` text. The photo already brings the colour, so nothing on top of it is coloured. Spend `accent` only on the primary action of plain screens without an image, and on small status marks (the follow check, the calendar day line). If a view seems to need two accent elements, one of them is not primary.
@@ -42,7 +42,7 @@ On Now is a stripped, cinematic iOS app that answers one question in two seconds
 
 ## Iconography
 
-- Use SF Symbols, as iOS does. The system has no icon set of its own yet.
+- Use SF Symbols, as iOS does. The one exception is the tab bar's four icons, drawn for the app so they share one stroke and can fill when active (see Tab bar below). The My shows icon holds the follow controls' own SF Symbol check.
 - Service names appear as text, not logos, until each service's brand guidelines are checked.
 
 ## Home, direction B (chosen over A, the portrait poster)
@@ -54,7 +54,7 @@ Measured on a 390 × 844 screen, from the design canvas:
 - Content block on the fade: starts at 452, 24 side padding, 8 between items: badge (`label`, `ink-muted`), logo box (240 × 88), meta line (`meta`, `ink-muted`), then 16 down to the button.
 - Button: full content width, 50 tall (a tad over the Apple TV reference, 47), `radius-pill`, `ink` fill, `bg` text in `button` (18): "Open in [service]". Page dots 16 below: 8 × 8, active `ink`, others `hairline`.
 - "+": top right, 44 round, quiet: `bg` at 55% opacity, white plus icon.
-- Tab bar: 83 tall, `surface` at 72% opacity with a background blur, `hairline` top edge; active tab `ink`, others `ink-subtle`.
+- Tab bar: 83 tall, `surface` at 72% opacity with a background blur, `hairline` top edge; active tab `ink`, others `ink-subtle`. Replaced by the floating tab bar (see Tab bar below).
 
 Refinement round (2026-10-09, CRI-124, CRI-127), replacing the measurements above where they differ:
 
@@ -71,5 +71,15 @@ Refinement round (2026-10-09, CRI-124, CRI-127), replacing the measurements abov
 - A note in the button's place ("Unavailable in Sweden") and the "Requires … subscription" line under the button are centred, as everything else in the hero's block.
 - Poster rows: cards about 150 wide with 12 between them, two full cards and a peek of the third; every swipe rests with a card at the left margin. 32 above a row's heading, which is also the space between two rows; nothing under a row. Dragged past its end, a row shows a spinner (`ink-muted`) to the right of the last card, centred on the poster, not the poster and name; past 64 a light haptic, and the next batch comes in as two skeleton cards at the end, at least 0.7 s, which crossfade into the cards. Posters fade in once loaded. The name on one line; "Airing this week" keeps the day on its own second line.
 - A row's end element sits on its title line, right-aligned, at least 16 from the title, and fades in at the end of the row. Space for it is kept, so the title never moves, and on a narrow screen the title keeps its width and the end element truncates first. Its text is `label`'s size (12/16) in regular weight with no letter spacing. "All caught up" is passive status: `ink-muted`, on the title's baseline, not tappable. "Search more" is a pill to tap: 22 high, so it fits within the title's line and the gap above the cards stays whole, centred on the title, 10 side padding, `ink` text on `surface-raised` with an `image-control-edge` hairline, no blur, no icon, with a hit area of at least 44.
+
+## Tab bar (CRI-133, Instagram style)
+
+- A floating pill, fully rounded (`radius-pill`), centred, `tab-bar-bottom-gap` above the bottom of the screen. Content scrolls visibly behind it and ends above it (89 from the bottom). Home's hero is tied to the screen, not to the bar: it ends 183 above the bottom, as in the sketch.
+- Material: `tab-bar-background` over a background blur (`tab-bar-blur`), edged with a `tab-bar-edge` hairline (`tab-bar-edge-width`). `tab-bar-padding` inside, `tab-bar-gap` between the tabs.
+- Four tabs, icon only, no labels: Home, Calendar, My shows, Search. Their names are the accessibility labels. Every tab is the same size (`tab-bar-tab-width` × `tab-bar-tab-height`), active or not.
+- Icons: soft, rounded, even-weight `ink` outlines, `tab-bar-icon-stroke` on a 24 viewBox with round caps and joins, drawn at `tab-bar-icon-size`. Home is a house with no roof overhang and a small door notch; Calendar a rounded square (corner 4) with two nubs and a header line; My shows a squircle (corner 6) with the follow check; Search a magnifier with a large circle (radius 7.5) and a short handle.
+- Active tab: a wide `tab-bar-active-pill` filling its slot, which slides from the old tab to the new one on `tab-bar-spring`. Home, Calendar and My shows draw their icon filled in `ink` (Calendar's header line cut out, the check dark). Search is the exception: it stays an outline, with only the pill behind it, since a filled magnifier reads as a lollipop. No accent anywhere in the bar.
+- Touch: a pressed icon shrinks to `tab-bar-press-scale` and springs back on release, the bar's only size change; it never changes size on scroll. A tab change gives a `tab-bar-haptic`.
+- Tapping the active tab scrolls its view to the top (Home to the hero), or, on Search, goes back to the results and opens the keyboard.
 
 Open questions: whether "+" stays quiet (current proposal) and how to find the "newest" backdrop (the TMDB image list has no upload date; to be checked in the prototype).
