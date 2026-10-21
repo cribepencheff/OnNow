@@ -119,9 +119,10 @@ export function MyShowsIcon({ active }: TabIconProps) {
         <SymbolView
           name={FOLLOW_CHECK_SYMBOL}
           tintColor={active ? t.bg : t.ink}
-          // A bit over half the tray, at the outline's weight.
-          size={Math.round(t.tabBarIconSize * 0.3)}
-          weight="bold"
+          // Small enough to clear the tray's own outline on every side:
+          // at 0.3 it touched the tray's wall, inactive and active alike.
+          size={Math.round(t.tabBarIconSize * 0.17)}
+          weight="semibold"
         />
       </View>
     </View>
