@@ -7,8 +7,8 @@ import {
 } from "./tab-bar";
 
 describe("floating tab bar size and position (CRI-133)", () => {
-  it("is a 50 tab plus 7 padding and a 0.5 edge on each side", () => {
-    expect(FLOATING_TAB_BAR_HEIGHT).toBe(65);
+  it("is a 50 tab plus 3.5 padding and a 0.5 edge on each side", () => {
+    expect(FLOATING_TAB_BAR_HEIGHT).toBe(58);
   });
 
   it("floats clear of the home indicator", () => {
@@ -20,7 +20,7 @@ describe("floating tab bar size and position (CRI-133)", () => {
     expect(TAB_BAR_HEIGHT).toBe(
       FLOATING_TAB_BAR_BOTTOM + FLOATING_TAB_BAR_HEIGHT,
     );
-    expect(TAB_BAR_HEIGHT).toBe(85);
+    expect(TAB_BAR_HEIGHT).toBe(78);
   });
 });
 

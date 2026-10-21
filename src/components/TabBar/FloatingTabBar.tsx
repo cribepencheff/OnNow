@@ -6,8 +6,9 @@
 //
 // Touch is one gesture over the whole bar, not a button per tab: a tap
 // and a drag race, and whichever wins handles the touch. Putting a finger
-// down lifts the bar a little and grows the icon under it. A tap commits
-// the tab it lands on. A drag carries the pill along under the finger,
+// down lifts the bar a little, the sign that it is listening. A tap
+// commits the tab it lands on. A drag carries the pill along under the
+// finger,
 // 1:1; nothing is chosen until the finger lifts, when the tab nearest that
 // spot is committed and the pill springs into its slot, even if the
 // finger has strayed above or below the bar. The bar stays lifted until
@@ -28,11 +29,9 @@ import type { Tabs } from "expo-router";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   runOnJS,
-  useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-  type SharedValue,
 } from "react-native-reanimated";
 
 import {
@@ -87,11 +86,8 @@ export function FloatingTabBar({
     transform: [{ translateX: pillX.get() }],
   }));
 
-  // The touch: which tab is nearest the finger (for its icon's emphasis),
-  // and the bar's lift while a finger is on it.
+  // The bar's lift while a finger is on it.
   const barLift = useSharedValue(1);
-  const isTouching = useSharedValue(false);
-  const hoverIndex = useSharedValue(state.index);
 
   function commitSelection(index: number) {
     const route = state.routes[index];
@@ -111,12 +107,6 @@ export function FloatingTabBar({
     state.routes.length * t.tabBarTabWidth +
     (state.routes.length - 1) * t.tabBarGap;
 
-  // The tab nearest the finger, for the hovered icon's emphasis only: it
-  // never navigates on its own.
-  function resolveHover(x: number) {
-    "worklet";
-    hoverIndex.set(nearestTabIndex(x - t.tabBarPadding, orderedLayouts));
-  }
   // While dragging, the pill sits centred under the finger, 1:1 with no
   // spring, kept inside the row, even with the finger above or below the
   // bar.
@@ -137,11 +127,9 @@ export function FloatingTabBar({
     }
     runOnJS(commitSelection)(index);
   }
-  function touchDown(x: number) {
+  function touchDown() {
     "worklet";
-    isTouching.set(true);
     barLift.set(withSpring(t.tabBarLiftScale, t.tabBarSpring));
-    resolveHover(x);
   }
 
   // A tap and a drag race: a finger that lifts without moving far is the
@@ -152,18 +140,14 @@ export function FloatingTabBar({
   // fails the moment a drag starts and would drop the lift mid-drag.
   const tapGesture = Gesture.Tap()
     .maxDuration(TAP_MAX_DURATION)
-    .onBegin((event) => touchDown(event.x))
+    .onBegin(() => touchDown())
     .onEnd((event) => release(event.x));
   const dragGesture = Gesture.Pan()
     .withTestId("tab-bar-scrub")
-    .onBegin((event) => touchDown(event.x))
-    .onUpdate((event) => {
-      resolveHover(event.x);
-      followFinger(event.x);
-    })
+    .onBegin(() => touchDown())
+    .onUpdate((event) => followFinger(event.x))
     .onEnd((event) => release(event.x))
     .onFinalize(() => {
-      isTouching.set(false);
       barLift.set(withSpring(1, t.tabBarSpring));
     });
   const barGesture = Gesture.Race(tapGesture, dragGesture);
@@ -201,11 +185,8 @@ export function FloatingTabBar({
               return (
                 <TabButton
                   key={route.key}
-                  index={index}
                   label={options.title}
                   active={active}
-                  hoverIndex={hoverIndex}
-                  isTouching={isTouching}
                   onActivate={() => commitSelection(index)}
                   onLayout={(layout) =>
                     setLayouts((current) => ({
@@ -230,47 +211,26 @@ export function FloatingTabBar({
   );
 }
 
-// One tab: its icon grows a little while the finger is over it, scrubbing
-// or tapping, and springs back when it isn't. Not itself touchable (the
-// bar's single pan gesture is); a plain "activate" accessibility action
-// stands in for a screen reader, which cannot scrub.
+// One tab: not itself touchable (the bar's single gesture is); a plain
+// "activate" accessibility action stands in for a screen reader, which
+// cannot drag.
 function TabButton({
-  index,
   label,
   active,
-  hoverIndex,
-  isTouching,
   onActivate,
   onLayout,
   testID,
   children,
 }: {
-  index: number;
   label?: string;
   active: boolean;
-  hoverIndex: SharedValue<number>;
-  isTouching: SharedValue<boolean>;
   onActivate: () => void;
   onLayout: (layout: TabLayout) => void;
   testID?: string;
   children: React.ReactNode;
 }) {
-  const scale = useSharedValue(1);
-  useAnimatedReaction(
-    () => isTouching.get() && hoverIndex.get() === index,
-    (hovered, previouslyHovered) => {
-      if (hovered === previouslyHovered) {
-        return;
-      }
-      scale.set(withSpring(hovered ? t.tabBarHoverScale : 1, t.tabBarSpring));
-    },
-  );
-  const iconStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.get() }],
-  }));
-
   return (
-    <Animated.View
+    <View
       accessible
       accessibilityRole="tab"
       accessibilityLabel={label}
@@ -287,8 +247,8 @@ function TabButton({
       testID={testID}
       style={styles.tab}
     >
-      <Animated.View style={iconStyle}>{children}</Animated.View>
-    </Animated.View>
+      {children}
+    </View>
   );
 }
 

@@ -55,15 +55,13 @@ export const t = {
   tabBarTabWidth: 72,
   tabBarTabHeight: 50,
   // Space inside the bar, and between its tabs.
-  tabBarPadding: 7,
+  tabBarPadding: 3.5,
   tabBarGap: 6,
   // The gap under the bar, above the bottom of the screen.
   tabBarBottomGap: 20,
   // Touching the bar lifts it a little, the bar's only size change.
   tabBarLiftScale: 1.04,
-  // The tab under the finger grows to this while scrubbing or pressed.
-  tabBarHoverScale: 1.15,
-  // The spring of the sliding pill, the lift and the hover scale.
+  // The spring of the sliding pill and the lift.
   tabBarSpring: { damping: 18, stiffness: 220, mass: 0.8 },
 } as const;
 
