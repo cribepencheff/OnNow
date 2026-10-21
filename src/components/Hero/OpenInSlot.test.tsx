@@ -86,4 +86,26 @@ describe("OpenInSlot (FR-014, CRI-90)", () => {
     }
     expect(StyleSheet.flatten(node?.props.style).alignItems).toBe("center");
   });
+
+  // Owner: Apple's continuous corners on the hero's CTA, a capsule exactly
+  // half its height round (52 tall at Jest's window size).
+  it("draws the button as a continuous-corner capsule, half its height round", async () => {
+    await render(
+      <OpenInSlot
+        availability={{
+          kind: "button",
+          link: {
+            service: "Peacock",
+            url: "https://www.peacocktv.com",
+            logoPath: null,
+          },
+        }}
+      />,
+    );
+    const style = StyleSheet.flatten(
+      screen.getByRole("button", { name: "Open in Peacock" }).props.style,
+    );
+    expect(style.borderCurve).toBe("continuous");
+    expect(style.borderRadius).toBe((style.height as number) / 2);
+  });
 });

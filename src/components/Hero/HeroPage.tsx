@@ -105,7 +105,14 @@ export function OpenInSlot({
     marginTop: openInMargin,
     height: buttonHeight + NOTE_LINE,
   };
-  const buttonHeightStyle = { height: buttonHeight };
+  // A capsule exactly half its own height round, not radiusPill: with
+  // Apple's continuous corners (borderCurve, below) the ends then ease
+  // into the straight sides instead of meeting them (owner), and a radius
+  // past half the height would be left for iOS to clamp.
+  const buttonHeightStyle = {
+    height: buttonHeight,
+    borderRadius: buttonHeight / 2,
+  };
 
   return (
     // Fixed height across all four HeroAvailability states (button, loading
@@ -825,7 +832,8 @@ const styles = StyleSheet.create({
   button: {
     flexDirection: "row",
     gap: 8,
-    borderRadius: t.radiusPill,
+    // Apple's continuous corners (iOS only; Android draws circular ones).
+    borderCurve: "continuous",
     backgroundColor: t.ink,
     alignItems: "center",
     justifyContent: "center",
@@ -837,7 +845,7 @@ const styles = StyleSheet.create({
   },
   // Lookup running: the button's own shape, quiet, no text or spinner.
   buttonPlaceholder: {
-    borderRadius: t.radiusPill,
+    borderCurve: "continuous",
     backgroundColor: t.surfaceRaised,
   },
   // TMDB gives an answer with no button to show for it (an unmapped

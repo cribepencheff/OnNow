@@ -52,7 +52,7 @@ Measured on a 390 × 844 screen, from the design canvas:
 - Backdrop: full width, 580 tall from the top of the screen, cropped to fill (cover), centred.
 - Fade: from 280 to 580, transparent `bg` to 75% `bg` at the middle to solid `bg` at 580.
 - Content block on the fade: starts at 452, 24 side padding, 8 between items: badge (`label`, `ink-muted`), logo box (240 × 88), meta line (`meta`, `ink-muted`), then 16 down to the button.
-- Button: full content width, 50 tall (a tad over the Apple TV reference, 47), `radius-pill`, `ink` fill, `bg` text in `button` (18): "Open in [service]". Page dots 16 below: 8 × 8, active `ink`, others `hairline`.
+- Button: full content width, 52 tall (a tad over the Apple TV reference, 47; 46 on short screens), a capsule exactly half its height round with Apple's continuous corners (iOS; the ends ease into the straight sides rather than meet them), `ink` fill, `bg` text in `button` (18): "Open in [service]". Page dots 16 below: 8 × 8, active `ink`, others `hairline`.
 - "+": top right, 44 round, quiet: `bg` at 55% opacity, white plus icon.
 - Tab bar: 83 tall, `surface` at 72% opacity with a background blur, `hairline` top edge; active tab `ink`, others `ink-subtle`. Replaced by the floating tab bar (see Tab bar below).
 
