@@ -501,6 +501,57 @@ describe("HomeScreen", () => {
     }
   });
 
+  // The hero marks a premiere or a finale in a chip after the episode
+  // line, the same facts Show detail marks; mid-season, no chip.
+  it("marks a premiere and a finale after the episode line, and nothing mid-season", async () => {
+    const premiere = makeShow({ id: 1, name: "Slow Horses" });
+    const finale = makeShow({
+      id: 2,
+      name: "Silo",
+      _embedded: {
+        episodes: [],
+        seasons: [{ number: 1, episodeOrder: 10 } as never],
+      },
+    });
+    const midSeason = makeShow({ id: 3, name: "The Bear" });
+    mockFollowedEpisodes({
+      followedShows: [
+        { show: premiere, episodes: [makeEpisode({ number: 1 })] },
+        { show: finale, episodes: [makeEpisode({ id: 2, number: 10 })] },
+        { show: midSeason, episodes: [makeEpisode({ id: 3, number: 4 })] },
+      ],
+    });
+    const { rerender } = await render(<HomeScreen />);
+    const markOnSlide = (name: string) => {
+      const row = screen
+        .getAllByTestId("hero-episode-row")
+        .find((r) => within(r.parent!).queryByText(name) !== null);
+      if (!row) {
+        throw new Error(`No episode row for ${name}`);
+      }
+      return within(row).queryByTestId("hero-episode-mark");
+    };
+    expect(markOnSlide("Slow Horses")).toBeTruthy();
+    expect(screen.getByLabelText("Premiere")).toBeTruthy();
+
+    await fireEvent(screen.getByTestId("home-pager"), "momentumScrollEnd", {
+      nativeEvent: {
+        contentOffset: { x: 800 },
+        layoutMeasurement: { width: 400 },
+      },
+    });
+    expect(screen.getByLabelText("Finale")).toBeTruthy();
+
+    await fireEvent(screen.getByTestId("home-pager"), "momentumScrollEnd", {
+      nativeEvent: {
+        contentOffset: { x: 1200 },
+        layoutMeasurement: { width: 400 },
+      },
+    });
+    await rerender(<HomeScreen />);
+    expect(markOnSlide("The Bear")).toBeNull();
+  });
+
   // CRI-94: one slide per show, so a show's episodes are one slide.
   it("shows several same-day episodes of one show as one slide with a range (FR-012, CRI-94)", async () => {
     const show = makeShow({ name: "The Bear" });

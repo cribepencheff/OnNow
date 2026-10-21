@@ -18,7 +18,12 @@ import {
   openInLink,
   type ProviderAnswer,
 } from "@/logic/streaming-service";
-import type { TvMazeEpisode, TvMazeShow } from "@/api/tvmaze-types";
+import { isFinale } from "@/logic/show-detail";
+import type {
+  TvMazeEpisode,
+  TvMazeSeason,
+  TvMazeShow,
+} from "@/api/tvmaze-types";
 
 // How far the backdrop trails the slide's own horizontal scroll (Apple TV+
 // style parallax), as a fraction of one page width. 0 pins the backdrop to
@@ -324,6 +329,34 @@ export function heroPillLabel(slide: HeroSlide, todayDate: LocalDate): string {
   }
   const days = `${startWord ?? dateParts(startDate).weekday}–${dateParts(endDate).weekday}`;
   return `${days} · ${dates}`;
+}
+
+// What the hero marks a slide as, in a chip after its episode line: a
+// "Premiere" when its first episode is episode 1 of a season, a "Finale"
+// when its last is the last of a season, nothing otherwise. The same facts
+// Show detail marks (ADR 0015 keeps premiere labels; isFinale knows a
+// finale only from TVmaze's episode order, never guessed). A slide that is
+// both (a whole season out on one day) starts a season: "Premiere".
+export type HeroEpisodeMark = "premiere" | "finale";
+
+export function heroEpisodeMark(slide: HeroSlide): HeroEpisodeMark | null {
+  const first = slide.episodes[0];
+  const last = slide.episodes[slide.episodes.length - 1];
+  if (!first || !last) {
+    return null;
+  }
+  if (first.number === 1) {
+    return "premiere";
+  }
+  return isFinale(last, showSeasons(slide.show)) ? "finale" : null;
+}
+
+// A show's seasons when its embeds came with it (the followed shows the
+// hero is built from), none otherwise.
+function showSeasons(show: TvMazeShow): TvMazeSeason[] {
+  const embedded = (show as { _embedded?: { seasons?: TvMazeSeason[] } })
+    ._embedded;
+  return embedded?.seasons ?? [];
 }
 
 // The episode line under the logo (CRI-124): "S2E4 · Blank Curtain",

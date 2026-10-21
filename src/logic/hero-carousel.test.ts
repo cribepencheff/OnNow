@@ -7,7 +7,9 @@
 // (loopSlideData, logicalToPhysical, physicalToLogical, isLoopWrapSlot,
 // contentMountFrames).
 
+import type { TvMazeEpisode, TvMazeShow } from "@/api/tvmaze-types";
 import {
+  heroEpisodeMark,
   heroPagerKey,
   contentMountFrames,
   dotKinds,
@@ -418,5 +420,54 @@ describe("flickReleaseTarget (CRI-124)", () => {
     expect(flickReleaseTarget(4 * PAGE_WIDTH + 30, PAGE_WIDTH, 5, 4, 0.6)).toBe(
       4,
     );
+  });
+});
+
+// The hero's Premiere/Finale chip: the same facts Show detail marks.
+describe("heroEpisodeMark", () => {
+  const episode = (season: number, number: number) =>
+    ({ season, number }) as TvMazeEpisode;
+  const show = (episodeOrder: number | null) =>
+    ({
+      id: 1,
+      _embedded: {
+        episodes: [],
+        seasons: [{ number: 3, episodeOrder }],
+      },
+    }) as unknown as TvMazeShow;
+  const slide = (episodes: TvMazeEpisode[], episodeOrder: number | null) => ({
+    show: show(episodeOrder),
+    episodes,
+    localDate: "2026-10-21",
+    endDate: "2026-10-21",
+  });
+
+  it("marks episode 1 of a season as a premiere", () => {
+    expect(heroEpisodeMark(slide([episode(3, 1)], 10))).toBe("premiere");
+  });
+
+  it("marks the season's last episode as a finale, from its episode order", () => {
+    expect(heroEpisodeMark(slide([episode(3, 10)], 10))).toBe("finale");
+  });
+
+  it("marks nothing without an episode order: a finale is never guessed", () => {
+    expect(heroEpisodeMark(slide([episode(3, 10)], null))).toBeNull();
+  });
+
+  it("marks nothing mid-season", () => {
+    expect(heroEpisodeMark(slide([episode(3, 4)], 10))).toBeNull();
+  });
+
+  it("marks a finale when a slide's last episode ends the season", () => {
+    expect(
+      heroEpisodeMark(
+        slide([episode(3, 8), episode(3, 9), episode(3, 10)], 10),
+      ),
+    ).toBe("finale");
+  });
+
+  it("marks a whole season out on one day as a premiere, since it starts the season", () => {
+    const all = Array.from({ length: 10 }, (_, i) => episode(3, i + 1));
+    expect(heroEpisodeMark(slide(all, 10))).toBe("premiere");
   });
 });

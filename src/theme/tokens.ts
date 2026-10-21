@@ -19,6 +19,12 @@ export const t = {
   // duplicated as a second hardcoded hex.
   accent,
   onAccent: "#07130e",
+  // The hero's Finale chip's dot (EpisodeMarkChip); a Premiere's is
+  // accent. Warm amber rather than red, which reads as an error or live.
+  episodeFinale: "#ff9f0a",
+  // The Premiere/Finale chip's outline: brighter than imageControlEdge
+  // (owner), since it has no fill to set it off the fade.
+  episodeMarkEdge: "rgba(255, 255, 255, 0.32)",
   // A destructive action's fill (Unfollow), with ink on it (4.56:1).
   destructive: "#c93c3c",
   space2: 8,
