@@ -93,10 +93,12 @@ export function CalendarIcon({ active }: TabIconProps) {
   );
 }
 
-// A squircle with the follow controls' own check in it (FOLLOW_CHECK_SYMBOL),
-// two short filled bars stacked above it, narrower on top, spaced like the
-// owner's reference image: each gap about as wide as the bar below it.
-// Filled, the check sits dark on the white fill.
+// A tray, corner 4 like Calendar's rather than a squircle's (a smaller
+// radius reads closer to the owner's reference image, less like a jar),
+// with the follow controls' own check in it (FOLLOW_CHECK_SYMBOL), two
+// short filled bars stacked above it, narrower on top, spaced like the
+// reference: each gap about as wide as the bar below it. Filled, the
+// check sits dark on the white fill.
 export function MyShowsIcon({ active }: TabIconProps) {
   return (
     <View style={styles.box}>
@@ -108,18 +110,16 @@ export function MyShowsIcon({ active }: TabIconProps) {
           y="6"
           width="18"
           height="15"
-          rx="6"
+          rx="4"
           fill={active ? t.ink : "none"}
           {...stroke}
         />
       </TabSvg>
-      <View
-        style={[StyleSheet.absoluteFill, styles.center, styles.squircleCenter]}
-      >
+      <View style={[StyleSheet.absoluteFill, styles.center, styles.trayCenter]}>
         <SymbolView
           name={FOLLOW_CHECK_SYMBOL}
           tintColor={active ? t.bg : t.ink}
-          // About half the squircle, at the outline's weight.
+          // About half the tray, at the outline's weight.
           size={Math.round(t.tabBarIconSize * 0.4)}
           weight="bold"
         />
@@ -152,9 +152,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  // The squircle (6-21 of 24) sits lower than the icon's own centre: 1.5
+  // The tray (6-21 of 24) sits lower than the icon's own centre: 1.5
   // below centre, scaled to the icon's drawn size.
-  squircleCenter: {
+  trayCenter: {
     transform: [{ translateY: (1.5 / 24) * t.tabBarIconSize }],
   },
 });
