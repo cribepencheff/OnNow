@@ -25,15 +25,22 @@ const SQUIRCLE_STEPS = 48;
 const RING_COLOR = "rgba(0, 0, 0, 0.35)";
 const RING_WIDTH = 1;
 
+// Inset by half the ring's stroke: the squircle's cardinal points sit at
+// the exact radius, so a centred stroke drawn at the full radius overflows
+// the Svg canvas by half its width there and gets clipped by it.
 function squirclePath(size: number): string {
-  const r = size / 2;
+  const r = size / 2 - RING_WIDTH / 2;
+  const cx = size / 2;
+  const cy = size / 2;
   const points: string[] = [];
   for (let i = 0; i < SQUIRCLE_STEPS; i++) {
     const angle = (i / SQUIRCLE_STEPS) * Math.PI * 2;
     const cos = Math.cos(angle);
     const sin = Math.sin(angle);
-    const x = r + r * Math.sign(cos) * Math.abs(cos) ** (2 / SQUIRCLE_EXPONENT);
-    const y = r + r * Math.sign(sin) * Math.abs(sin) ** (2 / SQUIRCLE_EXPONENT);
+    const x =
+      cx + r * Math.sign(cos) * Math.abs(cos) ** (2 / SQUIRCLE_EXPONENT);
+    const y =
+      cy + r * Math.sign(sin) * Math.abs(sin) ** (2 / SQUIRCLE_EXPONENT);
     points.push(`${i === 0 ? "M" : "L"}${x.toFixed(2)} ${y.toFixed(2)}`);
   }
   return `${points.join(" ")} Z`;

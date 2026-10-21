@@ -74,7 +74,7 @@ const BLURRED_COPY_SIZE = "w300";
 // The service's logo squircle in the "Open in" button (CRI-132), after the
 // text. A whole number: a fractional size caused the mask and the image to
 // round to slightly different pixel grids on device, clipping one edge.
-const SERVICE_LOGO_SIZE = 30;
+const SERVICE_LOGO_SIZE = 28;
 
 // The hero's layout for this screen (logic/hero-layout.ts).
 export function useHeroLayout() {
@@ -811,7 +811,7 @@ const styles = StyleSheet.create({
   },
   // Centred, as everything else in the block.
   requires: {
-    marginTop: 4,
+    marginTop: 8,
     alignItems: "center",
   },
   button: {

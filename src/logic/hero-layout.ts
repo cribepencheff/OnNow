@@ -37,8 +37,9 @@ export const BUTTON_HEIGHT_SHORT = 46;
 // line (ImdbRating's IMDB_CHIP_HEIGHT); this is the row's fixed height.
 export const EPISODE_LINE_HEIGHT = 20;
 // One note line under the button, reserved on every slide so the dots stay
-// put: an add-on's "Requires hayu subscription" (CRI-101).
-export const NOTE_LINE = 4 + type.meta.lineHeight;
+// put: an add-on's "Requires hayu subscription" (CRI-101), or "Streaming on
+// [service]" (CRI-132).
+export const NOTE_LINE = 8 + type.meta.lineHeight;
 // The page dots' height, and the space under them to the hero's end.
 const DOTS_HEIGHT = 8;
 const DOTS_BOTTOM_SPACE = 8;

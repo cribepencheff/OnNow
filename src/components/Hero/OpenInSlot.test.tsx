@@ -81,7 +81,7 @@ describe("OpenInSlot (FR-014, CRI-90)", () => {
     );
 
     let node = screen.getByText("Requires hayu subscription").parent;
-    while (node && StyleSheet.flatten(node.props.style)?.marginTop !== 4) {
+    while (node && StyleSheet.flatten(node.props.style)?.marginTop !== 8) {
       node = node.parent;
     }
     expect(StyleSheet.flatten(node?.props.style).alignItems).toBe("center");
