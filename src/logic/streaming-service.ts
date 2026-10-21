@@ -10,6 +10,8 @@ import { serviceLink, type ServiceLink } from "./service-link";
 export interface StreamingProvider {
   providerId: number;
   providerName: string;
+  // TMDB's own icon for the service (CRI-132), null when TMDB has none.
+  logoPath: string | null;
 }
 
 // TMDB has no show to match (CRI-99): unknown, so nothing is shown. Not the
@@ -25,6 +27,7 @@ export interface TmdbFindResponse {
 interface TmdbProvider {
   provider_id: number;
   provider_name: string;
+  logo_path?: string | null;
 }
 
 interface TmdbRegionProviders {
@@ -67,6 +70,7 @@ export function regionProviders(
   ].map((provider) => ({
     providerId: provider.provider_id,
     providerName: provider.provider_name,
+    logoPath: provider.logo_path ?? null,
   }));
 }
 
@@ -213,24 +217,40 @@ export function openInLink(
 ): ServiceLink | null {
   const streaming = providers.filter(isStreaming);
   const known = streaming
-    .map((provider) => KNOWN_SERVICES[provider.providerId])
-    .filter((service): service is KnownService => service !== undefined);
+    .map((provider) => {
+      const service = KNOWN_SERVICES[provider.providerId];
+      return service ? { ...service, logoPath: provider.logoPath } : undefined;
+    })
+    .filter(
+      (service): service is KnownService & { logoPath: string | null } =>
+        service !== undefined,
+    );
 
   const direct = serviceLink(officialSite);
   if (direct && known.some((service) => service.service === direct.service)) {
-    return direct;
+    const logoPath =
+      known.find((service) => service.service === direct.service)?.logoPath ??
+      null;
+    return { ...direct, logoPath };
   }
   if (known[0]) {
-    return { service: known[0].service, url: known[0].startPage };
+    return {
+      service: known[0].service,
+      url: known[0].startPage,
+      logoPath: known[0].logoPath,
+    };
   }
 
   for (const provider of streaming) {
     const channel = addOnChannel(provider);
     if (channel) {
+      // The channel's own logo (e.g. "Hayu Amazon Channel"), not the host
+      // app's, so no logo is shown rather than the wrong one (data first).
       return {
         service: channel.host.service,
         url: channel.host.startPage,
         requires: channel.name,
+        logoPath: null,
       };
     }
   }
@@ -243,6 +263,13 @@ export function openInAccessibilityLabel(link: ServiceLink): string {
   return link.requires
     ? `Open in ${link.service}, requires ${link.requires} subscription`
     : `Open in ${link.service}`;
+}
+
+// The button's subrow for a direct service (CRI-132): the add-on channel's
+// own "requires X subscription" marker takes this slot instead (CRI-90,
+// CRI-101).
+export function streamingOnLabel(service: string): string {
+  return `Streaming on ${service}`;
 }
 
 // When there is no "Open in" button, a quiet text says what TMDB's data

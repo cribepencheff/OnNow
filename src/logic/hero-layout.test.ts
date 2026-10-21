@@ -35,15 +35,17 @@ describe("heroLayout (CRI-124)", () => {
     const { contentTop, dotsTop } = heroLayout(844, 47);
     const pillCentre = contentTop + 13;
     const buttonCentre = contentTop + 26 + 16 + 88 + 16 + 20 + 8 + 8 + 50 / 2;
-    // 16 more room around the logo than the sketch: 2 × (16 − 8).
-    expect(Math.abs(pillCentre - (422 - 16))).toBeLessThan(12);
-    expect(Math.abs(buttonCentre - 592)).toBeLessThan(12);
+    // 16 more room around the logo than the sketch: 2 × (16 − 8). Another 18
+    // up from doubling the note line's margin and widening the dots gap for
+    // "Streaming on [service]" (CRI-132).
+    expect(Math.abs(pillCentre - (422 - 16 - 18))).toBeLessThan(12);
+    expect(Math.abs(buttonCentre - (592 - 18))).toBeLessThan(12);
     expect(Math.abs(dotsTop + 4 - 644)).toBeLessThan(12);
   });
 
-  it("uses a 50pt button on regular screens and 44pt on short ones", () => {
-    expect(heroLayout(844, 47).buttonHeight).toBe(50);
-    expect(heroLayout(667, 20).buttonHeight).toBe(44);
+  it("uses a 52pt button on regular screens and 46pt on short ones", () => {
+    expect(heroLayout(844, 47).buttonHeight).toBe(52);
+    expect(heroLayout(667, 20).buttonHeight).toBe(46);
   });
 
   it.each([

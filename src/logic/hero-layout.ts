@@ -27,17 +27,19 @@ export const SHORT_SCREEN_MAX_HEIGHT = 700;
 export const PILL_HEIGHT = 26;
 // The logo box under the pill: a logo or the display title.
 export const TITLE_BLOCK_HEIGHT = 88;
-// The "Open in" button: 50, a tad over the Apple TV reference (47) at the
-// owner's request; 44 on short screens (still the minimum tap target).
-export const BUTTON_HEIGHT = 50;
-export const BUTTON_HEIGHT_SHORT = 44;
+// The "Open in" button: 52, a tad over the Apple TV reference (47) at the
+// owner's request, +2 for the service logo (CRI-132); 46 on short screens
+// (still the minimum tap target).
+export const BUTTON_HEIGHT = 52;
+export const BUTTON_HEIGHT_SHORT = 46;
 // The episode line under the logo: its text and the IMDb chip after it,
 // centred together on one baseline. The chip is no taller than the text's
 // line (ImdbRating's IMDB_CHIP_HEIGHT); this is the row's fixed height.
 export const EPISODE_LINE_HEIGHT = 20;
 // One note line under the button, reserved on every slide so the dots stay
-// put: an add-on's "Requires hayu subscription" (CRI-101).
-export const NOTE_LINE = 4 + type.meta.lineHeight;
+// put: an add-on's "Requires hayu subscription" (CRI-101), or "Streaming on
+// [service]" (CRI-132).
+export const NOTE_LINE = 8 + type.meta.lineHeight;
 // The page dots' height, and the space under them to the hero's end.
 const DOTS_HEIGHT = 8;
 const DOTS_BOTTOM_SPACE = 8;
@@ -111,8 +113,10 @@ export function heroLayout(windowHeight: number, topInset: number): HeroLayout {
   const isShort = windowHeight < SHORT_SCREEN_MAX_HEIGHT;
   const buttonHeight = isShort ? BUTTON_HEIGHT_SHORT : BUTTON_HEIGHT;
   const openInMargin = isShort ? 0 : 8;
-  // Tight under the note line, which is often empty (the owner's sketch).
-  const dotsGap = isShort ? 4 : 6;
+  // The note line is filled on most slides now ("Streaming on [service]",
+  // CRI-132), so it needs real breathing room above the dots, not the
+  // tighter gap from when it was usually empty (the owner's sketch).
+  const dotsGap = isShort ? 12 : 20;
   const heroHeight = windowHeight - HERO_END_FROM_BOTTOM;
 
   // Pill row, logo box, episode line, then the "Open in" slot with its

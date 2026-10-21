@@ -25,9 +25,13 @@ import type { TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 import { openExternalUrl, useGuardedRouter } from "@/hooks/useGuardedRouter";
 import { useStreamingService } from "@/hooks/useStreamingService";
 import { useShowImages } from "@/hooks/useShowImages";
-import { openInAccessibilityLabel } from "@/logic/streaming-service";
+import {
+  openInAccessibilityLabel,
+  streamingOnLabel,
+} from "@/logic/streaming-service";
 import { ImdbRating } from "../ImdbRating";
 import { PaidSubscriptionMarker } from "../PaidSubscriptionMarker";
+import { ServiceLogo } from "../ServiceLogo";
 import { ProgressiveMask } from "../ProgressiveBlur";
 import { DatePill } from "./DatePill";
 import {
@@ -67,6 +71,10 @@ const TOP_MIRROR_BLUR_RADIUS = 12;
 // radius stays sharp on screen; a small source blurs far more softly, and
 // is cheaper to decode.
 const BLURRED_COPY_SIZE = "w300";
+// The service's logo squircle in the "Open in" button (CRI-132), after the
+// text. A whole number: a fractional size caused the mask and the image to
+// round to slightly different pixel grids on device, clipping one edge.
+const SERVICE_LOGO_SIZE = 28;
 
 // The hero's layout for this screen (logic/hero-layout.ts).
 export function useHeroLayout() {
@@ -119,18 +127,36 @@ export function OpenInSlot({
             onPress={() => openExternalUrl(availability.link.url)}
             style={[styles.button, buttonHeightStyle]}
           >
-            <Text style={styles.buttonLabel}>
-              Open in {availability.link.service}
-            </Text>
+            {availability.link.logoPath ? (
+              <>
+                <Text style={styles.buttonLabel}>Open in</Text>
+                <ServiceLogo
+                  logoPath={availability.link.logoPath}
+                  size={SERVICE_LOGO_SIZE}
+                />
+              </>
+            ) : (
+              <Text style={styles.buttonLabel}>
+                Open in {availability.link.service}
+              </Text>
+            )}
           </Pressable>
           {/* As in Show detail, under the button (CRI-90, CRI-101). */}
-          {availability.link.requires && (
+          {availability.link.requires ? (
             <View style={styles.requires}>
               <PaidSubscriptionMarker
                 channel={availability.link.requires}
                 color={t.inkMuted}
                 textStyle={styles.availabilityNote}
               />
+            </View>
+          ) : (
+            // Shares the slot with "Unavailable in <region>" (CRI-132), at
+            // the same offset as the Requires line above.
+            <View style={styles.requires}>
+              <Text style={styles.streamingOnNote} numberOfLines={1}>
+                {streamingOnLabel(availability.link.service)}
+              </Text>
             </View>
           )}
         </>
@@ -739,16 +765,18 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     minWidth: 0,
   },
-  // "S2E4 · ": never cut.
+  // "S2E4 · ": never cut. White, not muted (owner, CRI-132): more weight
+  // against the backdrop; the IMDb chip next to it keeps its own colour.
   episodeCode: {
     ...type.meta,
-    color: t.inkMuted,
+    color: t.ink,
     flexShrink: 0,
   },
-  // The episode title: cut first, with an ellipsis.
+  // The episode title: cut first, with an ellipsis. White, not muted, as
+  // episodeCode above.
   episodeTitle: {
     ...type.meta,
-    color: t.inkMuted,
+    color: t.ink,
     flexShrink: 1,
   },
   // The IMDb chip: never cut.
@@ -785,10 +813,12 @@ const styles = StyleSheet.create({
   },
   // Centred, as everything else in the block.
   requires: {
-    marginTop: 4,
+    marginTop: 8,
     alignItems: "center",
   },
   button: {
+    flexDirection: "row",
+    gap: 8,
     borderRadius: t.radiusPill,
     backgroundColor: t.ink,
     alignItems: "center",
@@ -810,6 +840,16 @@ const styles = StyleSheet.create({
   // within the fixed openInSlot height, not vertically centered.
   availabilityNote: {
     ...type.meta,
+    color: t.inkMuted,
+    textAlign: "center",
+  },
+  // Smaller than availabilityNote (Apple TV+ does the same under its own
+  // button): a quieter, secondary line, not the no-button state's main
+  // message (CRI-132).
+  streamingOnNote: {
+    ...type.meta,
+    fontSize: 12,
+    lineHeight: 16,
     color: t.inkMuted,
     textAlign: "center",
   },

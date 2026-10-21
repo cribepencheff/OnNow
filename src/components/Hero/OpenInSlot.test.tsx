@@ -17,6 +17,7 @@ describe("OpenInSlot (FR-014, CRI-90)", () => {
             service: "Prime Video",
             url: "https://www.primevideo.com",
             requires: "hayu",
+            logoPath: null,
           },
         }}
       />,
@@ -36,7 +37,11 @@ describe("OpenInSlot (FR-014, CRI-90)", () => {
       <OpenInSlot
         availability={{
           kind: "button",
-          link: { service: "Peacock", url: "https://www.peacocktv.com" },
+          link: {
+            service: "Peacock",
+            url: "https://www.peacocktv.com",
+            logoPath: null,
+          },
         }}
       />,
     );
@@ -44,6 +49,8 @@ describe("OpenInSlot (FR-014, CRI-90)", () => {
     expect(
       screen.getByRole("button", { name: "Open in Peacock" }),
     ).toBeTruthy();
+    // The subrow shares the slot with "Unavailable in <region>" (CRI-132).
+    expect(screen.getByText("Streaming on Peacock")).toBeTruthy();
   });
 
   // Home layout polish: centred like everything else in the hero's block.
@@ -67,13 +74,14 @@ describe("OpenInSlot (FR-014, CRI-90)", () => {
             service: "Prime Video",
             url: "https://www.primevideo.com",
             requires: "hayu",
+            logoPath: null,
           },
         }}
       />,
     );
 
     let node = screen.getByText("Requires hayu subscription").parent;
-    while (node && StyleSheet.flatten(node.props.style)?.marginTop !== 4) {
+    while (node && StyleSheet.flatten(node.props.style)?.marginTop !== 8) {
       node = node.parent;
     }
     expect(StyleSheet.flatten(node?.props.style).alignItems).toBe("center");

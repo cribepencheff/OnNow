@@ -18,10 +18,10 @@ interface CachedServices {
   providers: ProviderAnswer;
 }
 
-// v2: drops "no services" entries saved for shows TMDB was not matched to
-// before the name match (CRI-99); every show is looked up once again.
+// v3: drops answers persisted before CRI-132, which lacked each provider's
+// logo_path.
 function storageKey(showId: number, region: string): string {
-  return `onnow.streamingService.v2.${region}.${showId}`;
+  return `onnow.streamingService.v3.${region}.${showId}`;
 }
 
 export async function getCachedProviders(

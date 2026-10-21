@@ -54,7 +54,11 @@ describe("TmdbClient (FR-014, NFR-005, CRI-82)", () => {
     await expect(
       client.findStreamingProviders(NEAGLEY_EXTERNALS, "SE"),
     ).resolves.toEqual([
-      { providerId: 119, providerName: "Amazon Prime Video" },
+      {
+        providerId: 119,
+        providerName: "Amazon Prime Video",
+        logoPath: "/gMZdpavHmxFNnLpMHwVxfqeux2g.png",
+      },
     ]);
 
     const [findUrl] = fetchFn.mock.calls[0];
@@ -128,7 +132,11 @@ describe("TmdbClient (FR-014, NFR-005, CRI-82)", () => {
     const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
 
     await expect(client.findStreamingProviders(JAY_Z, "SE")).resolves.toEqual([
-      { providerId: 119, providerName: "Amazon Prime Video" },
+      {
+        providerId: 119,
+        providerName: "Amazon Prime Video",
+        logoPath: "/gMZdpavHmxFNnLpMHwVxfqeux2g.png",
+      },
     ]);
     expect(fetchFn.mock.calls[0][0]).toContain(
       "/3/search/tv?query=JA%C5%B8-Z%20IN%208",
@@ -369,7 +377,11 @@ describe("TmdbClient.providersById (FR-038, FR-039)", () => {
     const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
 
     await expect(client.providersById(273207, "SE")).resolves.toEqual([
-      { providerId: 119, providerName: "Amazon Prime Video" },
+      {
+        providerId: 119,
+        providerName: "Amazon Prime Video",
+        logoPath: "/gMZdpavHmxFNnLpMHwVxfqeux2g.png",
+      },
     ]);
     expect(fetchFn).toHaveBeenCalledTimes(1);
     expect(fetchFn.mock.calls[0][0]).toContain("/3/tv/273207/watch/providers");

@@ -21,7 +21,9 @@ const mockedFind = tmdbClient.findStreamingProviders as jest.MockedFunction<
   typeof tmdbClient.findStreamingProviders
 >;
 const neagley = showNeagleyFixture as unknown as TvMazeShow;
-const PRIME = [{ providerId: 119, providerName: "Amazon Prime Video" }];
+const PRIME = [
+  { providerId: 119, providerName: "Amazon Prime Video", logoPath: null },
+];
 
 // CRI-82: a followed show's Swedish services are looked up once through
 // TMDB and kept with the show; later reads come from the cache.
@@ -56,7 +58,7 @@ describe("useStreamingService (FR-014, NFR-005, CRI-82)", () => {
     );
     expect(
       JSON.parse(
-        (await AsyncStorage.getItem("onnow.streamingService.v2.SE.82707"))!,
+        (await AsyncStorage.getItem("onnow.streamingService.v3.SE.82707"))!,
       ).providers,
     ).toEqual(PRIME);
 
@@ -92,7 +94,7 @@ describe("useStreamingService (FR-014, NFR-005, CRI-82)", () => {
     await waitFor(() => expect(result.current.data).toBe(NOT_ON_TMDB));
     expect(
       JSON.parse(
-        (await AsyncStorage.getItem("onnow.streamingService.v2.SE.82707"))!,
+        (await AsyncStorage.getItem("onnow.streamingService.v3.SE.82707"))!,
       ).providers,
     ).toBe(NOT_ON_TMDB);
 
@@ -107,7 +109,7 @@ describe("useStreamingService (FR-014, NFR-005, CRI-82)", () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data).toBeNull();
     expect(
-      await AsyncStorage.getItem("onnow.streamingService.v2.SE.82707"),
+      await AsyncStorage.getItem("onnow.streamingService.v3.SE.82707"),
     ).toBeNull();
 
     await unmount();
