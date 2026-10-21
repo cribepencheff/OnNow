@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Animated,
+  Pressable,
   RefreshControl,
   StyleSheet,
   Text,
@@ -77,6 +78,14 @@ function heroGetsItsFirstSlides(
   return settled.length === 0 && next.length > 0;
 }
 
+// The two members of Home's tab-screen navigation used for a tap on its
+// own tab: expo-router exports the tab navigator's types only from its
+// internal build folder, not from a public entry.
+interface TabScreenNavigation {
+  addListener(event: "tabPress", listener: () => void): () => void;
+  isFocused(): boolean;
+}
+
 function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
 }
@@ -131,6 +140,17 @@ export default function HomeScreen() {
     todayDate,
     heroGetsItsFirstSlides,
   );
+  // A tap on the app logo, or on Home's tab while on Home: the latest
+  // slides, and the hero back at its first slide (owner: no swiping all
+  // the way back by hand). A changed set of slides remounts the pager,
+  // which opens on the first slide anyway; an unchanged one slides back
+  // there (restartKey), with no rebuild.
+  const [heroRestart, setHeroRestart] = useState(0);
+  const restartHero = useCallback(() => {
+    settleHero();
+    setHeroRestart((count) => count + 1);
+  }, [settleHero]);
+
   // On leaving Home (a push over it, or another tab), so the rebuild runs
   // while Home is out of sight, and on coming back, for changes made
   // elsewhere; each a transition later, so it never runs during one.
@@ -145,14 +165,23 @@ export default function HomeScreen() {
     };
     const offBlur = navigation.addListener("blur", settleLater);
     const offFocus = navigation.addListener("focus", settleLater);
+    // Home's tab tapped while on Home (also scrolls back to the hero,
+    // useScrollToTop below); from another tab, the focus above settles.
+    const tabs = navigation as unknown as TabScreenNavigation;
+    const offTabPress = tabs.addListener("tabPress", () => {
+      if (tabs.isFocused()) {
+        restartHero();
+      }
+    });
     return () => {
       offBlur();
       offFocus();
+      offTabPress();
       if (timer) {
         clearTimeout(timer);
       }
     };
-  }, [navigation, settleHero]);
+  }, [navigation, settleHero, restartHero]);
 
   // The day Top picks is ordered by: a new day takes effect when Home
   // regains focus or on a pull, never while the user is on the row
@@ -442,6 +471,7 @@ export default function HomeScreen() {
                   todayDate={todayDate}
                   pullDistance={pullDistance}
                   heroVisible={!heroOffscreen}
+                  restartKey={heroRestart}
                 />
               )}
 
@@ -461,6 +491,7 @@ export default function HomeScreen() {
                   todayDate={todayDate}
                   pullDistance={pullDistance}
                   heroVisible={!heroOffscreen}
+                  restartKey={heroRestart}
                 />
               )}
 
@@ -507,7 +538,19 @@ export default function HomeScreen() {
 
       {showsHero && (
         <Header
-          left={<AppLogo height={APP_LOGO_HEIGHT} color={tokens.ink} />}
+          left={
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="On Now"
+              accessibilityHint="Back to the first show, with any new ones"
+              onPress={restartHero}
+              // A 44pt tap target around the 20pt logo.
+              hitSlop={12}
+              testID="app-logo-button"
+            >
+              <AppLogo height={APP_LOGO_HEIGHT} color={tokens.ink} />
+            </Pressable>
+          }
           scrollOffset={scrollOffset}
         />
       )}

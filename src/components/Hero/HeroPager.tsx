@@ -74,6 +74,7 @@ export function HeroPager({
   todayDate,
   pullDistance,
   heroVisible,
+  restartKey,
 }: {
   slides: HeroSlide[];
   todayDate: string;
@@ -90,6 +91,9 @@ export function HeroPager({
   // scrollToIndex races the outer scroll off screen and can settle on the
   // wrong physical slot once it's back in view.
   heroVisible: boolean;
+  // A change takes the hero back to its first slide (a tap on the app
+  // logo, or on Home's tab while on Home); its value means nothing.
+  restartKey: number;
 }) {
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -546,6 +550,32 @@ export function HeroPager({
     },
     [pageCount, physicalPageCount],
   );
+
+  // Back to the first slide when restartKey changes, not on mount (a new
+  // pager already opens there). The page itself is set while rendering,
+  // off the last key seen (React's pattern for resetting state on a
+  // change, as index.tsx does for its layout key); only the scroll there
+  // is an effect. Animated, so the way back reads as the answer to the
+  // tap, and settled by handleScrollEnd like any scroll; straight there
+  // under Reduce Motion.
+  const [seenRestartKey, setSeenRestartKey] = useState(restartKey);
+  if (seenRestartKey !== restartKey) {
+    setSeenRestartKey(restartKey);
+    setPageIndex(0);
+  }
+  const scrolledRestartKeyRef = useRef(restartKey);
+  useEffect(() => {
+    if (scrolledRestartKeyRef.current === restartKey || pageCount === 0) {
+      return;
+    }
+    scrolledRestartKeyRef.current = restartKey;
+    const firstSlot = logicalToPhysical(0, pageCount);
+    physicalIndexRef.current = firstSlot;
+    listRef.current?.scrollToIndex({
+      index: firstSlot,
+      animated: !reduceMotionEnabled,
+    });
+  }, [restartKey, pageCount, reduceMotionEnabled]);
 
   return (
     <View style={{ height: heroHeight }}>
