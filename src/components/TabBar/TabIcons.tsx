@@ -93,24 +93,25 @@ export function CalendarIcon({ active }: TabIconProps) {
   );
 }
 
-// A tray the same height and place as Calendar's rect (corner 3, not a
-// squircle's), a touch wider (20 instead of 18, Calendar's left as it
-// was), with the follow controls' own check in it (FOLLOW_CHECK_SYMBOL),
-// two short filled bars above it, narrower on top, clear of the tray's
-// own stroke: an SVG stroke is centred on the path, so the tray's visible
-// top edge sits half its stroke width above its own y. Filled, the check
-// sits dark on the white fill.
+// A tray back to 18 wide (not the 20 of last round), its height shrunk by
+// the same ratio so its proportions hold (14.85, not Calendar's 16.5),
+// bottom edge kept level with Calendar's, with the follow controls' own
+// check in it (FOLLOW_CHECK_SYMBOL), two short filled bars above it,
+// narrower on top and a little further apart than last round, clear of
+// the tray's own stroke: an SVG stroke is centred on the path, so the
+// tray's visible top edge sits half its stroke width above its own y.
+// Filled, the check sits dark on the white fill.
 export function MyShowsIcon({ active }: TabIconProps) {
   return (
     <View style={styles.box}>
       <TabSvg>
-        <Rect x="7.5" y="0.4" width="9" height="0.6" rx="0.3" fill={t.ink} />
-        <Rect x="5.5" y="1.4" width="13" height="0.9" rx="0.45" fill={t.ink} />
+        <Rect x="8" y="1.45" width="8" height="0.8" rx="0.4" fill={t.ink} />
+        <Rect x="6" y="2.95" width="12" height="1" rx="0.5" fill={t.ink} />
         <Rect
-          x="2"
-          y="4.5"
-          width="20"
-          height="16.5"
+          x="3"
+          y="6.15"
+          width="18"
+          height="14.85"
           rx="3"
           fill={active ? t.ink : "none"}
           {...stroke}
@@ -153,9 +154,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  // The tray (4.5-21 of 24, Calendar's own box) sits lower than the
-  // icon's own centre: 0.75 below centre, scaled to the drawn size.
+  // The tray (6.15-21 of 24, its bottom level with Calendar's) sits
+  // lower than the icon's own centre: 1.575 below centre, scaled to the
+  // drawn size.
   trayCenter: {
-    transform: [{ translateY: (0.75 / 24) * t.tabBarIconSize }],
+    transform: [{ translateY: (1.575 / 24) * t.tabBarIconSize }],
   },
 });
