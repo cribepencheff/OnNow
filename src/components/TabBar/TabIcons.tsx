@@ -93,35 +93,34 @@ export function CalendarIcon({ active }: TabIconProps) {
   );
 }
 
-// A squircle with the follow controls' own check in it (FOLLOW_CHECK_SYMBOL),
-// so it reads as "shows I follow", two short rounded bars stacked above it,
-// each narrower than the one below, as in the owner's reference image (a
-// card in front of others stacked behind it). Filled, the check sits dark
-// on the white fill; the two bars above are always just a stroke.
+// Apple TV's own Library icon (the owner's reference image): a wide,
+// flat tray with three thin bars stacked on it, each narrower than the
+// one below. The follow controls' own check (FOLLOW_CHECK_SYMBOL) sits in
+// the tray in place of the play triangle. The bars are always filled, as
+// in the reference; only the tray itself follows the active fill rule.
 export function MyShowsIcon({ active }: TabIconProps) {
   return (
     <View style={styles.box}>
       <TabSvg>
-        <Line x1="8" y1="3" x2="16" y2="3" {...stroke} />
-        <Line x1="6" y1="6" x2="18" y2="6" {...stroke} />
+        <Rect x="8" y="6.9" width="8" height="1.5" rx="0.75" fill={t.ink} />
+        <Rect x="6.5" y="8.9" width="11" height="1.5" rx="0.75" fill={t.ink} />
+        <Rect x="5" y="10.9" width="14" height="1.5" rx="0.75" fill={t.ink} />
         <Rect
           x="3"
-          y="8.5"
+          y="13"
           width="18"
-          height="12.5"
-          rx="6"
+          height="8"
+          rx="3.5"
           fill={active ? t.ink : "none"}
           {...stroke}
         />
       </TabSvg>
-      <View
-        style={[StyleSheet.absoluteFill, styles.center, styles.squircleCenter]}
-      >
+      <View style={[StyleSheet.absoluteFill, styles.center, styles.trayCenter]}>
         <SymbolView
           name={FOLLOW_CHECK_SYMBOL}
           tintColor={active ? t.bg : t.ink}
-          // About half the squircle, at the outline's weight.
-          size={Math.round(t.tabBarIconSize * 0.36)}
+          // A bit over half the tray, at the outline's weight.
+          size={Math.round(t.tabBarIconSize * 0.3)}
           weight="bold"
         />
       </View>
@@ -153,9 +152,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  // The squircle (8.5-21 of 24) sits lower than the icon's own centre:
-  // 2.75 below centre, scaled to the icon's drawn size.
-  squircleCenter: {
-    transform: [{ translateY: (2.75 / 24) * t.tabBarIconSize }],
+  // The tray (13-21 of 24) sits lower than the icon's own centre: 5
+  // below centre, scaled to the icon's drawn size.
+  trayCenter: {
+    transform: [{ translateY: (5 / 24) * t.tabBarIconSize }],
   },
 });
