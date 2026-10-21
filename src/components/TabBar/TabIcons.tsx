@@ -72,7 +72,7 @@ export function CalendarIcon({ active }: TabIconProps) {
           y="4.5"
           width="18"
           height="16.5"
-          rx="4"
+          rx="3"
           fill={t.ink}
           mask={`url(#${maskId})`}
         />
@@ -82,7 +82,7 @@ export function CalendarIcon({ active }: TabIconProps) {
         y="4.5"
         width="18"
         height="16.5"
-        rx="4"
+        rx="3"
         fill="none"
         {...stroke}
       />
@@ -93,7 +93,7 @@ export function CalendarIcon({ active }: TabIconProps) {
   );
 }
 
-// A tray, corner 4 like Calendar's rather than a squircle's (a smaller
+// A tray, corner 3 like Calendar's rather than a squircle's (a smaller
 // radius reads closer to the owner's reference image, less like a jar),
 // with the follow controls' own check in it (FOLLOW_CHECK_SYMBOL), two
 // short filled bars stacked above it, narrower on top, spaced like the
@@ -110,7 +110,7 @@ export function MyShowsIcon({ active }: TabIconProps) {
           y="6"
           width="18"
           height="15"
-          rx="4"
+          rx="3"
           fill={active ? t.ink : "none"}
           {...stroke}
         />
