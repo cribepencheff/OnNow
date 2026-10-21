@@ -215,6 +215,21 @@ export default function HomeScreen() {
   const [pullRestOffsetY, setPullRestOffsetY] = useState<number | null>(null);
   const [scrolledDown, setScrolledDown] = useState(false);
 
+  // The hero's own height, to tell whether it is still on screen: the hero
+  // pager keeps auto-advancing and silently paging itself (goToPage) while
+  // scrolled out of view, same as it always has, but that scrollToIndex
+  // races the outer vertical scroll on a real device and can settle on the
+  // wrong physical slot (a black frame on the wrap, or a slide's text over
+  // another slide's backdrop once scrolled back up) instead of just
+  // failing loudly. Pausing it the same way touching/focus/background
+  // already do (HeroPager's own auto-advance effect) avoids the race
+  // instead of chasing its visible symptoms.
+  const heroHeight = useMemo(
+    () => heroLayout(height, insets.top).heroHeight,
+    [height, insets.top],
+  );
+  const [heroOffscreen, setHeroOffscreen] = useState(false);
+
   const handlePullRestOffsetCapture = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
       const { contentInset, contentOffset } = event.nativeEvent;
@@ -222,6 +237,7 @@ export default function HomeScreen() {
       // Scrolled down into the page, not at its top (or pulled): only then
       // does a row opening above keep what is on screen in place.
       setScrolledDown(contentOffset.y > candidate + SCROLLED_DOWN_MIN);
+      setHeroOffscreen(contentOffset.y > candidate + heroHeight);
       // Skip samples taken mid-pull (offset pulled above the resting top):
       // read the baseline only from a settled position (at the top or
       // scrolled down into content), where contentInset.top is its true
@@ -233,7 +249,7 @@ export default function HomeScreen() {
         current === null ? candidate : Math.max(current, candidate),
       );
     },
-    [],
+    [heroHeight],
   );
 
   // Re-establish the baseline when the layout changes (rotation, Dynamic
@@ -290,10 +306,7 @@ export default function HomeScreen() {
   // the hero; the rows keep their own positions.
   useScrollToTop(reanimatedScrollRef as never);
   const reanimatedScrollOffset = useScrollOffset(reanimatedScrollRef);
-  const dimEndScroll = posterDimEndScroll(
-    heroLayout(height, insets.top).heroHeight,
-    height,
-  );
+  const dimEndScroll = posterDimEndScroll(heroHeight, height);
   const posterDim = useDerivedValue(() =>
     posterDimAt(reanimatedScrollOffset.value, dimEndScroll),
   );
@@ -366,6 +379,7 @@ export default function HomeScreen() {
                   slides={heroSlides}
                   todayDate={todayDate}
                   pullDistance={pullDistance}
+                  heroVisible={!heroOffscreen}
                 />
               )}
 
@@ -384,6 +398,7 @@ export default function HomeScreen() {
                   }))}
                   todayDate={todayDate}
                   pullDistance={pullDistance}
+                  heroVisible={!heroOffscreen}
                 />
               )}
 

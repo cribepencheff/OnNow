@@ -73,6 +73,7 @@ export function HeroPager({
   slides,
   todayDate,
   pullDistance,
+  heroVisible,
 }: {
   slides: HeroSlide[];
   todayDate: string;
@@ -83,6 +84,12 @@ export function HeroPager({
   // here (horizontal paging, parallax, crossfade and the dot indicator
   // don't reference it at all).
   pullDistance: Animated.AnimatedInterpolation<number>;
+  // Whether the hero itself is still on screen, not scrolled past (see
+  // index.tsx's heroOffscreen). Auto-advance pauses off screen, same as it
+  // already does under a finger or in the background: its own
+  // scrollToIndex races the outer scroll off screen and can settle on the
+  // wrong physical slot once it's back in view.
+  heroVisible: boolean;
 }) {
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -263,7 +270,10 @@ export function HeroPager({
   );
 
   const canAutoAdvance =
-    pageCount > 1 && !reduceMotionEnabled && !screenReaderEnabled;
+    pageCount > 1 &&
+    !reduceMotionEnabled &&
+    !screenReaderEnabled &&
+    heroVisible;
 
   const markLoaded = useCallback((index: number) => {
     setLoadedPages((current) => {

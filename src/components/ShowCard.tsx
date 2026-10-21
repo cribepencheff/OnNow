@@ -3,13 +3,14 @@
 // tap opens Show detail (inside the sheet when shown in Search, PRD 5.6);
 // the follow circle follows at once.
 
-import { useCallback } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
 import { Image } from "expo-image";
 import * as Haptics from "expo-haptics";
 import { SymbolView } from "expo-symbols";
 
 import { IMAGE_BASE } from "@/api/tmdb-types";
+import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
 import { useFollowToggle } from "@/hooks/useFollowList";
 import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import type { PosterItem } from "@/logic/top-picks";
@@ -144,12 +145,45 @@ function PosterFollowCircle({
   );
 }
 
+// How long one pulse cycle (dim to bright to dim) takes.
+const PULSE_MS = 900;
+// How dim the skeleton gets at the low point of its pulse.
+const PULSE_LOW = 0.4;
+
 // A card's shape while its row loads for the first time (CRI-127): exactly
 // a real card's size, the name line and caption line included, so nothing
-// moves when the posters come in.
+// moves when the posters come in. Pulses while it waits, so a long wait
+// (a cold cache, say right after the app wakes from the background) still
+// reads as loading rather than stuck.
 export function SkeletonCard({ withCaption }: { withCaption: boolean }) {
+  const { reduceMotionEnabled } = useAccessibilityFlags();
+  const [opacity] = useState(() => new Animated.Value(1));
+
+  useEffect(() => {
+    if (reduceMotionEnabled) {
+      opacity.setValue(1);
+      return;
+    }
+    const pulse = Animated.loop(
+      Animated.sequence([
+        Animated.timing(opacity, {
+          toValue: PULSE_LOW,
+          duration: PULSE_MS,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacity, {
+          toValue: 1,
+          duration: PULSE_MS,
+          useNativeDriver: true,
+        }),
+      ]),
+    );
+    pulse.start();
+    return () => pulse.stop();
+  }, [reduceMotionEnabled, opacity]);
+
   return (
-    <View style={styles.card} testID="skeleton-card">
+    <Animated.View style={[styles.card, { opacity }]} testID="skeleton-card">
       <View style={[styles.poster, styles.skeletonPoster]} />
       <View>
         <View style={styles.nameLine}>
@@ -161,7 +195,7 @@ export function SkeletonCard({ withCaption }: { withCaption: boolean }) {
           </View>
         )}
       </View>
-    </View>
+    </Animated.View>
   );
 }
 

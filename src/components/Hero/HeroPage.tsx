@@ -29,7 +29,6 @@ import {
   openInAccessibilityLabel,
   streamingOnLabel,
 } from "@/logic/streaming-service";
-import { ImdbRating } from "../ImdbRating";
 import { PaidSubscriptionMarker } from "../PaidSubscriptionMarker";
 import { ServiceLogo } from "../ServiceLogo";
 import { ProgressiveMask } from "../ProgressiveBlur";
@@ -692,14 +691,13 @@ export const ContentLayer = memo(function ContentLayer({
             )}
           </View>
         </View>
-        {/* One fixed line, on the fade, no block behind it: the code, the
-            episode title and the IMDb chip, one group centred on the hero's
-            axis. Only the title gives way to a long line, with an ellipsis;
-            the code and the chip keep their width. Only the chip takes
-            touches. */}
+        {/* One fixed line, on the fade, no block behind it: the code and
+            the episode title, centred on the hero's axis. Only the title
+            gives way to a long line, with an ellipsis; the code keeps its
+            width. */}
         <View
           style={styles.episodeRow}
-          pointerEvents="box-none"
+          pointerEvents="none"
           testID="hero-episode-row"
         >
           <View
@@ -715,9 +713,6 @@ export const ContentLayer = memo(function ContentLayer({
             <Text style={styles.episodeTitle} numberOfLines={1}>
               {heroEpisodeTitle(slide.episodes)}
             </Text>
-          </View>
-          <View style={styles.chip}>
-            <ImdbRating show={show} variant="chip" />
           </View>
         </View>
         <OpenInSlot availability={availability} />
@@ -756,10 +751,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "baseline",
     justifyContent: "center",
-    gap: t.space2,
   },
-  // The code and the title, as wide as they need, giving way when the
-  // chip leaves less room.
+  // The code and the title, as wide as they need, giving way to the
+  // title's ellipsis when the line is long.
   episodeLine: {
     flexDirection: "row",
     flexShrink: 1,
@@ -778,10 +772,6 @@ const styles = StyleSheet.create({
     ...type.meta,
     color: t.ink,
     flexShrink: 1,
-  },
-  // The IMDb chip: never cut.
-  chip: {
-    flexShrink: 0,
   },
   // One height for a logo and a text title, so nothing below shifts.
   titleRoom: {
