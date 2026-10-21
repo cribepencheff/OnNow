@@ -68,6 +68,19 @@ export function ServiceLogo({
           <Path d={path} />
         </ClipPath>
       </Defs>
+      {/* The same icon at full bleed, corner to corner: TMDB's provider
+          icons are solid-colour square canvases, so this fills the inset
+          margin around the icon above with its own background colour
+          (edge-extend) instead of leaving it empty. */}
+      <SvgImage
+        href={`${IMAGE_BASE}/w154${logoPath}`}
+        x={0}
+        y={0}
+        width={size}
+        height={size}
+        preserveAspectRatio="xMidYMid slice"
+        clipPath={`url(#${clipId})`}
+      />
       <SvgImage
         href={`${IMAGE_BASE}/w154${logoPath}`}
         x={ICON_INSET}
