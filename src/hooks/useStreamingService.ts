@@ -18,9 +18,9 @@ export function useStreamingService(
 ): UseQueryResult<ProviderAnswer | null> & { region: string | undefined } {
   const { region } = useRegion();
   const query = useQuery({
-    // v2: drops answers persisted before CRI-99, when an unmatched show was
-    // stored as "no services" (CRI-102).
-    queryKey: ["streamingService", "v2", region, show.id],
+    // v3: drops answers persisted before CRI-132, which lacked each
+    // provider's logo_path.
+    queryKey: ["streamingService", "v3", region, show.id],
     enabled: enabled && region !== undefined,
     // Freshness is decided by the storage (30 days, a day for "not on
     // TMDB"); an hour re-reads it, so its expiry applies in a running app.
