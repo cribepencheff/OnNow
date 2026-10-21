@@ -4,7 +4,10 @@ import { tvMazeClient } from "@/api/tvmaze-client";
 import { getFollowedIds } from "@/storage/follow-list";
 import showSlowHorsesFixture from "@/api/fixtures/show-slow-horses.json";
 import showTheBearFixture from "@/api/fixtures/show-the-bear.json";
-import { SHOW_STALE_TIME_MS } from "./query-client";
+import {
+  ENDED_SHOW_STALE_TIME_MS,
+  SHOW_STALE_TIME_MS,
+} from "@/logic/show-staleness";
 import { useFollowedEpisodes } from "./useFollowedEpisodes";
 import { showQueryKey } from "./useShow";
 import { createTestQueryClient, wrapperWithQueryClient } from "./test-utils";
@@ -84,6 +87,41 @@ describe("useFollowedEpisodes", () => {
     expect(
       result.current.followedShows.map(({ show }) => show.name).sort(),
     ).toEqual(["Slow Horses", "The Bear"]);
+
+    await unmount();
+    client.unmount();
+  });
+
+  // CRI-137: useQueries returns a new array every render, and everything
+  // derived from it was rebuilt every render too, walking every followed
+  // show's full episode list. With nothing changed, a re-render must hand
+  // back the same arrays.
+  it("returns the same arrays on a re-render when nothing changed (CRI-137)", async () => {
+    mockedGetFollowedIds.mockResolvedValue([
+      showSlowHorsesFixture.id,
+      showTheBearFixture.id,
+    ]);
+    mockedGetShow.mockImplementation(async (id) =>
+      id === showSlowHorsesFixture.id
+        ? (showSlowHorsesFixture as never)
+        : (showTheBearFixture as never),
+    );
+    const client = createTestQueryClient();
+
+    const { result, rerender, unmount } = await renderHook(
+      () => useFollowedEpisodes(),
+      { wrapper: wrapperWithQueryClient(client) },
+    );
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    const first = result.current;
+
+    await rerender({});
+    expect(result.current.followedShows).toBe(first.followedShows);
+    expect(result.current.showsWithEpisodeToday).toBe(
+      first.showsWithEpisodeToday,
+    );
+    expect(result.current.nextDayEpisodes).toBe(first.nextDayEpisodes);
+    expect(result.current.nextByShow).toBe(first.nextByShow);
 
     await unmount();
     client.unmount();
@@ -266,7 +304,8 @@ describe("useFollowedEpisodes", () => {
     it("stale cache: shown at once, refreshed in the background, and a pull refetches only the stale show", async () => {
       const client = createTestQueryClient();
       seed(client, slowHorses, showSlowHorsesFixture, 1000);
-      seed(client, theBear, showTheBearFixture, SHOW_STALE_TIME_MS + 1);
+      // The Bear has ended: stale only after about a week (CRI-107).
+      seed(client, theBear, showTheBearFixture, ENDED_SHOW_STALE_TIME_MS + 1);
 
       const { result, unmount } = await renderHook(
         () => useFollowedEpisodes(),
@@ -285,6 +324,28 @@ describe("useFollowedEpisodes", () => {
       await act(() => result.current.refetch());
       expect(mockedGetShow).toHaveBeenCalledTimes(1);
       expect(mockedGetShow).toHaveBeenCalledWith(slowHorses);
+
+      await unmount();
+      client.unmount();
+    });
+
+    // CRI-107: an ended show is refetched about weekly, not hourly.
+    it("refetches an ended show after a week, not after an hour, on launch and on a pull", async () => {
+      const client = createTestQueryClient();
+      seed(client, slowHorses, showSlowHorsesFixture, 0);
+      seed(client, theBear, showTheBearFixture, SHOW_STALE_TIME_MS + 1);
+
+      const { result, unmount } = await renderHook(
+        () => useFollowedEpisodes(),
+        { wrapper: wrapperWithQueryClient(client) },
+      );
+      await waitFor(() => expect(result.current.isReady).toBe(true));
+      await act(() => result.current.refetch());
+      expect(mockedGetShow).not.toHaveBeenCalled();
+
+      jest.setSystemTime(Date.now() + ENDED_SHOW_STALE_TIME_MS);
+      await act(() => result.current.refetch());
+      expect(mockedGetShow).toHaveBeenCalledWith(theBear);
 
       await unmount();
       client.unmount();

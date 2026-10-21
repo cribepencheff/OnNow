@@ -24,6 +24,9 @@ import {
 import type { TmdbOnTheAir } from "@/logic/airing-this-week";
 import type { TmdbRecommendation } from "@/logic/recommendations";
 import { matchTmdbSearch, type TmdbSearchResult } from "@/logic/tmdb-match";
+import { queryClient } from "@/hooks/query-client";
+import { createTmdbFindCache } from "@/hooks/tmdb-find-cache";
+import type { TmdbImages } from "./tmdb-types";
 import type { TvMazeExternals, TvMazeShow } from "./tvmaze-types";
 
 // What identifies a TVmaze show on TMDB: its external IDs, and its name and
@@ -58,10 +61,20 @@ const V3_KEY_MAX_LENGTH = 40;
 type FetchLike = typeof fetch;
 type WaitFn = (ms: number) => Promise<void>;
 
+// Answers the find step for a show (findShow below): `find` does the
+// request; a cache may answer instead (CRI-107: the app's client keeps
+// one /find per show in the query cache, hooks/tmdb-find-cache.ts).
+export type CachedFind = (
+  show: TmdbShowRef,
+  find: () => Promise<TmdbFindResponse>,
+) => Promise<TmdbFindResponse>;
+
 export interface TmdbClientOptions {
   apiKey: string | undefined;
   fetchFn?: FetchLike;
   wait?: WaitFn;
+  // Without it, every lookup makes its own find request.
+  cachedFind?: CachedFind;
 }
 
 export interface TmdbClient {
@@ -85,6 +98,14 @@ export interface TmdbClient {
   ) => Promise<TmdbRecommendations | typeof NOT_ON_TMDB | null>;
   // A TMDB show's IMDb and TheTVDB IDs, to find it on TVmaze (FR-038).
   externalIdsById: (tmdbId: number) => Promise<ExternalIds | null>;
+  // A followed show's TMDB images, English and textless (the hero's
+  // backdrop and logo, ADR 0012), with its TMDB id; NOT_ON_TMDB when TMDB
+  // does not know it, null without a key.
+  findImages: (
+    show: TmdbShowRef,
+  ) => Promise<
+    { tvId: number; images: TmdbImages } | typeof NOT_ON_TMDB | null
+  >;
   // Shows on a streaming service in the region with an episode in the
   // week (TMDB discover), soaps excluded, by popularity, pages 1 and 2
   // (FR-039); null without a key.
@@ -119,8 +140,8 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     ((ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms)));
   const isBearer = (apiKey?.length ?? 0) > V3_KEY_MAX_LENGTH;
 
-  // NFR-005: one lookup per followed show, cached for 30 days, so TMDB's
-  // rate limit is rarely near. A 429 still backs off and retries.
+  // NFR-005: TMDB's rate limit is rarely near (the find step is cached,
+  // see cachedFind). A 429 still backs off and retries.
   async function requestJson<T>(path: string, key: string): Promise<T> {
     const separator = path.includes("?") ? "&" : "?";
     const url = isBearer
@@ -179,6 +200,13 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     return {};
   }
 
+  // The find step for a show, through the cache when the client has one.
+  function lookUp(show: TmdbShowRef, key: string): Promise<TmdbFindResponse> {
+    return options.cachedFind
+      ? options.cachedFind(show, () => findShow(show, key))
+      : findShow(show, key);
+  }
+
   async function findStreamingProviders(
     show: TmdbShowRef,
     region: string,
@@ -186,7 +214,7 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     if (!apiKey) {
       return null;
     }
-    const tvId = tmdbTvId(await findShow(show, apiKey));
+    const tvId = tmdbTvId(await lookUp(show, apiKey));
     if (tvId === null) {
       return NOT_ON_TMDB;
     }
@@ -202,7 +230,7 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     if (!apiKey) {
       return null;
     }
-    return tmdbOriginCountries(await findShow(show, apiKey));
+    return tmdbOriginCountries(await lookUp(show, apiKey));
   }
 
   async function findExternalIds(
@@ -211,7 +239,7 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     if (!apiKey) {
       return null;
     }
-    const tvId = tmdbTvId(await findShow(show, apiKey));
+    const tvId = tmdbTvId(await lookUp(show, apiKey));
     if (tvId === null) {
       return NOT_ON_TMDB;
     }
@@ -229,7 +257,7 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     if (!apiKey) {
       return null;
     }
-    const tvId = tmdbTvId(await findShow(show, apiKey));
+    const tvId = tmdbTvId(await lookUp(show, apiKey));
     if (tvId === null) {
       return NOT_ON_TMDB;
     }
@@ -238,6 +266,23 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
       apiKey,
     );
     return { tvId, results: response.results ?? [] };
+  }
+
+  async function findImages(
+    show: TmdbShowRef,
+  ): Promise<{ tvId: number; images: TmdbImages } | typeof NOT_ON_TMDB | null> {
+    if (!apiKey) {
+      return null;
+    }
+    const tvId = tmdbTvId(await lookUp(show, apiKey));
+    if (tvId === null) {
+      return NOT_ON_TMDB;
+    }
+    const images = await requestJson<TmdbImages>(
+      `/tv/${tvId}/images?include_image_language=en,null,xx`,
+      apiKey,
+    );
+    return { tvId, images };
   }
 
   async function externalIdsById(tmdbId: number): Promise<ExternalIds | null> {
@@ -304,10 +349,14 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     findOriginCountries,
     findExternalIds,
     findRecommendations,
+    findImages,
     externalIdsById,
   };
 }
 
+// The app's client: one /find per show for all its lookups, kept in the
+// query cache (CRI-107, hooks/tmdb-find-cache.ts).
 export const tmdbClient = createTmdbClient({
   apiKey: process.env.EXPO_PUBLIC_TMDB_API_KEY,
+  cachedFind: createTmdbFindCache(queryClient),
 });
