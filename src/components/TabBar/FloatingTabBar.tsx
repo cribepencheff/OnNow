@@ -22,7 +22,7 @@
 // back to its start, then the switch.
 
 import { useEffect, useRef, useState, type ComponentProps } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, useWindowDimensions } from "react-native";
 import { BlurView } from "expo-blur";
 import * as Haptics from "expo-haptics";
 import type { Tabs } from "expo-router";
@@ -37,6 +37,7 @@ import Animated, {
 import {
   FLOATING_TAB_BAR_BOTTOM,
   nearestTabIndex,
+  tabBarRowGap,
   type TabLayout,
 } from "@/logic/tab-bar";
 import { t } from "@/theme/tokens";
@@ -56,6 +57,12 @@ export function FloatingTabBar({
   descriptors,
   navigation,
 }: TabBarProps) {
+  // The gap between tabs: wide enough that the whole bar spans the same
+  // width as Home's content margins, matching the hero's "Open in" button
+  // (tabBarRowGap, logic/tab-bar.ts).
+  const { width: windowWidth } = useWindowDimensions();
+  const rowGap = tabBarRowGap(windowWidth, state.routes.length);
+
   // Each tab's place in the row, measured, so the pill and the scrub both
   // know where they are.
   const [layouts, setLayouts] = useState<Record<string, TabLayout>>({});
@@ -102,10 +109,10 @@ export function FloatingTabBar({
     }
   }
 
-  // The row's full width: every tab is the same size (tabBarTabWidth).
+  // The row's full width: every tab is the same size (tabBarTabWidth),
+  // rowGap apart.
   const rowWidth =
-    state.routes.length * t.tabBarTabWidth +
-    (state.routes.length - 1) * t.tabBarGap;
+    state.routes.length * t.tabBarTabWidth + (state.routes.length - 1) * rowGap;
 
   // While dragging, the pill sits centred under the finger, 1:1 with no
   // spring, kept inside the row, even with the finger above or below the
@@ -172,7 +179,7 @@ export function FloatingTabBar({
 
           {/* The tabs and the pill share this row, so the measured places
               and the pill's position have the same origin. */}
-          <View style={styles.row}>
+          <View style={[styles.row, { gap: rowGap }]}>
             <Animated.View
               pointerEvents="none"
               testID="tab-bar-pill"
@@ -275,7 +282,6 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: "row",
-    gap: t.tabBarGap,
   },
   // The active pill: the full size of a tab, so wider than tall.
   pill: {

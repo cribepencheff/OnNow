@@ -16,6 +16,27 @@ export const FLOATING_TAB_BAR_BOTTOM = t.tabBarBottomGap;
 // above it (Home's hero and rows, Shows, Calendar, Search's lists).
 export const TAB_BAR_HEIGHT = FLOATING_TAB_BAR_BOTTOM + FLOATING_TAB_BAR_HEIGHT;
 
+// The gap between tabs that makes the whole bar (its padding and edge,
+// the tabs, and the gaps between them) span exactly windowWidth minus
+// contentInset on each side, the same margins the hero's "Open in"
+// button sits inside (it stretches to that width by default flex
+// behaviour, with no explicit width of its own): visual balance between
+// the bar and Home's own big CTA (owner's request), rather than the
+// bar's previous fixed, narrower width. Tab count stays fixed (4, today);
+// only the gap between them grows or shrinks, not the tabs themselves,
+// so icon size and touch targets never change. Never below tabBarGap:
+// a very narrow screen keeps that floor instead of crowding the tabs
+// together, falling short of the target width rather than past it.
+export function tabBarRowGap(windowWidth: number, tabCount: number): number {
+  if (tabCount <= 1) {
+    return t.tabBarGap;
+  }
+  const targetWidth = windowWidth - 2 * t.contentInset;
+  const chrome = 2 * (t.tabBarPadding + t.tabBarEdgeWidth);
+  const availableForGaps = targetWidth - chrome - tabCount * t.tabBarTabWidth;
+  return Math.max(t.tabBarGap, availableForGaps / (tabCount - 1));
+}
+
 // A tab's measured place in the bar's row (FloatingTabBar's onLayout),
 // used to scrub across the bar (CRI-133).
 export interface TabLayout {

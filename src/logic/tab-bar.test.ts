@@ -2,6 +2,7 @@ import {
   FLOATING_TAB_BAR_BOTTOM,
   FLOATING_TAB_BAR_HEIGHT,
   nearestTabIndex,
+  tabBarRowGap,
   TAB_BAR_HEIGHT,
   type TabLayout,
 } from "./tab-bar";
@@ -21,6 +22,27 @@ describe("floating tab bar size and position (CRI-133)", () => {
       FLOATING_TAB_BAR_BOTTOM + FLOATING_TAB_BAR_HEIGHT,
     );
     expect(TAB_BAR_HEIGHT).toBe(80);
+  });
+});
+
+describe("the gap between tabs matches the bar's width to the hero CTA", () => {
+  // 4 tabs x 74 wide, 2 x (3.5 padding + 0.5 edge) chrome, 24 contentInset
+  // on each side: the same figures FLOATING_TAB_BAR_HEIGHT and the hero's
+  // own margins use.
+  it("widens on a wider screen, so the bar spans windowWidth - 48", () => {
+    // 390 - 48 (contentInset x2) - 8 (chrome) - 296 (4 x 74) = 38, / 3 gaps.
+    expect(tabBarRowGap(390, 4)).toBeCloseTo(38 / 3);
+    // 430 - 48 - 8 - 296 = 78, / 3 gaps.
+    expect(tabBarRowGap(430, 4)).toBeCloseTo(78 / 3);
+  });
+
+  it("never goes narrower than the token's own gap, even on a tiny screen", () => {
+    expect(tabBarRowGap(320, 4)).toBe(6);
+  });
+
+  it("falls back to the token's own gap with one tab or none", () => {
+    expect(tabBarRowGap(390, 1)).toBe(6);
+    expect(tabBarRowGap(390, 0)).toBe(6);
   });
 });
 
