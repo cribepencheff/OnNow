@@ -145,17 +145,36 @@ function PosterFollowCircle({
   );
 }
 
-// How long one pulse cycle (dim to bright to dim) takes.
-const PULSE_MS = 900;
-// How dim the skeleton gets at the low point of its pulse.
-const PULSE_LOW = 0.4;
+// How long one pulse cycle (dim to bright to dim) takes, by default.
+export const DEFAULT_PULSE_MS = 900;
+// How dim the skeleton gets at the low point of its pulse, by default.
+export const DEFAULT_PULSE_LOW = 0.4;
+// How far apart each card's pulse starts from the next one's, a card's own
+// position in the row (delayMs below) times this, by default: a wave
+// crossing the row rather than every card pulsing in lockstep (the
+// Facebook/Airbnb skeleton pattern, owner's request).
+export const DEFAULT_SKELETON_STAGGER_MS = 120;
 
 // A card's shape while its row loads for the first time (CRI-127): exactly
 // a real card's size, the name line and caption line included, so nothing
 // moves when the posters come in. Pulses while it waits, so a long wait
 // (a cold cache, say right after the app wakes from the background) still
-// reads as loading rather than stuck.
-export function SkeletonCard({ withCaption }: { withCaption: boolean }) {
+// reads as loading rather than stuck. The three pulseMs/pulseLow/delayMs
+// overrides exist only so the dev Images screen can tune them live; every
+// real call site (PosterRow) leaves them at their defaults.
+export function SkeletonCard({
+  withCaption,
+  delayMs = 0,
+  pulseMs = DEFAULT_PULSE_MS,
+  pulseLow = DEFAULT_PULSE_LOW,
+}: {
+  withCaption: boolean;
+  // This card's own position in the row, DEFAULT_SKELETON_STAGGER_MS apart
+  // by default, so the row's cards pulse as a wave rather than together.
+  delayMs?: number;
+  pulseMs?: number;
+  pulseLow?: number;
+}) {
   const { reduceMotionEnabled } = useAccessibilityFlags();
   const [opacity] = useState(() => new Animated.Value(1));
 
@@ -167,20 +186,24 @@ export function SkeletonCard({ withCaption }: { withCaption: boolean }) {
     const pulse = Animated.loop(
       Animated.sequence([
         Animated.timing(opacity, {
-          toValue: PULSE_LOW,
-          duration: PULSE_MS,
+          toValue: pulseLow,
+          duration: pulseMs,
           useNativeDriver: true,
         }),
         Animated.timing(opacity, {
           toValue: 1,
-          duration: PULSE_MS,
+          duration: pulseMs,
           useNativeDriver: true,
         }),
       ]),
     );
-    pulse.start();
-    return () => pulse.stop();
-  }, [reduceMotionEnabled, opacity]);
+    // The delay runs once, up front; the loop it hands off to then repeats
+    // forever with no further gap, so only each card's first cycle is
+    // offset, not every cycle after it.
+    const animation = Animated.sequence([Animated.delay(delayMs), pulse]);
+    animation.start();
+    return () => animation.stop();
+  }, [reduceMotionEnabled, opacity, delayMs, pulseMs, pulseLow]);
 
   return (
     <Animated.View style={[styles.card, { opacity }]} testID="skeleton-card">

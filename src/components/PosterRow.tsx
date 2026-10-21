@@ -58,6 +58,7 @@ import {
 } from "@/logic/poster-snap";
 import { t, type } from "@/theme/tokens";
 import {
+  DEFAULT_SKELETON_STAGGER_MS,
   POSTER_HEIGHT,
   POSTER_WIDTH,
   SkeletonCard,
@@ -199,7 +200,11 @@ export function PosterRow({
 
   const skeletons = (count: number, prefix: string) =>
     Array.from({ length: count }, (_, index) => (
-      <SkeletonCard key={`${prefix}${index}`} withCaption={withCaption} />
+      <SkeletonCard
+        key={`${prefix}${index}`}
+        withCaption={withCaption}
+        delayMs={index * DEFAULT_SKELETON_STAGGER_MS}
+      />
     ));
   const childCount = Children.count(children);
   const cardCount = showSkeleton
