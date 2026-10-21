@@ -151,10 +151,13 @@ export function OpenInSlot({
               />
             </View>
           ) : (
-            // Shares the slot with "Unavailable in <region>" (CRI-132).
-            <Text style={styles.availabilityNote} numberOfLines={1}>
-              {streamingOnLabel(availability.link.service)}
-            </Text>
+            // Shares the slot with "Unavailable in <region>" (CRI-132), at
+            // the same offset as the Requires line above.
+            <View style={styles.requires}>
+              <Text style={styles.availabilityNote} numberOfLines={1}>
+                {streamingOnLabel(availability.link.service)}
+              </Text>
+            </View>
           )}
         </>
       )}

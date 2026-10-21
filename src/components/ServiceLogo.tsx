@@ -2,32 +2,26 @@
 // superellipse, not a rounded rectangle, since a circle crops a square mark
 // too hard (clearest on TV4 Play and Prime Video).
 //
-// The icon is drawn larger than the box and centred ("bleed"), so its own
-// edge colour fills the squircle's corners instead of leaving a hole. TMDB's
-// provider icons are solid-colour square canvases (not transparent
-// cutouts), so a plain scaled-up crop reads the same as true edge-extend
-// without needing pixel sampling.
+// A square TMDB icon already covers the squircle corner to corner with no
+// scale-up needed (a squircle sits inside its own bounding square). The
+// clip and the image are both drawn inside one Svg tree (react-native-svg's
+// own ClipPath, not a separate MaskedView), so they share one coordinate
+// system instead of two native views that have to agree on the same pixel
+// grid: a fractional size once rounded the mask and the image to slightly
+// different grids on device, clipping an edge.
 //
 // A thin dark ring sits on every icon, regardless of its own colour: against
 // the always-light "Open in" pill, a dark ring gives a white icon (Prime
 // Video) a visible edge, and reads as a quiet outline on a dark icon too.
 
-import { useMemo } from "react";
-import { StyleSheet, View } from "react-native";
-import { Image } from "expo-image";
-import MaskedView from "@react-native-masked-view/masked-view";
-import Svg, { Path } from "react-native-svg";
+import { useId, useMemo } from "react";
+import Svg, { ClipPath, Defs, Image as SvgImage, Path } from "react-native-svg";
 
 import { IMAGE_BASE } from "@/api/tmdb-types";
 
 // Roughly n=5 in the superellipse family |x/a|^n + |y/b|^n = 1.
 const SQUIRCLE_EXPONENT = 5;
 const SQUIRCLE_STEPS = 48;
-// A square TMDB icon already covers the squircle corner to corner with no
-// scale-up needed (a squircle sits inside its own bounding square); scaling
-// it up would crop away the icon's own margin and zoom in on the mark
-// (CRI-132, caught in review: too tight against Viaplay's "V").
-const ICON_SCALE = 1;
 const RING_COLOR = "rgba(0, 0, 0, 0.35)";
 const RING_WIDTH = 1;
 
@@ -53,43 +47,27 @@ export function ServiceLogo({
   size: number;
 }) {
   const path = useMemo(() => squirclePath(size), [size]);
-  const iconSize = size * ICON_SCALE;
-  const offset = (iconSize - size) / 2;
+  // Unique per instance: several logos can be on screen at once (dev
+  // images screen), and an id is shared across every Svg on the page.
+  const clipId = `service-logo-squircle-${useId().replace(/:/g, "")}`;
 
   return (
-    <View style={{ width: size, height: size }}>
-      <MaskedView
-        style={{ width: size, height: size }}
-        maskElement={
-          <Svg width={size} height={size}>
-            <Path d={path} fill="#000" />
-          </Svg>
-        }
-      >
-        <Image
-          source={{ uri: `${IMAGE_BASE}/w154${logoPath}` }}
-          style={{
-            width: iconSize,
-            height: iconSize,
-            marginLeft: -offset,
-            marginTop: -offset,
-          }}
-          contentFit="cover"
-        />
-      </MaskedView>
-      <Svg
+    <Svg width={size} height={size}>
+      <Defs>
+        <ClipPath id={clipId}>
+          <Path d={path} />
+        </ClipPath>
+      </Defs>
+      <SvgImage
+        href={`${IMAGE_BASE}/w154${logoPath}`}
+        x={0}
+        y={0}
         width={size}
         height={size}
-        style={StyleSheet.absoluteFill}
-        pointerEvents="none"
-      >
-        <Path
-          d={path}
-          fill="none"
-          stroke={RING_COLOR}
-          strokeWidth={RING_WIDTH}
-        />
-      </Svg>
-    </View>
+        preserveAspectRatio="xMidYMid slice"
+        clipPath={`url(#${clipId})`}
+      />
+      <Path d={path} fill="none" stroke={RING_COLOR} strokeWidth={RING_WIDTH} />
+    </Svg>
   );
 }
