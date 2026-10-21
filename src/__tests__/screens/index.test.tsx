@@ -26,6 +26,7 @@ const mockScrollToTop = jest.fn();
 let mockTabIndex = 0;
 const mockNavListeners: Record<string, (() => void)[]> = {};
 const mockNavigation = {
+  isFocused: () => mockIsFocused(),
   getState: () => ({
     index: mockTabIndex,
     routes: [{ key: "index-1" }, { key: "calendar-1" }],
@@ -314,6 +315,72 @@ describe("HomeScreen", () => {
       await act(async () => {
         await refreshControlProps().onRefresh?.();
       });
+      expect(screen.getByLabelText("Show 1 of 3")).toBeTruthy();
+    });
+
+    // Owner: a tap on the app logo, or on Home's tab while on Home, takes
+    // the latest slides and goes back to the first, so a slide in the
+    // middle needs no swiping all the way back.
+    // The hero fades to the background first (the restart veil), then
+    // restarts behind it, then fades back in.
+    const throughVeil = () =>
+      act(async () => {
+        jest.advanceTimersByTime(1000);
+      });
+    const settleOnSecond = async () =>
+      fireEvent(screen.getByTestId("home-pager"), "momentumScrollEnd", {
+        nativeEvent: {
+          contentOffset: { x: 800 },
+          layoutMeasurement: { width: 400 },
+        },
+      });
+
+    it("goes back to the first slide on a tap of the app logo", async () => {
+      mockFollowedEpisodes({ followedShows: three });
+      await render(<HomeScreen />);
+      await settleOnSecond();
+      expect(screen.getByLabelText("Show 2 of 3")).toBeTruthy();
+
+      await fireEvent.press(screen.getByTestId("app-logo-button"));
+      expect(screen.getByTestId("hero-restart-veil").props.pointerEvents).toBe(
+        "auto",
+      );
+      await throughVeil();
+      expect(screen.getByLabelText("Show 1 of 3")).toBeTruthy();
+      // Faded back in (that fade starts once the first slide is shown, an
+      // effect React runs at the end of the step above), and out of the
+      // way of touches again.
+      await throughVeil();
+      expect(screen.getByTestId("hero-restart-veil").props.pointerEvents).toBe(
+        "none",
+      );
+    });
+
+    it("takes the latest slides on a tap of the app logo", async () => {
+      mockFollowedEpisodes({ followedShows: two });
+      const { rerender } = await render(<HomeScreen />);
+      mockFollowedEpisodes({ followedShows: three });
+      await rerender(<HomeScreen />);
+      expect(screen.getByLabelText("Show 1 of 2")).toBeTruthy();
+
+      await fireEvent.press(screen.getByTestId("app-logo-button"));
+      await throughVeil();
+      expect(screen.getByLabelText("Show 1 of 3")).toBeTruthy();
+    });
+
+    it("goes back to the first slide on a tap of Home's tab while on Home, not from another tab", async () => {
+      mockFollowedEpisodes({ followedShows: three });
+      await render(<HomeScreen />);
+      await settleOnSecond();
+
+      mockIsFocused.mockReturnValue(false);
+      await act(async () => mockNavListeners.tabPress?.forEach((l) => l()));
+      await throughVeil();
+      expect(screen.getByLabelText("Show 2 of 3")).toBeTruthy();
+
+      mockIsFocused.mockReturnValue(true);
+      await act(async () => mockNavListeners.tabPress?.forEach((l) => l()));
+      await throughVeil();
       expect(screen.getByLabelText("Show 1 of 3")).toBeTruthy();
     });
 

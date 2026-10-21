@@ -74,6 +74,8 @@ export function HeroPager({
   todayDate,
   pullDistance,
   heroVisible,
+  restartKey,
+  onFirstSlideShown,
 }: {
   slides: HeroSlide[];
   todayDate: string;
@@ -90,6 +92,14 @@ export function HeroPager({
   // scrollToIndex races the outer scroll off screen and can settle on the
   // wrong physical slot once it's back in view.
   heroVisible: boolean;
+  // A change takes the hero back to its first slide (a tap on the app
+  // logo, or on Home's tab while on Home), straight there: Home fades the
+  // hero out first (its restart veil), so the jump is never seen.
+  restartKey: number;
+  // Called with restartKey whenever the first slide is the one on screen
+  // and its backdrop has loaded (or turned out to have none): on mount once
+  // it has, and after each restart. Home fades its veil back out on it.
+  onFirstSlideShown: (restartKey: number) => void;
 }) {
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -546,6 +556,35 @@ export function HeroPager({
     },
     [pageCount, physicalPageCount],
   );
+
+  // Back to the first slide when restartKey changes, not on mount (a new
+  // pager already opens there). The page itself is set while rendering,
+  // off the last key seen (React's pattern for resetting state on a
+  // change, as index.tsx does for its layout key); only the scroll there
+  // is an effect. Not animated: an animated scroll back crossed every
+  // slide in between (owner), and Home's veil hides the jump instead.
+  const [seenRestartKey, setSeenRestartKey] = useState(restartKey);
+  if (seenRestartKey !== restartKey) {
+    setSeenRestartKey(restartKey);
+    setPageIndex(0);
+  }
+  const scrolledRestartKeyRef = useRef(restartKey);
+  useEffect(() => {
+    if (scrolledRestartKeyRef.current === restartKey || pageCount === 0) {
+      return;
+    }
+    scrolledRestartKeyRef.current = restartKey;
+    const firstSlot = logicalToPhysical(0, pageCount);
+    physicalIndexRef.current = firstSlot;
+    listRef.current?.scrollToIndex({ index: firstSlot, animated: false });
+  }, [restartKey, pageCount]);
+
+  const firstSlideLoaded = loadedPages.has(0);
+  useEffect(() => {
+    if (pageIndex === 0 && firstSlideLoaded) {
+      onFirstSlideShown(restartKey);
+    }
+  }, [pageIndex, firstSlideLoaded, restartKey, onFirstSlideShown]);
 
   return (
     <View style={{ height: heroHeight }}>
