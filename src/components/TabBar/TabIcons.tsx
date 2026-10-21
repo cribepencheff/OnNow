@@ -94,29 +94,33 @@ export function CalendarIcon({ active }: TabIconProps) {
 }
 
 // A squircle with the follow controls' own check in it (FOLLOW_CHECK_SYMBOL),
-// so it reads as "shows I follow", one short line above it. Filled, the
-// check sits dark on the white fill.
+// two short filled bars stacked above it, narrower on top, spaced like the
+// owner's reference image: each gap about as wide as the bar below it.
+// Filled, the check sits dark on the white fill.
 export function MyShowsIcon({ active }: TabIconProps) {
   return (
     <View style={styles.box}>
       <TabSvg>
-        <Line x1="7" y1="2" x2="17" y2="2" {...stroke} />
+        <Rect x="7" y="1" width="10" height="1.2" rx="0.6" fill={t.ink} />
+        <Rect x="5" y="3.4" width="14" height="1.4" rx="0.7" fill={t.ink} />
         <Rect
           x="3"
-          y="3"
+          y="6"
           width="18"
-          height="18"
+          height="15"
           rx="6"
           fill={active ? t.ink : "none"}
           {...stroke}
         />
       </TabSvg>
-      <View style={[StyleSheet.absoluteFill, styles.center]}>
+      <View
+        style={[StyleSheet.absoluteFill, styles.center, styles.squircleCenter]}
+      >
         <SymbolView
           name={FOLLOW_CHECK_SYMBOL}
           tintColor={active ? t.bg : t.ink}
           // About half the squircle, at the outline's weight.
-          size={Math.round(t.tabBarIconSize * 0.44)}
+          size={Math.round(t.tabBarIconSize * 0.4)}
           weight="bold"
         />
       </View>
@@ -147,5 +151,10 @@ const styles = StyleSheet.create({
   center: {
     alignItems: "center",
     justifyContent: "center",
+  },
+  // The squircle (6-21 of 24) sits lower than the icon's own centre: 1.5
+  // below centre, scaled to the icon's drawn size.
+  squircleCenter: {
+    transform: [{ translateY: (1.5 / 24) * t.tabBarIconSize }],
   },
 });
