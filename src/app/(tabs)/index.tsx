@@ -28,7 +28,7 @@ import { AiringThisWeekRow } from "@/components/AiringThisWeekRow";
 import { AppLogo } from "@/components/AppLogo";
 import { Header } from "@/components/Header";
 import { PosterDimContext } from "@/components/PosterDim";
-import { BUSY_FADE_MS, FOLLOW_BUSY_MS } from "@/components/ShowCard";
+import { FOLLOW_SETTLED_MS } from "@/components/ShowCard";
 import { TopPicksRow } from "@/components/TopPicksRow";
 import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
@@ -65,9 +65,9 @@ const SCROLLED_DOWN_MIN = 8;
 const APP_LOGO_HEIGHT = 20;
 
 // How long the hero holds a new set of slides before it rebuilds: until a
-// tapped poster card's follow circle has finished its busy arc and faded
-// it out (heroPagerSlides below).
-const HERO_REBUILD_DELAY_MS = FOLLOW_BUSY_MS + BUSY_FADE_MS;
+// tapped poster card's follow circle has finished its busy arc and its
+// new icon has settled (heroPagerSlides below).
+const HERO_REBUILD_DELAY_MS = FOLLOW_SETTLED_MS;
 
 function isFirstHeroSlides(held: HeroSlide[]): boolean {
   return held.length === 0;

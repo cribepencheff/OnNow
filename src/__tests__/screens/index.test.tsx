@@ -703,6 +703,10 @@ describe("HomeScreen", () => {
 
       expect(screen.getByText("Top picks for you")).toBeTruthy();
       await fireEvent.press(screen.getByTestId("top-pick-follow-15299"));
+      // A frame after the tap: the circle's busy arc is started first.
+      await act(async () => {
+        jest.advanceTimersByTime(50);
+      });
       expect(mockFollow).toHaveBeenCalledWith(15299);
 
       await fireEvent.press(
@@ -924,6 +928,10 @@ describe("HomeScreen", () => {
       await render(<HomeScreen />);
 
       await fireEvent.press(screen.getByTestId("airing-follow-1211"));
+      // A frame after the tap: the circle's busy arc is started first.
+      await act(async () => {
+        jest.advanceTimersByTime(50);
+      });
       expect(mockFollow).toHaveBeenCalledWith(1211);
     });
 

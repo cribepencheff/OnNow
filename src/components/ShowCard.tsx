@@ -162,24 +162,39 @@ function PosterFollowCircle({
     },
     [reduceMotionEnabled, progress],
   );
-  useEffect(() => {
-    morphTo(followed);
-  }, [followed, morphTo]);
-
   // A short busy window after each tap (owner's request): a bright arc
-  // runs around the circle's own edge while the new icon settles inside
-  // it, and the circle takes no taps until it ends, so a second tap
-  // cannot undo the first mid-way. Home holds the hero's rebuild until
-  // this window is over (HERO_REBUILD_DELAY_MS in index.tsx), so the
-  // arc does not share the UI thread with it. 0 = no arc, 1 = arc.
+  // runs around the circle's own edge, the circle takes no taps (so a
+  // second tap cannot undo the first mid-way), and only once it ends
+  // does the icon change. Home holds the hero's rebuild until the icon
+  // has settled too (HERO_REBUILD_DELAY_MS in index.tsx), so none of
+  // this shares the UI thread with it. 0 = no arc, 1 = arc.
   const [busy, setBusy] = useState(false);
+  // The same, read at once by the tap and by the effect below: `busy`
+  // itself only changes on the next render.
+  const busyRef = useRef(false);
+  const followedRef = useRef(followed);
+  useEffect(() => {
+    followedRef.current = followed;
+  }, [followed]);
+  // The icon follows `followed`, except during the busy window: the tap
+  // flips `followed` at once (following is optimistic), and the icon
+  // waits for the arc instead; the timer below morphs it at the end.
+  useEffect(() => {
+    if (!busyRef.current) {
+      morphTo(followed);
+    }
+  }, [followed, morphTo]);
   const [busyAnim] = useState(() => new Animated.Value(0));
   const [spin] = useState(() => new Animated.Value(0));
   const busyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const stateFrame = useRef<number | null>(null);
   useEffect(
     () => () => {
       if (busyTimer.current) {
         clearTimeout(busyTimer.current);
+      }
+      if (stateFrame.current !== null) {
+        cancelAnimationFrame(stateFrame.current);
       }
     },
     [],
@@ -247,28 +262,39 @@ function PosterFollowCircle({
   const checkOpacity = progress;
 
   const handlePress = useCallback(() => {
-    if (busy) {
+    if (busyRef.current) {
       return;
     }
-    const next = !followed;
+    busyRef.current = true;
     // A confirming tap on follow; a lighter one on unfollow, so removing
     // a show reads as equally instant as adding one (both are optimistic
     // either way, useFollowList).
-    if (next) {
+    if (!followed) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     } else {
       Haptics.selectionAsync();
     }
-    setBusy(true);
     setBusyRing(true);
-    morphTo(next);
-    onPress();
+    // The arc first, everything else a frame later: native animation
+    // commands go to the UI thread only after the JavaScript work of the
+    // same tick, and state changes here (this circle's, and the follow
+    // itself, which redraws Home's rows) would render first and hold the
+    // arc's start back, the delay the owner saw before it appeared.
+    stateFrame.current = requestAnimationFrame(() => {
+      stateFrame.current = null;
+      setBusy(true);
+      onPress();
+    });
     busyTimer.current = setTimeout(() => {
       busyTimer.current = null;
+      busyRef.current = false;
       setBusy(false);
       setBusyRing(false);
+      // Whatever the follow list says now: the new state, or the old one
+      // again if the write failed meanwhile.
+      morphTo(followedRef.current);
     }, FOLLOW_BUSY_MS);
-  }, [busy, followed, onPress, morphTo, setBusyRing]);
+  }, [followed, onPress, morphTo, setBusyRing]);
 
   return (
     <Pressable
@@ -326,7 +352,13 @@ function PosterFollowCircle({
 // How long the follow circle stays busy (the arc, no taps) after a tap.
 export const FOLLOW_BUSY_MS = 600;
 // How quickly the arc fades in and out around that window.
-export const BUSY_FADE_MS = 120;
+const BUSY_FADE_MS = 120;
+// About how long the icon's spring takes to settle once it starts, at
+// the end of the busy window.
+const ICON_MORPH_MS = 400;
+// When a tap's whole animation is over (the arc, then the new icon):
+// Home waits this long before rebuilding the hero.
+export const FOLLOW_SETTLED_MS = FOLLOW_BUSY_MS + ICON_MORPH_MS;
 // One full turn of the arc around the circle.
 const SPINNER_TURN_MS = 700;
 // The arc's stroke, a little heavier than the circle's hairline edge.
