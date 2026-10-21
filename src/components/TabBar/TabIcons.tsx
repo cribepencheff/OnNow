@@ -96,14 +96,16 @@ export function CalendarIcon({ active }: TabIconProps) {
 // A tray the same height and place as Calendar's rect (corner 3, not a
 // squircle's), so the two boxes line up, with the follow controls' own
 // check in it (FOLLOW_CHECK_SYMBOL), two short filled bars stacked above
-// it, narrower on top, spaced like the owner's reference image. Filled,
-// the check sits dark on the white fill.
+// it, narrower on top, spaced like the owner's reference image, clear of
+// the tray's own stroke: an SVG stroke is centred on the path, so the
+// tray's visible top edge sits half its stroke width above its own y.
+// Filled, the check sits dark on the white fill.
 export function MyShowsIcon({ active }: TabIconProps) {
   return (
     <View style={styles.box}>
       <TabSvg>
-        <Rect x="7" y="0.5" width="10" height="1" rx="0.5" fill={t.ink} />
-        <Rect x="5" y="2.3" width="14" height="1.3" rx="0.65" fill={t.ink} />
+        <Rect x="8" y="0.3" width="8" height="0.8" rx="0.4" fill={t.ink} />
+        <Rect x="6" y="1.7" width="12" height="1" rx="0.5" fill={t.ink} />
         <Rect
           x="3"
           y="4.5"
