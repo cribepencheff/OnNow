@@ -49,7 +49,7 @@ describe("HeroPage backdrop readiness (CRI-94)", () => {
     const onBackdropLoad = jest.fn();
     await renderPage(onBackdropLoad);
 
-    expect(onBackdropLoad).toHaveBeenCalledWith(3);
+    expect(onBackdropLoad).toHaveBeenCalledWith(show.id);
   });
 
   it("waits while the image lookups are still running", async () => {
@@ -72,7 +72,7 @@ describe("HeroPage backdrop readiness (CRI-94)", () => {
     await fireEvent(screen.getByTestId("hero-backdrop-image"), "error", {
       nativeEvent: { error: "404" },
     });
-    expect(onBackdropLoad).toHaveBeenCalledWith(3);
+    expect(onBackdropLoad).toHaveBeenCalledWith(show.id);
   });
 });
 

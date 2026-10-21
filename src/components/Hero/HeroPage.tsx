@@ -198,11 +198,16 @@ export const HeroPage = memo(function HeroPage({
   scrollX: Animated.Value;
   reduceMotionEnabled: boolean;
   pullDistance: Animated.AnimatedInterpolation<number>;
-  // Takes this instance's own (physical) index, rather than being called
+  // Takes this instance's own slide's show id, rather than being called
   // with no arguments: lets HeroPager pass the exact same function to
   // every instance (see handleBackdropLoad), instead of a fresh closure
-  // per cell that would defeat this memo regardless of anything else.
-  onBackdropLoad: (index: number) => void;
+  // per cell that would defeat this memo regardless of anything else. A
+  // show id, not this cell's (physical) index: HeroPager tracks loaded
+  // slides by show, so a show whose physical slot shifts (a follow or
+  // unfollow elsewhere reordering the pager, CRI-114's remount replaced
+  // by an in-place reposition) is still "loaded" wherever it ends up,
+  // without needing its image to load again under a new index.
+  onBackdropLoad: (showId: number) => void;
 }) {
   const {
     heroHeight,
@@ -235,15 +240,15 @@ export const HeroPage = memo(function HeroPage({
   // Ready for auto-advance once the image loads, fails, or turns out not to
   // exist; a slide without an image must never hold the pager.
   const handleLoad = useCallback(
-    () => onBackdropLoad(index),
-    [onBackdropLoad, index],
+    () => onBackdropLoad(show.id),
+    [onBackdropLoad, show.id],
   );
   const noImage = !displayPath && !imagesLoading;
   useEffect(() => {
     if (noImage) {
-      onBackdropLoad(index);
+      onBackdropLoad(show.id);
     }
-  }, [noImage, onBackdropLoad, index]);
+  }, [noImage, onBackdropLoad, show.id]);
 
   // Overscanned wider than the screen and centered, so the parallax shift
   // below never reveals the page background at either edge. Only needed

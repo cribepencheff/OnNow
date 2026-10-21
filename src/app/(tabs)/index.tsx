@@ -40,11 +40,7 @@ import { SettledDayContext, useSettledDay } from "@/hooks/useSettledDay";
 import { useTabReturn } from "@/hooks/useTabReturn";
 import { useToday } from "@/hooks/useToday";
 import { deriveHomeViewState } from "@/logic/home";
-import {
-  findHeroSlides,
-  heroPagerKey,
-  type HeroSlide,
-} from "@/logic/hero-carousel";
+import { findHeroSlides, type HeroSlide } from "@/logic/hero-carousel";
 import { HEADER_BAR_HEIGHT } from "@/logic/header";
 import {
   TAB_BAR_HEIGHT,
@@ -374,8 +370,14 @@ export default function HomeScreen() {
             <>
               {top.heroPager && (
                 <HeroPager
-                  // A new set of slides starts a fresh pager (heroPagerKey).
-                  key={heroPagerKey(heroSlides)}
+                  // A fixed key, not derived from the slides: HeroPager
+                  // now keeps itself mounted and repositions in place
+                  // across an ordinary slides change (a follow or
+                  // unfollow elsewhere, its own reposition effect), so
+                  // the key only needs to tell this variant apart from
+                  // the next-day fallback below, not react to every
+                  // change the pager already handles itself.
+                  key="hero-pager"
                   slides={heroSlides}
                   todayDate={todayDate}
                   pullDistance={pullDistance}
@@ -390,7 +392,7 @@ export default function HomeScreen() {
                   TypeScript knows state has its shows here. */}
               {heroSlides.length === 0 && state.kind === "next-day" && (
                 <HeroPager
-                  key={heroPagerKey(state.shows)}
+                  key="hero-pager-next-day"
                   slides={state.shows.map((show): HeroSlide => ({
                     ...show,
                     localDate: state.localDate,

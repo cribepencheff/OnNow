@@ -5,7 +5,14 @@
 // than part of each slide. The vertical layout comes from heroLayout
 // (logic/hero-layout.ts, through useHeroLayout).
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   AppState,
   Animated,
@@ -21,6 +28,7 @@ import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
 import {
   contentMountFrames,
   flickReleaseTarget,
+  heroPagerKey,
   isLoopWrapSlot,
   logicalToPhysical,
   loopSlideData,
@@ -120,7 +128,13 @@ export function HeroPager({
   const physicalPageCount = physicalSlides.length;
 
   const [pageIndex, setPageIndex] = useState(0);
-  const [loadedPages, setLoadedPages] = useState<Set<number>>(new Set());
+  // By show id, not logical index: a slide's logical index can change
+  // when the slides array does (a follow or unfollow elsewhere, no
+  // longer a full pager remount, see the reposition effect below), and a
+  // Set keyed by index would then read another show's old "loaded" entry
+  // for whichever show now sits there, or lose a still-loaded show's own
+  // entry because it moved.
+  const [loadedShowIds, setLoadedShowIds] = useState<Set<number>>(new Set());
   const [touching, setTouching] = useState(false);
 
   const listRef = useRef<FlatList<HeroSlide>>(null);
@@ -136,6 +150,15 @@ export function HeroPager({
   useEffect(() => {
     pageIndexRef.current = pageIndex;
   }, [pageIndex]);
+
+  // The settled slide's own show id, updated at the same moment as
+  // pageIndex everywhere it's set (goToPage, handleScrollEndDrag,
+  // handleScrollEnd), not reactively off pageIndex itself: the reposition
+  // effect below (a slides change, not a swipe) needs this slide's
+  // identity from BEFORE the slides array updates, to find where it
+  // landed in the new one, and a ref reacting to the new pageIndex/slides
+  // together could run after that array already changed.
+  const currentShowIdRef = useRef<number | null>(slides[0]?.show.id ?? null);
 
   // Where the FlatList's own physical scroll position actually is (or is
   // headed to), as opposed to pageIndex above, which is always the
@@ -226,6 +249,16 @@ export function HeroPager({
     [reduceMotionEnabled, pullDistance],
   );
 
+  // Clamped to the current slides array: pageIndex itself can briefly
+  // point past its end for one render when the slides array shrinks (the
+  // currently shown show leaving the horizon), the reposition effect
+  // below being the fix for it, but that effect runs after this render,
+  // not before it. Everything below that indexes into `slides` with
+  // pageIndex uses this instead, so that one render stays safe (reads as
+  // the nearest still-valid slide) rather than crashing on
+  // slides[pageIndex] being undefined.
+  const safePageIndex = pageCount > 0 ? Math.min(pageIndex, pageCount - 1) : 0;
+
   // Which LOGICAL slides mount a ContentLayer (logo/title/meta/Open-in),
   // below (contentMountFrames, hero-carousel.ts): the settled page plus one
   // neighbour on each side, so whichever page a single swipe lands on already
@@ -240,8 +273,8 @@ export function HeroPager({
   // crossfade, which is why the content used to visibly lag a slide
   // change instead of changing with it.)
   const contentFrames = reduceMotionEnabled
-    ? [pageIndex]
-    : contentMountFrames(pageCount, pageIndex);
+    ? [safePageIndex]
+    : contentMountFrames(pageCount, safePageIndex);
 
   // The shared basis for every mounted ContentLayer's own crossfade
   // (logicalCrossfadePosition on each one, below): a slide's continuous
@@ -275,35 +308,29 @@ export function HeroPager({
     !screenReaderEnabled &&
     heroVisible;
 
-  const markLoaded = useCallback((index: number) => {
-    setLoadedPages((current) => {
-      if (current.has(index)) return current;
+  // Passed directly as every HeroPage instance's onBackdropLoad (no
+  // per-cell wrapper needed now that it takes a show id, not a physical
+  // index: HeroPage already has its own slide's show id to hand back,
+  // nothing left here to convert). HeroPage is memo-wrapped specifically
+  // so that HeroPager's frequent, largely unrelated re-renders (touching,
+  // loadedShowIds, pageIndex) don't cascade into re-rendering every
+  // mounted pager cell (and, inside each, re-running
+  // useShowImages/useStreamingService) each time, but that only works if
+  // every prop it receives is actually stable across those re-renders; a
+  // fresh closure here on every render would defeat it by itself,
+  // regardless of what HeroPage does internally, which is why this is
+  // still its own stable useCallback rather than an inline setState call.
+  const markLoaded = useCallback((showId: number) => {
+    setLoadedShowIds((current) => {
+      if (current.has(showId)) return current;
       const next = new Set(current);
-      next.add(index);
+      next.add(showId);
       return next;
     });
   }, []);
 
-  // One stable callback for every HeroPage instance's onBackdropLoad,
-  // rather than a fresh arrow function per cell inside renderItem below:
-  // HeroPage is memo-wrapped specifically so that HeroPager's frequent,
-  // largely unrelated re-renders (touching, loadedPages, pageIndex) don't
-  // cascade into re-rendering every mounted pager cell (and, inside each,
-  // re-running useShowImages/useStreamingService) each time, but that only
-  // works if every prop it receives is actually stable across those
-  // re-renders; a fresh closure here on every render would defeat it by
-  // itself, regardless of what HeroPage does internally. Takes the
-  // PHYSICAL index (HeroPage's own), converting to logical here rather
-  // than in the closure that used to create this per cell.
-  const handleBackdropLoad = useCallback(
-    (physicalIndex: number) => {
-      markLoaded(physicalToLogical(physicalIndex, pageCount));
-    },
-    [markLoaded, pageCount],
-  );
-
-  // Also memoized for the same reason as handleBackdropLoad above: a
-  // fresh renderItem function on every HeroPager render is a well-known
+  // Also memoized for the same reason as markLoaded above: a fresh
+  // renderItem function on every HeroPager render is a well-known
   // FlatList/VirtualizedList performance pitfall (RN's own "large list
   // slow to update" warning specifically calls this out), independent of
   // whatever HeroPage itself does.
@@ -317,17 +344,10 @@ export function HeroPager({
         scrollX={scrollX}
         reduceMotionEnabled={reduceMotionEnabled}
         pullDistance={pullDistance}
-        onBackdropLoad={handleBackdropLoad}
+        onBackdropLoad={markLoaded}
       />
     ),
-    [
-      width,
-      todayDate,
-      scrollX,
-      reduceMotionEnabled,
-      pullDistance,
-      handleBackdropLoad,
-    ],
+    [width, todayDate, scrollX, reduceMotionEnabled, pullDistance, markLoaded],
   );
 
   // direction is which way `index` was reached (+1 forward, -1 back),
@@ -349,6 +369,7 @@ export function HeroPager({
   const goToPage = useCallback(
     (index: number, direction: 1 | -1) => {
       setPageIndex(index);
+      currentShowIdRef.current = slides[index]?.show.id ?? null;
       const physicalTarget = reduceMotionEnabled
         ? logicalToPhysical(index, pageCount)
         : physicalIndexRef.current + direction;
@@ -358,7 +379,7 @@ export function HeroPager({
         animated: !reduceMotionEnabled,
       });
     },
-    [reduceMotionEnabled, pageCount],
+    [reduceMotionEnabled, pageCount, slides],
   );
 
   // Which page progressAnim's current run belongs to, so this effect can
@@ -399,7 +420,13 @@ export function HeroPager({
     }
 
     const paused = touching || !isFocused || !appActive;
-    if (!canAutoAdvance || paused || !loadedPages.has(pageIndex)) {
+    const currentShowId = slides[pageIndex]?.show.id;
+    if (
+      !canAutoAdvance ||
+      paused ||
+      currentShowId === undefined ||
+      !loadedShowIds.has(currentShowId)
+    ) {
       // Reads the current value (already frozen by the cleanup below, if
       // there was a running animation to freeze) rather than assuming
       // `startValue`, so repeated pauses without an intervening resume
@@ -429,7 +456,8 @@ export function HeroPager({
     isFocused,
     appActive,
     canAutoAdvance,
-    loadedPages,
+    loadedShowIds,
+    slides,
     pageCount,
     goToPage,
     progressAnim,
@@ -497,10 +525,12 @@ export function HeroPager({
         });
       }
       physicalIndexRef.current = target;
-      setPageIndex(physicalToLogical(target, pageCount));
+      const settledLogical = physicalToLogical(target, pageCount);
+      setPageIndex(settledLogical);
+      currentShowIdRef.current = slides[settledLogical]?.show.id ?? null;
       setTouching(false);
     },
-    [pageCount, physicalPageCount],
+    [pageCount, physicalPageCount, slides],
   );
 
   // Safety net: corrects pageIndex if the scroll actually settles somewhere
@@ -535,6 +565,7 @@ export function HeroPager({
       );
       const settledLogical = physicalToLogical(settled, pageCount);
       setPageIndex(settledLogical);
+      currentShowIdRef.current = slides[settledLogical]?.show.id ?? null;
 
       if (isLoopWrapSlot(settled, pageCount)) {
         const realSlot = logicalToPhysical(settledLogical, pageCount);
@@ -544,8 +575,78 @@ export function HeroPager({
         physicalIndexRef.current = settled;
       }
     },
-    [pageCount, physicalPageCount],
+    [pageCount, physicalPageCount, slides],
   );
+
+  // Keeps the pager showing the same slide across a slides change (a
+  // follow or unfollow elsewhere adding or removing a show), rather than
+  // Home remounting a fresh pager from slide 0 every time (CRI-114's
+  // original fix for a different bug: a SHRUNK slide count could leave
+  // pageIndex pointing past the last slide and crash). Remounting also
+  // meant every mounted HeroPage lost its loaded image and its
+  // Open-in button's streaming lookup had to run again from scratch, a
+  // real (not merely animated) loading flash on whichever show landed on
+  // slide 1 of the new pager (owner's diagnosis, tracing back to Home's
+  // "Airing this week" row, the one row that can make this happen: it
+  // excludes shows already in the hero, so following a card there always
+  // changes the hero's own slide set on the same tap).
+  //
+  // slidesKey (heroPagerKey, the shows' ids in order) stands in for the
+  // slides array's own identity, the same string Home used to key a full
+  // remount on; comparing it here, instead of comparing `slides` itself,
+  // means a re-render that creates a new array with the SAME shows
+  // (findHeroSlides runs fresh each time Home renders) is correctly seen
+  // as no change at all, not a reposition to run every render.
+  //
+  // Skipped on mount (prevSlidesKeyRef's initial value already matches
+  // the first render's slidesKey, so the first comparison is always
+  // equal): running this on mount would fight the cold-launch seeding
+  // above (scrollX, initialContentOffset) with a redundant scrollToIndex,
+  // risking exactly the flash that seeding exists to prevent.
+  //
+  // useLayoutEffect, not useEffect: a shrunk slides array can leave
+  // pageIndex pointing past its own end for exactly the render that
+  // triggers this (safePageIndex above keeps that one render safe, not
+  // accurate), and this is what corrects pageIndex itself to a real
+  // target; running before paint means that merely-safe render is never
+  // actually shown, only the corrected one.
+  const slidesKey = useMemo(() => heroPagerKey(slides), [slides]);
+  const prevSlidesKeyRef = useRef(slidesKey);
+  useLayoutEffect(() => {
+    if (slidesKey === prevSlidesKeyRef.current) {
+      return;
+    }
+    prevSlidesKeyRef.current = slidesKey;
+    if (pageCount === 0) {
+      // Home unmounts the pager entirely in this case (heroSlides.length
+      // > 0 gates it); nothing left to reposition.
+      return;
+    }
+    // The settled slide's own show, wherever it ended up in the new
+    // array; if it left altogether (the show itself was unfollowed),
+    // clamped to the nearest still-valid logical index instead, the same
+    // "don't point past the end" guarantee CRI-114's remount gave by
+    // starting over at 0, kept here without starting over.
+    const matchIndex = slides.findIndex(
+      (slide) => slide.show.id === currentShowIdRef.current,
+    );
+    const newIndex =
+      matchIndex >= 0
+        ? matchIndex
+        : Math.min(pageIndexRef.current, pageCount - 1);
+    const physicalTarget = logicalToPhysical(newIndex, pageCount);
+    currentShowIdRef.current = slides[newIndex]?.show.id ?? null;
+    physicalIndexRef.current = physicalTarget;
+    dragStartPageRef.current = physicalTarget;
+    setPageIndex(newIndex);
+    // Not animated: the same silent-correction trick handleScrollEnd's
+    // own wrap repositioning already relies on (see its comment) stays
+    // imperceptible here for the same reason, the settled frame looking
+    // the same before and after, as long as the jump happens between
+    // scroll gestures rather than fighting one still in flight, which a
+    // slides change (not a touch) never does.
+    listRef.current?.scrollToIndex({ index: physicalTarget, animated: false });
+  }, [slidesKey, slides, pageCount]);
 
   return (
     <View style={{ height: heroHeight }}>
@@ -673,7 +774,7 @@ export function HeroPager({
           logicalCrossfadePosition={logicalCrossfadePosition}
           pageCount={pageCount}
           reduceMotionEnabled={reduceMotionEnabled}
-          interactive={logicalIndex === pageIndex}
+          interactive={logicalIndex === safePageIndex}
         />
       ))}
 
@@ -683,14 +784,14 @@ export function HeroPager({
           progressAnim={progressAnim}
           reduceMotionEnabled={reduceMotionEnabled}
           screenReaderEnabled={screenReaderEnabled}
-          currentPage={pageIndex}
+          currentPage={safePageIndex}
           top={dotsTop}
           width={width}
           // VoiceOver: auto-advance is off (canAutoAdvance already
           // excludes it), so swiping the indicator up or down is how a
           // VoiceOver user moves between slides instead.
           onAdjust={(delta) =>
-            goToPage((pageIndex + delta + pageCount) % pageCount, delta)
+            goToPage((safePageIndex + delta + pageCount) % pageCount, delta)
           }
         />
       )}

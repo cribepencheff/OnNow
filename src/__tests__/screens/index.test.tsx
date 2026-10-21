@@ -275,6 +275,97 @@ describe("HomeScreen", () => {
     expect(screen.getByText("Silo")).toBeTruthy();
   });
 
+  // The hero used to remount from scratch on any change to its slides (a
+  // follow or unfollow elsewhere, CRI-114's own fix for the crash below),
+  // resetting the pager to slide 0 every time and refetching every slide's
+  // image and "Open in" lookup again, a visible loading flash. It now
+  // stays mounted and keeps showing the same show, repositioning to
+  // wherever that show's own slide landed instead.
+  it("stays on the same show after the hero's slide set changes, not back to the first", async () => {
+    const showA = makeShow({ id: 1, name: "Slow Horses" });
+    const showB = makeShow({ id: 2, name: "Silo" });
+    const showC = makeShow({ id: 3, name: "The Bear" });
+    const showD = makeShow({ id: 4, name: "Severance" });
+    mockFollowedEpisodes({
+      followedShows: [
+        { show: showA, episodes: [makeEpisode()] },
+        { show: showB, episodes: [makeEpisode()] },
+        { show: showC, episodes: [makeEpisode()] },
+      ],
+    });
+    const { rerender } = await render(<HomeScreen />);
+
+    // Settle on Silo (the second slide, as above).
+    await fireEvent(screen.getByTestId("home-pager"), "momentumScrollEnd", {
+      nativeEvent: {
+        contentOffset: { x: 800 },
+        layoutMeasurement: { width: 400 },
+      },
+    });
+    expect(screen.getByText("Silo")).toBeTruthy();
+
+    // A new show, airing at the same time as the rest (every episode here
+    // shares makeEpisode's default airstamp, so findHeroSlides' stable
+    // sort keeps everyone's relative order from followedShows itself),
+    // joins ahead of Silo in the follow list: Silo's own logical index
+    // moves from 1 to 2. The pager should still show Silo, not reset to
+    // Slow Horses at slide 0.
+    mockFollowedEpisodes({
+      followedShows: [
+        { show: showA, episodes: [makeEpisode()] },
+        { show: showD, episodes: [makeEpisode()] },
+        { show: showB, episodes: [makeEpisode()] },
+        { show: showC, episodes: [makeEpisode()] },
+      ],
+    });
+    await rerender(<HomeScreen />);
+
+    expect(screen.getByLabelText("Show 3 of 4")).toBeTruthy();
+    expect(screen.getByText("Silo")).toBeTruthy();
+  });
+
+  // CRI-114's original bug: the pager kept its page while mounted, so a
+  // SHRUNK slide count (the currently shown show itself leaving the
+  // horizon) could leave pageIndex pointing past the last slide and crash
+  // Home. The fix here keeps the pager mounted (no remount) but must
+  // still clamp to a valid slide instead of reproducing that crash.
+  it("clamps to the nearest slide, without crashing, when the one shown is itself removed", async () => {
+    const showA = makeShow({ id: 1, name: "Slow Horses" });
+    const showB = makeShow({ id: 2, name: "Silo" });
+    const showC = makeShow({ id: 3, name: "The Bear" });
+    mockFollowedEpisodes({
+      followedShows: [
+        { show: showA, episodes: [makeEpisode()] },
+        { show: showB, episodes: [makeEpisode()] },
+        { show: showC, episodes: [makeEpisode()] },
+      ],
+    });
+    const { rerender } = await render(<HomeScreen />);
+
+    // Settle on The Bear, the last of the three slides: physical slot 3
+    // (logical slide 2, logicalToPhysical adds 1 for the loop's own
+    // leading duplicate).
+    await fireEvent(screen.getByTestId("home-pager"), "momentumScrollEnd", {
+      nativeEvent: {
+        contentOffset: { x: 1200 },
+        layoutMeasurement: { width: 400 },
+      },
+    });
+    expect(screen.getByText("The Bear")).toBeTruthy();
+
+    // The Bear itself drops out of the horizon.
+    mockFollowedEpisodes({
+      followedShows: [
+        { show: showA, episodes: [makeEpisode()] },
+        { show: showB, episodes: [makeEpisode()] },
+      ],
+    });
+    await rerender(<HomeScreen />);
+
+    expect(screen.getByLabelText("Show 2 of 2")).toBeTruthy();
+    expect(screen.getByText("Silo")).toBeTruthy();
+  });
+
   // CRI-94: every slide's rows have one height whatever they hold, so the
   // pill row, title and episode line never jump between slides.
   // Home polish: the logo and the episode line centred on the hero's axis,
