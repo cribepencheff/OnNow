@@ -1,7 +1,7 @@
 // Home (PRD 5.1, FR-004, FR-005, FR-006, FR-007, FR-011, FR-012, FR-013,
 // FR-037): which followed shows have a new episode today.
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Animated,
@@ -63,6 +63,12 @@ const SCROLLED_DOWN_MIN = 8;
 
 // The app logo's height in the header.
 const APP_LOGO_HEIGHT = 20;
+
+// The hero's restart veil (restartHero): how quickly it fades, how long
+// a wait before its spinner shows, and the longest it ever stays.
+const VEIL_FADE_MS = 200;
+const VEIL_SPINNER_DELAY_MS = 400;
+const VEIL_MAX_MS = 4000;
 
 // About how long a screen transition takes (a push or pop over Home, or
 // a tab switch): the hero settles this long after Home loses or regains
@@ -142,14 +148,76 @@ export default function HomeScreen() {
   );
   // A tap on the app logo, or on Home's tab while on Home: the latest
   // slides, and the hero back at its first slide (owner: no swiping all
-  // the way back by hand). A changed set of slides remounts the pager,
-  // which opens on the first slide anyway; an unchanged one slides back
-  // there (restartKey), with no rebuild.
+  // the way back by hand). The hero fades to the page's background first
+  // (the restart veil), then settles (a changed set of slides remounts
+  // the pager, which opens on the first slide anyway; an unchanged one
+  // jumps back there, restartKey), and fades back in once the first slide
+  // is shown with its backdrop loaded. Behind the veil neither the jump
+  // nor a rebuild's UI-thread hitch is seen; the spinner is native and
+  // keeps turning through that hitch (owner: no scroll back across every
+  // slide). The spinner only shows once the wait has gone on a while, so
+  // a quick restart is a dip, not a flash of a spinner.
   const [heroRestart, setHeroRestart] = useState(0);
+  const restartCount = useRef(0);
+  const awaitedRestart = useRef<number | null>(null);
+  const veilTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const [veilOpacity] = useState(() => new Animated.Value(0));
+  const [veilShown, setVeilShown] = useState(false);
+  const [veilSpinner, setVeilSpinner] = useState(false);
+  const revealHero = useCallback(() => {
+    awaitedRestart.current = null;
+    veilTimers.current.forEach(clearTimeout);
+    veilTimers.current = [];
+    setVeilSpinner(false);
+    Animated.timing(veilOpacity, {
+      toValue: 0,
+      duration: VEIL_FADE_MS,
+      useNativeDriver: true,
+    }).start(({ finished }) => {
+      if (finished) {
+        setVeilShown(false);
+      }
+    });
+  }, [veilOpacity]);
   const restartHero = useCallback(() => {
-    settleHero();
-    setHeroRestart((count) => count + 1);
-  }, [settleHero]);
+    if (awaitedRestart.current !== null) {
+      return;
+    }
+    restartCount.current += 1;
+    const key = restartCount.current;
+    awaitedRestart.current = key;
+    setVeilShown(true);
+    veilTimers.current = [
+      setTimeout(() => setVeilSpinner(true), VEIL_SPINNER_DELAY_MS),
+      // Never left dark: a backdrop that neither loads nor fails in time.
+      setTimeout(revealHero, VEIL_MAX_MS),
+    ];
+    Animated.timing(veilOpacity, {
+      toValue: 1,
+      duration: VEIL_FADE_MS,
+      useNativeDriver: true,
+    }).start(() => {
+      settleHero();
+      setHeroRestart(key);
+    });
+  }, [settleHero, veilOpacity, revealHero]);
+  const handleFirstSlideShown = useCallback(
+    (restartKey: number) => {
+      if (
+        awaitedRestart.current !== null &&
+        restartKey >= awaitedRestart.current
+      ) {
+        revealHero();
+      }
+    },
+    [revealHero],
+  );
+  useEffect(
+    () => () => {
+      veilTimers.current.forEach(clearTimeout);
+    },
+    [],
+  );
 
   // On leaving Home (a push over it, or another tab), so the rebuild runs
   // while Home is out of sight, and on coming back, for changes made
@@ -472,6 +540,7 @@ export default function HomeScreen() {
                   pullDistance={pullDistance}
                   heroVisible={!heroOffscreen}
                   restartKey={heroRestart}
+                  onFirstSlideShown={handleFirstSlideShown}
                 />
               )}
 
@@ -492,6 +561,7 @@ export default function HomeScreen() {
                   pullDistance={pullDistance}
                   heroVisible={!heroOffscreen}
                   restartKey={heroRestart}
+                  onFirstSlideShown={handleFirstSlideShown}
                 />
               )}
 
@@ -531,6 +601,26 @@ export default function HomeScreen() {
                 </SettledFollowedContext.Provider>
               </SettledDayContext.Provider>
               <View style={styles.tabBarClearance} />
+              {/* The hero's restart veil, over the hero only (the header
+                  and its logo stay above it). Last among the page's
+                  children, so it does not change "Airing this week"'s
+                  place among them (airingIndex). */}
+              <Animated.View
+                pointerEvents={veilShown ? "auto" : "none"}
+                style={[
+                  styles.restartVeil,
+                  { height: heroHeight, opacity: veilOpacity },
+                ]}
+                testID="hero-restart-veil"
+              >
+                {veilSpinner && (
+                  <ActivityIndicator
+                    size="large"
+                    color={tokens.inkMuted}
+                    testID="hero-restart-spinner"
+                  />
+                )}
+              </Animated.View>
             </>
           )}
         </Animated.ScrollView>
@@ -695,6 +785,15 @@ const styles = StyleSheet.create({
     color: tokens.inkMuted,
     fontSize: 15,
     paddingHorizontal: 32,
+  },
+  restartVeil: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: tokens.bg,
   },
   // The rows clear the translucent tab bar at the end of the page.
   tabBarClearance: {
