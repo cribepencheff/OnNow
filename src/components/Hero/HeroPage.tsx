@@ -154,7 +154,7 @@ export function OpenInSlot({
             // Shares the slot with "Unavailable in <region>" (CRI-132), at
             // the same offset as the Requires line above.
             <View style={styles.requires}>
-              <Text style={styles.availabilityNote} numberOfLines={1}>
+              <Text style={styles.streamingOnNote} numberOfLines={1}>
                 {streamingOnLabel(availability.link.service)}
               </Text>
             </View>
@@ -838,6 +838,16 @@ const styles = StyleSheet.create({
   // within the fixed openInSlot height, not vertically centered.
   availabilityNote: {
     ...type.meta,
+    color: t.inkMuted,
+    textAlign: "center",
+  },
+  // Smaller than availabilityNote (Apple TV+ does the same under its own
+  // button): a quieter, secondary line, not the no-button state's main
+  // message (CRI-132).
+  streamingOnNote: {
+    ...type.meta,
+    fontSize: 12,
+    lineHeight: 16,
     color: t.inkMuted,
     textAlign: "center",
   },
