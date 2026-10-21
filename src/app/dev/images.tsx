@@ -22,6 +22,7 @@ import { useStreamingService } from "@/hooks/useStreamingService";
 import { useToday } from "@/hooks/useToday";
 import { sortShowsByTitle } from "@/logic/shows-list";
 import { OpenInSlot } from "@/components/Hero/HeroPage";
+import { SkeletonCard } from "@/components/ShowCard";
 import { heroAvailability, type HeroAvailability } from "@/logic/hero-carousel";
 import { openInAccessibilityLabel } from "@/logic/streaming-service";
 import { IMAGE_BASE, type TmdbImage } from "@/api/tmdb-types";
@@ -121,6 +122,27 @@ export default function DevImagesScreen() {
                   <OpenInSlot availability={availability} />
                 </View>
               ))}
+            </View>
+
+            {/* A poster row's first-load skeleton (PosterRow), held static
+                here rather than crossfading into real cards, so the pulse
+                is easy to sit and watch. Both row shapes: without a
+                caption line (Top picks) and with one (Airing this week). */}
+            <View style={styles.forcedSection}>
+              <Text style={styles.meta}>
+                Skeleton row (pulsing, PosterRow&apos;s first load):
+              </Text>
+              <View style={styles.skeletonRow}>
+                <SkeletonCard withCaption={false} />
+                <SkeletonCard withCaption={false} />
+                <SkeletonCard withCaption={false} />
+              </View>
+              <Text style={styles.meta}>With a caption line:</Text>
+              <View style={styles.skeletonRow}>
+                <SkeletonCard withCaption />
+                <SkeletonCard withCaption />
+                <SkeletonCard withCaption />
+              </View>
             </View>
           </View>
         }
@@ -261,6 +283,7 @@ const styles = StyleSheet.create({
   followAllLabel: { color: t.ink, fontWeight: "600" },
   forcedSection: { gap: 16, marginTop: 4 },
   forcedRow: { gap: 4 },
+  skeletonRow: { flexDirection: "row", gap: 8 },
   row: {
     paddingHorizontal: 16,
     paddingVertical: 20,
