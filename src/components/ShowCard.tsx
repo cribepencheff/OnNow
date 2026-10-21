@@ -3,7 +3,7 @@
 // tap opens Show detail (inside the sheet when shown in Search, PRD 5.6);
 // the follow circle follows at once.
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Animated,
   Easing,
@@ -165,21 +165,86 @@ function PosterFollowCircle({
   useEffect(() => {
     morphTo(followed);
   }, [followed, morphTo]);
-  const plusOpacity = progress.interpolate({
-    inputRange: [0, 1],
-    outputRange: [1, 0],
-  });
-  const plusScale = progress.interpolate({
-    inputRange: [0, 1],
-    outputRange: [1, 0.5],
-  });
-  const checkOpacity = progress;
-  const checkScale = progress.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0.5, 1],
-  });
+
+  // A short busy window after each tap (owner's request): a following
+  // or unfollowing on "Airing this week" also rebuilds the hero, and the
+  // card can feel stuck while that happens. A spinning stroke stands in
+  // for the icon meanwhile, so the wait reads as work in progress, and
+  // the circle takes no taps until it ends, so a second tap cannot undo
+  // the first mid-way. 0 = icon shown, 1 = spinner shown.
+  const [busy, setBusy] = useState(false);
+  const [busyAnim] = useState(() => new Animated.Value(0));
+  const [spin] = useState(() => new Animated.Value(0));
+  const busyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (busyTimer.current) {
+        clearTimeout(busyTimer.current);
+      }
+    },
+    [],
+  );
+  useEffect(() => {
+    if (!busy || reduceMotionEnabled) {
+      return;
+    }
+    spin.setValue(0);
+    const loop = Animated.loop(
+      Animated.timing(spin, {
+        toValue: 1,
+        duration: SPINNER_TURN_MS,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }),
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [busy, reduceMotionEnabled, spin]);
+  const fadeBusy = useCallback(
+    (toBusy: boolean) => {
+      if (reduceMotionEnabled) {
+        // No spinner under Reduce Motion: the icon swaps at once, and
+        // the circle still takes no taps until the window ends.
+        busyAnim.setValue(0);
+        return;
+      }
+      Animated.timing(busyAnim, {
+        toValue: toBusy ? 1 : 0,
+        duration: BUSY_FADE_MS,
+        useNativeDriver: true,
+      }).start();
+    },
+    [reduceMotionEnabled, busyAnim],
+  );
+
+  const { plusOpacity, plusScale, checkOpacity, checkScale, spinRotate } =
+    useMemo(() => {
+      const iconShown = Animated.subtract(1, busyAnim);
+      return {
+        plusOpacity: Animated.multiply(
+          progress.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }),
+          iconShown,
+        ),
+        plusScale: progress.interpolate({
+          inputRange: [0, 1],
+          outputRange: [1, 0.5],
+        }),
+        checkOpacity: Animated.multiply(progress, iconShown),
+        checkScale: progress.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0.5, 1],
+        }),
+        spinRotate: spin.interpolate({
+          inputRange: [0, 1],
+          outputRange: ["0deg", "360deg"],
+        }),
+      };
+    }, [progress, busyAnim, spin]);
 
   const handlePress = useCallback(() => {
+    if (busy) {
+      return;
+    }
     const next = !followed;
     // A confirming tap on follow; a lighter one on unfollow, so removing
     // a show reads as equally instant as adding one (both are optimistic
@@ -189,16 +254,26 @@ function PosterFollowCircle({
     } else {
       Haptics.selectionAsync();
     }
+    setBusy(true);
+    fadeBusy(true);
+    // The icon morphs under the spinner, so the new one is already in
+    // place when the spinner fades out.
     morphTo(next);
     onPress();
-  }, [followed, onPress, morphTo]);
+    busyTimer.current = setTimeout(() => {
+      busyTimer.current = null;
+      setBusy(false);
+      fadeBusy(false);
+    }, FOLLOW_BUSY_MS);
+  }, [busy, followed, onPress, morphTo, fadeBusy]);
 
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={followed ? "Followed" : "Follow"}
-      accessibilityState={{ selected: followed }}
+      accessibilityState={{ selected: followed, busy, disabled: busy }}
       onPress={handlePress}
+      disabled={busy}
       // A 44pt tap target around the 32pt circle.
       hitSlop={6}
       testID={testID}
@@ -224,10 +299,27 @@ function PosterFollowCircle({
             size={15}
           />
         </Animated.View>
+        <Animated.View
+          pointerEvents="none"
+          style={[styles.circleIcon, { opacity: busyAnim }]}
+          testID={`${testID}-busy`}
+        >
+          <Animated.View
+            style={[styles.spinner, { transform: [{ rotate: spinRotate }] }]}
+          />
+        </Animated.View>
       </View>
     </Pressable>
   );
 }
+
+// How long the follow circle stays busy (spinner, no taps) after a tap.
+const FOLLOW_BUSY_MS = 600;
+// How quickly the spinner fades in and out around that window.
+const BUSY_FADE_MS = 120;
+// One full turn of the spinner's stroke.
+const SPINNER_TURN_MS = 700;
+const SPINNER_SIZE = 16;
 
 // How long one pulse cycle (dim to bright to dim) takes, by default.
 export const DEFAULT_PULSE_MS = 750;
@@ -379,6 +471,15 @@ const styles = StyleSheet.create({
     bottom: 0,
     alignItems: "center",
     justifyContent: "center",
+  },
+  // The busy spinner: a faint ring with one bright quarter, turning.
+  spinner: {
+    width: SPINNER_SIZE,
+    height: SPINNER_SIZE,
+    borderRadius: SPINNER_SIZE / 2,
+    borderWidth: 2,
+    borderColor: "rgba(255, 255, 255, 0.25)",
+    borderTopColor: "#FFFFFF",
   },
   name: {
     ...type.meta,

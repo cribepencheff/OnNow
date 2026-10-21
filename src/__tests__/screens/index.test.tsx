@@ -926,5 +926,30 @@ describe("HomeScreen", () => {
       await fireEvent.press(screen.getByTestId("airing-follow-1211"));
       expect(mockFollow).toHaveBeenCalledWith(1211);
     });
+
+    // A tap leaves the circle busy for a moment (a spinner, no taps), so
+    // a quick second tap cannot undo the first while the hero rebuilds.
+    it("takes no second tap while busy after a follow, then takes taps again", async () => {
+      mockAiring.mockReturnValue([lanterns]);
+      mockFollowedEpisodes({ followedCount: 0 });
+      mockFollow.mockClear();
+      await render(<HomeScreen />);
+
+      const circle = screen.getByTestId("airing-follow-1211");
+      await fireEvent.press(circle);
+      await fireEvent.press(circle);
+      await act(async () => {
+        jest.advanceTimersByTime(50);
+      });
+      expect(mockFollow).toHaveBeenCalledTimes(1);
+      expect(circle.props.accessibilityState).toMatchObject({ busy: true });
+
+      await act(async () => {
+        jest.advanceTimersByTime(1000);
+      });
+      expect(
+        screen.getByTestId("airing-follow-1211").props.accessibilityState,
+      ).toMatchObject({ busy: false });
+    });
   });
 });
