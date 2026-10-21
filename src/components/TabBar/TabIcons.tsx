@@ -93,24 +93,25 @@ export function CalendarIcon({ active }: TabIconProps) {
   );
 }
 
-// Apple TV's own Library icon (the owner's reference image): a wide,
-// flat tray with three thin bars stacked on it, each narrower than the
-// one below. The follow controls' own check (FOLLOW_CHECK_SYMBOL) sits in
+// Apple TV's own Library icon (the owner's reference image), the tray
+// taller than the reference's (as tall as Calendar's body) so the check
+// has room: three thin bars stacked on it, each narrower than the one
+// below, and the follow controls' own check (FOLLOW_CHECK_SYMBOL) sits in
 // the tray in place of the play triangle. The bars are always filled, as
 // in the reference; only the tray itself follows the active fill rule.
 export function MyShowsIcon({ active }: TabIconProps) {
   return (
     <View style={styles.box}>
       <TabSvg>
-        <Rect x="8" y="6.9" width="8" height="1.5" rx="0.75" fill={t.ink} />
-        <Rect x="6.5" y="8.9" width="11" height="1.5" rx="0.75" fill={t.ink} />
-        <Rect x="5" y="10.9" width="14" height="1.5" rx="0.75" fill={t.ink} />
+        <Rect x="8" y="4" width="8" height="1.5" rx="0.75" fill={t.ink} />
+        <Rect x="6.5" y="6" width="11" height="1.5" rx="0.75" fill={t.ink} />
+        <Rect x="5" y="8" width="14" height="1.5" rx="0.75" fill={t.ink} />
         <Rect
           x="3"
-          y="13"
+          y="10"
           width="18"
-          height="8"
-          rx="3.5"
+          height="11"
+          rx="4.5"
           fill={active ? t.ink : "none"}
           {...stroke}
         />
@@ -119,10 +120,10 @@ export function MyShowsIcon({ active }: TabIconProps) {
         <SymbolView
           name={FOLLOW_CHECK_SYMBOL}
           tintColor={active ? t.bg : t.ink}
-          // Small enough to clear the tray's own outline on every side:
-          // at 0.3 it touched the tray's wall, inactive and active alike.
-          size={Math.round(t.tabBarIconSize * 0.17)}
-          weight="semibold"
+          // About half the tray, at the outline's weight: the tray is
+          // taller now (as tall as Calendar's body), room enough for this.
+          size={Math.round(t.tabBarIconSize * 0.3)}
+          weight="bold"
         />
       </View>
     </View>
@@ -153,9 +154,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  // The tray (13-21 of 24) sits lower than the icon's own centre: 5
+  // The tray (10-21 of 24) sits lower than the icon's own centre: 3.5
   // below centre, scaled to the icon's drawn size.
   trayCenter: {
-    transform: [{ translateY: (5 / 24) * t.tabBarIconSize }],
+    transform: [{ translateY: (3.5 / 24) * t.tabBarIconSize }],
   },
 });
