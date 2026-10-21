@@ -24,6 +24,9 @@ const SQUIRCLE_EXPONENT = 5;
 const SQUIRCLE_STEPS = 48;
 const RING_COLOR = "rgba(0, 0, 0, 0.35)";
 const RING_WIDTH = 1;
+// A little smaller than the box, so the icon itself has some room inside
+// the squircle rather than touching it corner to corner.
+const ICON_INSET = 1.5;
 
 // Inset by half the ring's stroke: the squircle's cardinal points sit at
 // the exact radius, so a centred stroke drawn at the full radius overflows
@@ -67,10 +70,10 @@ export function ServiceLogo({
       </Defs>
       <SvgImage
         href={`${IMAGE_BASE}/w154${logoPath}`}
-        x={0}
-        y={0}
-        width={size}
-        height={size}
+        x={ICON_INSET}
+        y={ICON_INSET}
+        width={size - ICON_INSET * 2}
+        height={size - ICON_INSET * 2}
         preserveAspectRatio="xMidYMid slice"
         clipPath={`url(#${clipId})`}
       />
