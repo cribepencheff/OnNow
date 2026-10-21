@@ -19,14 +19,7 @@ const LABELS: Record<HeroEpisodeMark, string> = {
 
 const DOT_SIZE = 6;
 
-export function EpisodeMarkChip({
-  mark,
-  // Only the dev Images screen overrides it, to compare candidates.
-  finaleColor = t.episodeFinale,
-}: {
-  mark: HeroEpisodeMark;
-  finaleColor?: string;
-}) {
+export function EpisodeMarkChip({ mark }: { mark: HeroEpisodeMark }) {
   return (
     <View
       style={styles.chip}
@@ -37,7 +30,9 @@ export function EpisodeMarkChip({
       <View
         style={[
           styles.dot,
-          { backgroundColor: mark === "premiere" ? t.accent : finaleColor },
+          {
+            backgroundColor: mark === "premiere" ? t.accent : t.episodeFinale,
+          },
         ]}
       />
       <Text style={styles.label}>{LABELS[mark]}</Text>
