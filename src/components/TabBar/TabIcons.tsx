@@ -94,23 +94,25 @@ export function CalendarIcon({ active }: TabIconProps) {
 }
 
 // A squircle with the follow controls' own check in it (FOLLOW_CHECK_SYMBOL),
-// so it reads as "shows I follow", two short nubs above it like Calendar's.
-// Filled, the check sits dark on the white fill.
+// so it reads as "shows I follow", two short rounded bars stacked above it,
+// each narrower than the one below, as in the owner's reference image (a
+// card in front of others stacked behind it). Filled, the check sits dark
+// on the white fill; the two bars above are always just a stroke.
 export function MyShowsIcon({ active }: TabIconProps) {
   return (
     <View style={styles.box}>
       <TabSvg>
+        <Line x1="8" y1="3" x2="16" y2="3" {...stroke} />
+        <Line x1="6" y1="6" x2="18" y2="6" {...stroke} />
         <Rect
           x="3"
-          y="6"
+          y="8.5"
           width="18"
-          height="15"
+          height="12.5"
           rx="6"
           fill={active ? t.ink : "none"}
           {...stroke}
         />
-        <Line x1="8" y1="3" x2="8" y2="7" {...stroke} />
-        <Line x1="16" y1="3" x2="16" y2="7" {...stroke} />
       </TabSvg>
       <View
         style={[StyleSheet.absoluteFill, styles.center, styles.squircleCenter]}
@@ -119,7 +121,7 @@ export function MyShowsIcon({ active }: TabIconProps) {
           name={FOLLOW_CHECK_SYMBOL}
           tintColor={active ? t.bg : t.ink}
           // About half the squircle, at the outline's weight.
-          size={Math.round(t.tabBarIconSize * 0.4)}
+          size={Math.round(t.tabBarIconSize * 0.36)}
           weight="bold"
         />
       </View>
@@ -151,9 +153,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  // The squircle (6-21 of 24) sits lower than the icon's own centre: 1.5
-  // below centre, scaled to the icon's drawn size.
+  // The squircle (8.5-21 of 24) sits lower than the icon's own centre:
+  // 2.75 below centre, scaled to the icon's drawn size.
   squircleCenter: {
-    transform: [{ translateY: (1.5 / 24) * t.tabBarIconSize }],
+    transform: [{ translateY: (2.75 / 24) * t.tabBarIconSize }],
   },
 });
