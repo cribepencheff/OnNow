@@ -41,9 +41,9 @@ describe("heroLayout (CRI-124)", () => {
     expect(Math.abs(dotsTop + 4 - 644)).toBeLessThan(12);
   });
 
-  it("uses a 50pt button on regular screens and 44pt on short ones", () => {
-    expect(heroLayout(844, 47).buttonHeight).toBe(50);
-    expect(heroLayout(667, 20).buttonHeight).toBe(44);
+  it("uses a 52pt button on regular screens and 46pt on short ones", () => {
+    expect(heroLayout(844, 47).buttonHeight).toBe(52);
+    expect(heroLayout(667, 20).buttonHeight).toBe(46);
   });
 
   it.each([

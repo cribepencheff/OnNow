@@ -265,6 +265,13 @@ export function openInAccessibilityLabel(link: ServiceLink): string {
     : `Open in ${link.service}`;
 }
 
+// The button's subrow for a direct service (CRI-132): the add-on channel's
+// own "requires X subscription" marker takes this slot instead (CRI-90,
+// CRI-101).
+export function streamingOnLabel(service: string): string {
+  return `Streaming on ${service}`;
+}
+
 // When there is no "Open in" button, a quiet text says what TMDB's data
 // for the region (from JustWatch) shows, and nothing more (data first,
 // CRI-84): every streaming service it lists, in TMDB's order and names

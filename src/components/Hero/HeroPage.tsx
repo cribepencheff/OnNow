@@ -25,7 +25,10 @@ import type { TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 import { openExternalUrl, useGuardedRouter } from "@/hooks/useGuardedRouter";
 import { useStreamingService } from "@/hooks/useStreamingService";
 import { useShowImages } from "@/hooks/useShowImages";
-import { openInAccessibilityLabel } from "@/logic/streaming-service";
+import {
+  openInAccessibilityLabel,
+  streamingOnLabel,
+} from "@/logic/streaming-service";
 import { ImdbRating } from "../ImdbRating";
 import { PaidSubscriptionMarker } from "../PaidSubscriptionMarker";
 import { ServiceLogo } from "../ServiceLogo";
@@ -69,8 +72,9 @@ const TOP_MIRROR_BLUR_RADIUS = 12;
 // is cheaper to decode.
 const BLURRED_COPY_SIZE = "w300";
 // The service's logo squircle in the "Open in" button (CRI-132), after the
-// text.
-const SERVICE_LOGO_SIZE = 31.5;
+// text. A whole number: a fractional size caused the mask and the image to
+// round to slightly different pixel grids on device, clipping one edge.
+const SERVICE_LOGO_SIZE = 30;
 
 // The hero's layout for this screen (logic/hero-layout.ts).
 export function useHeroLayout() {
@@ -138,7 +142,7 @@ export function OpenInSlot({
             )}
           </Pressable>
           {/* As in Show detail, under the button (CRI-90, CRI-101). */}
-          {availability.link.requires && (
+          {availability.link.requires ? (
             <View style={styles.requires}>
               <PaidSubscriptionMarker
                 channel={availability.link.requires}
@@ -146,6 +150,11 @@ export function OpenInSlot({
                 textStyle={styles.availabilityNote}
               />
             </View>
+          ) : (
+            // Shares the slot with "Unavailable in <region>" (CRI-132).
+            <Text style={styles.availabilityNote} numberOfLines={1}>
+              {streamingOnLabel(availability.link.service)}
+            </Text>
           )}
         </>
       )}

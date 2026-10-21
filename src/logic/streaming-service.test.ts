@@ -2,6 +2,7 @@ import {
   availabilityText,
   NOT_ON_TMDB,
   openInAccessibilityLabel,
+  streamingOnLabel,
   openInLink,
   regionProviders,
   rowServiceText,
@@ -420,6 +421,10 @@ describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
         logoPath: null,
       }),
     ).toBe("Open in Peacock");
+  });
+
+  it('shows "Streaming on [service]" under a direct button (CRI-132)', () => {
+    expect(streamingOnLabel("Peacock")).toBe("Streaming on Peacock");
   });
 
   it("names an add-on channel alone by its own service", () => {

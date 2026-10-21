@@ -49,6 +49,8 @@ describe("OpenInSlot (FR-014, CRI-90)", () => {
     expect(
       screen.getByRole("button", { name: "Open in Peacock" }),
     ).toBeTruthy();
+    // The subrow shares the slot with "Unavailable in <region>" (CRI-132).
+    expect(screen.getByText("Streaming on Peacock")).toBeTruthy();
   });
 
   // Home layout polish: centred like everything else in the hero's block.

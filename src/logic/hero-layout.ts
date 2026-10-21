@@ -27,10 +27,11 @@ export const SHORT_SCREEN_MAX_HEIGHT = 700;
 export const PILL_HEIGHT = 26;
 // The logo box under the pill: a logo or the display title.
 export const TITLE_BLOCK_HEIGHT = 88;
-// The "Open in" button: 50, a tad over the Apple TV reference (47) at the
-// owner's request; 44 on short screens (still the minimum tap target).
-export const BUTTON_HEIGHT = 50;
-export const BUTTON_HEIGHT_SHORT = 44;
+// The "Open in" button: 52, a tad over the Apple TV reference (47) at the
+// owner's request, +2 for the service logo (CRI-132); 46 on short screens
+// (still the minimum tap target).
+export const BUTTON_HEIGHT = 52;
+export const BUTTON_HEIGHT_SHORT = 46;
 // The episode line under the logo: its text and the IMDb chip after it,
 // centred together on one baseline. The chip is no taller than the text's
 // line (ImdbRating's IMDB_CHIP_HEIGHT); this is the row's fixed height.
