@@ -4,15 +4,16 @@
 // an outline) on a wide light-grey pill that slides from tab to tab on a
 // spring. Everything is neutral white and grey, no accent.
 //
-// Touch is a single scrub, like iOS's own tab bar: one pan gesture across
-// the whole bar, not a tap per tab. Putting a finger down lifts the bar a
-// little; the pill and the hovered tab's icon follow the finger, snapping
-// to whichever tab is under it with a selection haptic each time it moves
-// to a new one; releasing commits that tab. Dragged well outside the bar
-// and released, the gesture cancels and the pill springs back to the tab
-// that was already active. A tap is just a scrub that never moves: the
-// same gesture resolves and commits it. Screen readers cannot scrub, so
-// each tab also exposes a plain "activate" accessibility action.
+// Touch is one gesture over the whole bar, not a button per tab: a tap
+// and a drag race, and whichever wins handles the touch. Putting a finger
+// down lifts the bar a little and grows the icon under it. A tap commits
+// the tab it lands on. A drag carries the pill along under the finger,
+// 1:1; nothing is chosen until the finger lifts, when the tab nearest that
+// spot is committed and the pill springs into its slot. Dragged well
+// outside the bar and released, the drag cancels and the pill springs
+// back to the tab that was already active. A tab change gives one
+// selection haptic. Screen readers cannot drag, so each tab also exposes a
+// plain "activate" accessibility action.
 //
 // Each tab's icon, title (its accessibility label) and test ID come from
 // its screen's options in app/(tabs)/_layout.tsx. Committing follows React
@@ -116,10 +117,6 @@ export function FloatingTabBar({
       navigation.emit({ type: "tabLongPress", target: route.key });
     }, LONG_PRESS_DURATION);
   }
-  function onHoverChange(index: number) {
-    void Haptics.selectionAsync();
-    armLongPress(index);
-  }
   function commitSelection(index: number) {
     const route = state.routes[index];
     const event = navigation.emit({
@@ -128,17 +125,40 @@ export function FloatingTabBar({
       canPreventDefault: true,
     });
     if (index !== state.index && !event.defaultPrevented) {
+      void Haptics.selectionAsync();
       navigation.navigate(route.name, route.params);
     }
   }
 
-  // One touch resolves the hovered tab and the pill's target from its
-  // position; onBegin and onUpdate share this so a plain tap (which never
-  // moves) resolves exactly the same way a scrub does.
-  function resolveTouch(x: number, y: number) {
+  // The row's full width: every tab is the same size (tabBarTabWidth).
+  const rowWidth =
+    state.routes.length * t.tabBarTabWidth +
+    (state.routes.length - 1) * t.tabBarGap;
+
+  // The tab nearest the finger, for the hovered icon's emphasis only: it
+  // never navigates. Dragged out of bounds, it falls back to the active tab.
+  function resolveHover(x: number, y: number) {
     "worklet";
     const inBounds = isWithinScrubBounds(y);
     withinBounds.set(inBounds);
+    hoverIndex.set(
+      inBounds
+        ? nearestTabIndex(x - t.tabBarPadding, orderedLayouts)
+        : state.index,
+    );
+  }
+  // While dragging, the pill sits centred under the finger, 1:1 with no
+  // spring, kept inside the row.
+  function followFinger(x: number) {
+    "worklet";
+    const left = x - t.tabBarPadding - t.tabBarTabWidth / 2;
+    pillX.set(Math.min(Math.max(left, 0), rowWidth - t.tabBarTabWidth));
+  }
+  // On release: the tab nearest where the finger was lifted (or the
+  // active one, if it was dragged out), the pill springing into its slot.
+  function release(x: number) {
+    "worklet";
+    const inBounds = withinBounds.get();
     const index = inBounds
       ? nearestTabIndex(x - t.tabBarPadding, orderedLayouts)
       : state.index;
@@ -147,45 +167,42 @@ export function FloatingTabBar({
       pillX.set(withSpring(layout.x, t.tabBarSpring));
       pillWidth.set(withSpring(layout.width, t.tabBarSpring));
     }
-    if (!inBounds) {
-      runOnJS(cancelLongPress)();
-      return;
-    }
-    if (index !== hoverIndex.get()) {
-      hoverIndex.set(index);
-      runOnJS(onHoverChange)(index);
+    if (inBounds) {
+      runOnJS(commitSelection)(index);
     }
   }
+  function touchDown(x: number, y: number) {
+    "worklet";
+    isTouching.set(true);
+    barLift.set(withSpring(t.tabBarLiftScale, t.tabBarSpring));
+    resolveHover(x, y);
+    runOnJS(armLongPress)(hoverIndex.get());
+  }
+  function touchUp() {
+    "worklet";
+    isTouching.set(false);
+    barLift.set(withSpring(1, t.tabBarSpring));
+    runOnJS(cancelLongPress)();
+  }
 
-  // minDistance(0): a plain tap never moves far enough to reach Pan's
-  // normal ACTIVE state, so onEnd (which only fires from ACTIVE) would
-  // never see it. Committing in onFinalize instead, which always fires
-  // once, handles a tap and a cancelled or out-of-bounds drag the same
-  // way, by whatever resolveTouch last found.
-  const panGesture = Gesture.Pan()
+  // A tap and a drag race: a finger that lifts without moving far is the
+  // tap, one that moves is the drag, never both. onEnd only fires for the
+  // one that won, so only it commits; onFinalize always resets.
+  const tapGesture = Gesture.Tap()
+    .onBegin((event) => touchDown(event.x, event.y))
+    .onEnd((event) => release(event.x))
+    .onFinalize(() => touchUp());
+  const dragGesture = Gesture.Pan()
     .withTestId("tab-bar-scrub")
-    .minDistance(0)
-    .onBegin((event) => {
-      isTouching.set(true);
-      hoverIndex.set(state.index);
-      barLift.set(withSpring(t.tabBarLiftScale, t.tabBarSpring));
-      resolveTouch(event.x, event.y);
-      // Arms even a touch down that lands back on the tab that was
-      // already hovered (resolveTouch only arms it on a change), so
-      // holding the already-active tab still long-presses.
-      runOnJS(armLongPress)(hoverIndex.get());
-    })
+    .onBegin((event) => touchDown(event.x, event.y))
+    .onStart(() => runOnJS(cancelLongPress)())
     .onUpdate((event) => {
-      resolveTouch(event.x, event.y);
+      resolveHover(event.x, event.y);
+      followFinger(event.x);
     })
-    .onFinalize(() => {
-      if (withinBounds.get()) {
-        runOnJS(commitSelection)(hoverIndex.get());
-      }
-      isTouching.set(false);
-      barLift.set(withSpring(1, t.tabBarSpring));
-      runOnJS(cancelLongPress)();
-    });
+    .onEnd((event) => release(event.x))
+    .onFinalize(() => touchUp());
+  const barGesture = Gesture.Race(tapGesture, dragGesture);
 
   const barStyle = useAnimatedStyle(() => ({
     transform: [{ scale: barLift.get() }],
@@ -193,7 +210,7 @@ export function FloatingTabBar({
 
   return (
     <View pointerEvents="box-none" style={styles.wrapper}>
-      <GestureDetector gesture={panGesture}>
+      <GestureDetector gesture={barGesture}>
         <Animated.View style={[styles.bar, barStyle]} testID="tab-bar">
           {/* The blur first, the fill over it: a fill under the blur
               would be blurred into a solid colour (as in
