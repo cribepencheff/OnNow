@@ -13,7 +13,6 @@ import {
   View,
 } from "react-native";
 import { Image } from "expo-image";
-import * as Haptics from "expo-haptics";
 import { SymbolView } from "expo-symbols";
 
 import { IMAGE_BASE } from "@/api/tmdb-types";
@@ -23,6 +22,7 @@ import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import type { PosterItem } from "@/logic/top-picks";
 import { POSTER_CARD_WIDTH } from "@/logic/poster-snap";
 import { t, type } from "@/theme/tokens";
+import { followHaptic } from "./followHaptic";
 import { FOLLOW_CHECK_SYMBOL, FOLLOW_PLUS_SYMBOL } from "./followSymbols";
 import { PosterDimOverlay } from "./PosterDim";
 
@@ -181,14 +181,7 @@ function PosterFollowCircle({
 
   const handlePress = useCallback(() => {
     const next = !followed;
-    // A confirming tap on follow; a lighter one on unfollow, so removing
-    // a show reads as equally instant as adding one (both are optimistic
-    // either way, useFollowList).
-    if (next) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    } else {
-      Haptics.selectionAsync();
-    }
+    followHaptic(next);
     morphTo(next);
     onPress();
   }, [followed, onPress, morphTo]);

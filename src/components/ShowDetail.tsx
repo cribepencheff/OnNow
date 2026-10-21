@@ -5,7 +5,6 @@
 // "Open in" and the territory state are MVP. Visual design comes later,
 // so styling here stays minimal and functional.
 
-import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { SymbolView } from "expo-symbols";
 import { useRef, useState } from "react";
@@ -49,6 +48,7 @@ import {
   openInAccessibilityLabel,
   openInLink,
 } from "@/logic/streaming-service";
+import { followHaptic } from "./followHaptic";
 import { followSymbol } from "./followSymbols";
 import { ImdbRating } from "./ImdbRating";
 import { OmdbCredit } from "./OmdbCredit";
@@ -280,9 +280,7 @@ function FollowToggle({ showId }: { showId: number }) {
       accessibilityHint={followed ? "Unfollows the show" : undefined}
       accessibilityState={{ selected: followed }}
       onPress={() => {
-        if (!followed) {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        }
+        followHaptic(!followed);
         toggle();
       }}
       style={[
