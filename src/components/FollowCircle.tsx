@@ -1,14 +1,15 @@
 // The follow control at the right edge of a Search result row (PRD 5.4,
 // FR-002). Not followed: hollow circle with a "+" at lower opacity.
-// Followed: filled with the accent color and a check, with light haptic
-// feedback. The filled state is a status, not a competing action.
+// Followed: filled with the accent color and a check. The follow haptic
+// is shared by every follow control (followHaptic). The filled state is a
+// status, not a competing action.
 
 import { useCallback } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
-import * as Haptics from "expo-haptics";
 import { SymbolView } from "expo-symbols";
 
 import { accent } from "@/theme/color";
+import { followHaptic } from "./followHaptic";
 import { followSymbol } from "./followSymbols";
 
 interface FollowCircleProps {
@@ -21,9 +22,7 @@ const CIRCLE_SIZE = 32;
 
 export function FollowCircle({ followed, onPress, testID }: FollowCircleProps) {
   const handlePress = useCallback(() => {
-    if (!followed) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
+    followHaptic(!followed);
     onPress();
   }, [followed, onPress]);
 

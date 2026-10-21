@@ -5,14 +5,17 @@ import { FollowCircle } from "./FollowCircle";
 
 jest.mock("expo-haptics", () => ({
   impactAsync: jest.fn(),
+  selectionAsync: jest.fn(),
   ImpactFeedbackStyle: { Light: "light" },
 }));
 
-// PRD 5.4: hollow "+" when not followed, filled check with light haptic
-// feedback when followed.
+// PRD 5.4: hollow "+" when not followed, filled check when followed; the
+// same haptics as every follow control: a light impact on follow, a
+// lighter selection tick on unfollow.
 describe("FollowCircle", () => {
   beforeEach(() => {
     (Haptics.impactAsync as jest.Mock).mockClear();
+    (Haptics.selectionAsync as jest.Mock).mockClear();
   });
 
   it("calls onPress when tapped", async () => {
@@ -35,13 +38,14 @@ describe("FollowCircle", () => {
     );
   });
 
-  it("does not trigger haptic feedback when unfollowing", async () => {
+  it("triggers a lighter selection haptic, not the impact, when unfollowing", async () => {
     const onPress = jest.fn();
     await render(<FollowCircle followed={true} onPress={onPress} />);
 
     fireEvent.press(screen.getByRole("button"));
 
     expect(Haptics.impactAsync).not.toHaveBeenCalled();
+    expect(Haptics.selectionAsync).toHaveBeenCalledTimes(1);
   });
 
   it("marks the circle as selected when followed", async () => {

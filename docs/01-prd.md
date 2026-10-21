@@ -208,7 +208,9 @@ first user is the author, who currently uses Next Episode.
   network is not shown.
 - **Follow control:** a circle at the right edge of each row, aligned in one
   column. Not followed: hollow circle with a "+" at lower opacity. Followed:
-  filled with the accent colour and a check, with light haptic feedback. The
+  filled with the accent colour and a check. A light haptic on follow and a
+  lighter one on unfollow, the same for every follow control (the circles
+  in Search and on poster cards, and Show detail's Follow button). The
   filled state is a status, not a competing action.
 - **Status line (FR-025):** every row shows the status line from Show
   detail, the same as the Shows row ("Airing · next ep Fri 9 Oct",
