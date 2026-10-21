@@ -1,13 +1,7 @@
 // Home (PRD 5.1, FR-004, FR-005, FR-006, FR-007, FR-011, FR-012, FR-013,
 // FR-037): which followed shows have a new episode today.
 
-import {
-  useCallback,
-  useDeferredValue,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Animated,
@@ -34,9 +28,11 @@ import { AiringThisWeekRow } from "@/components/AiringThisWeekRow";
 import { AppLogo } from "@/components/AppLogo";
 import { Header } from "@/components/Header";
 import { PosterDimContext } from "@/components/PosterDim";
+import { BUSY_FADE_MS, FOLLOW_BUSY_MS } from "@/components/ShowCard";
 import { TopPicksRow } from "@/components/TopPicksRow";
 import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
+import { useHeldValue } from "@/hooks/useHeldValue";
 import { useOpenSearch } from "@/hooks/useOpenSearch";
 import {
   SettledFollowedContext,
@@ -67,6 +63,15 @@ const SCROLLED_DOWN_MIN = 8;
 
 // The app logo's height in the header.
 const APP_LOGO_HEIGHT = 20;
+
+// How long the hero holds a new set of slides before it rebuilds: until a
+// tapped poster card's follow circle has finished its busy arc and faded
+// it out (heroPagerSlides below).
+const HERO_REBUILD_DELAY_MS = FOLLOW_BUSY_MS + BUSY_FADE_MS;
+
+function isFirstHeroSlides(held: HeroSlide[]): boolean {
+  return held.length === 0;
+}
 
 function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -142,26 +147,26 @@ export default function HomeScreen() {
     () => findHeroSlides(followedShows, deviceTimeZone(), todayDate),
     [followedShows, todayDate],
   );
-  // What the hero pager itself actually renders (its key and its slides),
-  // kept a beat behind heroSlides: a follow/unfollow on "Airing this
-  // week" (the one row that can change heroSlides, since it excludes
-  // shows already in the hero) remounts the whole pager on the same tap
-  // (heroPagerKey, below), a real burst of work (every HeroPage rebuilt,
-  // fresh image and streaming lookups). Without this, that burst competes
-  // for the same render pass, and the same JS/UI thread, as the tapped
-  // card's own follow circle, whose icon animation is native-driven and
-  // already starts on the tap itself, not blocked by this, but can still
-  // visibly stutter from that contention. React renders the hero's own
-  // update at lower priority instead, after the card's own, rather than
-  // together in one synchronous burst.
+  // What the hero pager itself renders (its key and its slides), held
+  // until the tapped card's follow circle has finished: a follow or
+  // unfollow on "Airing this week" (the one row that changes heroSlides,
+  // since it excludes shows already in the hero) remounts the whole pager
+  // (heroPagerKey, below), and creating its native views (images, blurs,
+  // masks) runs on the same UI thread as the circle's own busy arc, which
+  // stalled while both ran together (owner). Lowering the hero's React
+  // priority (useDeferredValue) did not help: that only reorders the
+  // JavaScript side, not the native work. Holding it does: the hero
+  // rebuilds once the circle is done.
   //
-  // top.heroPager below (whether the hero shows at all) stays off the
-  // UNDEFERRED heroSlides on purpose: that is a structural, binary
-  // decision (mount the hero or don't), not the hero's own content, and
-  // must track the real list immediately, not a render behind it, or
-  // following the very first show would leave the hero's section absent
-  // for a beat with nothing rendered in its place.
-  const deferredHeroSlides = useDeferredValue(heroSlides);
+  // At once, not held, when the hero had no slides (the first show
+  // followed): there is nothing on screen to keep, and holding would
+  // leave the hero's place empty. top.heroPager below (whether the hero
+  // shows at all) reads heroSlides itself, for the same reason.
+  const heroPagerSlides = useHeldValue(
+    heroSlides,
+    HERO_REBUILD_DELAY_MS,
+    isFirstHeroSlides,
+  );
 
   const followedShowList = useMemo(
     () => followedShows.map(({ show }) => show),
@@ -400,12 +405,10 @@ export default function HomeScreen() {
             <>
               {top.heroPager && (
                 <HeroPager
-                  // A new set of slides starts a fresh pager (heroPagerKey);
-                  // deferred (deferredHeroSlides, above) so that remount's
-                  // own burst of work renders at lower priority than the
-                  // row/card update that triggered it.
-                  key={heroPagerKey(deferredHeroSlides)}
-                  slides={deferredHeroSlides}
+                  // A new set of slides starts a fresh pager (heroPagerKey),
+                  // held until the tapped card is done (heroPagerSlides).
+                  key={heroPagerKey(heroPagerSlides)}
+                  slides={heroPagerSlides}
                   todayDate={todayDate}
                   pullDistance={pullDistance}
                   heroVisible={!heroOffscreen}

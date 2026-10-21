@@ -166,12 +166,12 @@ function PosterFollowCircle({
     morphTo(followed);
   }, [followed, morphTo]);
 
-  // A short busy window after each tap (owner's request): a following
-  // or unfollowing on "Airing this week" also rebuilds the hero, and the
-  // card can feel stuck while that happens. A spinning stroke stands in
-  // for the icon meanwhile, so the wait reads as work in progress, and
-  // the circle takes no taps until it ends, so a second tap cannot undo
-  // the first mid-way. 0 = icon shown, 1 = spinner shown.
+  // A short busy window after each tap (owner's request): a bright arc
+  // runs around the circle's own edge while the new icon settles inside
+  // it, and the circle takes no taps until it ends, so a second tap
+  // cannot undo the first mid-way. Home holds the hero's rebuild until
+  // this window is over (HERO_REBUILD_DELAY_MS in index.tsx), so the
+  // arc does not share the UI thread with it. 0 = no arc, 1 = arc.
   const [busy, setBusy] = useState(false);
   const [busyAnim] = useState(() => new Animated.Value(0));
   const [spin] = useState(() => new Animated.Value(0));
@@ -184,62 +184,67 @@ function PosterFollowCircle({
     },
     [],
   );
-  useEffect(() => {
-    if (!busy || reduceMotionEnabled) {
-      return;
-    }
-    spin.setValue(0);
-    const loop = Animated.loop(
-      Animated.timing(spin, {
-        toValue: 1,
-        duration: SPINNER_TURN_MS,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      }),
-    );
-    loop.start();
-    return () => loop.stop();
-  }, [busy, reduceMotionEnabled, spin]);
-  const fadeBusy = useCallback(
+  // Started and stopped from the tap and the timer themselves, not from
+  // an effect on `busy`: an effect waits for a render, and on this tap
+  // that render is the one Home is busy with.
+  const spinLoop = useRef<Animated.CompositeAnimation | null>(null);
+  useEffect(() => () => spinLoop.current?.stop(), []);
+  const setBusyRing = useCallback(
     (toBusy: boolean) => {
       if (reduceMotionEnabled) {
-        // No spinner under Reduce Motion: the icon swaps at once, and
-        // the circle still takes no taps until the window ends.
+        // No ring under Reduce Motion: the circle only takes no taps
+        // until the window ends.
         busyAnim.setValue(0);
         return;
+      }
+      if (toBusy) {
+        spin.setValue(0);
+        spinLoop.current = Animated.loop(
+          Animated.timing(spin, {
+            toValue: 1,
+            duration: SPINNER_TURN_MS,
+            easing: Easing.linear,
+            useNativeDriver: true,
+          }),
+        );
+        spinLoop.current.start();
       }
       Animated.timing(busyAnim, {
         toValue: toBusy ? 1 : 0,
         duration: BUSY_FADE_MS,
         useNativeDriver: true,
-      }).start();
+      }).start(({ finished }) => {
+        if (finished && !toBusy) {
+          spinLoop.current?.stop();
+          spinLoop.current = null;
+        }
+      });
     },
-    [reduceMotionEnabled, busyAnim],
+    [reduceMotionEnabled, busyAnim, spin],
   );
 
-  const { plusOpacity, plusScale, checkOpacity, checkScale, spinRotate } =
-    useMemo(() => {
-      const iconShown = Animated.subtract(1, busyAnim);
-      return {
-        plusOpacity: Animated.multiply(
-          progress.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }),
-          iconShown,
-        ),
-        plusScale: progress.interpolate({
-          inputRange: [0, 1],
-          outputRange: [1, 0.5],
-        }),
-        checkOpacity: Animated.multiply(progress, iconShown),
-        checkScale: progress.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0.5, 1],
-        }),
-        spinRotate: spin.interpolate({
-          inputRange: [0, 1],
-          outputRange: ["0deg", "360deg"],
-        }),
-      };
-    }, [progress, busyAnim, spin]);
+  const { plusOpacity, plusScale, checkScale, spinRotate } = useMemo(
+    () => ({
+      plusOpacity: progress.interpolate({
+        inputRange: [0, 1],
+        outputRange: [1, 0],
+      }),
+      plusScale: progress.interpolate({
+        inputRange: [0, 1],
+        outputRange: [1, 0.5],
+      }),
+      checkScale: progress.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0.5, 1],
+      }),
+      spinRotate: spin.interpolate({
+        inputRange: [0, 1],
+        outputRange: ["0deg", "360deg"],
+      }),
+    }),
+    [progress, spin],
+  );
+  const checkOpacity = progress;
 
   const handlePress = useCallback(() => {
     if (busy) {
@@ -255,17 +260,15 @@ function PosterFollowCircle({
       Haptics.selectionAsync();
     }
     setBusy(true);
-    fadeBusy(true);
-    // The icon morphs under the spinner, so the new one is already in
-    // place when the spinner fades out.
+    setBusyRing(true);
     morphTo(next);
     onPress();
     busyTimer.current = setTimeout(() => {
       busyTimer.current = null;
       setBusy(false);
-      fadeBusy(false);
+      setBusyRing(false);
     }, FOLLOW_BUSY_MS);
-  }, [busy, followed, onPress, morphTo, fadeBusy]);
+  }, [busy, followed, onPress, morphTo, setBusyRing]);
 
   return (
     <Pressable
@@ -278,48 +281,56 @@ function PosterFollowCircle({
       hitSlop={6}
       testID={testID}
     >
-      <View style={styles.circle}>
-        <Animated.View
-          style={[
-            styles.circleIcon,
-            { opacity: plusOpacity, transform: [{ scale: plusScale }] },
-          ]}
-        >
-          <SymbolView name={FOLLOW_PLUS_SYMBOL} tintColor="#FFFFFF" size={15} />
-        </Animated.View>
-        <Animated.View
-          style={[
-            styles.circleIcon,
-            { opacity: checkOpacity, transform: [{ scale: checkScale }] },
-          ]}
-        >
-          <SymbolView
-            name={FOLLOW_CHECK_SYMBOL}
-            tintColor="#FFFFFF"
-            size={15}
-          />
-        </Animated.View>
+      <View>
+        <View style={styles.circle}>
+          <Animated.View
+            style={[
+              styles.circleIcon,
+              { opacity: plusOpacity, transform: [{ scale: plusScale }] },
+            ]}
+          >
+            <SymbolView
+              name={FOLLOW_PLUS_SYMBOL}
+              tintColor="#FFFFFF"
+              size={15}
+            />
+          </Animated.View>
+          <Animated.View
+            style={[
+              styles.circleIcon,
+              { opacity: checkOpacity, transform: [{ scale: checkScale }] },
+            ]}
+          >
+            <SymbolView
+              name={FOLLOW_CHECK_SYMBOL}
+              tintColor="#FFFFFF"
+              size={15}
+            />
+          </Animated.View>
+        </View>
+        {/* Over the circle, not inside it, so the arc lies on the
+            circle's own edge rather than inside its border. */}
         <Animated.View
           pointerEvents="none"
-          style={[styles.circleIcon, { opacity: busyAnim }]}
+          style={[
+            styles.busyRing,
+            { opacity: busyAnim, transform: [{ rotate: spinRotate }] },
+          ]}
           testID={`${testID}-busy`}
-        >
-          <Animated.View
-            style={[styles.spinner, { transform: [{ rotate: spinRotate }] }]}
-          />
-        </Animated.View>
+        />
       </View>
     </Pressable>
   );
 }
 
-// How long the follow circle stays busy (spinner, no taps) after a tap.
-const FOLLOW_BUSY_MS = 600;
-// How quickly the spinner fades in and out around that window.
-const BUSY_FADE_MS = 120;
-// One full turn of the spinner's stroke.
+// How long the follow circle stays busy (the arc, no taps) after a tap.
+export const FOLLOW_BUSY_MS = 600;
+// How quickly the arc fades in and out around that window.
+export const BUSY_FADE_MS = 120;
+// One full turn of the arc around the circle.
 const SPINNER_TURN_MS = 700;
-const SPINNER_SIZE = 16;
+// The arc's stroke, a little heavier than the circle's hairline edge.
+const BUSY_RING_WIDTH = 2;
 
 // How long one pulse cycle (dim to bright to dim) takes, by default.
 export const DEFAULT_PULSE_MS = 750;
@@ -472,13 +483,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  // The busy spinner: a faint ring with one bright quarter, turning.
-  spinner: {
-    width: SPINNER_SIZE,
-    height: SPINNER_SIZE,
-    borderRadius: SPINNER_SIZE / 2,
-    borderWidth: 2,
-    borderColor: "rgba(255, 255, 255, 0.25)",
+  // The busy arc: one bright quarter of a ring exactly the circle's size,
+  // on top of it, turning around its edge; the rest of the ring is
+  // clear, so the circle's own hairline edge still shows.
+  busyRing: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: FOLLOW_CIRCLE_SIZE,
+    height: FOLLOW_CIRCLE_SIZE,
+    borderRadius: FOLLOW_CIRCLE_SIZE / 2,
+    borderWidth: BUSY_RING_WIDTH,
+    borderColor: "transparent",
     borderTopColor: "#FFFFFF",
   },
   name: {
