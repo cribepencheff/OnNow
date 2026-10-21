@@ -225,9 +225,15 @@ export default function DevImagesScreen() {
                   label="Stagger gap"
                   value={staggerMs}
                   format={(v) => `${v}ms`}
-                  step={20}
+                  step={25}
                   min={0}
-                  max={400}
+                  // Up to roughly a full pulse cycle (pulseMs*2): past
+                  // pulseMs itself, two adjacent cards sit in opposite
+                  // phase, one near peak brightness while the other's near
+                  // its dimmest, the strongest possible contrast between
+                  // them (owner found 250ms too close in phase to read as
+                  // different at a glance).
+                  max={pulseMs * 2}
                   onChange={setStaggerMs}
                 />
                 {(pulseMs !== DEFAULT_PULSE_MS ||
