@@ -13,10 +13,8 @@ import {
 
 import * as SplashScreen from "expo-splash-screen";
 import HomeScreen from "@/app/(tabs)/index";
-import { IMDB_CHIP_HEIGHT } from "@/components/ImdbRating";
 import { EPISODE_LINE_HEIGHT, POSTER_REST_DIM } from "@/logic/hero-layout";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
-import { useImdbRating } from "@/hooks/useImdbRating";
 import { useShowImages } from "@/hooks/useShowImages";
 import type { TvMazeEpisode, TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 
@@ -112,9 +110,6 @@ jest.mock("@/hooks/useFollowList", () =>
     unfollow: jest.fn(),
   })),
 );
-jest.mock("@/hooks/useImdbRating", () => ({
-  useImdbRating: jest.fn(() => ({ data: undefined })),
-}));
 jest.mock("@/hooks/useStreamingService", () => ({
   useStreamingService: jest.fn(() => ({
     data: undefined,
@@ -284,24 +279,16 @@ describe("HomeScreen", () => {
   // pill row, title and episode line never jump between slides.
   // Home polish: the logo and the episode line centred on the hero's axis,
   // like the pill, the button and the dots.
-  it("centres the logo and the episode line with its IMDb chip as one group; only the episode title gives way", async () => {
-    const withChip = makeShow({
-      id: 1,
-      name: "MobLand",
-      externals: { tvrage: null, thetvdb: null, imdb: "tt31510819" },
-    });
+  it("centres the logo and the episode line as one group; only the episode title gives way", async () => {
+    const withLogo = makeShow({ id: 1, name: "MobLand" });
     const plain = makeShow({ id: 2, name: "Outside" });
     (useShowImages as jest.Mock).mockImplementation((show) => ({
       data: show.id === 1 ? { logo: { file_path: "/logo.png" } } : undefined,
       isLoading: false,
     }));
-    (useImdbRating as jest.Mock).mockImplementation((show) => ({
-      data: show.id === 1 ? "8.1" : undefined,
-      imdbId: show.externals?.imdb ?? null,
-    }));
     mockFollowedEpisodes({
       followedShows: [
-        { show: withChip, episodes: [makeEpisode()] },
+        { show: withLogo, episodes: [makeEpisode()] },
         { show: plain, episodes: [makeEpisode()] },
       ],
     });
@@ -328,12 +315,11 @@ describe("HomeScreen", () => {
       expect(style(logo).maxWidth).toBe("100%");
       expect(style(screen.getByText("Outside")).textAlign).toBe("center");
 
-      // One centred group, a small gap apart, not pushed to the edges;
-      // with no rating, the line alone is centred.
+      // The episode line is centred, not pushed to an edge.
       const rows = screen.getAllByTestId("hero-episode-row");
       for (const row of rows) {
         expect(style(row).justifyContent).toBe("center");
-        expect(style(row).gap).toBe(8);
+        expect(style(row).alignItems).toBe("baseline");
       }
       const lines = screen.getAllByTestId("hero-episode-line");
       for (const line of lines) {
@@ -346,55 +332,25 @@ describe("HomeScreen", () => {
       const title = within(lines[0]).getByText("Episode");
       expect(title.props.numberOfLines).toBe(1);
       expect(style(title).flexShrink).toBe(1);
-      // The chip keeps its width.
-      const chip = screen.getByTestId("imdb-rating");
-      expect(style(chip.parent!).flexShrink).toBe(0);
-
-      // One line: the chip's label, smaller as fits a chip, on the episode
-      // text's baseline, and the chip no taller than the text's line.
-      for (const row of rows) {
-        expect(style(row).alignItems).toBe("baseline");
-      }
-      const episodeText = style(code);
-      expect(style(chip).height).toBe(IMDB_CHIP_HEIGHT);
-      expect(IMDB_CHIP_HEIGHT).toBeLessThanOrEqual(
-        episodeText.lineHeight as number,
-      );
-      for (const label of ["IMDb", "8.1"]) {
-        expect(
-          style(within(chip).getByText(label)).fontSize as number,
-        ).toBeLessThan(episodeText.fontSize as number);
-      }
     } finally {
       (useShowImages as jest.Mock).mockImplementation(() => ({
         data: undefined,
         isLoading: false,
         isError: false,
       }));
-      (useImdbRating as jest.Mock).mockImplementation(() => ({
-        data: undefined,
-      }));
     }
   });
 
-  it("gives the label row and title block one height with or without an IMDb chip and logo (CRI-94)", async () => {
-    const withChip = makeShow({
-      id: 1,
-      name: "MobLand",
-      externals: { tvrage: null, thetvdb: null, imdb: "tt31510819" },
-    });
+  it("gives the label row and title block one height with or without a logo (CRI-94)", async () => {
+    const withLogo = makeShow({ id: 1, name: "MobLand" });
     const plain = makeShow({ id: 2, name: "Outside" });
     (useShowImages as jest.Mock).mockImplementation((show) => ({
       data: show.id === 1 ? { logo: { file_path: "/logo.png" } } : undefined,
       isLoading: false,
     }));
-    (useImdbRating as jest.Mock).mockImplementation((show) => ({
-      data: show.id === 1 ? "8.1" : undefined,
-      imdbId: show.externals?.imdb ?? null,
-    }));
     mockFollowedEpisodes({
       followedShows: [
-        { show: withChip, episodes: [makeEpisode()] },
+        { show: withLogo, episodes: [makeEpisode()] },
         { show: plain, episodes: [makeEpisode()] },
       ],
     });
@@ -402,8 +358,6 @@ describe("HomeScreen", () => {
     try {
       await render(<HomeScreen />);
 
-      // Both slides are mounted: one with chip and logo, one without either.
-      expect(screen.getAllByTestId("imdb-rating")).toHaveLength(1);
       // A logo replaces the text title.
       expect(screen.queryByText("MobLand")).toBeNull();
       expect(screen.getByText("Outside")).toBeTruthy();
@@ -412,34 +366,19 @@ describe("HomeScreen", () => {
         screen
           .getAllByTestId(testID)
           .map((view) => StyleSheet.flatten(view.props.style).height);
-      // The pill's height, and the episode line one height, chip or not
+      // The pill's height, and the episode line one height, logo or not
       // (CRI-124).
       expect(heights("hero-label-row")).toEqual([26, 26]);
       expect(heights("hero-episode-row")).toEqual([
         EPISODE_LINE_HEIGHT,
         EPISODE_LINE_HEIGHT,
       ]);
-      // "IMDb 8.1" in one chip, on the episode line.
-      const withChipRows = screen
-        .getAllByTestId("hero-episode-row")
-        .filter((row) => within(row).queryByTestId("imdb-rating"));
-      expect(withChipRows).toHaveLength(1);
-      const chip = within(withChipRows[0]).getByTestId("imdb-rating");
-      expect(within(chip).getByText("IMDb")).toBeTruthy();
-      // Tabular figures: the chip keeps its width from slide to slide.
-      expect(
-        StyleSheet.flatten(within(chip).getByText("8.1").props.style)
-          .fontVariant,
-      ).toEqual(["tabular-nums"]);
       expect(heights("hero-title-block")).toEqual([88, 88]);
     } finally {
       (useShowImages as jest.Mock).mockImplementation(() => ({
         data: undefined,
         isLoading: false,
         isError: false,
-      }));
-      (useImdbRating as jest.Mock).mockImplementation(() => ({
-        data: undefined,
       }));
     }
   });
