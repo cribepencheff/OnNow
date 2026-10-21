@@ -573,8 +573,18 @@ export function HeroPager({
           // owner's own diagnosis). Keeping every cell permanently mounted
           // removes the window entirely, so there is nothing for that jump
           // to desync.
-          initialNumToRender={physicalPageCount}
-          windowSize={physicalPageCount}
+          //
+          // Floored at 1, not physicalPageCount directly: Home's hero now
+          // reads a deferred value for `slides` (useDeferredValue, see
+          // index.tsx), which can briefly still be the old, empty array
+          // for one render right as the hero first appears (nothing
+          // followed yet, to the very first show), making
+          // physicalPageCount 0 for that render; VirtualizedList requires
+          // windowSize > 0 and throws otherwise. 1 is already more than
+          // that transitional empty render needs, and physicalPageCount
+          // itself is never actually 0 once there is at least one slide.
+          initialNumToRender={Math.max(physicalPageCount, 1)}
+          windowSize={Math.max(physicalPageCount, 1)}
           disableVirtualization
           // physical index suffix: loopSlideData's two duplicate slots
           // hold the exact same item (same show id/episode id) as their
