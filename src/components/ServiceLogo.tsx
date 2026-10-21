@@ -23,8 +23,11 @@ import { IMAGE_BASE } from "@/api/tmdb-types";
 // Roughly n=5 in the superellipse family |x/a|^n + |y/b|^n = 1.
 const SQUIRCLE_EXPONENT = 5;
 const SQUIRCLE_STEPS = 48;
-// The icon fills ~80% of the box (CRI-132); the rest bleeds under the mask.
-const ICON_SCALE = 1.25;
+// A square TMDB icon already covers the squircle corner to corner with no
+// scale-up needed (a squircle sits inside its own bounding square); scaling
+// it up would crop away the icon's own margin and zoom in on the mark
+// (CRI-132, caught in review: too tight against Viaplay's "V").
+const ICON_SCALE = 1;
 const RING_COLOR = "rgba(0, 0, 0, 0.35)";
 const RING_WIDTH = 1;
 

@@ -70,7 +70,7 @@ const TOP_MIRROR_BLUR_RADIUS = 12;
 const BLURRED_COPY_SIZE = "w300";
 // The service's logo squircle in the "Open in" button (CRI-132), after the
 // text.
-const SERVICE_LOGO_SIZE = 22;
+const SERVICE_LOGO_SIZE = 32;
 
 // The hero's layout for this screen (logic/hero-layout.ts).
 export function useHeroLayout() {
