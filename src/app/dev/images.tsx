@@ -21,6 +21,7 @@ import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useStreamingService } from "@/hooks/useStreamingService";
 import { useToday } from "@/hooks/useToday";
 import { sortShowsByTitle } from "@/logic/shows-list";
+import { EpisodeMarkChip } from "@/components/Hero/EpisodeMarkChip";
 import { OpenInSlot } from "@/components/Hero/HeroPage";
 import {
   DEFAULT_PULSE_LOW,
@@ -130,6 +131,10 @@ export default function DevImagesScreen() {
                 {following ? "Following…" : "Follow the test set (21 shows)"}
               </Text>
             </Pressable>
+
+            {shows[0] && (
+              <EpisodeMarkSamples show={shows[0].show} todayDate={todayDate} />
+            )}
 
             <View style={styles.forcedSection}>
               <Text style={styles.meta}>
@@ -400,6 +405,54 @@ function Stepper({
   );
 }
 
+// The hero's fade into bg, as in HeroPager, under the samples.
+const SAMPLE_FADE =
+  "linear-gradient(to bottom, rgba(11,12,15,0.22) 0%, rgba(11,12,15,0.8) 60%, rgba(11,12,15,1) 100%)";
+
+// The Premiere/Finale chip on a real backdrop with the hero's fade over
+// it, where the chip sits, to judge its look.
+function EpisodeMarkSamples({
+  show,
+  todayDate,
+}: {
+  show: TvMazeShowWithEmbeds;
+  todayDate: string;
+}) {
+  const { width } = useWindowDimensions();
+  const { data } = useShowImages(show, deviceTimeZone(), todayDate);
+  const backdrop = data?.highestRatedBackdrop;
+  return (
+    <View style={styles.forcedSection}>
+      <Text style={styles.meta}>
+        Premiere / Finale chip (on the hero&apos;s fade):
+      </Text>
+      <View style={[styles.markSamples, { width: width - 32 }]}>
+        {backdrop && (
+          <Image
+            source={`${IMAGE_BASE}/w780${backdrop.file_path}`}
+            style={StyleSheet.absoluteFill}
+            contentFit="cover"
+          />
+        )}
+        <View
+          style={[
+            StyleSheet.absoluteFill,
+            { experimental_backgroundImage: SAMPLE_FADE },
+          ]}
+        />
+        <View style={styles.markSampleRow}>
+          <Text style={styles.markSampleText}>S1E1 · Episode</Text>
+          <EpisodeMarkChip mark="premiere" />
+        </View>
+        <View style={styles.markSampleRow}>
+          <Text style={styles.markSampleText}>S1E10 · Episode</Text>
+          <EpisodeMarkChip mark="finale" />
+        </View>
+      </View>
+    </View>
+  );
+}
+
 function Backdrop({
   label,
   image,
@@ -444,6 +497,20 @@ const styles = StyleSheet.create({
   forcedSection: { gap: 16, marginTop: 4 },
   forcedRow: { gap: 4 },
   skeletonRow: { flexDirection: "row", gap: 8 },
+  markSamples: {
+    borderRadius: t.radiusSm,
+    overflow: "hidden",
+    paddingVertical: 16,
+    gap: 12,
+    backgroundColor: t.bg,
+  },
+  markSampleRow: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    justifyContent: "center",
+    gap: t.space2,
+  },
+  markSampleText: { ...type.meta, color: t.ink },
   controls: { gap: 10, marginTop: 4 },
   stepper: {
     flexDirection: "row",

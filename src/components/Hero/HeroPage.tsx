@@ -33,6 +33,7 @@ import { PaidSubscriptionMarker } from "../PaidSubscriptionMarker";
 import { ServiceLogo } from "../ServiceLogo";
 import { ProgressiveMask } from "../ProgressiveBlur";
 import { DatePill } from "./DatePill";
+import { EpisodeMarkChip } from "./EpisodeMarkChip";
 import {
   HERO_CONTENT_FADE_PAGES,
   HERO_CROSSFADE_FLOOR,
@@ -40,6 +41,7 @@ import {
   heroAvailability,
   heroEpisodeLine,
   heroEpisodeRange,
+  heroEpisodeMark,
   heroEpisodeTitle,
   heroPillLabel,
   type HeroAvailability,
@@ -103,7 +105,14 @@ export function OpenInSlot({
     marginTop: openInMargin,
     height: buttonHeight + NOTE_LINE,
   };
-  const buttonHeightStyle = { height: buttonHeight };
+  // A capsule exactly half its own height round, not radiusPill: with
+  // Apple's continuous corners (borderCurve, below) the ends then ease
+  // into the straight sides instead of meeting them (owner), and a radius
+  // past half the height would be left for iOS to clamp.
+  const buttonHeightStyle = {
+    height: buttonHeight,
+    borderRadius: buttonHeight / 2,
+  };
 
   return (
     // Fixed height across all four HeroAvailability states (button, loading
@@ -615,6 +624,7 @@ export const ContentLayer = memo(function ContentLayer({
     region,
   );
   const logo = images?.logo;
+  const mark = heroEpisodeMark(slide);
 
   // Full opacity centered on this layer's own fixed logical index, down to
   // 0 already HERO_CONTENT_FADE_PAGES of a page away in either direction
@@ -691,9 +701,10 @@ export const ContentLayer = memo(function ContentLayer({
             )}
           </View>
         </View>
-        {/* One fixed line, on the fade, no block behind it: the code and
-            the episode title, centred on the hero's axis. Only the title
-            gives way to a long line, with an ellipsis; the code keeps its
+        {/* One fixed line, on the fade, no block behind it: the code, the
+            episode title and, for a premiere or a finale, its chip, one
+            group centred on the hero's axis. Only the title gives way to a
+            long line, with an ellipsis; the code and the chip keep their
             width. */}
         <View
           style={styles.episodeRow}
@@ -714,6 +725,11 @@ export const ContentLayer = memo(function ContentLayer({
               {heroEpisodeTitle(slide.episodes)}
             </Text>
           </View>
+          {mark && (
+            <View style={styles.markChip}>
+              <EpisodeMarkChip mark={mark} />
+            </View>
+          )}
         </View>
         <OpenInSlot availability={availability} />
       </View>
@@ -749,8 +765,15 @@ const styles = StyleSheet.create({
   episodeRow: {
     height: EPISODE_LINE_HEIGHT,
     flexDirection: "row",
+    // The chip's word on the episode text's baseline, so the two read as
+    // one line.
     alignItems: "baseline",
     justifyContent: "center",
+    gap: t.space2,
+  },
+  // The Premiere/Finale chip: never cut.
+  markChip: {
+    flexShrink: 0,
   },
   // The code and the title, as wide as they need, giving way to the
   // title's ellipsis when the line is long.
@@ -809,7 +832,8 @@ const styles = StyleSheet.create({
   button: {
     flexDirection: "row",
     gap: 8,
-    borderRadius: t.radiusPill,
+    // Apple's continuous corners (iOS only; Android draws circular ones).
+    borderCurve: "continuous",
     backgroundColor: t.ink,
     alignItems: "center",
     justifyContent: "center",
@@ -821,7 +845,7 @@ const styles = StyleSheet.create({
   },
   // Lookup running: the button's own shape, quiet, no text or spinner.
   buttonPlaceholder: {
-    borderRadius: t.radiusPill,
+    borderCurve: "continuous",
     backgroundColor: t.surfaceRaised,
   },
   // TMDB gives an answer with no button to show for it (an unmapped
