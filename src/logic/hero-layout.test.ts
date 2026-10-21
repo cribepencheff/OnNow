@@ -35,10 +35,10 @@ describe("heroLayout (CRI-124)", () => {
     const { contentTop, dotsTop } = heroLayout(844, 47);
     const pillCentre = contentTop + 13;
     const buttonCentre = contentTop + 26 + 16 + 88 + 16 + 20 + 8 + 8 + 50 / 2;
-    // 16 more room around the logo than the sketch: 2 × (16 − 8). Another 4
-    // up from doubling the note line's margin for "Streaming on [service]"
-    // (CRI-132).
-    expect(Math.abs(pillCentre - (422 - 16 - 4))).toBeLessThan(12);
+    // 16 more room around the logo than the sketch: 2 × (16 − 8). Another 8
+    // up from doubling the note line's margin and widening the dots gap for
+    // "Streaming on [service]" (CRI-132).
+    expect(Math.abs(pillCentre - (422 - 16 - 8))).toBeLessThan(12);
     expect(Math.abs(buttonCentre - 592)).toBeLessThan(12);
     expect(Math.abs(dotsTop + 4 - 644)).toBeLessThan(12);
   });
