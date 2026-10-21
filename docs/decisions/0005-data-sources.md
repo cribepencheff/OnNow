@@ -71,3 +71,18 @@ change, ADR 0002):
 - **JustWatch** (TMDB's watch provider data): must be credited. Commercial
   use needs a data partnership with JustWatch, currently offered to bigger
   partners only.
+
+## Known gap: JustWatch data can lag for a service, not just a region (2026-10-21)
+A show missing its Swedish service in TMDB's watch providers is not
+necessarily a region-specific lag. VisionQuest (Disney+, premiered
+2026-10-13) showed no Swedish service although it premiered on Disney+
+globally. Two closed TMDB support threads describe a general Disney+ sync
+problem between JustWatch and TMDB in October 2026 (Toy Story 5 and Coven
+Academy both lost their streaming offer in the US, not just Sweden;
+JustWatch confirmed it, then fixed it days later):
+<https://www.themoviedb.org/talk/6abbcc3c3727bcf28743e316>.
+So a missing service can be a JustWatch source data problem that self
+corrects, not something an alternate data source or region fallback would
+have avoided. Treat a single missing-service report as this known class of
+gap before investigating further, especially for a title that just
+premiered on Disney+.

@@ -36,3 +36,12 @@ In priority order:
 Only if the app gets users. Costs and revenue are considered first at this
 stage. Candidates: real push notifications, accounts and sync, a shared cache
 for API requests, a commercial data licence, a paid tier.
+
+A direction we believe in for this stage: our own small backend (free tier
+serverless is enough for the expected volume) that aggregates and
+cross-checks streaming availability across sources (TMDB/JustWatch,
+Streaming Availability API, others), so a source's gap (see ADR 0005's
+JustWatch/Disney+ sync note) can be caught and resolved server side instead
+of client side. This is a deliberate step away from "no backend" (ADR
+0002), not a quick fix, so it waits for this stage rather than being bolted
+onto the MVP.
