@@ -116,7 +116,7 @@ export function heroLayout(windowHeight: number, topInset: number): HeroLayout {
   // The note line is filled on most slides now ("Streaming on [service]",
   // CRI-132), so it needs real breathing room above the dots, not the
   // tighter gap from when it was usually empty (the owner's sketch).
-  const dotsGap = isShort ? 6 : 10;
+  const dotsGap = isShort ? 12 : 20;
   const heroHeight = windowHeight - HERO_END_FROM_BOTTOM;
 
   // Pill row, logo box, episode line, then the "Open in" slot with its
