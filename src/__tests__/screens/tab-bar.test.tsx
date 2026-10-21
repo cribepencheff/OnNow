@@ -95,6 +95,17 @@ describe("Floating tab bar (real navigation)", () => {
     );
   });
 
+  it("opens the hidden image review on a double tap on My shows, not a single one", async () => {
+    const rendered = renderRouter("src/app", { initialUrl: "/calendar" });
+    await rendered;
+
+    await activate("tab-shows");
+    expect(rendered.getPathname()).toBe("/shows");
+
+    await activate("tab-shows");
+    expect(rendered.getPathname()).toBe("/dev/images");
+  });
+
   it("goes to the Search tab from Shows' search field, keeping the tab bar", async () => {
     const rendered = renderRouter("src/app", { initialUrl: "/shows" });
     await rendered;

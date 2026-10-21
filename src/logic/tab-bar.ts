@@ -48,16 +48,3 @@ export function nearestTabIndex(
   }
   return nearest;
 }
-
-// Scrubbing: a finger dragged this far above or below the bar, then
-// released, cancels the selection rather than committing whatever tab it
-// last crossed (CRI-133).
-export const TAB_BAR_SCRUB_CANCEL_SLOP = 60;
-
-export function isWithinScrubBounds(y: number): boolean {
-  "worklet";
-  return (
-    y > -TAB_BAR_SCRUB_CANCEL_SLOP &&
-    y < FLOATING_TAB_BAR_HEIGHT + TAB_BAR_SCRUB_CANCEL_SLOP
-  );
-}

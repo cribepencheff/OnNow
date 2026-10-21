@@ -1,16 +1,14 @@
 import {
   FLOATING_TAB_BAR_BOTTOM,
   FLOATING_TAB_BAR_HEIGHT,
-  isWithinScrubBounds,
   nearestTabIndex,
   TAB_BAR_HEIGHT,
-  TAB_BAR_SCRUB_CANCEL_SLOP,
   type TabLayout,
 } from "./tab-bar";
 
 describe("floating tab bar size and position (CRI-133)", () => {
-  it("is a 54 tab plus 7 padding and a 0.5 edge on each side", () => {
-    expect(FLOATING_TAB_BAR_HEIGHT).toBe(69);
+  it("is a 50 tab plus 7 padding and a 0.5 edge on each side", () => {
+    expect(FLOATING_TAB_BAR_HEIGHT).toBe(65);
   });
 
   it("floats clear of the home indicator", () => {
@@ -22,31 +20,31 @@ describe("floating tab bar size and position (CRI-133)", () => {
     expect(TAB_BAR_HEIGHT).toBe(
       FLOATING_TAB_BAR_BOTTOM + FLOATING_TAB_BAR_HEIGHT,
     );
-    expect(TAB_BAR_HEIGHT).toBe(89);
+    expect(TAB_BAR_HEIGHT).toBe(85);
   });
 });
 
-// Four tabs, 76 wide with 6 between them, as on the real bar.
+// Four tabs, 72 wide with 6 between them, as on the real bar.
 const FOUR_TABS: TabLayout[] = [
-  { x: 0, width: 76 },
-  { x: 82, width: 76 },
-  { x: 164, width: 76 },
-  { x: 246, width: 76 },
+  { x: 0, width: 72 },
+  { x: 78, width: 72 },
+  { x: 156, width: 72 },
+  { x: 234, width: 72 },
 ];
 
 describe("scrubbing across the tab bar (CRI-133)", () => {
   it("picks the tab whose centre is closest to the finger", () => {
-    expect(nearestTabIndex(38, FOUR_TABS)).toBe(0);
-    expect(nearestTabIndex(120, FOUR_TABS)).toBe(1);
-    expect(nearestTabIndex(202, FOUR_TABS)).toBe(2);
-    expect(nearestTabIndex(284, FOUR_TABS)).toBe(3);
+    expect(nearestTabIndex(36, FOUR_TABS)).toBe(0);
+    expect(nearestTabIndex(114, FOUR_TABS)).toBe(1);
+    expect(nearestTabIndex(192, FOUR_TABS)).toBe(2);
+    expect(nearestTabIndex(270, FOUR_TABS)).toBe(3);
   });
 
   it("picks the nearer tab across the gap between two tabs", () => {
-    // The gap's own midpoint, 79, between tab 0 (centre 38) and tab 1
-    // (centre 120): still nearer to tab 0.
-    expect(nearestTabIndex(79, FOUR_TABS)).toBe(0);
-    expect(nearestTabIndex(80, FOUR_TABS)).toBe(1);
+    // The gap's own midpoint, 75, between tab 0 (centre 36) and tab 1
+    // (centre 114): still nearer to tab 0.
+    expect(nearestTabIndex(75, FOUR_TABS)).toBe(0);
+    expect(nearestTabIndex(76, FOUR_TABS)).toBe(1);
   });
 
   it("clamps to the first and last tab, even far outside the row", () => {
@@ -61,29 +59,6 @@ describe("scrubbing across the tab bar (CRI-133)", () => {
       FOUR_TABS[2],
       FOUR_TABS[3],
     ];
-    expect(nearestTabIndex(120, withAGap)).toBe(0);
-  });
-
-  it("stays within bounds for a finger over the bar itself", () => {
-    expect(isWithinScrubBounds(0)).toBe(true);
-    expect(isWithinScrubBounds(FLOATING_TAB_BAR_HEIGHT)).toBe(true);
-  });
-
-  it("stays within bounds just past the cancel slop", () => {
-    expect(isWithinScrubBounds(-TAB_BAR_SCRUB_CANCEL_SLOP + 1)).toBe(true);
-    expect(
-      isWithinScrubBounds(
-        FLOATING_TAB_BAR_HEIGHT + TAB_BAR_SCRUB_CANCEL_SLOP - 1,
-      ),
-    ).toBe(true);
-  });
-
-  it("cancels once the finger is dragged well outside the bar", () => {
-    expect(isWithinScrubBounds(-TAB_BAR_SCRUB_CANCEL_SLOP - 1)).toBe(false);
-    expect(
-      isWithinScrubBounds(
-        FLOATING_TAB_BAR_HEIGHT + TAB_BAR_SCRUB_CANCEL_SLOP + 1,
-      ),
-    ).toBe(false);
+    expect(nearestTabIndex(100, withAGap)).toBe(0);
   });
 });

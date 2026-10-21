@@ -9,19 +9,16 @@
 // down lifts the bar a little and grows the icon under it. A tap commits
 // the tab it lands on. A drag carries the pill along under the finger,
 // 1:1; nothing is chosen until the finger lifts, when the tab nearest that
-// spot is committed and the pill springs into its slot. Dragged well
-// outside the bar and released, the drag cancels and the pill springs
-// back to the tab that was already active. A tab change gives one
-// selection haptic. Screen readers cannot drag, so each tab also exposes a
+// spot is committed and the pill springs into its slot, even if the
+// finger has strayed above or below the bar. The bar stays lifted until
+// the finger lifts. A tab change gives one selection haptic. Screen readers cannot drag, so each tab also exposes a
 // plain "activate" accessibility action.
 //
 // Each tab's icon, title (its accessibility label) and test ID come from
 // its screen's options in app/(tabs)/_layout.tsx. Committing follows React
 // Navigation's own tab bar: a tabPress event first, so landing on the
 // active tab still scrolls its view to the top (Home to the hero) or goes
-// back to its start, then the switch. A long press (My shows' hidden dev
-// screen) fires once the finger has rested on a tab for a moment, the
-// same as a plain Pressable's.
+// back to its start, then the switch.
 
 import { useEffect, useRef, useState, type ComponentProps } from "react";
 import { StyleSheet, View } from "react-native";
@@ -40,7 +37,6 @@ import Animated, {
 
 import {
   FLOATING_TAB_BAR_BOTTOM,
-  isWithinScrubBounds,
   nearestTabIndex,
   type TabLayout,
 } from "@/logic/tab-bar";
@@ -52,9 +48,9 @@ type TabBarProps = Parameters<
   NonNullable<ComponentProps<typeof Tabs>["tabBar"]>
 >[0];
 
-// How long a still finger takes to count as a long press, as Pressable's
-// own default.
-const LONG_PRESS_DURATION = 500;
+// A slow, still press is still a tap: Tap's own default (500 ms) would
+// fail it, and with no drag either, nothing would be selected.
+const TAP_MAX_DURATION = 60_000;
 
 export function FloatingTabBar({
   state,
@@ -91,32 +87,12 @@ export function FloatingTabBar({
     transform: [{ translateX: pillX.get() }],
   }));
 
-  // The scrub: which tab is under the finger, and whether the finger is
-  // still over the bar (vertically) or has been dragged out, which cancels
-  // the gesture on release instead of committing.
+  // The touch: which tab is nearest the finger (for its icon's emphasis),
+  // and the bar's lift while a finger is on it.
   const barLift = useSharedValue(1);
   const isTouching = useSharedValue(false);
-  const withinBounds = useSharedValue(true);
   const hoverIndex = useSharedValue(state.index);
 
-  // A plain JS-thread value, not a React ref: it is read and written from
-  // functions the gesture calls through runOnJS, never during render.
-  const longPressTimer = useSharedValue<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
-  function cancelLongPress() {
-    if (longPressTimer.value !== null) {
-      clearTimeout(longPressTimer.value);
-      longPressTimer.value = null;
-    }
-  }
-  function armLongPress(index: number) {
-    cancelLongPress();
-    const route = state.routes[index];
-    longPressTimer.value = setTimeout(() => {
-      navigation.emit({ type: "tabLongPress", target: route.key });
-    }, LONG_PRESS_DURATION);
-  }
   function commitSelection(index: number) {
     const route = state.routes[index];
     const event = navigation.emit({
@@ -136,72 +112,60 @@ export function FloatingTabBar({
     (state.routes.length - 1) * t.tabBarGap;
 
   // The tab nearest the finger, for the hovered icon's emphasis only: it
-  // never navigates. Dragged out of bounds, it falls back to the active tab.
-  function resolveHover(x: number, y: number) {
+  // never navigates on its own.
+  function resolveHover(x: number) {
     "worklet";
-    const inBounds = isWithinScrubBounds(y);
-    withinBounds.set(inBounds);
-    hoverIndex.set(
-      inBounds
-        ? nearestTabIndex(x - t.tabBarPadding, orderedLayouts)
-        : state.index,
-    );
+    hoverIndex.set(nearestTabIndex(x - t.tabBarPadding, orderedLayouts));
   }
   // While dragging, the pill sits centred under the finger, 1:1 with no
-  // spring, kept inside the row.
+  // spring, kept inside the row, even with the finger above or below the
+  // bar.
   function followFinger(x: number) {
     "worklet";
     const left = x - t.tabBarPadding - t.tabBarTabWidth / 2;
     pillX.set(Math.min(Math.max(left, 0), rowWidth - t.tabBarTabWidth));
   }
-  // On release: the tab nearest where the finger was lifted (or the
-  // active one, if it was dragged out), the pill springing into its slot.
+  // On release: the tab nearest where the finger was lifted, the pill
+  // springing into its slot.
   function release(x: number) {
     "worklet";
-    const inBounds = withinBounds.get();
-    const index = inBounds
-      ? nearestTabIndex(x - t.tabBarPadding, orderedLayouts)
-      : state.index;
+    const index = nearestTabIndex(x - t.tabBarPadding, orderedLayouts);
     const layout = orderedLayouts[index];
     if (layout) {
       pillX.set(withSpring(layout.x, t.tabBarSpring));
       pillWidth.set(withSpring(layout.width, t.tabBarSpring));
     }
-    if (inBounds) {
-      runOnJS(commitSelection)(index);
-    }
+    runOnJS(commitSelection)(index);
   }
-  function touchDown(x: number, y: number) {
+  function touchDown(x: number) {
     "worklet";
     isTouching.set(true);
     barLift.set(withSpring(t.tabBarLiftScale, t.tabBarSpring));
-    resolveHover(x, y);
-    runOnJS(armLongPress)(hoverIndex.get());
-  }
-  function touchUp() {
-    "worklet";
-    isTouching.set(false);
-    barLift.set(withSpring(1, t.tabBarSpring));
-    runOnJS(cancelLongPress)();
+    resolveHover(x);
   }
 
   // A tap and a drag race: a finger that lifts without moving far is the
   // tap, one that moves is the drag, never both. onEnd only fires for the
-  // one that won, so only it commits; onFinalize always resets.
+  // one that won, so only it commits. The bar stays lifted until the touch
+  // is over: the drag gesture resets it, since it ends last either way
+  // (when the tap wins, the race cancels it); the tap does not, as it
+  // fails the moment a drag starts and would drop the lift mid-drag.
   const tapGesture = Gesture.Tap()
-    .onBegin((event) => touchDown(event.x, event.y))
-    .onEnd((event) => release(event.x))
-    .onFinalize(() => touchUp());
+    .maxDuration(TAP_MAX_DURATION)
+    .onBegin((event) => touchDown(event.x))
+    .onEnd((event) => release(event.x));
   const dragGesture = Gesture.Pan()
     .withTestId("tab-bar-scrub")
-    .onBegin((event) => touchDown(event.x, event.y))
-    .onStart(() => runOnJS(cancelLongPress)())
+    .onBegin((event) => touchDown(event.x))
     .onUpdate((event) => {
-      resolveHover(event.x, event.y);
+      resolveHover(event.x);
       followFinger(event.x);
     })
     .onEnd((event) => release(event.x))
-    .onFinalize(() => touchUp());
+    .onFinalize(() => {
+      isTouching.set(false);
+      barLift.set(withSpring(1, t.tabBarSpring));
+    });
   const barGesture = Gesture.Race(tapGesture, dragGesture);
 
   const barStyle = useAnimatedStyle(() => ({
@@ -242,7 +206,6 @@ export function FloatingTabBar({
                   active={active}
                   hoverIndex={hoverIndex}
                   isTouching={isTouching}
-                  withinBounds={withinBounds}
                   onActivate={() => commitSelection(index)}
                   onLayout={(layout) =>
                     setLayouts((current) => ({
@@ -277,7 +240,6 @@ function TabButton({
   active,
   hoverIndex,
   isTouching,
-  withinBounds,
   onActivate,
   onLayout,
   testID,
@@ -288,7 +250,6 @@ function TabButton({
   active: boolean;
   hoverIndex: SharedValue<number>;
   isTouching: SharedValue<boolean>;
-  withinBounds: SharedValue<boolean>;
   onActivate: () => void;
   onLayout: (layout: TabLayout) => void;
   testID?: string;
@@ -296,7 +257,7 @@ function TabButton({
 }) {
   const scale = useSharedValue(1);
   useAnimatedReaction(
-    () => isTouching.get() && withinBounds.get() && hoverIndex.get() === index,
+    () => isTouching.get() && hoverIndex.get() === index,
     (hovered, previouslyHovered) => {
       if (hovered === previouslyHovered) {
         return;

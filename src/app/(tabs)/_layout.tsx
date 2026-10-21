@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { Tabs } from "expo-router";
 
 import {
@@ -13,8 +14,12 @@ import { t } from "@/theme/tokens";
 
 // The floating tab bar (CRI-133): four icon-only tabs, Home, Calendar, My
 // shows and Search. Each title is the tab's accessibility label.
+// Two presses on My shows this close together count as a double tap.
+const DOUBLE_TAP_MS = 300;
+
 export default function TabLayout() {
   const router = useGuardedRouter();
+  const lastShowsPress = useRef(0);
   return (
     <Tabs tabBar={(props) => <FloatingTabBar {...props} />}>
       <Tabs.Screen
@@ -52,13 +57,15 @@ export default function TabLayout() {
           headerTitleStyle: { color: t.ink },
           headerShadowVisible: false,
         }}
-        // The hidden image review screen is reached by a long press on
+        // The hidden image review screen is reached by a double tap on
         // this tab, development builds only.
         listeners={{
-          tabLongPress: () => {
-            if (__DEV__) {
+          tabPress: () => {
+            const now = Date.now();
+            if (__DEV__ && now - lastShowsPress.current < DOUBLE_TAP_MS) {
               router.push("/dev/images");
             }
+            lastShowsPress.current = now;
           },
         }}
       />
