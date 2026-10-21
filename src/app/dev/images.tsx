@@ -22,6 +22,13 @@ import { useStreamingService } from "@/hooks/useStreamingService";
 import { useToday } from "@/hooks/useToday";
 import { sortShowsByTitle } from "@/logic/shows-list";
 import { OpenInSlot } from "@/components/Hero/HeroPage";
+import {
+  DEFAULT_PULSE_LOW,
+  DEFAULT_PULSE_MS,
+  DEFAULT_SKELETON_STAGGER_MS,
+  SkeletonCard,
+  useSkeletonRowPulse,
+} from "@/components/ShowCard";
 import { heroAvailability, type HeroAvailability } from "@/logic/hero-carousel";
 import { openInAccessibilityLabel } from "@/logic/streaming-service";
 import { IMAGE_BASE, type TmdbImage } from "@/api/tmdb-types";
@@ -71,6 +78,19 @@ export default function DevImagesScreen() {
   const { follow } = useFollowList();
   const todayDate = useToday();
   const [following, setFollowing] = useState(false);
+  // Live controls for the skeleton pulse below, so it can be tuned by eye
+  // here instead of round-tripping numbers through commits; PosterRow
+  // itself always uses ShowCard's own defaults, untouched by this.
+  const [pulseMs, setPulseMs] = useState(DEFAULT_PULSE_MS);
+  const [pulseLow, setPulseLow] = useState(DEFAULT_PULSE_LOW);
+  const [staggerMs, setStaggerMs] = useState(DEFAULT_SKELETON_STAGGER_MS);
+  // One clock per preview row, same as Home's own Top picks/Airing this
+  // week (PosterRow, useSkeletonRowPulse each): not shared between rows,
+  // since real rows aren't either. The second row's own cards then start
+  // one stagger after the first row's, matching AiringThisWeekRow's
+  // pulseOffsetMs.
+  const firstRowClock = useSkeletonRowPulse(pulseMs);
+  const secondRowClock = useSkeletonRowPulse(pulseMs);
 
   if (!__DEV__) {
     return null;
@@ -121,6 +141,116 @@ export default function DevImagesScreen() {
                   <OpenInSlot availability={availability} />
                 </View>
               ))}
+            </View>
+
+            {/* A poster row's first-load skeleton (PosterRow), held static
+                here rather than crossfading into real cards, so the pulse
+                is easy to sit and watch, with live controls below to tune
+                it by eye. Both row shapes: without a caption line (Top
+                picks) and with one (Airing this week). */}
+            <View style={styles.forcedSection}>
+              <Text style={styles.meta}>
+                Skeleton row (pulsing, PosterRow&apos;s first load):
+              </Text>
+              <View style={styles.skeletonRow}>
+                <SkeletonCard
+                  withCaption={false}
+                  clock={firstRowClock}
+                  pulseMs={pulseMs}
+                  pulseLow={pulseLow}
+                  delayMs={0}
+                />
+                <SkeletonCard
+                  withCaption={false}
+                  clock={firstRowClock}
+                  pulseMs={pulseMs}
+                  pulseLow={pulseLow}
+                  delayMs={staggerMs}
+                />
+                <SkeletonCard
+                  withCaption={false}
+                  clock={firstRowClock}
+                  pulseMs={pulseMs}
+                  pulseLow={pulseLow}
+                  delayMs={2 * staggerMs}
+                />
+              </View>
+              <Text style={styles.meta}>
+                With a caption line, one stagger behind the row above:
+              </Text>
+              <View style={styles.skeletonRow}>
+                <SkeletonCard
+                  withCaption
+                  clock={secondRowClock}
+                  pulseMs={pulseMs}
+                  pulseLow={pulseLow}
+                  delayMs={staggerMs}
+                />
+                <SkeletonCard
+                  withCaption
+                  clock={secondRowClock}
+                  pulseMs={pulseMs}
+                  pulseLow={pulseLow}
+                  delayMs={2 * staggerMs}
+                />
+                <SkeletonCard
+                  withCaption
+                  clock={secondRowClock}
+                  pulseMs={pulseMs}
+                  pulseLow={pulseLow}
+                  delayMs={3 * staggerMs}
+                />
+              </View>
+
+              <View style={styles.controls}>
+                <Stepper
+                  label="Pulse speed"
+                  value={pulseMs}
+                  format={(v) => `${v}ms`}
+                  step={100}
+                  min={200}
+                  max={2000}
+                  onChange={setPulseMs}
+                />
+                <Stepper
+                  label="Pulse dimness"
+                  value={pulseLow}
+                  format={(v) => v.toFixed(1)}
+                  step={0.1}
+                  min={0}
+                  max={0.9}
+                  onChange={setPulseLow}
+                />
+                <Stepper
+                  label="Stagger gap"
+                  value={staggerMs}
+                  format={(v) => `${v}ms`}
+                  step={25}
+                  min={0}
+                  // Up to roughly a full pulse cycle (pulseMs*2): past
+                  // pulseMs itself, two adjacent cards sit in opposite
+                  // phase, one near peak brightness while the other's near
+                  // its dimmest, the strongest possible contrast between
+                  // them (owner found 250ms too close in phase to read as
+                  // different at a glance).
+                  max={pulseMs * 2}
+                  onChange={setStaggerMs}
+                />
+                {(pulseMs !== DEFAULT_PULSE_MS ||
+                  pulseLow !== DEFAULT_PULSE_LOW ||
+                  staggerMs !== DEFAULT_SKELETON_STAGGER_MS) && (
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={() => {
+                      setPulseMs(DEFAULT_PULSE_MS);
+                      setPulseLow(DEFAULT_PULSE_LOW);
+                      setStaggerMs(DEFAULT_SKELETON_STAGGER_MS);
+                    }}
+                  >
+                    <Text style={styles.resetLabel}>Reset to defaults</Text>
+                  </Pressable>
+                )}
+              </View>
             </View>
           </View>
         }
@@ -218,6 +348,58 @@ function ShowImagesRow({
   );
 }
 
+// A -/value/+ row for one of the skeleton controls above, clamped to
+// [min, max] and snapped to a fixed decimal to avoid float drift from
+// repeated +/- steps on pulseLow.
+function Stepper({
+  label,
+  value,
+  step,
+  min,
+  max,
+  format,
+  onChange,
+}: {
+  label: string;
+  value: number;
+  step: number;
+  min: number;
+  max: number;
+  format: (value: number) => string;
+  onChange: (value: number) => void;
+}) {
+  const move = (delta: number) => {
+    const next = Math.min(max, Math.max(min, value + delta));
+    onChange(Math.round(next * 100) / 100);
+  };
+  return (
+    <View style={styles.stepper}>
+      <Text style={styles.meta}>{label}</Text>
+      <View style={styles.stepperControls}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`${label}, decrease`}
+          onPress={() => move(-step)}
+          hitSlop={8}
+          style={styles.stepperButton}
+        >
+          <Text style={styles.stepperButtonLabel}>−</Text>
+        </Pressable>
+        <Text style={styles.stepperValue}>{format(value)}</Text>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`${label}, increase`}
+          onPress={() => move(step)}
+          hitSlop={8}
+          style={styles.stepperButton}
+        >
+          <Text style={styles.stepperButtonLabel}>+</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
 function Backdrop({
   label,
   image,
@@ -261,6 +443,34 @@ const styles = StyleSheet.create({
   followAllLabel: { color: t.ink, fontWeight: "600" },
   forcedSection: { gap: 16, marginTop: 4 },
   forcedRow: { gap: 4 },
+  skeletonRow: { flexDirection: "row", gap: 8 },
+  controls: { gap: 10, marginTop: 4 },
+  stepper: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  stepperControls: { flexDirection: "row", alignItems: "center", gap: 12 },
+  stepperButton: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: t.surfaceRaised,
+  },
+  stepperButtonLabel: { color: t.ink, fontSize: 18, fontWeight: "600" },
+  stepperValue: {
+    ...type.meta,
+    color: t.ink,
+    minWidth: 48,
+    textAlign: "center",
+  },
+  resetLabel: {
+    ...type.meta,
+    color: t.inkMuted,
+    textDecorationLine: "underline",
+  },
   row: {
     paddingHorizontal: 16,
     paddingVertical: 20,

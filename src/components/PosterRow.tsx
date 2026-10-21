@@ -58,10 +58,12 @@ import {
 } from "@/logic/poster-snap";
 import { t, type } from "@/theme/tokens";
 import {
+  DEFAULT_SKELETON_STAGGER_MS,
   POSTER_HEIGHT,
   POSTER_WIDTH,
   SkeletonCard,
   cardHeight,
+  useSkeletonRowPulse,
 } from "./ShowCard";
 
 // Skeleton cards on a first load: two full and the peek of a third, as
@@ -117,6 +119,7 @@ export function PosterRow({
   emptyText,
   endAction,
   quietEndOnArrival = false,
+  pulseOffsetMs = 0,
   testID,
   children,
 }: {
@@ -141,12 +144,25 @@ export function PosterRow({
   // its cards: in Search, which shares Home's rows, it is said only when
   // the end is reached there (CRI-131).
   quietEndOnArrival?: boolean;
+  // Added on top of each of this row's own skeleton cards' delayMs, so a
+  // later row on the same screen (Home's "Airing this week" under "Top
+  // picks") can start its wave a beat after the row above it, rather than
+  // pulsing in the same place in the cycle (owner's request). Every
+  // PosterRow mounts its own independent pulse clock (useSkeletonRowPulse
+  // below), but sibling rows on the same screen mount in the same React
+  // commit, so their clocks start close enough together in real time for
+  // this offset to read as deliberate, not coincidental.
+  pulseOffsetMs?: number;
   testID: string;
   children: ReactNode;
 }) {
   const { reduceMotionEnabled } = useAccessibilityFlags();
   const { width: viewportWidth } = useWindowDimensions();
   const height = cardHeight(withCaption);
+  // One shared pulse clock for every skeleton card in this row (first
+  // load and loading-more both), so they never drift apart from each
+  // other; see useSkeletonRowPulse.
+  const pulseClock = useSkeletonRowPulse();
   // No cards yet and none cached: skeleton cards hold the row's place.
   const showSkeleton = isLoading && !hasCards;
   const isShown = hasCards || Boolean(emptyText) || showSkeleton;
@@ -199,7 +215,12 @@ export function PosterRow({
 
   const skeletons = (count: number, prefix: string) =>
     Array.from({ length: count }, (_, index) => (
-      <SkeletonCard key={`${prefix}${index}`} withCaption={withCaption} />
+      <SkeletonCard
+        key={`${prefix}${index}`}
+        withCaption={withCaption}
+        clock={pulseClock}
+        delayMs={pulseOffsetMs + index * DEFAULT_SKELETON_STAGGER_MS}
+      />
     ));
   const childCount = Children.count(children);
   const cardCount = showSkeleton
