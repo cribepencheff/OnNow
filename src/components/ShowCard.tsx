@@ -3,7 +3,7 @@
 // tap opens Show detail (inside the sheet when shown in Search, PRD 5.6);
 // the follow circle follows at once.
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Animated,
   Easing,
@@ -162,201 +162,72 @@ function PosterFollowCircle({
     },
     [reduceMotionEnabled, progress],
   );
-  // A short busy window after each tap (owner's request): a bright arc
-  // runs around the circle's own edge, the circle takes no taps (so a
-  // second tap cannot undo the first mid-way), and only once it ends
-  // does the icon change. Home does not rebuild its hero while the user
-  // is on Home (heroPagerSlides in index.tsx), so none of this shares the
-  // UI thread with that. 0 = no arc, 1 = arc.
-  const [busy, setBusy] = useState(false);
-  // The same, read at once by the tap and by the effect below: `busy`
-  // itself only changes on the next render.
-  const busyRef = useRef(false);
-  const followedRef = useRef(followed);
   useEffect(() => {
-    followedRef.current = followed;
-  }, [followed]);
-  // The icon follows `followed`, except during the busy window: the tap
-  // flips `followed` at once (following is optimistic), and the icon
-  // waits for the arc instead; the timer below morphs it at the end.
-  useEffect(() => {
-    if (!busyRef.current) {
-      morphTo(followed);
-    }
+    morphTo(followed);
   }, [followed, morphTo]);
-  const [busyAnim] = useState(() => new Animated.Value(0));
-  const [spin] = useState(() => new Animated.Value(0));
-  const busyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const stateFrame = useRef<number | null>(null);
-  useEffect(
-    () => () => {
-      if (busyTimer.current) {
-        clearTimeout(busyTimer.current);
-      }
-      if (stateFrame.current !== null) {
-        cancelAnimationFrame(stateFrame.current);
-      }
-    },
-    [],
-  );
-  // Started and stopped from the tap and the timer themselves, not from
-  // an effect on `busy`: an effect waits for a render, and on this tap
-  // that render is the one Home is busy with.
-  const spinLoop = useRef<Animated.CompositeAnimation | null>(null);
-  useEffect(() => () => spinLoop.current?.stop(), []);
-  const setBusyRing = useCallback(
-    (toBusy: boolean) => {
-      if (reduceMotionEnabled) {
-        // No ring under Reduce Motion: the circle only takes no taps
-        // until the window ends.
-        busyAnim.setValue(0);
-        return;
-      }
-      if (toBusy) {
-        spin.setValue(0);
-        spinLoop.current = Animated.loop(
-          Animated.timing(spin, {
-            toValue: 1,
-            duration: SPINNER_TURN_MS,
-            easing: Easing.linear,
-            useNativeDriver: true,
-          }),
-        );
-        spinLoop.current.start();
-      }
-      Animated.timing(busyAnim, {
-        toValue: toBusy ? 1 : 0,
-        duration: BUSY_FADE_MS,
-        useNativeDriver: true,
-      }).start(({ finished }) => {
-        if (finished && !toBusy) {
-          spinLoop.current?.stop();
-          spinLoop.current = null;
-        }
-      });
-    },
-    [reduceMotionEnabled, busyAnim, spin],
-  );
-
-  const { plusOpacity, plusScale, checkScale, spinRotate } = useMemo(
-    () => ({
-      plusOpacity: progress.interpolate({
-        inputRange: [0, 1],
-        outputRange: [1, 0],
-      }),
-      plusScale: progress.interpolate({
-        inputRange: [0, 1],
-        outputRange: [1, 0.5],
-      }),
-      checkScale: progress.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0.5, 1],
-      }),
-      spinRotate: spin.interpolate({
-        inputRange: [0, 1],
-        outputRange: ["0deg", "360deg"],
-      }),
-    }),
-    [progress, spin],
-  );
+  const plusOpacity = progress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 0],
+  });
+  const plusScale = progress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 0.5],
+  });
   const checkOpacity = progress;
+  const checkScale = progress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.5, 1],
+  });
 
   const handlePress = useCallback(() => {
-    if (busyRef.current) {
-      return;
-    }
-    busyRef.current = true;
+    const next = !followed;
     // A confirming tap on follow; a lighter one on unfollow, so removing
     // a show reads as equally instant as adding one (both are optimistic
     // either way, useFollowList).
-    if (!followed) {
+    if (next) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     } else {
       Haptics.selectionAsync();
     }
-    setBusyRing(true);
-    // The arc first, everything else a frame later: native animation
-    // commands go to the UI thread only after the JavaScript work of the
-    // same tick, and state changes here (this circle's, and the follow
-    // itself, which redraws Home's rows) would render first and hold the
-    // arc's start back, the delay the owner saw before it appeared.
-    stateFrame.current = requestAnimationFrame(() => {
-      stateFrame.current = null;
-      setBusy(true);
-      onPress();
-    });
-    busyTimer.current = setTimeout(() => {
-      busyTimer.current = null;
-      busyRef.current = false;
-      setBusy(false);
-      setBusyRing(false);
-      // Whatever the follow list says now: the new state, or the old one
-      // again if the write failed meanwhile.
-      morphTo(followedRef.current);
-    }, FOLLOW_BUSY_MS);
-  }, [followed, onPress, morphTo, setBusyRing]);
+    morphTo(next);
+    onPress();
+  }, [followed, onPress, morphTo]);
 
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={followed ? "Followed" : "Follow"}
-      accessibilityState={{ selected: followed, busy, disabled: busy }}
+      accessibilityState={{ selected: followed }}
       onPress={handlePress}
-      disabled={busy}
       // A 44pt tap target around the 32pt circle.
       hitSlop={6}
       testID={testID}
     >
-      <View>
-        <View style={styles.circle}>
-          <Animated.View
-            style={[
-              styles.circleIcon,
-              { opacity: plusOpacity, transform: [{ scale: plusScale }] },
-            ]}
-          >
-            <SymbolView
-              name={FOLLOW_PLUS_SYMBOL}
-              tintColor="#FFFFFF"
-              size={15}
-            />
-          </Animated.View>
-          <Animated.View
-            style={[
-              styles.circleIcon,
-              { opacity: checkOpacity, transform: [{ scale: checkScale }] },
-            ]}
-          >
-            <SymbolView
-              name={FOLLOW_CHECK_SYMBOL}
-              tintColor="#FFFFFF"
-              size={15}
-            />
-          </Animated.View>
-        </View>
-        {/* Over the circle, not inside it, so the arc lies on the
-            circle's own edge rather than inside its border. */}
+      <View style={styles.circle}>
         <Animated.View
-          pointerEvents="none"
           style={[
-            styles.busyRing,
-            { opacity: busyAnim, transform: [{ rotate: spinRotate }] },
+            styles.circleIcon,
+            { opacity: plusOpacity, transform: [{ scale: plusScale }] },
           ]}
-          testID={`${testID}-busy`}
-        />
+        >
+          <SymbolView name={FOLLOW_PLUS_SYMBOL} tintColor="#FFFFFF" size={15} />
+        </Animated.View>
+        <Animated.View
+          style={[
+            styles.circleIcon,
+            { opacity: checkOpacity, transform: [{ scale: checkScale }] },
+          ]}
+        >
+          <SymbolView
+            name={FOLLOW_CHECK_SYMBOL}
+            tintColor="#FFFFFF"
+            size={15}
+          />
+        </Animated.View>
       </View>
     </Pressable>
   );
 }
-
-// How long the follow circle stays busy (the arc, no taps) after a tap.
-const FOLLOW_BUSY_MS = 600;
-// How quickly the arc fades in and out around that window.
-const BUSY_FADE_MS = 120;
-// One full turn of the arc around the circle.
-const SPINNER_TURN_MS = 700;
-// The arc's stroke, a little heavier than the circle's hairline edge.
-const BUSY_RING_WIDTH = 2;
 
 // How long one pulse cycle (dim to bright to dim) takes, by default.
 export const DEFAULT_PULSE_MS = 750;
@@ -508,20 +379,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     alignItems: "center",
     justifyContent: "center",
-  },
-  // The busy arc: one bright quarter of a ring exactly the circle's size,
-  // on top of it, turning around its edge; the rest of the ring is
-  // clear, so the circle's own hairline edge still shows.
-  busyRing: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: FOLLOW_CIRCLE_SIZE,
-    height: FOLLOW_CIRCLE_SIZE,
-    borderRadius: FOLLOW_CIRCLE_SIZE / 2,
-    borderWidth: BUSY_RING_WIDTH,
-    borderColor: "transparent",
-    borderTopColor: "#FFFFFF",
   },
   name: {
     ...type.meta,

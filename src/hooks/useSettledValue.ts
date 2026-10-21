@@ -1,7 +1,9 @@
 // A value that only changes when it is settled: the screen keeps the one
 // it settled on, and takes the current one again when it calls settle(),
-// when `epoch` changes, or when `isUrgent` says the settled one must not be
-// kept. Taken while rendering, like useSettledDay and useSettledFollowed.
+// when `epoch` changes, or when `isUrgent` says the change must show at
+// once. `isUrgent` must be false for two values that only differ in
+// identity: the value may be a new object on every render, and each
+// urgent change renders again. Taken while rendering, like useSettledDay and useSettledFollowed.
 // Home settles the hero's slides with it, so a follow or unfollow does not
 // rebuild the hero while the user is on Home (see index.tsx).
 
@@ -10,7 +12,7 @@ import { useCallback, useState } from "react";
 export function useSettledValue<T>(
   value: T,
   epoch: unknown,
-  isUrgent: (settled: T) => boolean,
+  isUrgent: (settled: T, next: T) => boolean,
 ): {
   value: T;
   // Takes the value as it is now.
@@ -21,7 +23,7 @@ export function useSettledValue<T>(
   if (
     settled.asked !== asked ||
     settled.epoch !== epoch ||
-    (settled.value !== value && isUrgent(settled.value))
+    (settled.value !== value && isUrgent(settled.value, value))
   ) {
     setSettled({ asked, epoch, value });
   }

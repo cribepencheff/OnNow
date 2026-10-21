@@ -2,14 +2,15 @@ import { act, renderHook } from "@testing-library/react-native";
 
 import { useSettledValue } from "./useSettledValue";
 
-const isEmpty = (settled: number[]) => settled.length === 0;
+const firstOnes = (settled: number[], next: number[]) =>
+  settled.length === 0 && next.length > 0;
 
 // Home settles the hero's slides with it (heroPagerSlides).
 describe("useSettledValue", () => {
   function setup(value: number[], epoch = "day 1") {
     return renderHook(
       ({ value, epoch }: { value: number[]; epoch: string }) =>
-        useSettledValue(value, epoch, isEmpty),
+        useSettledValue(value, epoch, firstOnes),
       { initialProps: { value, epoch } },
     );
   }
@@ -33,6 +34,18 @@ describe("useSettledValue", () => {
     const { result, rerender } = await setup([]);
     await rerender({ value: [1], epoch: "day 1" });
     expect(result.current.value).toEqual([1]);
+  });
+
+  // The bug the owner hit: a new empty value every render, replacing an
+  // empty settled one, rendered again without end.
+  it("settles once for a value that is a new object every render", async () => {
+    let renders = 0;
+    const { result } = await renderHook(() => {
+      renders += 1;
+      return useSettledValue([] as number[], "day 1", firstOnes);
+    });
+    expect(result.current.value).toEqual([]);
+    expect(renders).toBeLessThan(5);
   });
 
   it("does not take a later change after a settle with nothing new", async () => {

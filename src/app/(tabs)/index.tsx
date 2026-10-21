@@ -68,8 +68,13 @@ const APP_LOGO_HEIGHT = 20;
 // focus, so its rebuild runs once that animation is over, not during it.
 const SCREEN_TRANSITION_MS = 400;
 
-function heroHasNoSlides(settled: HeroSlide[]): boolean {
-  return settled.length === 0;
+// Only from none to some: heroSlides is a new array on every render, and
+// an empty one replacing an empty one would render again without end.
+function heroGetsItsFirstSlides(
+  settled: HeroSlide[],
+  next: HeroSlide[],
+): boolean {
+  return settled.length === 0 && next.length > 0;
 }
 
 function deviceTimeZone(): string {
@@ -124,7 +129,7 @@ export default function HomeScreen() {
   const { value: heroPagerSlides, settle: settleHero } = useSettledValue(
     heroSlides,
     todayDate,
-    heroHasNoSlides,
+    heroGetsItsFirstSlides,
   );
   // On leaving Home (a push over it, or another tab), so the rebuild runs
   // while Home is out of sight, and on coming back, for changes made
