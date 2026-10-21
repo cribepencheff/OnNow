@@ -149,13 +149,26 @@ function PosterFollowCircle({
 const PULSE_MS = 900;
 // How dim the skeleton gets at the low point of its pulse.
 const PULSE_LOW = 0.4;
+// How far apart each card's pulse starts from the next one's, a card's
+// own position in the row (delayMs below) times this: a wave crossing the
+// row rather than every card pulsing in lockstep (the Facebook/Airbnb
+// skeleton pattern), owner's request.
+export const SKELETON_STAGGER_MS = 120;
 
 // A card's shape while its row loads for the first time (CRI-127): exactly
 // a real card's size, the name line and caption line included, so nothing
 // moves when the posters come in. Pulses while it waits, so a long wait
 // (a cold cache, say right after the app wakes from the background) still
 // reads as loading rather than stuck.
-export function SkeletonCard({ withCaption }: { withCaption: boolean }) {
+export function SkeletonCard({
+  withCaption,
+  delayMs = 0,
+}: {
+  withCaption: boolean;
+  // This card's own position in the row, SKELETON_STAGGER_MS apart, so the
+  // row's cards pulse as a wave rather than together.
+  delayMs?: number;
+}) {
   const { reduceMotionEnabled } = useAccessibilityFlags();
   const [opacity] = useState(() => new Animated.Value(1));
 
@@ -178,9 +191,13 @@ export function SkeletonCard({ withCaption }: { withCaption: boolean }) {
         }),
       ]),
     );
-    pulse.start();
-    return () => pulse.stop();
-  }, [reduceMotionEnabled, opacity]);
+    // The delay runs once, up front; the loop it hands off to then repeats
+    // forever with no further gap, so only each card's first cycle is
+    // offset, not every cycle after it.
+    const animation = Animated.sequence([Animated.delay(delayMs), pulse]);
+    animation.start();
+    return () => animation.stop();
+  }, [reduceMotionEnabled, opacity, delayMs]);
 
   return (
     <Animated.View style={[styles.card, { opacity }]} testID="skeleton-card">

@@ -60,6 +60,7 @@ import { t, type } from "@/theme/tokens";
 import {
   POSTER_HEIGHT,
   POSTER_WIDTH,
+  SKELETON_STAGGER_MS,
   SkeletonCard,
   cardHeight,
 } from "./ShowCard";
@@ -199,7 +200,11 @@ export function PosterRow({
 
   const skeletons = (count: number, prefix: string) =>
     Array.from({ length: count }, (_, index) => (
-      <SkeletonCard key={`${prefix}${index}`} withCaption={withCaption} />
+      <SkeletonCard
+        key={`${prefix}${index}`}
+        withCaption={withCaption}
+        delayMs={index * SKELETON_STAGGER_MS}
+      />
     ));
   const childCount = Children.count(children);
   const cardCount = showSkeleton
