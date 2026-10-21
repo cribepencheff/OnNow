@@ -114,9 +114,10 @@ export function ShowCard({
 // The follow circle on a poster (CRI-127), Apple TV style: a translucent
 // dark fill, no blur, a light hairline edge, the same followed or not; a
 // white plus, or a white check once followed, morphing between the two
-// (crossfade + scale) rather than swapping instantly: a prototype, Home's
-// poster rows only for now, not yet the other follow circles (Search,
-// Shows, Show detail's own FollowCircle). expo-symbols has no native SF
+// (crossfade + scale) rather than swapping instantly. Every poster card
+// has it, on Home and in Search's rows alike; Search's typed results
+// (FollowCircle) and Show detail's Follow button do not morph, but share
+// the same haptic (followHaptic). expo-symbols has no native SF
 // Symbol "replace" transition exposed (checked before building this), so
 // this fakes the morph with two overlaid SymbolViews instead, the same
 // crossfade technique PosterRow's own skeleton-to-cards transition uses.
