@@ -84,10 +84,13 @@ export default function DevImagesScreen() {
   const [pulseMs, setPulseMs] = useState(DEFAULT_PULSE_MS);
   const [pulseLow, setPulseLow] = useState(DEFAULT_PULSE_LOW);
   const [staggerMs, setStaggerMs] = useState(DEFAULT_SKELETON_STAGGER_MS);
-  // One shared clock for every preview card below, same as a real row
-  // (useSkeletonRowPulse), so they stay in sync with each other; rebuilt
-  // whenever the pulse-speed stepper changes it.
-  const pulseClock = useSkeletonRowPulse(pulseMs);
+  // One clock per preview row, same as Home's own Top picks/Airing this
+  // week (PosterRow, useSkeletonRowPulse each): not shared between rows,
+  // since real rows aren't either. The second row's own cards then start
+  // one stagger after the first row's, matching AiringThisWeekRow's
+  // pulseOffsetMs.
+  const firstRowClock = useSkeletonRowPulse(pulseMs);
+  const secondRowClock = useSkeletonRowPulse(pulseMs);
 
   if (!__DEV__) {
     return null;
@@ -152,48 +155,50 @@ export default function DevImagesScreen() {
               <View style={styles.skeletonRow}>
                 <SkeletonCard
                   withCaption={false}
-                  clock={pulseClock}
+                  clock={firstRowClock}
                   pulseMs={pulseMs}
                   pulseLow={pulseLow}
                   delayMs={0}
                 />
                 <SkeletonCard
                   withCaption={false}
-                  clock={pulseClock}
+                  clock={firstRowClock}
                   pulseMs={pulseMs}
                   pulseLow={pulseLow}
                   delayMs={staggerMs}
                 />
                 <SkeletonCard
                   withCaption={false}
-                  clock={pulseClock}
+                  clock={firstRowClock}
                   pulseMs={pulseMs}
                   pulseLow={pulseLow}
                   delayMs={2 * staggerMs}
                 />
               </View>
-              <Text style={styles.meta}>With a caption line:</Text>
+              <Text style={styles.meta}>
+                With a caption line, one stagger behind the row above:
+              </Text>
               <View style={styles.skeletonRow}>
                 <SkeletonCard
                   withCaption
-                  clock={pulseClock}
-                  pulseMs={pulseMs}
-                  pulseLow={pulseLow}
-                  delayMs={0}
-                />
-                <SkeletonCard
-                  withCaption
-                  clock={pulseClock}
+                  clock={secondRowClock}
                   pulseMs={pulseMs}
                   pulseLow={pulseLow}
                   delayMs={staggerMs}
                 />
                 <SkeletonCard
                   withCaption
-                  clock={pulseClock}
+                  clock={secondRowClock}
                   pulseMs={pulseMs}
                   pulseLow={pulseLow}
                   delayMs={2 * staggerMs}
+                />
+                <SkeletonCard
+                  withCaption
+                  clock={secondRowClock}
+                  pulseMs={pulseMs}
+                  pulseLow={pulseLow}
+                  delayMs={3 * staggerMs}
                 />
               </View>
 

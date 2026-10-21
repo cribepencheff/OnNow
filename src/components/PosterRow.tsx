@@ -119,6 +119,7 @@ export function PosterRow({
   emptyText,
   endAction,
   quietEndOnArrival = false,
+  pulseOffsetMs = 0,
   testID,
   children,
 }: {
@@ -143,6 +144,15 @@ export function PosterRow({
   // its cards: in Search, which shares Home's rows, it is said only when
   // the end is reached there (CRI-131).
   quietEndOnArrival?: boolean;
+  // Added on top of each of this row's own skeleton cards' delayMs, so a
+  // later row on the same screen (Home's "Airing this week" under "Top
+  // picks") can start its wave a beat after the row above it, rather than
+  // pulsing in the same place in the cycle (owner's request). Every
+  // PosterRow mounts its own independent pulse clock (useSkeletonRowPulse
+  // below), but sibling rows on the same screen mount in the same React
+  // commit, so their clocks start close enough together in real time for
+  // this offset to read as deliberate, not coincidental.
+  pulseOffsetMs?: number;
   testID: string;
   children: ReactNode;
 }) {
@@ -209,7 +219,7 @@ export function PosterRow({
         key={`${prefix}${index}`}
         withCaption={withCaption}
         clock={pulseClock}
-        delayMs={index * DEFAULT_SKELETON_STAGGER_MS}
+        delayMs={pulseOffsetMs + index * DEFAULT_SKELETON_STAGGER_MS}
       />
     ));
   const childCount = Children.count(children);

@@ -153,9 +153,9 @@ function PosterFollowCircle({
 }
 
 // How long one pulse cycle (dim to bright to dim) takes, by default.
-export const DEFAULT_PULSE_MS = 1000;
+export const DEFAULT_PULSE_MS = 750;
 // How dim the skeleton gets at the low point of its pulse, by default.
-export const DEFAULT_PULSE_LOW = 0.4;
+export const DEFAULT_PULSE_LOW = 0.25;
 // How far apart each card's pulse starts from the next one's, a card's own
 // position in the row (delayMs below) times this, by default: a wave
 // crossing the row rather than every card pulsing in lockstep (the

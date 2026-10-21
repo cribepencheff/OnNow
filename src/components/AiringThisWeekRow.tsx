@@ -8,7 +8,11 @@
 
 import { useAiringThisWeek } from "@/hooks/useAiringThisWeek";
 import { PosterRow } from "./PosterRow";
-import { ShowCard, type DetailPathname } from "./ShowCard";
+import {
+  DEFAULT_SKELETON_STAGGER_MS,
+  ShowCard,
+  type DetailPathname,
+} from "./ShowCard";
 
 export function AiringThisWeekRow({
   detailPathname,
@@ -33,6 +37,9 @@ export function AiringThisWeekRow({
       hasMore={hasMore}
       onLoadMore={loadMore}
       quietEndOnArrival={quietEndOnArrival}
+      // Starts its skeleton wave one stagger after "Top picks" above it,
+      // not in the same place in the cycle (owner's request).
+      pulseOffsetMs={DEFAULT_SKELETON_STAGGER_MS}
       testID="airing-this-week-row"
     >
       {cards.map((card) => (
