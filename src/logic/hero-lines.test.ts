@@ -136,7 +136,7 @@ describe("heroAvailability (FR-014, FR-029)", () => {
   it("is a full button when the show has a service in the region", () => {
     expect(
       heroAvailability(
-        [{ providerId: 8, providerName: "Netflix" }],
+        [{ providerId: 8, providerName: "Netflix", logoPath: null }],
         false,
         false,
         netflixSite,

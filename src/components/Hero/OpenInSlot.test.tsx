@@ -17,6 +17,7 @@ describe("OpenInSlot (FR-014, CRI-90)", () => {
             service: "Prime Video",
             url: "https://www.primevideo.com",
             requires: "hayu",
+            logoPath: null,
           },
         }}
       />,
@@ -36,7 +37,11 @@ describe("OpenInSlot (FR-014, CRI-90)", () => {
       <OpenInSlot
         availability={{
           kind: "button",
-          link: { service: "Peacock", url: "https://www.peacocktv.com" },
+          link: {
+            service: "Peacock",
+            url: "https://www.peacocktv.com",
+            logoPath: null,
+          },
         }}
       />,
     );
@@ -67,6 +72,7 @@ describe("OpenInSlot (FR-014, CRI-90)", () => {
             service: "Prime Video",
             url: "https://www.primevideo.com",
             requires: "hayu",
+            logoPath: null,
           },
         }}
       />,

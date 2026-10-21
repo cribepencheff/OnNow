@@ -21,7 +21,9 @@ const mockedFind = tmdbClient.findStreamingProviders as jest.MockedFunction<
   typeof tmdbClient.findStreamingProviders
 >;
 const neagley = showNeagleyFixture as unknown as TvMazeShow;
-const PRIME = [{ providerId: 119, providerName: "Amazon Prime Video" }];
+const PRIME = [
+  { providerId: 119, providerName: "Amazon Prime Video", logoPath: null },
+];
 
 // CRI-82: a followed show's Swedish services are looked up once through
 // TMDB and kept with the show; later reads come from the cache.

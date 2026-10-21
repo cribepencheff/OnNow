@@ -21,6 +21,7 @@ describe("serviceLink (FR-014, CRI-80)", () => {
     expect(serviceLink(showSlowHorsesFixture.officialSite)).toEqual({
       service: "Apple TV",
       url: "https://tv.apple.com/show/slow-horses/umc.cmc.2szz3fdt71tl1ulnbp8utgq5o",
+      logoPath: null,
     });
   });
 
@@ -28,6 +29,7 @@ describe("serviceLink (FR-014, CRI-80)", () => {
     expect(serviceLink(showDarkMatterFixture.officialSite)).toEqual({
       service: "Apple TV",
       url: "https://tv.apple.com/show/dark-matter/umc.cmc.4luj45vtqpmjsvb6sc2675oeg",
+      logoPath: null,
     });
   });
 
@@ -35,6 +37,7 @@ describe("serviceLink (FR-014, CRI-80)", () => {
     expect(serviceLink(showFoundationFixture.officialSite)).toEqual({
       service: "Apple TV",
       url: "https://tv.apple.com/show/foundation/umc.cmc.5983fipzqbicvrve6jdfep4x3",
+      logoPath: null,
     });
   });
 
@@ -42,6 +45,7 @@ describe("serviceLink (FR-014, CRI-80)", () => {
     expect(serviceLink(showLegendsFixture.officialSite)).toEqual({
       service: "Netflix",
       url: "https://www.netflix.com/title/81708404",
+      logoPath: null,
     });
   });
 
@@ -50,6 +54,7 @@ describe("serviceLink (FR-014, CRI-80)", () => {
     expect(serviceLink(showAKnightFixture.officialSite)).toEqual({
       service: "HBO Max",
       url: "https://www.hbomax.com/show/3507a932-eace-46ea-bfe1-638ae819fa12",
+      logoPath: null,
     });
     expect(serviceLink(showThePittFixture.officialSite)?.service).toBe(
       "HBO Max",
@@ -66,6 +71,7 @@ describe("serviceLink (FR-014, CRI-80)", () => {
     expect(serviceLink(showLanternsFixture.officialSite)).toEqual({
       service: "HBO Max",
       url: "https://www.hbomax.com/show/8c11d041-6b71-4e54-8369-fdb310e063b8",
+      logoPath: null,
     });
   });
 
@@ -77,6 +83,7 @@ describe("serviceLink (FR-014, CRI-80)", () => {
     ).toEqual({
       service: "HBO Max",
       url: "https://www.hbomax.com/show/8c11d041-6b71-4e54-8369-fdb310e063b8",
+      logoPath: null,
     });
   });
 
@@ -84,6 +91,7 @@ describe("serviceLink (FR-014, CRI-80)", () => {
     expect(serviceLink("https://www.hbomax.com/originals")).toEqual({
       service: "HBO Max",
       url: "https://www.hbomax.com/originals",
+      logoPath: null,
     });
   });
 
@@ -91,6 +99,7 @@ describe("serviceLink (FR-014, CRI-80)", () => {
     expect(serviceLink("http://www.netflix.com/title/81288983")).toEqual({
       service: "Netflix",
       url: "https://www.netflix.com/title/81288983",
+      logoPath: null,
     });
   });
 

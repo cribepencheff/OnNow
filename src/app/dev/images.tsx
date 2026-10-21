@@ -42,7 +42,7 @@ const FORCED_STATES: { label: string; availability: HeroAvailability }[] = [
   {
     label: "Unmapped service (Tele2 Play)",
     availability: heroAvailability(
-      [{ providerId: 497, providerName: "Tele2 Play" }],
+      [{ providerId: 497, providerName: "Tele2 Play", logoPath: null }],
       false,
       false,
       null,

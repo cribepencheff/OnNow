@@ -73,6 +73,7 @@ describe("openInLink (FR-014, ADR 0004, CRI-82)", () => {
     ).toEqual({
       service: "Apple TV",
       url: "https://tv.apple.com/show/slow-horses/umc.cmc.2szz3fdt71tl1ulnbp8utgq5o",
+      logoPath: "/9icYBfYFcwgCbky5VdGUIKJ4C5i.png",
     });
     expect(
       openInLink(
@@ -82,6 +83,7 @@ describe("openInLink (FR-014, ADR 0004, CRI-82)", () => {
     ).toEqual({
       service: "Netflix",
       url: "https://www.netflix.com/title/81708404",
+      logoPath: "/rK1KljqmbvO9HQa1PBFLILWah72.png",
     });
     expect(
       openInLink(
@@ -91,6 +93,7 @@ describe("openInLink (FR-014, ADR 0004, CRI-82)", () => {
     ).toEqual({
       service: "HBO Max",
       url: "https://www.hbomax.com/show/e6e7bad9-d48d-4434-b334-7c651ffc4bdf",
+      logoPath: "/skypuy7SXuugIQeYg0IglmzoKaS.png",
     });
   });
 
@@ -100,7 +103,11 @@ describe("openInLink (FR-014, ADR 0004, CRI-82)", () => {
         regionProviders(providersNeagley, "SE"),
         showNeagley.officialSite,
       ),
-    ).toEqual({ service: "Prime Video", url: "https://www.primevideo.com" });
+    ).toEqual({
+      service: "Prime Video",
+      url: "https://www.primevideo.com",
+      logoPath: "/gMZdpavHmxFNnLpMHwVxfqeux2g.png",
+    });
   });
 
   it("opens SkyShowtime for MobLand, a Paramount+ show in the US", () => {
@@ -109,7 +116,11 @@ describe("openInLink (FR-014, ADR 0004, CRI-82)", () => {
         regionProviders(providersMobLand, "SE"),
         showMobLand.officialSite,
       ),
-    ).toEqual({ service: "SkyShowtime", url: "https://www.skyshowtime.com" });
+    ).toEqual({
+      service: "SkyShowtime",
+      url: "https://www.skyshowtime.com",
+      logoPath: "/ube1pVpP3FklRkeyQjlDkkC3tL2.png",
+    });
   });
 
   it("uses the Swedish service, not TVmaze's US one, when they differ (Killing Eve: AMC+ in the US, Netflix in Sweden)", () => {
@@ -118,13 +129,17 @@ describe("openInLink (FR-014, ADR 0004, CRI-82)", () => {
         regionProviders(providersKillingEve, "SE"),
         showKillingEve.officialSite,
       ),
-    ).toEqual({ service: "Netflix", url: "https://www.netflix.com" });
+    ).toEqual({
+      service: "Netflix",
+      url: "https://www.netflix.com",
+      logoPath: "/rK1KljqmbvO9HQa1PBFLILWah72.png",
+    });
   });
 
   it("prefers a service with a direct show link over one listed before it", () => {
     const providers = [
-      { providerId: 8, providerName: "Netflix" },
-      { providerId: 350, providerName: "Apple TV" },
+      { providerId: 8, providerName: "Netflix", logoPath: null },
+      { providerId: 350, providerName: "Apple TV", logoPath: null },
     ];
     expect(openInLink(providers, showSlowHorses.officialSite)?.service).toBe(
       "Apple TV",
@@ -135,6 +150,7 @@ describe("openInLink (FR-014, ADR 0004, CRI-82)", () => {
     expect(openInLink(regionProviders(providersLudwig, "SE"), null)).toEqual({
       service: "BritBox",
       url: "https://www.britbox.com",
+      logoPath: "/eZeWGG6DDIi4Kmu1z9RfTeZtqZX.png",
     });
   });
 
@@ -144,23 +160,28 @@ describe("openInLink (FR-014, ADR 0004, CRI-82)", () => {
     ).toEqual({
       service: "Pluto TV",
       url: "https://pluto.tv",
+      logoPath: "/fN4czqaMQNLeF6sSSIjGbAWzvwK.png",
     });
   });
 
   it("skips an operator bundle and takes the next known one", () => {
     const providers = [
-      { providerId: 497, providerName: "Tele2 Play" },
-      { providerId: 1944, providerName: "TV4 Play" },
+      { providerId: 497, providerName: "Tele2 Play", logoPath: null },
+      { providerId: 1944, providerName: "TV4 Play", logoPath: null },
     ];
     expect(openInLink(providers, null)).toEqual({
       service: "TV4 Play",
       url: "https://www.tv4play.se",
+      logoPath: null,
     });
   });
 
   it("gives no link for an operator bundle alone (Tele2 Play, CRI-90)", () => {
     expect(
-      openInLink([{ providerId: 497, providerName: "Tele2 Play" }], null),
+      openInLink(
+        [{ providerId: 497, providerName: "Tele2 Play", logoPath: null }],
+        null,
+      ),
     ).toBeNull();
   });
 
@@ -179,9 +200,11 @@ describe("rowServiceText (FR-027, CRI-97, CRI-102)", () => {
     expect(rowServiceText(regionProviders(providersSpecialForces, "SE"))).toBe(
       "Unavailable",
     );
-    expect(rowServiceText([{ providerId: 8, providerName: "Netflix" }])).toBe(
-      "On Netflix",
-    );
+    expect(
+      rowServiceText([
+        { providerId: 8, providerName: "Netflix", logoPath: null },
+      ]),
+    ).toBe("On Netflix");
   });
 
   it("is nothing when TMDB does not know the show, has no key or has not answered", () => {
@@ -207,8 +230,8 @@ describe("availabilityText (FR-014, CRI-84)", () => {
   it("names every service in TMDB's order when there are several (CRI-90)", () => {
     expect(
       availabilityText([
-        { providerId: 151, providerName: "BritBox" },
-        { providerId: 9999, providerName: "Other" },
+        { providerId: 151, providerName: "BritBox", logoPath: null },
+        { providerId: 9999, providerName: "Other", logoPath: null },
       ]),
     ).toBe("On BritBox, Other");
   });
@@ -245,10 +268,12 @@ describe("streaming services per region (FR-017, CRI-88)", () => {
     expect(linkIn("US")).toEqual({
       service: "Paramount+",
       url: "https://www.paramountplus.com",
+      logoPath: "/4N4BMd0Mm0kHAmF7RZgL5lW3cwc.png",
     });
     expect(linkIn("GB")).toEqual({
       service: "Prime Video",
       url: "https://www.primevideo.com",
+      logoPath: "/gMZdpavHmxFNnLpMHwVxfqeux2g.png",
     });
   });
 
@@ -271,6 +296,7 @@ describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
       service: "Prime Video",
       url: "https://www.primevideo.com",
       requires: "hayu",
+      logoPath: null,
     });
   });
 
@@ -278,6 +304,7 @@ describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
     expect(openInLink(regionProviders(providersWwhl, "US"), null)).toEqual({
       service: "Peacock",
       url: "https://www.peacocktv.com",
+      logoPath: "/a1UIdq5BrkcAxnxcUhFsNbXnxeu.png",
     });
   });
 
@@ -286,15 +313,16 @@ describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
       service: "Prime Video",
       url: "https://www.primevideo.com",
       requires: "hayu",
+      logoPath: null,
     });
   });
 
   it("never counts pay-TV or operator bundles, for the link or the text", () => {
     const payTv = [
-      { providerId: 257, providerName: "fuboTV" },
-      { providerId: 29, providerName: "Sky Go" },
-      { providerId: 553, providerName: "Telia Play" },
-      { providerId: 365, providerName: "Bravo TV" },
+      { providerId: 257, providerName: "fuboTV", logoPath: null },
+      { providerId: 29, providerName: "Sky Go", logoPath: null },
+      { providerId: 553, providerName: "Telia Play", logoPath: null },
+      { providerId: 365, providerName: "Bravo TV", logoPath: null },
     ];
     expect(openInLink(payTv, null)).toBeNull();
     expect(availabilityText(payTv)).toBe("Unavailable");
@@ -304,43 +332,65 @@ describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
     expect(
       openInLink(
         [
-          { providerId: 296, providerName: "Hayu Amazon Channel" },
-          { providerId: 1899, providerName: "HBO Max" },
+          {
+            providerId: 296,
+            providerName: "Hayu Amazon Channel",
+            logoPath: null,
+          },
+          { providerId: 1899, providerName: "HBO Max", logoPath: null },
         ],
         null,
       ),
-    ).toEqual({ service: "HBO Max", url: "https://www.hbomax.com" });
+    ).toEqual({
+      service: "HBO Max",
+      url: "https://www.hbomax.com",
+      logoPath: null,
+    });
   });
 
   it("opens Apple TV and Roku add-on channels through their hosts", () => {
     expect(
       openInLink(
-        [{ providerId: 1854, providerName: "AMC Plus Apple TV channel" }],
+        [
+          {
+            providerId: 1854,
+            providerName: "AMC Plus Apple TV channel",
+            logoPath: null,
+          },
+        ],
         null,
       ),
     ).toEqual({
       service: "Apple TV",
       url: "https://tv.apple.com",
       requires: "AMC Plus",
+      logoPath: null,
     });
     expect(
       openInLink(
-        [{ providerId: 633, providerName: "Paramount+ Roku Premium Channel" }],
+        [
+          {
+            providerId: 633,
+            providerName: "Paramount+ Roku Premium Channel",
+            logoPath: null,
+          },
+        ],
         null,
       ),
     ).toEqual({
       service: "The Roku Channel",
       url: "https://therokuchannel.roku.com",
       requires: "Paramount+",
+      logoPath: null,
     });
   });
 
   it("gives no button for services without a start page, and names them all", () => {
     const providers = [
-      { providerId: 464, providerName: "Kocowa" },
-      { providerId: 430, providerName: "HiDive" },
-      { providerId: 257, providerName: "fuboTV" },
-      { providerId: 464, providerName: "Kocowa" },
+      { providerId: 464, providerName: "Kocowa", logoPath: null },
+      { providerId: 430, providerName: "HiDive", logoPath: null },
+      { providerId: 257, providerName: "fuboTV", logoPath: null },
+      { providerId: 464, providerName: "Kocowa", logoPath: null },
     ];
     expect(openInLink(providers, null)).toBeNull();
     expect(availabilityText(providers)).toBe("On Kocowa, HiDive");
@@ -350,6 +400,7 @@ describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
     expect(openInLink(regionProviders(providersFrieren, "SE"), null)).toEqual({
       service: "Crunchyroll",
       url: "https://www.crunchyroll.com",
+      logoPath: "/uFL3c4Cq8M6WoLymlC5Y8bmGytV.png",
     });
   });
 
@@ -359,12 +410,14 @@ describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
         service: "Prime Video",
         url: "https://www.primevideo.com",
         requires: "hayu",
+        logoPath: null,
       }),
     ).toBe("Open in Prime Video, requires hayu subscription");
     expect(
       openInAccessibilityLabel({
         service: "Peacock",
         url: "https://www.peacocktv.com",
+        logoPath: null,
       }),
     ).toBe("Open in Peacock");
   });
@@ -372,7 +425,11 @@ describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
   it("names an add-on channel alone by its own service", () => {
     expect(
       availabilityText([
-        { providerId: 296, providerName: "Hayu Amazon Channel" },
+        {
+          providerId: 296,
+          providerName: "Hayu Amazon Channel",
+          logoPath: null,
+        },
       ]),
     ).toBe("On hayu");
   });
@@ -384,9 +441,17 @@ describe("Open in coverage across regions (FR-014, FR-017, CRI-90)", () => {
     );
     expect(
       availabilityText([
-        { providerId: 2243, providerName: "Apple TV Amazon Channel" },
-        { providerId: 350, providerName: "Apple TV" },
-        { providerId: 296, providerName: "Hayu Amazon Channel" },
+        {
+          providerId: 2243,
+          providerName: "Apple TV Amazon Channel",
+          logoPath: null,
+        },
+        { providerId: 350, providerName: "Apple TV", logoPath: null },
+        {
+          providerId: 296,
+          providerName: "Hayu Amazon Channel",
+          logoPath: null,
+        },
       ]),
     ).toBe("On Apple TV, hayu");
   });

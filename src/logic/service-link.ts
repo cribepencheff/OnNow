@@ -14,6 +14,10 @@ export interface ServiceLink {
   // An add-on channel the user must subscribe to; the link opens its host
   // app, named in `service` (CRI-90).
   requires?: string;
+  // TMDB's icon for the service, built from a provider's logo_path
+  // (CRI-132); null when none is known, so the button falls back to text
+  // only (data first).
+  logoPath: string | null;
 }
 
 interface KnownService {
@@ -61,6 +65,7 @@ export function serviceLink(officialSite: string | null): ServiceLink | null {
     return {
       service: known.service,
       url: `https://${host}${path.replace(/^\/[a-z]{2}(?=\/)/i, "")}`,
+      logoPath: null,
     };
   }
 
@@ -73,9 +78,14 @@ export function serviceLink(officialSite: string | null): ServiceLink | null {
       return {
         service: known.service,
         url: `https://www.hbomax.com/show/${showId}`,
+        logoPath: null,
       };
     }
   }
 
-  return { service: known.service, url: `https://${host}${path}${query}` };
+  return {
+    service: known.service,
+    url: `https://${host}${path}${query}`,
+    logoPath: null,
+  };
 }

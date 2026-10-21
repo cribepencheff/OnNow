@@ -9,7 +9,9 @@ import {
 } from "./streaming-service";
 
 const NEAGLEY = 82707;
-const PRIME = [{ providerId: 119, providerName: "Amazon Prime Video" }];
+const PRIME = [
+  { providerId: 119, providerName: "Amazon Prime Video", logoPath: null },
+];
 
 // CRI-82: each followed show's Swedish services are looked up once and
 // kept with the show, in plain storage (NFR-006).

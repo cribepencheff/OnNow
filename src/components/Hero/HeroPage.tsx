@@ -28,6 +28,7 @@ import { useShowImages } from "@/hooks/useShowImages";
 import { openInAccessibilityLabel } from "@/logic/streaming-service";
 import { ImdbRating } from "../ImdbRating";
 import { PaidSubscriptionMarker } from "../PaidSubscriptionMarker";
+import { ServiceLogo } from "../ServiceLogo";
 import { ProgressiveMask } from "../ProgressiveBlur";
 import { DatePill } from "./DatePill";
 import {
@@ -67,6 +68,9 @@ const TOP_MIRROR_BLUR_RADIUS = 12;
 // radius stays sharp on screen; a small source blurs far more softly, and
 // is cheaper to decode.
 const BLURRED_COPY_SIZE = "w300";
+// The service's logo squircle in the "Open in" button (CRI-132), after the
+// text.
+const SERVICE_LOGO_SIZE = 22;
 
 // The hero's layout for this screen (logic/hero-layout.ts).
 export function useHeroLayout() {
@@ -119,9 +123,19 @@ export function OpenInSlot({
             onPress={() => openExternalUrl(availability.link.url)}
             style={[styles.button, buttonHeightStyle]}
           >
-            <Text style={styles.buttonLabel}>
-              Open in {availability.link.service}
-            </Text>
+            {availability.link.logoPath ? (
+              <>
+                <Text style={styles.buttonLabel}>Open in</Text>
+                <ServiceLogo
+                  logoPath={availability.link.logoPath}
+                  size={SERVICE_LOGO_SIZE}
+                />
+              </>
+            ) : (
+              <Text style={styles.buttonLabel}>
+                Open in {availability.link.service}
+              </Text>
+            )}
           </Pressable>
           {/* As in Show detail, under the button (CRI-90, CRI-101). */}
           {availability.link.requires && (
@@ -789,6 +803,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   button: {
+    flexDirection: "row",
+    gap: 8,
     borderRadius: t.radiusPill,
     backgroundColor: t.ink,
     alignItems: "center",

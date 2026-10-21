@@ -10,9 +10,17 @@ jest.mock("../tmdb-client", () => ({
 }));
 
 const providersById = tmdbClient.providersById as jest.Mock;
-const NETFLIX = { providerId: 8, providerName: "Netflix" };
-const TELE2_PLAY = { providerId: 497, providerName: "Tele2 Play" };
-const MUBI_CHANNEL = { providerId: 201, providerName: "MUBI Amazon Channel" };
+const NETFLIX = { providerId: 8, providerName: "Netflix", logoPath: null };
+const TELE2_PLAY = {
+  providerId: 497,
+  providerName: "Tele2 Play",
+  logoPath: null,
+};
+const MUBI_CHANNEL = {
+  providerId: 201,
+  providerName: "MUBI Amazon Channel",
+  logoPath: null,
+};
 
 describe("hasServiceInRegion (FR-038, FR-039)", () => {
   beforeEach(async () => {

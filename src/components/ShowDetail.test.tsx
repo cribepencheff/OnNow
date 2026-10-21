@@ -83,11 +83,19 @@ function mockImdbRating(rating: string | null | undefined) {
   );
 }
 
-const APPLE_TV = { providerId: 350, providerName: "Apple TV" };
-const PRIME_VIDEO = { providerId: 119, providerName: "Amazon Prime Video" };
-const SKYSHOWTIME = { providerId: 1773, providerName: "SkyShowtime" };
-const NETFLIX = { providerId: 8, providerName: "Netflix" };
-const PLUTO_TV = { providerId: 300, providerName: "Pluto TV" };
+const APPLE_TV = { providerId: 350, providerName: "Apple TV", logoPath: null };
+const PRIME_VIDEO = {
+  providerId: 119,
+  providerName: "Amazon Prime Video",
+  logoPath: null,
+};
+const SKYSHOWTIME = {
+  providerId: 1773,
+  providerName: "SkyShowtime",
+  logoPath: null,
+};
+const NETFLIX = { providerId: 8, providerName: "Netflix", logoPath: null };
+const PLUTO_TV = { providerId: 300, providerName: "Pluto TV", logoPath: null };
 
 const follow = jest.fn();
 const unfollow = jest.fn();
@@ -431,8 +439,8 @@ describe("ShowDetail", () => {
   it("CRI-90: names services without a start page below the hero, with no button", async () => {
     mockShow(showSlowHorsesFixture);
     mockStreamingServices([
-      { providerId: 464, providerName: "Kocowa" },
-      { providerId: 430, providerName: "HiDive" },
+      { providerId: 464, providerName: "Kocowa", logoPath: null },
+      { providerId: 430, providerName: "HiDive", logoPath: null },
     ]);
     await render(<ShowDetail showId={45039} />);
 
@@ -448,7 +456,7 @@ describe("ShowDetail", () => {
   it("CRI-90: an add-on opens its host, with the extra subscription below the button", async () => {
     mockShow(showSlowHorsesFixture);
     mockStreamingServices([
-      { providerId: 296, providerName: "Hayu Amazon Channel" },
+      { providerId: 296, providerName: "Hayu Amazon Channel", logoPath: null },
     ]);
     await render(<ShowDetail showId={45039} />);
 
