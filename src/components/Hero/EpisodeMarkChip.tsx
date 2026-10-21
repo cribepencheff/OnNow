@@ -1,9 +1,10 @@
 // The hero's Premiere / Finale chip after the episode line (owner, in the
 // IMDb chip's old place): a hairline outline, brighter than the date
 // pill's, and no fill (it sits on the dark fade, where a fill would hardly
-// show), an accent dot (the same for both, owner: one colour to learn),
-// and the word in white, like the episode code beside it. The word says
-// which (heroEpisodeMark, logic/hero-carousel.ts).
+// show), a coloured dot, and the word
+// in white, like the episode code beside it. The word says it; the dot
+// only marks it, so the chip reads the same without telling the colours
+// apart (heroEpisodeMark, logic/hero-carousel.ts).
 
 import { StyleSheet, Text, View } from "react-native";
 
@@ -18,7 +19,14 @@ const LABELS: Record<HeroEpisodeMark, string> = {
 
 const DOT_SIZE = 6;
 
-export function EpisodeMarkChip({ mark }: { mark: HeroEpisodeMark }) {
+export function EpisodeMarkChip({
+  mark,
+  // Only the dev Images screen overrides it, to compare candidates.
+  finaleColor = t.episodeFinale,
+}: {
+  mark: HeroEpisodeMark;
+  finaleColor?: string;
+}) {
   return (
     <View
       style={styles.chip}
@@ -26,7 +34,12 @@ export function EpisodeMarkChip({ mark }: { mark: HeroEpisodeMark }) {
       accessibilityLabel={LABELS[mark]}
       testID="hero-episode-mark"
     >
-      <View style={styles.dot} />
+      <View
+        style={[
+          styles.dot,
+          { backgroundColor: mark === "premiere" ? t.accent : finaleColor },
+        ]}
+      />
       <Text style={styles.label}>{LABELS[mark]}</Text>
     </View>
   );
@@ -49,7 +62,6 @@ const styles = StyleSheet.create({
     width: DOT_SIZE,
     height: DOT_SIZE,
     borderRadius: DOT_SIZE / 2,
-    backgroundColor: t.accent,
   },
   // Smaller than the episode text, as fits a chip; Medium, since regular
   // reads thin that small.

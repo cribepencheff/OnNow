@@ -405,12 +405,20 @@ function Stepper({
   );
 }
 
+// Finale dot candidates, the first being the episode-finale token (what
+// the real hero shows); a Premiere's dot is accent, shown for comparison.
+const FINALE_CANDIDATES: { label: string; color: string }[] = [
+  { label: "Orange (token)", color: t.episodeFinale },
+  { label: "Amber", color: "#ffb340" },
+  { label: "Coral", color: "#ff7a45" },
+];
+
 // The hero's fade into bg, as in HeroPager, under the samples.
 const SAMPLE_FADE =
   "linear-gradient(to bottom, rgba(11,12,15,0.22) 0%, rgba(11,12,15,0.8) 60%, rgba(11,12,15,1) 100%)";
 
 // The Premiere/Finale chip on a real backdrop with the hero's fade over
-// it, where the chip sits, to judge its look.
+// it, where the chip sits, to pick the finale colour.
 function EpisodeMarkSamples({
   show,
   todayDate,
@@ -424,7 +432,7 @@ function EpisodeMarkSamples({
   return (
     <View style={styles.forcedSection}>
       <Text style={styles.meta}>
-        Premiere / Finale chip (on the hero&apos;s fade):
+        Premiere / Finale chip, finale dot candidates (on the hero&apos;s fade):
       </Text>
       <View style={[styles.markSamples, { width: width - 32 }]}>
         {backdrop && (
@@ -444,10 +452,12 @@ function EpisodeMarkSamples({
           <Text style={styles.markSampleText}>S1E1 · Episode</Text>
           <EpisodeMarkChip mark="premiere" />
         </View>
-        <View style={styles.markSampleRow}>
-          <Text style={styles.markSampleText}>S1E10 · Episode</Text>
-          <EpisodeMarkChip mark="finale" />
-        </View>
+        {FINALE_CANDIDATES.map(({ label, color }) => (
+          <View key={label} style={styles.markSampleRow}>
+            <Text style={styles.markSampleText}>S1E10 · {label}</Text>
+            <EpisodeMarkChip mark="finale" finaleColor={color} />
+          </View>
+        ))}
       </View>
     </View>
   );
