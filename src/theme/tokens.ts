@@ -59,13 +59,12 @@ export const t = {
   tabBarGap: 6,
   // The gap under the bar, above the bottom of the screen.
   tabBarBottomGap: 20,
-  // A pressed tab's icon shrinks to this and springs back on release: the
-  // bar's only size change.
-  tabBarPressScale: 0.86,
-  // The spring of the sliding pill and of the press.
+  // Touching the bar lifts it a little, the bar's only size change.
+  tabBarLiftScale: 1.04,
+  // The tab under the finger grows to this while scrubbing or pressed.
+  tabBarHoverScale: 1.15,
+  // The spring of the sliding pill, the lift and the hover scale.
   tabBarSpring: { damping: 18, stiffness: 220, mass: 0.8 },
-  // The haptic on a tab change: expo-haptics' ImpactFeedbackStyle.Light.
-  tabBarHaptic: "light",
 } as const;
 
 // Trial (CRI-124): button labels in Manrope ExtraBold, loaded in

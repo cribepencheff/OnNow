@@ -1,5 +1,4 @@
 import { StyleSheet } from "react-native";
-import * as Haptics from "expo-haptics";
 import {
   fireEvent,
   renderRouter,
@@ -9,6 +8,18 @@ import {
 
 import { takeSearchFocusRequest } from "@/hooks/search-focus";
 import { t } from "@/theme/tokens";
+
+// Stands in for a screen reader's double tap: the bar's single scrub
+// gesture (FloatingTabBar.tsx) cannot itself be driven from a plain tap in
+// tests, so this exercises the same commit through the tab's "activate"
+// accessibility action instead. The gesture's own hover tracking, haptics
+// and cancel-on-exit need a real touch, tested by hand in Expo Go and by
+// the Maestro flow.
+function activate(testId: string) {
+  return fireEvent(screen.getByTestId(testId), "accessibilityAction", {
+    nativeEvent: { actionName: "activate" },
+  });
+}
 
 // CRI-133: the floating tab bar, in the real navigation tree (root Stack
 // wrapping the Tabs navigator), as in shows-navigation.test.tsx.
@@ -58,26 +69,22 @@ describe("Floating tab bar (real navigation)", () => {
     expect(t.tabBarTabWidth).toBeGreaterThan(t.tabBarTabHeight);
   });
 
-  it("gives a light haptic on a tab change, not on a tap on the active tab", async () => {
-    const haptic = jest.spyOn(Haptics, "impactAsync");
+  it("stays put when the already active tab is activated again, switches otherwise", async () => {
     const rendered = renderRouter("src/app", { initialUrl: "/calendar" });
     await rendered;
 
-    await fireEvent.press(screen.getByTestId("tab-calendar"));
-    expect(haptic).not.toHaveBeenCalled();
+    await activate("tab-calendar");
+    expect(rendered.getPathname()).toBe("/calendar");
 
-    await fireEvent.press(screen.getByTestId("tab-shows"));
-    expect(haptic).toHaveBeenCalledTimes(1);
-    expect(haptic).toHaveBeenCalledWith(Haptics.ImpactFeedbackStyle.Light);
-
-    haptic.mockRestore();
+    await activate("tab-shows");
+    expect(rendered.getPathname()).toBe("/shows");
   });
 
   it("opens the Search screen directly from its tab, in typing mode", async () => {
     const rendered = renderRouter("src/app", { initialUrl: "/calendar" });
     await rendered;
 
-    await fireEvent.press(screen.getByTestId("tab-search"));
+    await activate("tab-search");
 
     expect(rendered.getPathname()).toBe("/search");
     await waitFor(() =>
