@@ -23,7 +23,7 @@ import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import type { PosterItem } from "@/logic/top-picks";
 import { POSTER_CARD_WIDTH } from "@/logic/poster-snap";
 import { t, type } from "@/theme/tokens";
-import { followSymbol } from "./followSymbols";
+import { FOLLOW_CHECK_SYMBOL, FOLLOW_PLUS_SYMBOL } from "./followSymbols";
 import { PosterDimOverlay } from "./PosterDim";
 
 // About 150 wide: two full cards and a peek of the third (CRI-127).
@@ -113,8 +113,13 @@ export function ShowCard({
 
 // The follow circle on a poster (CRI-127), Apple TV style: a translucent
 // dark fill, no blur, a light hairline edge, the same followed or not; a
-// white plus, or a white check once followed. (Search results and Shows
-// keep their own FollowCircle.)
+// white plus, or a white check once followed, morphing between the two
+// (crossfade + scale) rather than swapping instantly: a prototype, Home's
+// poster rows only for now, not yet the other follow circles (Search,
+// Shows, Show detail's own FollowCircle). expo-symbols has no native SF
+// Symbol "replace" transition exposed (checked before building this), so
+// this fakes the morph with two overlaid SymbolViews instead, the same
+// crossfade technique PosterRow's own skeleton-to-cards transition uses.
 function PosterFollowCircle({
   followed,
   onPress,
@@ -124,6 +129,40 @@ function PosterFollowCircle({
   onPress: () => void;
   testID: string;
 }) {
+  const { reduceMotionEnabled } = useAccessibilityFlags();
+  // 0 = plus shown, 1 = check shown; everything below is derived from
+  // this one value, so the two icons can never fall out of sync with
+  // each other mid-morph.
+  const [progress] = useState(() => new Animated.Value(followed ? 1 : 0));
+  useEffect(() => {
+    if (reduceMotionEnabled) {
+      progress.setValue(followed ? 1 : 0);
+      return;
+    }
+    const morph = Animated.spring(progress, {
+      toValue: followed ? 1 : 0,
+      useNativeDriver: true,
+      damping: 14,
+      stiffness: 260,
+      mass: 0.6,
+    });
+    morph.start();
+    return () => morph.stop();
+  }, [followed, reduceMotionEnabled, progress]);
+  const plusOpacity = progress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 0],
+  });
+  const plusScale = progress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 0.5],
+  });
+  const checkOpacity = progress;
+  const checkScale = progress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.5, 1],
+  });
+
   const handlePress = useCallback(() => {
     if (!followed) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -142,11 +181,26 @@ function PosterFollowCircle({
       testID={testID}
     >
       <View style={styles.circle}>
-        <SymbolView
-          name={followSymbol(followed)}
-          tintColor="#FFFFFF"
-          size={15}
-        />
+        <Animated.View
+          style={[
+            styles.circleIcon,
+            { opacity: plusOpacity, transform: [{ scale: plusScale }] },
+          ]}
+        >
+          <SymbolView name={FOLLOW_PLUS_SYMBOL} tintColor="#FFFFFF" size={15} />
+        </Animated.View>
+        <Animated.View
+          style={[
+            styles.circleIcon,
+            { opacity: checkOpacity, transform: [{ scale: checkScale }] },
+          ]}
+        >
+          <SymbolView
+            name={FOLLOW_CHECK_SYMBOL}
+            tintColor="#FFFFFF"
+            size={15}
+          />
+        </Animated.View>
       </View>
     </Pressable>
   );
@@ -289,6 +343,17 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: t.imageControlEdge,
     backgroundColor: t.imageControlBackdrop,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  // Both follow-circle icons stack here, absolutely, so their crossfade
+  // overlaps instead of the incoming one pushing the outgoing one aside.
+  circleIcon: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     alignItems: "center",
     justifyContent: "center",
   },
