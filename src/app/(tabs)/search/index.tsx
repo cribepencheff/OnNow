@@ -1,12 +1,10 @@
-// Search sheet (PRD 5.4, FR-001, FR-007, FR-026): a sheet over the current view
-// with the keyboard open on entry, results while typing, and a round close
-// button next to the search field that returns to where the user came
-// from. It sits at the top so the keyboard never covers it (CRI-77).
-// Following is saved immediately; there is no "Cancel". A search waits for
-// a short pause in typing, and a clear button (X) inside the field empties
-// it, the same on iOS and Android (PRD 5.4).
+// Search (PRD 5.4, FR-001, FR-007, FR-026): a tab of its own (CRI-133),
+// with the keyboard open on entry (search-focus.ts) and results while
+// typing. Following is saved immediately; there is no "Cancel". A search
+// waits for a short pause in typing, and a clear button (X) inside the
+// field empties it, the same on iOS and Android (PRD 5.4).
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   FlatList,
   Pressable,
@@ -16,22 +14,27 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { SymbolView } from "expo-symbols";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useNavigation } from "expo-router";
 
 import { AiringThisWeekRow } from "@/components/AiringThisWeekRow";
-import { CloseButton } from "@/components/CloseButton";
 import { SearchResultRow } from "@/components/SearchResultRow";
 import { TopPicksRow } from "@/components/TopPicksRow";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useGuardedRouter } from "@/hooks/useGuardedRouter";
+import {
+  subscribeSearchFocus,
+  takeSearchFocusRequest,
+} from "@/hooks/search-focus";
 import { useSearchShows } from "@/hooks/useSearchShows";
 import { SettledDayContext, useSettledDay } from "@/hooks/useSettledDay";
 import {
   SettledFollowedContext,
   useSettledFollowed,
 } from "@/hooks/useSettledFollowed";
+import { TAB_BAR_HEIGHT } from "@/logic/tab-bar";
 import { t, type } from "@/theme/tokens";
 
 // The pause in typing before a search is sent (PRD 5.4).
@@ -39,14 +42,48 @@ const SEARCH_DELAY_MS = 250;
 
 export default function SearchScreen() {
   const router = useGuardedRouter();
+  const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
+  const inputRef = useRef<TextInput>(null);
   // Shows followed before Search opened are left out of its rows; one
-  // followed here stays, marked, while Search is open (CRI-131).
-  const { hidden: settledFollowed } = useSettledFollowed();
+  // followed here stays, marked, while Search is open (CRI-131). Search
+  // stays mounted as a tab, so it settles them again each time it opens.
+  const { hidden: settledFollowed, settle: settleFollowed } =
+    useSettledFollowed();
   // The day Top picks is ordered by, settled when Search opens or regains
   // focus, never while the user is on the row (CRI-131).
   const { day: settledDay, settle: settleDay } = useSettledDay();
   useFocusEffect(settleDay);
   const [query, setQuery] = useState("");
+
+  // Typing mode on entry (CRI-133): a request taken as Search gains focus
+  // opens it, and one made while Search is already on screen (a tap on its
+  // tab) focuses the field at once. Leaving Search closes the keyboard.
+  useEffect(() => {
+    const focusField = () => inputRef.current?.focus();
+    const offFocus = navigation.addListener("focus", () => {
+      if (takeSearchFocusRequest()) {
+        settleFollowed();
+        focusField();
+      }
+    });
+    const offBlur = navigation.addListener("blur", () =>
+      inputRef.current?.blur(),
+    );
+    const unsubscribe = subscribeSearchFocus(() => {
+      if (navigation.isFocused() && takeSearchFocusRequest()) {
+        focusField();
+      }
+    });
+    // The first visit opens with the field focused (autoFocus below), so a
+    // request made on the way here is used up.
+    takeSearchFocusRequest();
+    return () => {
+      offFocus();
+      offBlur();
+      unsubscribe();
+    };
+  }, [navigation, settleFollowed]);
 
   const searchedQuery = useDebouncedValue(query, SEARCH_DELAY_MS);
   const { data: results, isFetching } = useSearchShows(searchedQuery);
@@ -54,7 +91,7 @@ export default function SearchScreen() {
   const answered = !isFetching && searchedQuery.trim() === query.trim();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top + t.space4 }]}>
       <View style={styles.header} testID="search-header">
         <View style={styles.searchField}>
           <SymbolView
@@ -63,6 +100,7 @@ export default function SearchScreen() {
             size={16}
           />
           <TextInput
+            ref={inputRef}
             autoFocus
             value={query}
             onChangeText={setQuery}
@@ -101,7 +139,6 @@ export default function SearchScreen() {
             </Pressable>
           )}
         </View>
-        <CloseButton onPress={() => router.back()} testID="search-close" />
       </View>
 
       {query.trim().length === 0 ? (
@@ -118,8 +155,8 @@ export default function SearchScreen() {
           renderItem={({ item }) => (
             <SearchResultRow
               show={item.show}
-              // Show detail opens inside the sheet, with a back arrow to
-              // these results (PRD 5.6, CRI-79).
+              // Show detail opens inside Search, with a back arrow to these
+              // results (PRD 5.6, CRI-79).
               onPress={() =>
                 router.push({
                   pathname: "/search/show/[id]",
@@ -150,7 +187,7 @@ export default function SearchScreen() {
 // same components and data. "Top picks for you" only with followed shows,
 // as on Home; the cards it has loaded are shared with Home's row
 // (CRI-131). A card opens Show
-// detail inside the sheet (PRD 5.6).
+// detail inside Search (PRD 5.6).
 function BeforeTyping() {
   const { followedShows, followedCount } = useFollowedEpisodes();
   const followedShowList = useMemo(
@@ -183,12 +220,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: t.bg,
-    paddingTop: t.space4,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
-    gap: t.space2 + 4,
     marginHorizontal: t.contentInset,
     marginBottom: t.space2 + 4,
   },
@@ -208,8 +243,9 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     color: t.ink,
   },
+  // The lists end above the tab bar.
   resultsContent: {
-    paddingBottom: t.space10,
+    paddingBottom: TAB_BAR_HEIGHT + t.space4,
   },
   noResults: {
     ...type.body,

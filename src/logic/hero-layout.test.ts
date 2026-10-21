@@ -2,7 +2,7 @@
 
 import { HEADER_BAR_HEIGHT } from "./header";
 import {
-  HERO_END_ABOVE_TAB_BAR,
+  HERO_END_FROM_BOTTOM,
   TOP_SCRIM_ALPHA,
   TOP_SCRIM_FADE,
   TOP_SCRIM_FADE_LIFT,
@@ -20,10 +20,12 @@ import {
 describe("heroLayout (CRI-124)", () => {
   it("ends the hero well above the tab bar, so the first row's heading and posters peek in", () => {
     const { heroHeight } = heroLayout(844, 47);
-    expect(heroHeight).toBe(844 - TAB_BAR_HEIGHT - HERO_END_ABOVE_TAB_BAR);
-    // A row's heading (24 above, 25 tall) and its gap leave room for the
-    // top of the posters.
-    expect(HERO_END_ABOVE_TAB_BAR - 24 - 25 - 8).toBeGreaterThan(30);
+    expect(heroHeight).toBe(844 - HERO_END_FROM_BOTTOM);
+    // Between the hero's end and the tab bar, a row's heading (24 above,
+    // 25 tall) and its gap leave room for the top of the posters.
+    expect(HERO_END_FROM_BOTTOM - TAB_BAR_HEIGHT - 24 - 25 - 8).toBeGreaterThan(
+      30,
+    );
   });
 
   // The owner's sketch on a 390 × 844 screen, read for proportions: the

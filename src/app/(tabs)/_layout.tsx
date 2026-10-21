@@ -1,57 +1,33 @@
-import { Pressable, type GestureResponderEvent } from "react-native";
-import { SymbolView } from "expo-symbols";
+import { useRef } from "react";
 import { Tabs } from "expo-router";
 
+import {
+  CalendarIcon,
+  HomeIcon,
+  MyShowsIcon,
+  SearchIcon,
+} from "@/components/TabBar/TabIcons";
+import { FloatingTabBar } from "@/components/TabBar/FloatingTabBar";
+import { requestSearchFocus } from "@/hooks/search-focus";
 import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import { t } from "@/theme/tokens";
 
-// The hidden image review screen is reached by a long press on the Shows
-// tab, development builds only. Typed loosely rather than importing
-// expo-router's internal BottomTabBarButtonProps, which is not part of
-// its public exports.
-function ShowsTabButton(props: {
-  children?: React.ReactNode;
-  onPress?: (event: GestureResponderEvent) => void;
-  [key: string]: unknown;
-}) {
-  const router = useGuardedRouter();
-  return (
-    <Pressable
-      {...props}
-      onLongPress={__DEV__ ? () => router.push("/dev/images") : undefined}
-    />
-  );
-}
+// The floating tab bar (CRI-133): four icon-only tabs, Home, Calendar, My
+// shows and Search. Each title is the tab's accessibility label.
+// Two presses on My shows this close together count as a double tap.
+const DOUBLE_TAP_MS = 300;
 
 export default function TabLayout() {
+  const router = useGuardedRouter();
+  const lastShowsPress = useRef(0);
   return (
-    <Tabs
-      // The translucent tab bar: surface at 72% with a hairline top edge;
-      // active ink, others ink-subtle. No background blur (expo-blur is
-      // not installed).
-      screenOptions={{
-        tabBarStyle: {
-          position: "absolute",
-          height: 83,
-          backgroundColor: "rgba(22,24,29,0.72)",
-          borderTopColor: "#2c2f37",
-        },
-        tabBarActiveTintColor: "#f4f4f6",
-        tabBarInactiveTintColor: "#8b8e97",
-      }}
-    >
+    <Tabs tabBar={(props) => <FloatingTabBar {...props} />}>
       <Tabs.Screen
         name="index"
         options={{
           title: "Home",
           tabBarButtonTestID: "tab-home",
-          tabBarIcon: ({ color, size }) => (
-            <SymbolView
-              name={{ ios: "house", android: "home", web: "home" }}
-              tintColor={color}
-              size={size}
-            />
-          ),
+          tabBarIcon: ({ focused }) => <HomeIcon active={focused} />,
           // No native header: the hero backdrop fills the screen.
           headerShown: false,
         }}
@@ -61,13 +37,7 @@ export default function TabLayout() {
         options={{
           title: "Calendar",
           tabBarButtonTestID: "tab-calendar",
-          tabBarIcon: ({ color, size }) => (
-            <SymbolView
-              name={{ ios: "calendar", android: "event", web: "event" }}
-              tintColor={color}
-              size={size}
-            />
-          ),
+          tabBarIcon: ({ focused }) => <CalendarIcon active={focused} />,
           // The header on bg, like the screen under it (as in Shows).
           headerStyle: { backgroundColor: t.bg },
           headerTitleStyle: { color: t.ink },
@@ -77,22 +47,39 @@ export default function TabLayout() {
       <Tabs.Screen
         name="shows"
         options={{
-          title: "Shows",
+          title: "My shows",
+          // The screen's own header keeps its name.
+          headerTitle: "Shows",
           tabBarButtonTestID: "tab-shows",
-          tabBarIcon: ({ color, size }) => (
-            <SymbolView
-              name={{ ios: "tv", android: "tv", web: "tv" }}
-              tintColor={color}
-              size={size}
-            />
-          ),
-          // Long press opens the hidden image review screen.
-          tabBarButton: ShowsTabButton,
+          tabBarIcon: ({ focused }) => <MyShowsIcon active={focused} />,
           // The header on bg, like the screen under it.
           headerStyle: { backgroundColor: t.bg },
           headerTitleStyle: { color: t.ink },
           headerShadowVisible: false,
         }}
+        // The hidden image review screen is reached by a double tap on
+        // this tab, development builds only.
+        listeners={{
+          tabPress: () => {
+            const now = Date.now();
+            if (__DEV__ && now - lastShowsPress.current < DOUBLE_TAP_MS) {
+              router.push("/dev/images");
+            }
+            lastShowsPress.current = now;
+          },
+        }}
+      />
+      <Tabs.Screen
+        name="search"
+        options={{
+          title: "Search",
+          tabBarButtonTestID: "tab-search",
+          tabBarIcon: ({ focused }) => <SearchIcon active={focused} />,
+          // Search's own stack draws its screens (search/_layout.tsx).
+          headerShown: false,
+        }}
+        // A tap on the tab opens Search in typing mode (search-focus.ts).
+        listeners={{ tabPress: requestSearchFocus }}
       />
     </Tabs>
   );

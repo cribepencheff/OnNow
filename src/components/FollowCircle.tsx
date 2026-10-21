@@ -9,6 +9,7 @@ import * as Haptics from "expo-haptics";
 import { SymbolView } from "expo-symbols";
 
 import { accent } from "@/theme/color";
+import { followSymbol } from "./followSymbols";
 
 interface FollowCircleProps {
   followed: boolean;
@@ -42,11 +43,7 @@ export function FollowCircle({ followed, onPress, testID }: FollowCircleProps) {
         ]}
       >
         <SymbolView
-          name={{
-            ios: followed ? "checkmark" : "plus",
-            android: followed ? "check" : "add",
-            web: followed ? "check" : "add",
-          }}
+          name={followSymbol(followed)}
           tintColor={followed ? "#FFFFFF" : accent}
           size={16}
           style={followed ? undefined : styles.plusIcon}

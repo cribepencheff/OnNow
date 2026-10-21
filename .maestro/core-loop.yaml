@@ -81,11 +81,12 @@ appId: host.exp.Exponent
     id: "follow-${output.show.id}"
     text: "Followed"
 
-# 5. FR-004, FR-006, FR-007: the close button returns to Home, where the
-# show is today's card or the next day's card. The keyboard is still open
-# here, which proves the close button stays reachable (CRI-77).
+# 5. FR-004, FR-006, FR-007: the Home tab returns to Home (Search is a tab,
+# CRI-133), where the show is today's card or the next day's card. The
+# keyboard covers the tab bar, so close it first.
+- hideKeyboard
 - tapOn:
-    id: "search-close"
+    id: "tab-home"
 - extendedWaitUntil:
     visible:
       id: "home-card"

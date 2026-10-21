@@ -34,6 +34,35 @@ export const t = {
   radiusSm: 10,
   radiusLg: 22,
   radiusPill: 999,
+  // The floating tab bar (CRI-133), Instagram style: a frosted pill of
+  // icon-only tabs, neutral white and grey, no accent.
+  // Its fill, over the background blur: #2a2a2e at 50%.
+  tabBarBackground: "rgba(42, 42, 46, 0.5)",
+  // The background blur on expo-blur's scale: 90 is blur(18px) on the web,
+  // where expo-blur turns intensity into a CSS blur of intensity × 0.2.
+  tabBarBlur: 90,
+  // Its hairline edge, drawn 0.5 wide.
+  tabBarEdge: "rgba(255, 255, 255, 0.14)",
+  tabBarEdgeWidth: 0.5,
+  // The wide light-grey pill behind the active tab's icon. It slides from
+  // tab to tab on tabBarSpring.
+  tabBarActivePill: "rgba(255, 255, 255, 0.16)",
+  // The icons: drawn on a 24 viewBox with this stroke, shown this size.
+  tabBarIconStroke: 2,
+  tabBarIconSize: 30,
+  // Every tab's slot, active or not: the active pill fills it, so it is
+  // wider than tall. Active and inactive tabs are the same size.
+  tabBarTabWidth: 74,
+  tabBarTabHeight: 52,
+  // Space inside the bar, and between its tabs.
+  tabBarPadding: 3.5,
+  tabBarGap: 6,
+  // The gap under the bar, above the bottom of the screen.
+  tabBarBottomGap: 20,
+  // Touching the bar lifts it a little, the bar's only size change.
+  tabBarLiftScale: 1.04,
+  // The spring of the sliding pill and the lift.
+  tabBarSpring: { damping: 18, stiffness: 220, mass: 0.8 },
 } as const;
 
 // Trial (CRI-124): button labels in Manrope ExtraBold, loaded in
