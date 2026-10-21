@@ -765,16 +765,18 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     minWidth: 0,
   },
-  // "S2E4 · ": never cut.
+  // "S2E4 · ": never cut. White, not muted (owner, CRI-132): more weight
+  // against the backdrop; the IMDb chip next to it keeps its own colour.
   episodeCode: {
     ...type.meta,
-    color: t.inkMuted,
+    color: t.ink,
     flexShrink: 0,
   },
-  // The episode title: cut first, with an ellipsis.
+  // The episode title: cut first, with an ellipsis. White, not muted, as
+  // episodeCode above.
   episodeTitle: {
     ...type.meta,
-    color: t.inkMuted,
+    color: t.ink,
     flexShrink: 1,
   },
   // The IMDb chip: never cut.
