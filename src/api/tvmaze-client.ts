@@ -10,7 +10,11 @@ export interface TvMazeWeekInfo {
 const BASE_URL = "https://api.tvmaze.com";
 
 // TVmaze allows at least 20 requests per 10 seconds per IP (spike 0001,
-// section 8). Stay under that with margin.
+// section 8), and this is that floor exactly, not under it. Revisited in
+// CRI-107 and kept: going past it risks 429s, and a 429 costs more than the
+// wait (the retry below backs off 1, 2 and 4 seconds). The queue is
+// shortened by asking less instead (an ended show about weekly,
+// showStaleTime).
 const RATE_LIMIT_MAX_REQUESTS = 20;
 const RATE_LIMIT_WINDOW_MS = 10_000;
 

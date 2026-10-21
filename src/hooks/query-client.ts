@@ -8,8 +8,11 @@ import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persi
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // TVmaze's own cache is one hour (NFR-005, spike 0001), so data is never
-// refetched more often than that.
-export const SHOW_STALE_TIME_MS = 60 * 60 * 1000;
+// refetched more often than that; an ended show only about weekly
+// (showStaleTime, logic/show-staleness.ts, CRI-107).
+import { SHOW_STALE_TIME_MS } from "@/logic/show-staleness";
+
+export { SHOW_STALE_TIME_MS };
 
 // Cached data can be shown for a long time while offline; a stale query
 // still refetches in the background once online and stale.

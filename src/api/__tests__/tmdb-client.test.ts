@@ -387,3 +387,73 @@ describe("TmdbClient.providersById (FR-038, FR-039)", () => {
     expect(fetchFn.mock.calls[0][0]).toContain("/3/tv/273207/watch/providers");
   });
 });
+
+// CRI-107: every TMDB lookup for a show (services, origin countries,
+// external IDs, recommendations, images) starts from the same /find, so
+// the client takes a cache for it, and one lookup serves them all.
+describe("TmdbClient find cache (CRI-107)", () => {
+  function mapCache() {
+    const found = new Map<string, Promise<unknown>>();
+    return jest.fn((show: { name: string }, find: () => Promise<unknown>) => {
+      if (!found.has(show.name)) {
+        found.set(show.name, find());
+      }
+      return found.get(show.name)!;
+    });
+  }
+
+  it("asks the cache for the find step, and makes one /find for several lookups of a show", async () => {
+    const fetchFn = jest.fn(async (url: string) =>
+      jsonResponse(url.includes("/find/") ? findNeagley : providersNeagley),
+    );
+    const cachedFind = mapCache();
+    const client = createTmdbClient({
+      apiKey: V3_KEY,
+      fetchFn: fetchFn as never,
+      wait: noWait,
+      cachedFind: cachedFind as never,
+    });
+
+    await client.findStreamingProviders(NEAGLEY_EXTERNALS, "SE");
+    await client.findOriginCountries(NEAGLEY_EXTERNALS);
+
+    expect(cachedFind).toHaveBeenCalledTimes(2);
+    const finds = fetchFn.mock.calls.filter(([url]) => url.includes("/find/"));
+    expect(finds).toHaveLength(1);
+  });
+});
+
+// CRI-107: the hero's images come through the same client (and its find
+// step) instead of a helper of their own.
+describe("TmdbClient.findImages", () => {
+  it("finds the show, then its English and textless images", async () => {
+    const images = { backdrops: [], logos: [] };
+    const fetchFn = jest
+      .fn()
+      .mockResolvedValueOnce(jsonResponse(findNeagley))
+      .mockResolvedValueOnce(jsonResponse(images));
+    const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
+
+    await expect(client.findImages(NEAGLEY_EXTERNALS)).resolves.toEqual({
+      tvId: 273207,
+      images,
+    });
+    expect(fetchFn.mock.calls[1][0]).toContain(
+      "/3/tv/273207/images?include_image_language=en,null,xx",
+    );
+  });
+
+  it("is NOT_ON_TMDB for an unknown show, null without a key", async () => {
+    const fetchFn = jest.fn().mockResolvedValue(jsonResponse({}));
+    const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
+    await expect(client.findImages(NEAGLEY_EXTERNALS)).resolves.toBe(
+      NOT_ON_TMDB,
+    );
+    const noKey = createTmdbClient({
+      apiKey: undefined,
+      fetchFn,
+      wait: noWait,
+    });
+    await expect(noKey.findImages(NEAGLEY_EXTERNALS)).resolves.toBeNull();
+  });
+});

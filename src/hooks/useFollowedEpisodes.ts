@@ -3,7 +3,12 @@
 // list from its own storage, then queries each followed show.
 
 import { useMemo } from "react";
-import { useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useQueries,
+  useQuery,
+  useQueryClient,
+  type UseQueryResult,
+} from "@tanstack/react-query";
 
 import { tvMazeClient } from "@/api/tvmaze-client";
 import { getFollowedIds } from "@/storage/follow-list";
@@ -15,7 +20,7 @@ import { findNextDayWithEpisodes, type NextDayEpisodes } from "@/logic/home";
 import { homeIsReady } from "@/logic/launch";
 import { nextForShow, type NextForShow } from "@/logic/next-episode";
 import type { TvMazeEpisode, TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
-import { SHOW_STALE_TIME_MS } from "./query-client";
+import { showStaleTime } from "@/logic/show-staleness";
 import { showQueryKey } from "./useShow";
 import { useToday } from "./useToday";
 
@@ -44,6 +49,28 @@ export interface FollowedEpisodesResult {
   refetch: () => Promise<void>;
 }
 
+// What the hook needs from the followed shows' queries, as one value.
+// Module-level, so its identity never changes: TanStack then keeps the
+// combined value itself while it stays deep-equal (replaceEqualDeep), so
+// loadedShows, and everything derived from it below and on Home, keeps
+// its identity across renders instead of being rebuilt on every one, as
+// it was when derived from useQueries' own result array, which is new on
+// every render (CRI-137).
+function combineShowQueries(results: UseQueryResult<TvMazeShowWithEmbeds>[]) {
+  const timestamps = results
+    .map((query) => query.dataUpdatedAt)
+    .filter((timestamp): timestamp is number => Boolean(timestamp));
+  return {
+    loadedShows: results
+      .map((query) => query.data)
+      .filter((show): show is TvMazeShowWithEmbeds => Boolean(show)),
+    dataUpdatedAt: timestamps.length === 0 ? null : Math.min(...timestamps),
+    anyLoading: results.some((query) => query.isLoading),
+    anyRefetching: results.some((query) => query.isRefetching),
+    anyError: results.some((query) => query.isError),
+  };
+}
+
 function deviceTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
 }
@@ -60,39 +87,20 @@ export function useFollowedEpisodes(): FollowedEpisodesResult {
 
   const followedIds = followedIdsQuery.data ?? [];
 
-  const showQueries = useQueries({
+  const shows = useQueries({
     queries: followedIds.map((showId) => ({
       queryKey: showQueryKey(showId),
       queryFn: () => tvMazeClient.getShowWithEpisodesAndSeasons(showId),
-      staleTime: SHOW_STALE_TIME_MS,
+      // An hour, or about a week for an ended show (CRI-107).
+      staleTime: (query: { state: { data?: { status?: string } } }) =>
+        showStaleTime(query.state.data),
     })),
+    combine: combineShowQueries,
   });
+  const { loadedShows, dataUpdatedAt } = shows;
 
-  const isLoading =
-    followedIdsQuery.isLoading || showQueries.some((query) => query.isLoading);
-  const isRefetching =
-    followedIdsQuery.isRefetching ||
-    showQueries.some((query) => query.isRefetching);
-
-  const dataUpdatedAt = useMemo(() => {
-    const timestamps = showQueries
-      .map((query) => query.dataUpdatedAt)
-      .filter((timestamp): timestamp is number => Boolean(timestamp));
-
-    if (timestamps.length === 0) {
-      return null;
-    }
-
-    return Math.min(...timestamps);
-  }, [showQueries]);
-
-  const loadedShows = useMemo(
-    () =>
-      showQueries
-        .map((query) => query.data)
-        .filter((show): show is NonNullable<typeof show> => Boolean(show)),
-    [showQueries],
-  );
+  const isLoading = followedIdsQuery.isLoading || shows.anyLoading;
+  const isRefetching = followedIdsQuery.isRefetching || shows.anyRefetching;
 
   const followedShows = useMemo(
     () =>
@@ -108,9 +116,7 @@ export function useFollowedEpisodes(): FollowedEpisodesResult {
   // failed background refetch with prior data is not an error state; the
   // prior data in `loadedShows` is shown instead.
   const isError =
-    loadedShows.length === 0 &&
-    followedIds.length > 0 &&
-    showQueries.some((query) => query.isError);
+    loadedShows.length === 0 && followedIds.length > 0 && shows.anyError;
 
   const showsWithEpisodeToday = useMemo(
     () => findShowsWithEpisodeToday(followedShows, timeZone, todayDate),
@@ -144,9 +150,10 @@ export function useFollowedEpisodes(): FollowedEpisodesResult {
     [loadedShows, showsWithEpisodeTodayIds, timeZone, todayDate],
   );
 
-  // CRI-85: a pull refetches only shows older than SHOW_STALE_TIME_MS,
-  // judged now rather than at the last render; a pull right after another
-  // has nothing to fetch. The follow list is local, so it is always reread.
+  // CRI-85: a pull refetches only shows that are stale by now (an hour, or
+  // about a week for an ended show: showStaleTime), judged now rather than
+  // at the last render; a pull right after another has nothing to fetch.
+  // The follow list is local, so it is always reread.
   async function refetch(): Promise<void> {
     const { data: ids = [] } = await followedIdsQuery.refetch();
     await Promise.all(
@@ -154,7 +161,10 @@ export function useFollowedEpisodes(): FollowedEpisodesResult {
         const query = queryClient
           .getQueryCache()
           .find({ queryKey: showQueryKey(showId), exact: true });
-        return !query || query.isStaleByTime(SHOW_STALE_TIME_MS)
+        return !query ||
+          query.isStaleByTime(
+            showStaleTime(query.state.data as { status?: string } | undefined),
+          )
           ? queryClient.refetchQueries({
               queryKey: showQueryKey(showId),
               exact: true,
@@ -168,7 +178,7 @@ export function useFollowedEpisodes(): FollowedEpisodesResult {
     followedIdsKnown: followedIdsQuery.isSuccess,
     followedCount: followedIds.length,
     loadedCount: loadedShows.length,
-    anyShowLoading: showQueries.some((query) => query.isLoading),
+    anyShowLoading: shows.anyLoading,
   });
 
   return {
