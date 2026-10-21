@@ -93,23 +93,22 @@ export function CalendarIcon({ active }: TabIconProps) {
   );
 }
 
-// A tray, corner 3 like Calendar's rather than a squircle's (a smaller
-// radius reads closer to the owner's reference image, less like a jar),
-// with the follow controls' own check in it (FOLLOW_CHECK_SYMBOL), two
-// short filled bars stacked above it, narrower on top, spaced like the
-// reference: each gap about as wide as the bar below it. Filled, the
-// check sits dark on the white fill.
+// A tray the same height and place as Calendar's rect (corner 3, not a
+// squircle's), so the two boxes line up, with the follow controls' own
+// check in it (FOLLOW_CHECK_SYMBOL), two short filled bars stacked above
+// it, narrower on top, spaced like the owner's reference image. Filled,
+// the check sits dark on the white fill.
 export function MyShowsIcon({ active }: TabIconProps) {
   return (
     <View style={styles.box}>
       <TabSvg>
-        <Rect x="7" y="1" width="10" height="1.2" rx="0.6" fill={t.ink} />
-        <Rect x="5" y="3.4" width="14" height="1.4" rx="0.7" fill={t.ink} />
+        <Rect x="7" y="0.5" width="10" height="1" rx="0.5" fill={t.ink} />
+        <Rect x="5" y="2.3" width="14" height="1.3" rx="0.65" fill={t.ink} />
         <Rect
           x="3"
-          y="6"
+          y="4.5"
           width="18"
-          height="15"
+          height="16.5"
           rx="3"
           fill={active ? t.ink : "none"}
           {...stroke}
@@ -152,9 +151,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  // The tray (6-21 of 24) sits lower than the icon's own centre: 1.5
-  // below centre, scaled to the icon's drawn size.
+  // The tray (4.5-21 of 24, Calendar's own box) sits lower than the
+  // icon's own centre: 0.75 below centre, scaled to the drawn size.
   trayCenter: {
-    transform: [{ translateY: (1.5 / 24) * t.tabBarIconSize }],
+    transform: [{ translateY: (0.75 / 24) * t.tabBarIconSize }],
   },
 });
