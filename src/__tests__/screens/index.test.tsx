@@ -275,6 +275,57 @@ describe("HomeScreen", () => {
     expect(screen.getByText("Silo")).toBeTruthy();
   });
 
+  // The hero is rebuilt (remounted) when its set of slides changes, which
+  // stalls the UI thread for a moment: so a follow while on Home shows up
+  // in the hero only on a pull, or once Home is left or returned to.
+  describe("hero slides settle, not live", () => {
+    const showA = makeShow({ id: 1, name: "Slow Horses" });
+    const showB = makeShow({ id: 2, name: "Silo" });
+    const showC = makeShow({ id: 3, name: "The Bear" });
+    const two = [
+      { show: showA, episodes: [makeEpisode()] },
+      { show: showB, episodes: [makeEpisode()] },
+    ];
+    const three = [...two, { show: showC, episodes: [makeEpisode()] }];
+
+    it("keeps the hero as it is while on Home, and takes the change once Home is left", async () => {
+      mockFollowedEpisodes({ followedShows: two });
+      const { rerender } = await render(<HomeScreen />);
+      expect(screen.getByLabelText("Show 1 of 2")).toBeTruthy();
+
+      mockFollowedEpisodes({ followedShows: three });
+      await rerender(<HomeScreen />);
+      expect(screen.getByLabelText("Show 1 of 2")).toBeTruthy();
+
+      await act(async () => mockNavListeners.blur?.forEach((l) => l()));
+      await act(async () => {
+        jest.advanceTimersByTime(500);
+      });
+      expect(screen.getByLabelText("Show 1 of 3")).toBeTruthy();
+    });
+
+    it("takes the change on a pull", async () => {
+      mockFollowedEpisodes({ followedShows: two });
+      const { rerender } = await render(<HomeScreen />);
+      mockFollowedEpisodes({ followedShows: three });
+      await rerender(<HomeScreen />);
+      expect(screen.getByLabelText("Show 1 of 2")).toBeTruthy();
+
+      await act(async () => {
+        await refreshControlProps().onRefresh?.();
+      });
+      expect(screen.getByLabelText("Show 1 of 3")).toBeTruthy();
+    });
+
+    it("shows the first slides at once, from an empty hero", async () => {
+      mockFollowedEpisodes({ followedShows: [] });
+      const { rerender } = await render(<HomeScreen />);
+      mockFollowedEpisodes({ followedShows: two });
+      await rerender(<HomeScreen />);
+      expect(screen.getByLabelText("Show 1 of 2")).toBeTruthy();
+    });
+  });
+
   // CRI-94: every slide's rows have one height whatever they hold, so the
   // pill row, title and episode line never jump between slides.
   // Home polish: the logo and the episode line centred on the hero's axis,

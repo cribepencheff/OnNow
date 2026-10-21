@@ -165,9 +165,9 @@ function PosterFollowCircle({
   // A short busy window after each tap (owner's request): a bright arc
   // runs around the circle's own edge, the circle takes no taps (so a
   // second tap cannot undo the first mid-way), and only once it ends
-  // does the icon change. Home holds the hero's rebuild until the icon
-  // has settled too (HERO_REBUILD_DELAY_MS in index.tsx), so none of
-  // this shares the UI thread with it. 0 = no arc, 1 = arc.
+  // does the icon change. Home does not rebuild its hero while the user
+  // is on Home (heroPagerSlides in index.tsx), so none of this shares the
+  // UI thread with that. 0 = no arc, 1 = arc.
   const [busy, setBusy] = useState(false);
   // The same, read at once by the tap and by the effect below: `busy`
   // itself only changes on the next render.
@@ -350,15 +350,9 @@ function PosterFollowCircle({
 }
 
 // How long the follow circle stays busy (the arc, no taps) after a tap.
-export const FOLLOW_BUSY_MS = 600;
+const FOLLOW_BUSY_MS = 600;
 // How quickly the arc fades in and out around that window.
 const BUSY_FADE_MS = 120;
-// About how long the icon's spring takes to settle once it starts, at
-// the end of the busy window.
-const ICON_MORPH_MS = 400;
-// When a tap's whole animation is over (the arc, then the new icon):
-// Home waits this long before rebuilding the hero.
-export const FOLLOW_SETTLED_MS = FOLLOW_BUSY_MS + ICON_MORPH_MS;
 // One full turn of the arc around the circle.
 const SPINNER_TURN_MS = 700;
 // The arc's stroke, a little heavier than the circle's hairline edge.

@@ -15,7 +15,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as SplashScreen from "expo-splash-screen";
-import { useFocusEffect, useScrollToTop } from "expo-router";
+import { useFocusEffect, useNavigation, useScrollToTop } from "expo-router";
 import {
   useAnimatedRef,
   useDerivedValue,
@@ -28,11 +28,10 @@ import { AiringThisWeekRow } from "@/components/AiringThisWeekRow";
 import { AppLogo } from "@/components/AppLogo";
 import { Header } from "@/components/Header";
 import { PosterDimContext } from "@/components/PosterDim";
-import { FOLLOW_SETTLED_MS } from "@/components/ShowCard";
 import { TopPicksRow } from "@/components/TopPicksRow";
 import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
-import { useHeldValue } from "@/hooks/useHeldValue";
+import { useSettledValue } from "@/hooks/useSettledValue";
 import { useOpenSearch } from "@/hooks/useOpenSearch";
 import {
   SettledFollowedContext,
@@ -64,13 +63,13 @@ const SCROLLED_DOWN_MIN = 8;
 // The app logo's height in the header.
 const APP_LOGO_HEIGHT = 20;
 
-// How long the hero holds a new set of slides before it rebuilds: until a
-// tapped poster card's follow circle has finished its busy arc and its
-// new icon has settled (heroPagerSlides below).
-const HERO_REBUILD_DELAY_MS = FOLLOW_SETTLED_MS;
+// About how long a screen transition takes (a push or pop over Home, or
+// a tab switch): the hero settles this long after Home loses or regains
+// focus, so its rebuild runs once that animation is over, not during it.
+const SCREEN_TRANSITION_MS = 400;
 
-function isFirstHeroSlides(held: HeroSlide[]): boolean {
-  return held.length === 0;
+function heroHasNoSlides(settled: HeroSlide[]): boolean {
+  return settled.length === 0;
 }
 
 function deviceTimeZone(): string {
@@ -99,6 +98,57 @@ export default function HomeScreen() {
   // stays silent, so the hero never moves. Held for the whole refetch call.
   const [refreshing, setRefreshing] = useState(false);
 
+  // The hero's 7-day horizon (see HOME_HERO_HORIZON_DAYS in
+  // logic/hero-carousel.ts). Falls back to the existing single nearest-day
+  // pager (state.kind === "next-day") only when nothing followed has an
+  // episode within the horizon at all.
+  const heroSlides = useMemo(
+    () => findHeroSlides(followedShows, deviceTimeZone(), todayDate),
+    [followedShows, todayDate],
+  );
+  // What the hero pager itself renders (its key and its slides): settled,
+  // not live. A different set of slides remounts the whole pager
+  // (heroPagerKey, below), and creating its native views (images, blurs,
+  // masks) stalls the UI thread for a moment (measured with the
+  // performance monitor: only the UI frame rate drops, and not at all
+  // with the hero kept as it is). So the hero never changes while the
+  // user is on Home: a follow or unfollow there (from "Airing this
+  // week", say) shows up in the hero on a pull, or once Home is left or
+  // returned to (owner's decision), the same way the rows keep a followed
+  // card until then (CRI-131).
+  //
+  // At once on a new day (the core promise: today's episodes), and when
+  // the hero had no slides yet (nothing on screen to keep: the first show
+  // followed). top.heroPager below (whether the hero shows at all) reads
+  // heroSlides itself, so a hero whose shows were all unfollowed goes.
+  const { value: heroPagerSlides, settle: settleHero } = useSettledValue(
+    heroSlides,
+    todayDate,
+    heroHasNoSlides,
+  );
+  // On leaving Home (a push over it, or another tab), so the rebuild runs
+  // while Home is out of sight, and on coming back, for changes made
+  // elsewhere; each a transition later, so it never runs during one.
+  const navigation = useNavigation();
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const settleLater = () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+      timer = setTimeout(settleHero, SCREEN_TRANSITION_MS);
+    };
+    const offBlur = navigation.addListener("blur", settleLater);
+    const offFocus = navigation.addListener("focus", settleLater);
+    return () => {
+      offBlur();
+      offFocus();
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+  }, [navigation, settleHero]);
+
   // The day Top picks is ordered by: a new day takes effect when Home
   // regains focus or on a pull, never while the user is on the row
   // (CRI-131).
@@ -107,14 +157,18 @@ export default function HomeScreen() {
 
   const handleRefresh = useCallback(async () => {
     settleDay();
+    // At the pull, and again with what the refetch brought: the spinner
+    // already says work is going on.
+    settleHero();
     setRefreshing(true);
     try {
       await refetch();
     } finally {
+      settleHero();
       setRefreshing(false);
       setNow(Date.now());
     }
-  }, [refetch, settleDay]);
+  }, [refetch, settleDay, settleHero]);
 
   // CRI-95: hide the splash once there is something to show.
   useEffect(() => {
@@ -138,35 +192,6 @@ export default function HomeScreen() {
     showsWithEpisodeToday,
     nextDayEpisodes,
   });
-
-  // The hero's 7-day horizon (see HOME_HERO_HORIZON_DAYS in
-  // logic/hero-carousel.ts). Falls back to the existing single nearest-day
-  // pager (state.kind === "next-day") only when nothing followed has an
-  // episode within the horizon at all.
-  const heroSlides = useMemo(
-    () => findHeroSlides(followedShows, deviceTimeZone(), todayDate),
-    [followedShows, todayDate],
-  );
-  // What the hero pager itself renders (its key and its slides), held
-  // until the tapped card's follow circle has finished: a follow or
-  // unfollow on "Airing this week" (the one row that changes heroSlides,
-  // since it excludes shows already in the hero) remounts the whole pager
-  // (heroPagerKey, below), and creating its native views (images, blurs,
-  // masks) runs on the same UI thread as the circle's own busy arc, which
-  // stalled while both ran together (owner). Lowering the hero's React
-  // priority (useDeferredValue) did not help: that only reorders the
-  // JavaScript side, not the native work. Holding it does: the hero
-  // rebuilds once the circle is done.
-  //
-  // At once, not held, when the hero had no slides (the first show
-  // followed): there is nothing on screen to keep, and holding would
-  // leave the hero's place empty. top.heroPager below (whether the hero
-  // shows at all) reads heroSlides itself, for the same reason.
-  const heroPagerSlides = useHeldValue(
-    heroSlides,
-    HERO_REBUILD_DELAY_MS,
-    isFirstHeroSlides,
-  );
 
   const followedShowList = useMemo(
     () => followedShows.map(({ show }) => show),
@@ -406,7 +431,7 @@ export default function HomeScreen() {
               {top.heroPager && (
                 <HeroPager
                   // A new set of slides starts a fresh pager (heroPagerKey),
-                  // held until the tapped card is done (heroPagerSlides).
+                  // only once settled (heroPagerSlides).
                   key={heroPagerKey(heroPagerSlides)}
                   slides={heroPagerSlides}
                   todayDate={todayDate}
