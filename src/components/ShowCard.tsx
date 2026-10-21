@@ -134,21 +134,37 @@ function PosterFollowCircle({
   // this one value, so the two icons can never fall out of sync with
   // each other mid-morph.
   const [progress] = useState(() => new Animated.Value(followed ? 1 : 0));
+  // Starts the spring toward `toFollowed`'s value. Called twice for one
+  // tap: eagerly from handlePress's own event handler (below), so the
+  // morph begins on the very same tick as the tap rather than waiting on
+  // a render round trip (setState -> re-render -> commit -> this effect),
+  // a round trip that can land a frame or more later than the other
+  // direction's when the tap also triggers heavier re-render work
+  // elsewhere (owner noticed this specifically toward plus, unfollow,
+  // which is also where Home's row-settling logic has more to do); and
+  // reactively here, as the source of truth for whenever `followed`
+  // changes from anything other than this component's own tap. Calling
+  // .start() a second time toward a toValue a running spring is already
+  // headed to is harmless, so the two triggers never fight each other.
+  const morphTo = useCallback(
+    (toFollowed: boolean) => {
+      if (reduceMotionEnabled) {
+        progress.setValue(toFollowed ? 1 : 0);
+        return;
+      }
+      Animated.spring(progress, {
+        toValue: toFollowed ? 1 : 0,
+        useNativeDriver: true,
+        damping: 14,
+        stiffness: 260,
+        mass: 0.6,
+      }).start();
+    },
+    [reduceMotionEnabled, progress],
+  );
   useEffect(() => {
-    if (reduceMotionEnabled) {
-      progress.setValue(followed ? 1 : 0);
-      return;
-    }
-    const morph = Animated.spring(progress, {
-      toValue: followed ? 1 : 0,
-      useNativeDriver: true,
-      damping: 14,
-      stiffness: 260,
-      mass: 0.6,
-    });
-    morph.start();
-    return () => morph.stop();
-  }, [followed, reduceMotionEnabled, progress]);
+    morphTo(followed);
+  }, [followed, morphTo]);
   const plusOpacity = progress.interpolate({
     inputRange: [0, 1],
     outputRange: [1, 0],
@@ -164,11 +180,18 @@ function PosterFollowCircle({
   });
 
   const handlePress = useCallback(() => {
-    if (!followed) {
+    const next = !followed;
+    // A confirming tap on follow; a lighter one on unfollow, so removing
+    // a show reads as equally instant as adding one (both are optimistic
+    // either way, useFollowList).
+    if (next) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    } else {
+      Haptics.selectionAsync();
     }
+    morphTo(next);
     onPress();
-  }, [followed, onPress]);
+  }, [followed, onPress, morphTo]);
 
   return (
     <Pressable
