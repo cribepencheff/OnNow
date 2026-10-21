@@ -93,20 +93,21 @@ export function CalendarIcon({ active }: TabIconProps) {
   );
 }
 
-// A tray back to 18 wide (not the 20 of last round), its height shrunk by
-// the same ratio so its proportions hold (14.85, not Calendar's 16.5),
-// bottom edge kept level with Calendar's, with the follow controls' own
-// check in it (FOLLOW_CHECK_SYMBOL), two short filled bars above it,
-// narrower on top and a little further apart than last round, clear of
-// the tray's own stroke: an SVG stroke is centred on the path, so the
-// tray's visible top edge sits half its stroke width above its own y.
-// Filled, the check sits dark on the white fill.
+// A tray 18 wide, its height shrunk from Calendar's 16.5 to 14.85 by the
+// same ratio so its proportions hold, bottom edge kept level with
+// Calendar's, with the follow controls' own check in it
+// (FOLLOW_CHECK_SYMBOL), two short filled bars above it, narrower on top,
+// a touch wider than before, evenly spaced: the gap between the two bars
+// matches the gap from the lower one to the tray's own visible edge (an
+// SVG stroke is centred on its path, so that edge sits half the tray's
+// stroke width above its own y). Filled, the check sits dark on the
+// white fill.
 export function MyShowsIcon({ active }: TabIconProps) {
   return (
     <View style={styles.box}>
       <TabSvg>
-        <Rect x="8" y="1.45" width="8" height="0.8" rx="0.4" fill={t.ink} />
-        <Rect x="6" y="2.95" width="12" height="1" rx="0.5" fill={t.ink} />
+        <Rect x="7.5" y="0.95" width="9" height="0.8" rx="0.4" fill={t.ink} />
+        <Rect x="5.5" y="2.95" width="13" height="1" rx="0.5" fill={t.ink} />
         <Rect
           x="3"
           y="6.15"
