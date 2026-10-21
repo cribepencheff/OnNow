@@ -52,8 +52,8 @@ export const t = {
   tabBarIconSize: 30,
   // Every tab's slot, active or not: the active pill fills it, so it is
   // wider than tall. Active and inactive tabs are the same size.
-  tabBarTabWidth: 72,
-  tabBarTabHeight: 50,
+  tabBarTabWidth: 74,
+  tabBarTabHeight: 52,
   // Space inside the bar, and between its tabs.
   tabBarPadding: 3.5,
   tabBarGap: 6,

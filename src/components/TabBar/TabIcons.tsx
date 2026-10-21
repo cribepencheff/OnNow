@@ -54,16 +54,29 @@ export function HomeIcon({ active }: TabIconProps) {
 }
 
 // A rounded square with two short nubs on top and a header line near the
-// top. Filled, the header line is cut out of the fill.
+// top. Active fills only the header band down to that line, rounded top
+// corners and a flat bottom edge (a mask on the same rounded rect), not
+// the whole body.
 export function CalendarIcon({ active }: TabIconProps) {
   const maskId = useMaskId();
   return (
     <TabSvg>
       {active && (
         <Mask id={maskId}>
-          <Rect x="0" y="0" width="24" height="24" fill="#fff" />
-          <Line x1="3" y1="9.5" x2="21" y2="9.5" {...stroke} stroke="#000" />
+          <Rect x="0" y="0" width="24" height="24" fill="#000" />
+          <Rect x="3" y="4.5" width="18" height="5" fill="#fff" />
         </Mask>
+      )}
+      {active && (
+        <Rect
+          x="3"
+          y="4.5"
+          width="18"
+          height="16.5"
+          rx="4"
+          fill={t.ink}
+          mask={`url(#${maskId})`}
+        />
       )}
       <Rect
         x="3"
@@ -71,24 +84,34 @@ export function CalendarIcon({ active }: TabIconProps) {
         width="18"
         height="16.5"
         rx="4"
-        fill={active ? t.ink : "none"}
-        mask={active ? `url(#${maskId})` : undefined}
+        fill="none"
         {...stroke}
       />
-      {!active && <Line x1="3" y1="9.5" x2="21" y2="9.5" {...stroke} />}
+      <Line x1="3" y1="9.5" x2="21" y2="9.5" {...stroke} />
       <Line x1="8" y1="2.5" x2="8" y2="6.5" {...stroke} />
       <Line x1="16" y1="2.5" x2="16" y2="6.5" {...stroke} />
     </TabSvg>
   );
 }
 
-// A squircle with the follow controls' own check in it (FOLLOW_CHECK_SYMBOL),
-// so it reads as "shows I follow". Filled, the check sits dark on the white
-// fill.
+// A library/cabinet shape, Apple TV style: a squircle with a thin top lid
+// (a header line, like Calendar's) over a card sitting in the body, the
+// follow controls' own check in it (FOLLOW_CHECK_SYMBOL) in place of a
+// play triangle. Filled, the lid and the card are cut out of the fill, as
+// Calendar's header line is; the card then draws its own outline so it
+// still reads as a card, not a hole.
 export function MyShowsIcon({ active }: TabIconProps) {
+  const maskId = useMaskId();
   return (
     <View style={styles.box}>
       <TabSvg>
+        {active && (
+          <Mask id={maskId}>
+            <Rect x="0" y="0" width="24" height="24" fill="#fff" />
+            <Line x1="3" y1="7.5" x2="21" y2="7.5" {...stroke} stroke="#000" />
+            <Rect x="6" y="10" width="12" height="8" rx="2" fill="#000" />
+          </Mask>
+        )}
         <Rect
           x="3"
           y="3"
@@ -96,15 +119,26 @@ export function MyShowsIcon({ active }: TabIconProps) {
           height="18"
           rx="6"
           fill={active ? t.ink : "none"}
+          mask={active ? `url(#${maskId})` : undefined}
+          {...stroke}
+        />
+        {!active && <Line x1="3" y1="7.5" x2="21" y2="7.5" {...stroke} />}
+        <Rect
+          x="6"
+          y="10"
+          width="12"
+          height="8"
+          rx="2"
+          fill="none"
           {...stroke}
         />
       </TabSvg>
-      <View style={[StyleSheet.absoluteFill, styles.center]}>
+      <View style={[StyleSheet.absoluteFill, styles.center, styles.cardCenter]}>
         <SymbolView
           name={FOLLOW_CHECK_SYMBOL}
           tintColor={active ? t.bg : t.ink}
-          // About half the squircle, at the outline's weight.
-          size={Math.round(t.tabBarIconSize * 0.44)}
+          // About half the card, at the outline's weight.
+          size={Math.round(t.tabBarIconSize * 0.26)}
           weight="bold"
         />
       </View>
@@ -135,5 +169,10 @@ const styles = StyleSheet.create({
   center: {
     alignItems: "center",
     justifyContent: "center",
+  },
+  // The card sits lower than the icon's own centre (6-18, 10-18 of 24):
+  // 2 below centre, scaled to the icon's drawn size.
+  cardCenter: {
+    transform: [{ translateY: (2 / 24) * t.tabBarIconSize }],
   },
 });

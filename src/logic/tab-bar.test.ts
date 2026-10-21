@@ -7,8 +7,8 @@ import {
 } from "./tab-bar";
 
 describe("floating tab bar size and position (CRI-133)", () => {
-  it("is a 50 tab plus 3.5 padding and a 0.5 edge on each side", () => {
-    expect(FLOATING_TAB_BAR_HEIGHT).toBe(58);
+  it("is a 52 tab plus 3.5 padding and a 0.5 edge on each side", () => {
+    expect(FLOATING_TAB_BAR_HEIGHT).toBe(60);
   });
 
   it("floats clear of the home indicator", () => {
@@ -20,31 +20,31 @@ describe("floating tab bar size and position (CRI-133)", () => {
     expect(TAB_BAR_HEIGHT).toBe(
       FLOATING_TAB_BAR_BOTTOM + FLOATING_TAB_BAR_HEIGHT,
     );
-    expect(TAB_BAR_HEIGHT).toBe(78);
+    expect(TAB_BAR_HEIGHT).toBe(80);
   });
 });
 
-// Four tabs, 72 wide with 6 between them, as on the real bar.
+// Four tabs, 74 wide with 6 between them, as on the real bar.
 const FOUR_TABS: TabLayout[] = [
-  { x: 0, width: 72 },
-  { x: 78, width: 72 },
-  { x: 156, width: 72 },
-  { x: 234, width: 72 },
+  { x: 0, width: 74 },
+  { x: 80, width: 74 },
+  { x: 160, width: 74 },
+  { x: 240, width: 74 },
 ];
 
 describe("scrubbing across the tab bar (CRI-133)", () => {
   it("picks the tab whose centre is closest to the finger", () => {
-    expect(nearestTabIndex(36, FOUR_TABS)).toBe(0);
-    expect(nearestTabIndex(114, FOUR_TABS)).toBe(1);
-    expect(nearestTabIndex(192, FOUR_TABS)).toBe(2);
-    expect(nearestTabIndex(270, FOUR_TABS)).toBe(3);
+    expect(nearestTabIndex(37, FOUR_TABS)).toBe(0);
+    expect(nearestTabIndex(117, FOUR_TABS)).toBe(1);
+    expect(nearestTabIndex(197, FOUR_TABS)).toBe(2);
+    expect(nearestTabIndex(277, FOUR_TABS)).toBe(3);
   });
 
   it("picks the nearer tab across the gap between two tabs", () => {
-    // The gap's own midpoint, 75, between tab 0 (centre 36) and tab 1
-    // (centre 114): still nearer to tab 0.
-    expect(nearestTabIndex(75, FOUR_TABS)).toBe(0);
-    expect(nearestTabIndex(76, FOUR_TABS)).toBe(1);
+    // The gap's own midpoint, 77, between tab 0 (centre 37) and tab 1
+    // (centre 117): still nearer to tab 0.
+    expect(nearestTabIndex(77, FOUR_TABS)).toBe(0);
+    expect(nearestTabIndex(78, FOUR_TABS)).toBe(1);
   });
 
   it("clamps to the first and last tab, even far outside the row", () => {
