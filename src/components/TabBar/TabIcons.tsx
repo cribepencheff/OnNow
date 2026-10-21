@@ -106,8 +106,8 @@ export function MyShowsIcon({ active }: TabIconProps) {
   return (
     <View style={styles.box}>
       <TabSvg>
-        <Rect x="7.5" y="0.95" width="9" height="0.8" rx="0.4" fill={t.ink} />
-        <Rect x="5.5" y="2.95" width="13" height="1" rx="0.5" fill={t.ink} />
+        <Rect x="7" y="0.95" width="10" height="0.8" rx="0.4" fill={t.ink} />
+        <Rect x="5" y="2.95" width="14" height="1" rx="0.5" fill={t.ink} />
         <Rect
           x="3"
           y="6.15"
@@ -122,9 +122,10 @@ export function MyShowsIcon({ active }: TabIconProps) {
         <SymbolView
           name={FOLLOW_CHECK_SYMBOL}
           tintColor={active ? t.bg : t.ink}
-          // About half the tray, at the outline's weight.
+          // About half the tray. Heavy, not bold: closer to the
+          // magnifier's own stroke (tabBarIconStroke) at this size.
           size={Math.round(t.tabBarIconSize * 0.4)}
-          weight="bold"
+          weight="heavy"
         />
       </View>
     </View>
