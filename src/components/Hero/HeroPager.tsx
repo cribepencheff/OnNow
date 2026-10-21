@@ -559,6 +559,23 @@ export function HeroPager({
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
+          // Every physical slide, including both of loopSlideData's wrap
+          // duplicates, stays mounted for the pager's whole life (cheap:
+          // physicalPageCount is a handful of followed shows, never a long
+          // list). VirtualizedList otherwise windows cells by distance from
+          // where it last saw the scroll settle, and handleScrollEnd's own
+          // wrap correction below moves the native scroll position with an
+          // imperative, non-animated scrollToIndex, not a user scroll
+          // gesture; VirtualizedList's windowing doesn't reliably treat
+          // that the same way, and can judge the cell now on screen to be
+          // outside its window and unmount it for a frame right as the
+          // correction lands, a black flash exactly on the wrap (the
+          // owner's own diagnosis). Keeping every cell permanently mounted
+          // removes the window entirely, so there is nothing for that jump
+          // to desync.
+          initialNumToRender={physicalPageCount}
+          windowSize={physicalPageCount}
+          disableVirtualization
           // physical index suffix: loopSlideData's two duplicate slots
           // hold the exact same item (same show id/episode id) as their
           // real slot, which would otherwise collide.
