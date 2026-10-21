@@ -3,8 +3,15 @@
 // tap opens Show detail (inside the sheet when shown in Search, PRD 5.6);
 // the follow circle follows at once.
 
-import { useCallback, useEffect, useState } from "react";
-import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  Animated,
+  Easing,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { Image } from "expo-image";
 import * as Haptics from "expo-haptics";
 import { SymbolView } from "expo-symbols";
@@ -146,64 +153,93 @@ function PosterFollowCircle({
 }
 
 // How long one pulse cycle (dim to bright to dim) takes, by default.
-export const DEFAULT_PULSE_MS = 900;
+export const DEFAULT_PULSE_MS = 1000;
 // How dim the skeleton gets at the low point of its pulse, by default.
 export const DEFAULT_PULSE_LOW = 0.4;
 // How far apart each card's pulse starts from the next one's, a card's own
 // position in the row (delayMs below) times this, by default: a wave
 // crossing the row rather than every card pulsing in lockstep (the
 // Facebook/Airbnb skeleton pattern, owner's request).
-export const DEFAULT_SKELETON_STAGGER_MS = 120;
+export const DEFAULT_SKELETON_STAGGER_MS = 250;
+
+// One shared, continuously looping clock for every SkeletonCard in a row
+// (0 to cycleMs, linear, reset to 0 each iteration), rather than each card
+// running its own independent Animated.loop: owner caught cards drifting
+// out of sync with each other after sitting a while. Two separate native
+// loops started a fixed delay apart can't be trusted to stay that far
+// apart forever, since Animated.loop's per-iteration reset isn't a single
+// uninterrupted native animation but a sequence of individually started
+// ones, each a (small, variable) JS/bridge round trip away from the last;
+// over many iterations those round trips land at slightly different
+// moments for each card's own loop and the gap between them drifts. A
+// single shared clock has only one such loop to begin with, and every
+// card reads its own phase-shifted position off that one value every
+// frame, so there is nothing for two cards to drift apart FROM.
+function useSkeletonPulseClock(cycleMs: number, enabled: boolean) {
+  const [clock] = useState(() => new Animated.Value(0));
+  useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+    const loop = Animated.loop(
+      Animated.timing(clock, {
+        toValue: cycleMs,
+        duration: cycleMs,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }),
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [clock, cycleMs, enabled]);
+  return clock;
+}
+
+// One row's shared pulse clock: pulseMs/pulseLow are the row's own (every
+// real call site leaves them at the defaults; only the dev Images screen
+// overrides them), read once here rather than per card, so every
+// SkeletonCard in the row shares the exact same clock instance.
+export function useSkeletonRowPulse(
+  pulseMs: number = DEFAULT_PULSE_MS,
+): Animated.Value {
+  const { reduceMotionEnabled } = useAccessibilityFlags();
+  return useSkeletonPulseClock(pulseMs * 2, !reduceMotionEnabled);
+}
 
 // A card's shape while its row loads for the first time (CRI-127): exactly
 // a real card's size, the name line and caption line included, so nothing
 // moves when the posters come in. Pulses while it waits, so a long wait
 // (a cold cache, say right after the app wakes from the background) still
-// reads as loading rather than stuck. The three pulseMs/pulseLow/delayMs
-// overrides exist only so the dev Images screen can tune them live; every
-// real call site (PosterRow) leaves them at their defaults.
+// reads as loading rather than stuck. `clock` is the row's own shared
+// useSkeletonRowPulse value; delayMs is this card's own position in it
+// (DEFAULT_SKELETON_STAGGER_MS apart, by default), so the row's cards
+// pulse as a wave rather than together. pulseLow only exists so the dev
+// Images screen can tune it live; every real call site leaves it default.
 export function SkeletonCard({
   withCaption,
+  clock,
   delayMs = 0,
   pulseMs = DEFAULT_PULSE_MS,
   pulseLow = DEFAULT_PULSE_LOW,
 }: {
   withCaption: boolean;
-  // This card's own position in the row, DEFAULT_SKELETON_STAGGER_MS apart
-  // by default, so the row's cards pulse as a wave rather than together.
+  clock: Animated.Value;
   delayMs?: number;
   pulseMs?: number;
   pulseLow?: number;
 }) {
   const { reduceMotionEnabled } = useAccessibilityFlags();
-  const [opacity] = useState(() => new Animated.Value(1));
-
-  useEffect(() => {
+  const cycleMs = pulseMs * 2;
+  const opacity = useMemo(() => {
     if (reduceMotionEnabled) {
-      opacity.setValue(1);
-      return;
+      return 1;
     }
-    const pulse = Animated.loop(
-      Animated.sequence([
-        Animated.timing(opacity, {
-          toValue: pulseLow,
-          duration: pulseMs,
-          useNativeDriver: true,
-        }),
-        Animated.timing(opacity, {
-          toValue: 1,
-          duration: pulseMs,
-          useNativeDriver: true,
-        }),
-      ]),
-    );
-    // The delay runs once, up front; the loop it hands off to then repeats
-    // forever with no further gap, so only each card's first cycle is
-    // offset, not every cycle after it.
-    const animation = Animated.sequence([Animated.delay(delayMs), pulse]);
-    animation.start();
-    return () => animation.stop();
-  }, [reduceMotionEnabled, opacity, delayMs, pulseMs, pulseLow]);
+    const phase = Animated.modulo(Animated.add(clock, delayMs), cycleMs);
+    return phase.interpolate({
+      inputRange: [0, pulseMs, cycleMs],
+      outputRange: [1, pulseLow, 1],
+    });
+  }, [reduceMotionEnabled, clock, delayMs, pulseMs, cycleMs, pulseLow]);
 
   return (
     <Animated.View style={[styles.card, { opacity }]} testID="skeleton-card">

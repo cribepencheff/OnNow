@@ -27,6 +27,7 @@ import {
   DEFAULT_PULSE_MS,
   DEFAULT_SKELETON_STAGGER_MS,
   SkeletonCard,
+  useSkeletonRowPulse,
 } from "@/components/ShowCard";
 import { heroAvailability, type HeroAvailability } from "@/logic/hero-carousel";
 import { openInAccessibilityLabel } from "@/logic/streaming-service";
@@ -83,6 +84,10 @@ export default function DevImagesScreen() {
   const [pulseMs, setPulseMs] = useState(DEFAULT_PULSE_MS);
   const [pulseLow, setPulseLow] = useState(DEFAULT_PULSE_LOW);
   const [staggerMs, setStaggerMs] = useState(DEFAULT_SKELETON_STAGGER_MS);
+  // One shared clock for every preview card below, same as a real row
+  // (useSkeletonRowPulse), so they stay in sync with each other; rebuilt
+  // whenever the pulse-speed stepper changes it.
+  const pulseClock = useSkeletonRowPulse(pulseMs);
 
   if (!__DEV__) {
     return null;
@@ -147,18 +152,21 @@ export default function DevImagesScreen() {
               <View style={styles.skeletonRow}>
                 <SkeletonCard
                   withCaption={false}
+                  clock={pulseClock}
                   pulseMs={pulseMs}
                   pulseLow={pulseLow}
                   delayMs={0}
                 />
                 <SkeletonCard
                   withCaption={false}
+                  clock={pulseClock}
                   pulseMs={pulseMs}
                   pulseLow={pulseLow}
                   delayMs={staggerMs}
                 />
                 <SkeletonCard
                   withCaption={false}
+                  clock={pulseClock}
                   pulseMs={pulseMs}
                   pulseLow={pulseLow}
                   delayMs={2 * staggerMs}
@@ -168,18 +176,21 @@ export default function DevImagesScreen() {
               <View style={styles.skeletonRow}>
                 <SkeletonCard
                   withCaption
+                  clock={pulseClock}
                   pulseMs={pulseMs}
                   pulseLow={pulseLow}
                   delayMs={0}
                 />
                 <SkeletonCard
                   withCaption
+                  clock={pulseClock}
                   pulseMs={pulseMs}
                   pulseLow={pulseLow}
                   delayMs={staggerMs}
                 />
                 <SkeletonCard
                   withCaption
+                  clock={pulseClock}
                   pulseMs={pulseMs}
                   pulseLow={pulseLow}
                   delayMs={2 * staggerMs}

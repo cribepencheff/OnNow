@@ -63,6 +63,7 @@ import {
   POSTER_WIDTH,
   SkeletonCard,
   cardHeight,
+  useSkeletonRowPulse,
 } from "./ShowCard";
 
 // Skeleton cards on a first load: two full and the peek of a third, as
@@ -148,6 +149,10 @@ export function PosterRow({
   const { reduceMotionEnabled } = useAccessibilityFlags();
   const { width: viewportWidth } = useWindowDimensions();
   const height = cardHeight(withCaption);
+  // One shared pulse clock for every skeleton card in this row (first
+  // load and loading-more both), so they never drift apart from each
+  // other; see useSkeletonRowPulse.
+  const pulseClock = useSkeletonRowPulse();
   // No cards yet and none cached: skeleton cards hold the row's place.
   const showSkeleton = isLoading && !hasCards;
   const isShown = hasCards || Boolean(emptyText) || showSkeleton;
@@ -203,6 +208,7 @@ export function PosterRow({
       <SkeletonCard
         key={`${prefix}${index}`}
         withCaption={withCaption}
+        clock={pulseClock}
         delayMs={index * DEFAULT_SKELETON_STAGGER_MS}
       />
     ));
