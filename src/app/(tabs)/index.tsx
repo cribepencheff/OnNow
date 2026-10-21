@@ -1,7 +1,13 @@
 // Home (PRD 5.1, FR-004, FR-005, FR-006, FR-007, FR-011, FR-012, FR-013,
 // FR-037): which followed shows have a new episode today.
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   ActivityIndicator,
   Animated,
@@ -136,6 +142,26 @@ export default function HomeScreen() {
     () => findHeroSlides(followedShows, deviceTimeZone(), todayDate),
     [followedShows, todayDate],
   );
+  // What the hero pager itself actually renders (its key and its slides),
+  // kept a beat behind heroSlides: a follow/unfollow on "Airing this
+  // week" (the one row that can change heroSlides, since it excludes
+  // shows already in the hero) remounts the whole pager on the same tap
+  // (heroPagerKey, below), a real burst of work (every HeroPage rebuilt,
+  // fresh image and streaming lookups). Without this, that burst competes
+  // for the same render pass, and the same JS/UI thread, as the tapped
+  // card's own follow circle, whose icon animation is native-driven and
+  // already starts on the tap itself, not blocked by this, but can still
+  // visibly stutter from that contention. React renders the hero's own
+  // update at lower priority instead, after the card's own, rather than
+  // together in one synchronous burst.
+  //
+  // top.heroPager below (whether the hero shows at all) stays off the
+  // UNDEFERRED heroSlides on purpose: that is a structural, binary
+  // decision (mount the hero or don't), not the hero's own content, and
+  // must track the real list immediately, not a render behind it, or
+  // following the very first show would leave the hero's section absent
+  // for a beat with nothing rendered in its place.
+  const deferredHeroSlides = useDeferredValue(heroSlides);
 
   const followedShowList = useMemo(
     () => followedShows.map(({ show }) => show),
@@ -374,9 +400,12 @@ export default function HomeScreen() {
             <>
               {top.heroPager && (
                 <HeroPager
-                  // A new set of slides starts a fresh pager (heroPagerKey).
-                  key={heroPagerKey(heroSlides)}
-                  slides={heroSlides}
+                  // A new set of slides starts a fresh pager (heroPagerKey);
+                  // deferred (deferredHeroSlides, above) so that remount's
+                  // own burst of work renders at lower priority than the
+                  // row/card update that triggered it.
+                  key={heroPagerKey(deferredHeroSlides)}
+                  slides={deferredHeroSlides}
                   todayDate={todayDate}
                   pullDistance={pullDistance}
                   heroVisible={!heroOffscreen}
