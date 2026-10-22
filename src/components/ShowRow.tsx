@@ -183,7 +183,7 @@ const POSTER_WIDTH = 60;
 const POSTER_HEIGHT = 90;
 // A Search row's poster (owner, 2026-10-22): bigger, balancing its taller
 // row (summary, year and genres, status, services). 2:3, as posters are.
-export const LARGE_POSTER = { width: 80, height: 120 };
+export const LARGE_POSTER = { width: 90, height: 135 };
 
 const styles = StyleSheet.create({
   row: {
