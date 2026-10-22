@@ -55,6 +55,7 @@ describe("useShowImages", () => {
         ],
         logos: [image("/logo.png", 7, "en")],
       },
+      posterPath: "/poster.jpg",
     });
     const { result, unmount, client } = await render();
 
@@ -64,6 +65,7 @@ describe("useShowImages", () => {
       highestRatedBackdrop: { file_path: "/high.jpg" },
       textlessCount: 2,
       logo: { file_path: "/logo.png" },
+      posterPath: "/poster.jpg",
     });
     await unmount();
     client.unmount();
@@ -78,6 +80,7 @@ describe("useShowImages", () => {
       tmdbId: null,
       highestRatedBackdrop: null,
       logo: null,
+      posterPath: null,
     });
     await unmount();
     client.unmount();
@@ -89,6 +92,18 @@ describe("useShowImages", () => {
 
     await waitFor(() => expect(result.current.isError).toBe(true));
     await unmount();
+    client.unmount();
+  });
+
+  // CRI-100: a list asks only when TVmaze has no poster.
+  it("asks nothing while not enabled", async () => {
+    const client = createTestQueryClient();
+    const hook = await renderHook(
+      () => useShowImages(SHOW, { enabled: false }),
+      { wrapper: wrapperWithQueryClient(client) },
+    );
+    expect(findImages).not.toHaveBeenCalled();
+    await hook.unmount();
     client.unmount();
   });
 });

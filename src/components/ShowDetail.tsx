@@ -114,12 +114,16 @@ function ShowDetailContent({
   const { data: images, isLoading: imagesLoading } = useShowImages(show);
   const shown = imagesLoading
     ? null
-    : chooseShowImage(images?.highestRatedBackdrop, show.image);
+    : chooseShowImage(
+        images?.highestRatedBackdrop,
+        show.image,
+        images?.posterPath,
+      );
   const backdropPath = shown?.kind === "tmdb" ? shown.path : undefined;
   // Drawn square, about 1,180 px tall on a 3x phone: w1920 (1080 px tall),
   // with "original" if that undocumented size fails (CRI-140).
   const backdrop = useFallbackUri(
-    shown?.kind === "tvmaze"
+    shown?.kind === "poster"
       ? shown.sharp
       : backdropPath && `${IMAGE_BASE}/${LARGE_BACKDROP_SIZE}${backdropPath}`,
     backdropPath &&
@@ -154,7 +158,7 @@ function ShowDetailContent({
             testID="show-detail-backdrop"
             contentFit="cover"
             // A poster from the top, where its title usually is not.
-            contentPosition={shown?.kind === "tvmaze" ? "top" : "center"}
+            contentPosition={shown?.kind === "poster" ? "top" : "center"}
             accessibilityIgnoresInvertColors
           />
         )}

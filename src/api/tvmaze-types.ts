@@ -41,6 +41,8 @@ export interface TvMazeShow {
   webChannel: TvMazeNetwork | null;
   image: TvMazeImage | null;
   summary: string | null;
+  // When TVmaze last changed the show's record, in seconds since 1970.
+  updated?: number;
   // IDs of the same show elsewhere, used to find it on TMDB (spike 0002).
   externals?: TvMazeExternals;
   _links: {

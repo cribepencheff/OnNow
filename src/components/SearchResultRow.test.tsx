@@ -7,6 +7,14 @@ import { NOT_ON_TMDB } from "@/logic/streaming-service";
 import showSlowHorsesFixture from "@/api/fixtures/show-slow-horses.json";
 import type { TvMazeShow } from "@/api/tvmaze-types";
 
+// The list poster (CRI-100): TVmaze's, as these rows had before; its TMDB
+// lookup is tested in useListPoster.test.ts.
+jest.mock("@/hooks/useListPoster", () => ({
+  useListPoster: (show: { image?: { medium?: string | null } | null }) => ({
+    uri: show.image?.medium ?? undefined,
+    pending: false,
+  }),
+}));
 jest.mock("@/hooks/useShow", () => ({
   useShow: jest.fn(),
 }));

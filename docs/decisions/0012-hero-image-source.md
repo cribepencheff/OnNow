@@ -163,3 +163,20 @@ sample TVmaze had an image for every show it would have covered.
   symbol.
 - Once a show gets its images, they appear by themselves: TVmaze's data
   is refreshed within an hour, TMDB's images within a day.
+
+### Revised: TMDB's poster after all (2026-10-22, with #107)
+Status: Accepted (approved with #107, 2026-10-22)
+
+TMDB's main poster turned out to cost no request: it is in the answer to
+the find step the backdrop lookup already makes (`poster_path`, in any
+language; `/images` keeps only English and textless ones). The trigger
+was the reverse case: *Cecilias Unge* (SVT Play) has no TVmaze image, but
+TMDB has a backdrop and a poster, so its list rows showed the "no image"
+symbol.
+
+- The hero and Show detail: TMDB's backdrop, then TVmaze's poster, then
+  TMDB's poster, then no image.
+- A list's small poster (Shows, Search, Calendar): TVmaze's, then TMDB's
+  main poster, looked up only for a show without a TVmaze image; an empty
+  space while that lookup runs, then the "no image" symbol if there is
+  none.

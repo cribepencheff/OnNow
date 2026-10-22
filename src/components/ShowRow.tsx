@@ -23,6 +23,9 @@ import { NoImage } from "./NoImage";
 interface ShowRowProps {
   title: string;
   posterUri?: string | null;
+  // The poster is still being looked up (useListPoster): an empty space,
+  // not the "no image" symbol yet.
+  posterPending?: boolean;
   children?: ReactNode;
   trailing?: ReactNode;
   onPress?: () => void;
@@ -37,6 +40,7 @@ interface ShowRowProps {
 export function ShowRow({
   title,
   posterUri,
+  posterPending = false,
   children,
   trailing,
   onPress,
@@ -63,6 +67,8 @@ export function ShowRow({
           contentFit="cover"
           accessibilityIgnoresInvertColors
         />
+      ) : posterPending ? (
+        <View style={styles.poster} testID="poster-pending" />
       ) : (
         // No image: the still surface with the "no image" symbol
         // (CRI-100); the title beside it names the show.

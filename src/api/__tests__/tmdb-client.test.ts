@@ -421,7 +421,7 @@ describe("TmdbClient find cache (CRI-107)", () => {
 // CRI-107: the hero's images come through the same client (and its find
 // step) instead of a helper of their own.
 describe("TmdbClient.findImages", () => {
-  it("finds the show, then its English and textless images", async () => {
+  it("finds the show, then its English and textless images, and its poster from the find", async () => {
     const images = { backdrops: [], logos: [] };
     const fetchFn = jest
       .fn()
@@ -432,6 +432,7 @@ describe("TmdbClient.findImages", () => {
     await expect(client.findImages(NEAGLEY_EXTERNALS)).resolves.toEqual({
       tvId: 273207,
       images,
+      posterPath: "/tEPDFIa21VK0Q2YLuzhTt2xrw5W.jpg",
     });
     expect(fetchFn.mock.calls[1][0]).toContain(
       "/3/tv/273207/images?include_image_language=en,null,xx",

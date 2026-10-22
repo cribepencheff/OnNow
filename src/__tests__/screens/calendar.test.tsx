@@ -14,6 +14,14 @@ import { t } from "@/theme/tokens";
 // Counts each month page's renders, to prove scrolling never redraws the
 // pager (CRI-120). Otherwise the real page.
 const mockMonthPageRenders: string[] = [];
+// The list poster (CRI-100): TVmaze's, as these rows had before; its TMDB
+// lookup is tested in useListPoster.test.ts.
+jest.mock("@/hooks/useListPoster", () => ({
+  useListPoster: (show: { image?: { medium?: string | null } | null }) => ({
+    uri: show.image?.medium ?? undefined,
+    pending: false,
+  }),
+}));
 jest.mock("@/components/CalendarMonthPage", () => {
   const React = jest.requireActual("react");
   const actual = jest.requireActual("@/components/CalendarMonthPage");

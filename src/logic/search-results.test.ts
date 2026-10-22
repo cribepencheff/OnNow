@@ -16,6 +16,51 @@ function showWithStatus(status: string): TvMazeShow {
 }
 
 // FR-024, PRD 5.4 edge case: "Running shows rank above ended ones."
+// Owner, 2026-10-22: a show TVmaze still lists as "In Development" but has
+// not updated in two years has most likely not gone ahead, such as Prime
+// Video's The Girl with the Dragon Tattoo (TVmaze 48361, last updated
+// 2023). Search leaves it out; a newer one with the same name stays.
+describe("rankSearchResults: stale shows in development", () => {
+  const NOW = Date.parse("2026-10-22T12:00:00Z");
+  const secondsAgo = (days: number) =>
+    Math.round((NOW - days * 24 * 60 * 60 * 1000) / 1000);
+  const show = (id: number, status: string, updated?: number) => ({
+    score: 1,
+    show: { ...showWithStatus(status), id, updated },
+  });
+
+  it("leaves out a show in development not updated for two years", () => {
+    const ranked = rankSearchResults(
+      [
+        show(48361, "In Development", secondsAgo(3 * 365)),
+        show(91814, "In Development", secondsAgo(165)),
+      ],
+      NOW,
+    );
+    expect(ranked.map(({ show }) => show.id)).toEqual([91814]);
+  });
+
+  it("keeps an ended show however old, and one in development without an update time", () => {
+    const ranked = rankSearchResults(
+      [
+        show(1, "Ended", secondsAgo(10 * 365)),
+        show(2, "In Development", undefined),
+        show(3, "To Be Determined", secondsAgo(5 * 365)),
+      ],
+      NOW,
+    );
+    expect(ranked.map(({ show }) => show.id)).toEqual([1, 2, 3]);
+  });
+
+  it("keeps one in development updated just under two years ago", () => {
+    const ranked = rankSearchResults(
+      [show(4, "In Development", secondsAgo(2 * 365 - 2))],
+      NOW,
+    );
+    expect(ranked).toHaveLength(1);
+  });
+});
+
 describe("rankSearchResults", () => {
   it("keeps running shows above ended ones", () => {
     const running = showWithStatus("Running");

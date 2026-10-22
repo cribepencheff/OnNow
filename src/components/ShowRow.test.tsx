@@ -85,6 +85,14 @@ describe("ShowRow", () => {
     expect(screen.getByTestId("no-image-icon")).toBeTruthy();
   });
 
+  it("CRI-100: leaves the space empty while the poster is looked up", async () => {
+    await render(
+      <ShowRow title="Cecilias Unge" posterPending accessibilityLabel="x" />,
+    );
+    expect(screen.getByTestId("poster-pending")).toBeTruthy();
+    expect(screen.queryByTestId("no-image")).toBeNull();
+  });
+
   it("CRI-100: shows the poster, not the surface, when there is one", async () => {
     await render(
       <ShowRow

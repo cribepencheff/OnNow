@@ -244,14 +244,18 @@ export const HeroPage = memo(function HeroPage({
   // mirror, blur) depends on which image it is.
   const shown = imagesLoading
     ? null
-    : chooseShowImage(images?.highestRatedBackdrop, show.image);
+    : chooseShowImage(
+        images?.highestRatedBackdrop,
+        show.image,
+        images?.posterPath,
+      );
   const tmdbPath = shown?.kind === "tmdb" ? shown.path : undefined;
   // The small copy: the far slides, the placeholder while the sharp one
   // decodes, and the blurred edges.
   const smallUri =
     shown?.kind === "tmdb"
       ? `${IMAGE_BASE}/${BLURRED_COPY_SIZE}${shown.path}`
-      : shown?.kind === "tvmaze"
+      : shown?.kind === "poster"
         ? shown.small
         : undefined;
   // The sharp image runs from under the top safe area down to the title
@@ -291,7 +295,7 @@ export const HeroPage = memo(function HeroPage({
   // A TVmaze poster's size is not in the data: posters are 2:3. Cropped
   // from the top, where a poster's title usually is not.
   const aspectRatio = shown?.kind === "tmdb" ? shown.aspectRatio : 2 / 3;
-  const crop = shown?.kind === "tvmaze" ? "top" : "center";
+  const crop = shown?.kind === "poster" ? "top" : "center";
   const columnWidth = Math.max(width, imageBoxHeight * aspectRatio);
   const columnLeft = (backdropWidth - columnWidth) / 2;
   // Sharp on this screen's pixels at the width the image is drawn
@@ -303,7 +307,7 @@ export const HeroPage = memo(function HeroPage({
     PixelRatio.get(),
   );
   const sharpImage = useFallbackUri(
-    shown?.kind === "tvmaze"
+    shown?.kind === "poster"
       ? shown.sharp
       : tmdbPath && `${IMAGE_BASE}/${imageSize}${tmdbPath}`,
     tmdbPath && imageSize === LARGE_BACKDROP_SIZE
