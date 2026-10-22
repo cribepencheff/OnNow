@@ -4,7 +4,7 @@ import { tmdbClient } from "@/api/tmdb-client";
 import type { TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 import { NOT_ON_TMDB } from "@/logic/streaming-service";
 import { createTestQueryClient, wrapperWithQueryClient } from "./test-utils";
-import { useShowImages } from "./useShowImages";
+import { showImagesStaleTime, useShowImages } from "./useShowImages";
 
 jest.mock("@/api/tmdb-client", () => ({
   ...jest.requireActual("@/api/tmdb-client"),
@@ -105,5 +105,20 @@ describe("useShowImages", () => {
     expect(findImages).not.toHaveBeenCalled();
     await hook.unmount();
     client.unmount();
+  });
+
+  // ADR 0017 (owner, 2026-10-22): a show with a backdrop is asked again
+  // weekly, since a new top-voted backdrop is no hurry; one without (a
+  // poster or nothing, often a show just out) daily, so its backdrop
+  // comes in soon.
+  it("asks again after a week with a backdrop, after a day without", () => {
+    const DAY = 24 * 60 * 60 * 1000;
+    const withBackdrop = {
+      highestRatedBackdrop: image("/b.jpg", 8, null),
+    } as never;
+    const without = { highestRatedBackdrop: null } as never;
+    expect(showImagesStaleTime(withBackdrop)).toBe(7 * DAY);
+    expect(showImagesStaleTime(without)).toBe(DAY);
+    expect(showImagesStaleTime(undefined)).toBe(DAY);
   });
 });
