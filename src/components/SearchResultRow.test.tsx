@@ -91,9 +91,11 @@ describe("SearchResultRow", () => {
 
     expect(screen.getByText("Slow Horses")).toBeTruthy();
     expect(screen.queryByText(/2022 · Drama/)).toBeNull();
+    // Three lines (owner, 2026-10-22): room for them once year and genres
+    // went, matching the poster's height.
     expect(
       screen.getByText(/Slow Horses follows the story/).props.numberOfLines,
-    ).toBe(2);
+    ).toBe(3);
     expect(screen.queryByText(/Running/)).toBeNull();
     expect(screen.queryByText("Apple TV")).toBeNull();
   });

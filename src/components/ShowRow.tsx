@@ -28,9 +28,12 @@ interface ShowRowProps {
   // The poster is still being looked up (useListPoster): an empty space,
   // not the "no image" symbol yet.
   posterPending?: boolean;
-  // Two lines about the show, right under the title (owner, 2026-10-22):
-  // the show first. Nothing, and no gap, without one.
+  // Lines about the show, right under the title (owner, 2026-10-22): the
+  // show first. Nothing, and no gap, without one.
   summary?: string | null;
+  // How many lines the summary takes: 2, or 3 in Search, where its row has
+  // room for them beside the bigger poster.
+  summaryLines?: number;
   // Right under the title, before the summary (a Search row's status
   // line; owner, 2026-10-22).
   subtitle?: ReactNode;
@@ -55,6 +58,7 @@ export function ShowRow({
   posterUri,
   posterPending = false,
   summary,
+  summaryLines = 2,
   subtitle,
   posterAccessory,
   largePoster = false,
@@ -115,7 +119,7 @@ export function ShowRow({
         {summary ? (
           <Text
             style={styles.summary}
-            numberOfLines={2}
+            numberOfLines={summaryLines}
             testID="show-row-summary"
           >
             {summary}

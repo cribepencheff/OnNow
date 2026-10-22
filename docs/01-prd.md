@@ -220,8 +220,8 @@ first user is the author, who currently uses Next Episode.
   2026-10-22): "On [service]", or plain
   "Unavailable" when there is none (Show detail and the Home hero name the
   region, rows do not), and nothing when TMDB does not know the show
-  (FR-027, CRI-97, CRI-102). The status line right under the title in `ink`, then two lines about the
-  show, muted; no year and genres, which Show detail's meta line has
+  (FR-027, CRI-97, CRI-102). The status line right under the title in `ink`, then three lines about
+  the show, muted; no year and genres, which Show detail's meta line has
   (owner, 2026-10-22). No IMDb rating
   for now: it is in Show detail (ADR 0013, CRI-116). The original
   network is not shown.

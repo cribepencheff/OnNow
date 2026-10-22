@@ -48,6 +48,7 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
       posterUri={poster.uri}
       posterPending={poster.pending}
       summary={plainTextSummary(show.summary)}
+      summaryLines={3}
       // The show's status right under the title, in ink (owner,
       // 2026-10-22).
       subtitle={<StatusLine showId={show.id} />}
