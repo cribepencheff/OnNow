@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from "@testing-library/react-native";
+import { act, renderHook, waitFor } from "@testing-library/react-native";
 
 import { tmdbClient } from "@/api/tmdb-client";
 import type { TvMazeShow } from "@/api/tvmaze-types";
@@ -43,17 +43,22 @@ describe("useListPoster (CRI-100)", () => {
   });
 
   it("takes TMDB's poster when TVmaze has none, pending meanwhile", async () => {
-    findImages.mockResolvedValue({
-      tvId: 283033,
-      images: { backdrops: [], logos: [] },
-      posterPath: "/p.jpg",
-    });
+    // Held until the test has seen the lookup pending.
+    let answer: (value: unknown) => void = () => {};
+    findImages.mockReturnValue(new Promise((resolve) => (answer = resolve)));
     const { result, unmount, client } = await render({
       id: 81908,
       name: "Cecilias Unge",
       image: null,
     } as TvMazeShow);
-    expect(result.current.pending).toBe(true);
+    expect(result.current).toEqual({ uri: undefined, pending: true });
+    await act(async () =>
+      answer({
+        tvId: 283033,
+        images: { backdrops: [], logos: [] },
+        posterPath: "/p.jpg",
+      }),
+    );
     await waitFor(() =>
       expect(result.current).toEqual({
         uri: "https://image.tmdb.org/t/p/w185/p.jpg",
