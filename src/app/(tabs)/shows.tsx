@@ -12,7 +12,6 @@ import {
   Text,
   View,
 } from "react-native";
-import { SymbolView } from "expo-symbols";
 
 import { AddFirstShow } from "@/components/AddFirstShow";
 import { RegionLink } from "@/components/RegionLink";
@@ -27,6 +26,7 @@ import { splitBySegment, type ShowsSegment } from "@/logic/shows-list";
 import { showState, showStateLabel } from "@/logic/show-state";
 import { TAB_BAR_HEIGHT } from "@/logic/tab-bar";
 import { t, type } from "@/theme/tokens";
+import { SearchFieldFrame, searchFieldText } from "@/components/SearchField";
 
 const NONE_LEAVING: ReadonlySet<number> = new Set();
 
@@ -106,12 +106,10 @@ export default function ShowsScreen() {
         onPress={openSearch}
         style={styles.searchField}
       >
-        <SymbolView
-          name={{ ios: "magnifyingglass", android: "search", web: "search" }}
-          tintColor={t.inkMuted}
-          size={16}
-        />
-        <Text style={styles.searchFieldText}>Search shows</Text>
+        {/* Search's own field's look (SearchField). */}
+        <SearchFieldFrame>
+          <Text style={searchFieldText.placeholder}>Search shows</Text>
+        </SearchFieldFrame>
       </Pressable>
 
       {followedCount === 0 ? (
@@ -216,19 +214,8 @@ const styles = StyleSheet.create({
     backgroundColor: t.bg,
   },
   searchField: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: t.space2,
     marginHorizontal: t.contentInset,
     marginBottom: t.space2,
-    paddingHorizontal: t.space4,
-    paddingVertical: 12,
-    borderRadius: t.radiusPill,
-    backgroundColor: t.surfaceRaised,
-  },
-  searchFieldText: {
-    ...type.body,
-    color: t.inkMuted,
   },
   listContent: {
     paddingBottom: TAB_BAR_HEIGHT + t.space4,

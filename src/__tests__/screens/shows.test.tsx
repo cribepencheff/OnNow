@@ -1,3 +1,5 @@
+import { StyleSheet } from "react-native";
+import { type } from "@/theme/tokens";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
 import ShowsScreen from "@/app/(tabs)/shows";
@@ -359,5 +361,17 @@ describe("ShowsScreen", () => {
     await render(<ShowsScreen />);
 
     expect(screen.getByText(TVMAZE_CREDIT.text)).toBeTruthy();
+  });
+
+  // Owner, 2026-10-22: Shows' search field looks as Search's own: the same
+  // frame and text size (SearchField).
+  it("draws the search field as Search does", async () => {
+    mockShows([]);
+    await render(<ShowsScreen />);
+    const placeholder = StyleSheet.flatten(
+      screen.getByText("Search shows").props.style,
+    );
+    expect(placeholder.fontSize).toBe(type.headline.fontSize);
+    expect(placeholder.fontWeight).toBe("400");
   });
 });
