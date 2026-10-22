@@ -15,7 +15,11 @@ import { ShowRow, ShowRowServiceLine } from "./ShowRow";
 import { useStreamingService } from "@/hooks/useStreamingService";
 import { useListPoster } from "@/hooks/useListPoster";
 import { plainTextSummary } from "@/logic/search-results";
-import { rowServiceLogos, rowServiceText } from "@/logic/streaming-service";
+import {
+  rowIsUnavailable,
+  rowServiceLogos,
+  rowServiceText,
+} from "@/logic/streaming-service";
 import type { TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 import { t, type } from "@/theme/tokens";
 
@@ -70,6 +74,7 @@ export function ShowsRow({
         <ShowRowServiceLine
           logos={rowServiceLogos(providers)}
           text={service ?? ""}
+          unavailable={rowIsUnavailable(providers)}
           testID="shows-row-service"
         />
       </ShowRow>

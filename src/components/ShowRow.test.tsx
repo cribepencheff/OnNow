@@ -238,4 +238,35 @@ describe("ShowRow", () => {
       StyleSheet.flatten(screen.getByText("On Netflix").props.style).color,
     ).toBe(t.ink);
   });
+
+  // Owner, 2026-10-22: "Unavailable" with a yellow dot where the logos
+  // would be, a warning: you cannot watch it.
+  it("marks Unavailable with a yellow dot in the logos' place", async () => {
+    await render(
+      <ShowRowServiceLine
+        logos={[]}
+        text="Unavailable"
+        unavailable
+        testID="service"
+      />,
+    );
+    const dot = screen.getByTestId("service-unavailable-dot", {
+      includeHiddenElements: true,
+    });
+    expect(StyleSheet.flatten(dot.props.style).backgroundColor).toBe(
+      t.serviceUnavailable,
+    );
+    expect(screen.getByText("Unavailable")).toBeTruthy();
+  });
+
+  it("has no dot with services", async () => {
+    await render(
+      <ShowRowServiceLine logos={[]} text="On Netflix" testID="service" />,
+    );
+    expect(
+      screen.queryByTestId("service-unavailable-dot", {
+        includeHiddenElements: true,
+      }),
+    ).toBeNull();
+  });
 });

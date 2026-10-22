@@ -158,6 +158,7 @@ export function ShowRowLine({
 // before TMDB answers), the text alone. The line keeps its height either
 // way.
 const SERVICE_LOGO_SIZE = 16;
+const UNAVAILABLE_DOT_SIZE = 8;
 // The Premiere/Finale chip's light hairline (owner), on the dark page.
 const SERVICE_LOGO_RING = {
   color: t.episodeMarkEdge,
@@ -167,14 +168,26 @@ const SERVICE_LOGO_RING = {
 export function ShowRowServiceLine({
   logos,
   text,
+  unavailable = false,
   testID,
 }: {
   logos: { name: string; logoPath: string }[];
   text: string;
+  // "Unavailable": a yellow dot in the logos' place, a warning that the
+  // show cannot be watched (owner, 2026-10-22).
+  unavailable?: boolean;
   testID?: string;
 }) {
   return (
     <View style={styles.serviceLine} testID={testID}>
+      {unavailable && (
+        <View
+          style={styles.unavailableDot}
+          accessibilityElementsHidden
+          importantForAccessibility="no-hide-descendants"
+          testID="service-unavailable-dot"
+        />
+      )}
       {logos.length > 0 && (
         <View
           style={styles.serviceLogos}
@@ -266,6 +279,14 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: POSTER_ACCESSORY_INSET,
     left: POSTER_ACCESSORY_INSET,
+  },
+  // The size of the Premiere/Finale chip's dot, a touch larger for a line
+  // of its own.
+  unavailableDot: {
+    width: UNAVAILABLE_DOT_SIZE,
+    height: UNAVAILABLE_DOT_SIZE,
+    borderRadius: UNAVAILABLE_DOT_SIZE / 2,
+    backgroundColor: t.serviceUnavailable,
   },
   serviceLogos: {
     flexDirection: "row",

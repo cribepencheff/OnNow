@@ -18,7 +18,11 @@ import { useListPoster } from "@/hooks/useListPoster";
 import { useToday } from "@/hooks/useToday";
 import { plainTextSummary, searchResultMetaLine } from "@/logic/search-results";
 import { showState, showStateLabel } from "@/logic/show-state";
-import { rowServiceLogos, rowServiceText } from "@/logic/streaming-service";
+import {
+  rowIsUnavailable,
+  rowServiceLogos,
+  rowServiceText,
+} from "@/logic/streaming-service";
 import type { TvMazeShow } from "@/api/tvmaze-types";
 import { t, type } from "@/theme/tokens";
 
@@ -77,6 +81,7 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
       <ShowRowServiceLine
         logos={rowServiceLogos(providers)}
         text={service ?? ""}
+        unavailable={rowIsUnavailable(providers)}
         testID="search-result-service"
       />
     </ShowRow>

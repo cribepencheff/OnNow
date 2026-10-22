@@ -339,6 +339,16 @@ export function rowServiceText(
   return Array.isArray(answer) ? availabilityText(answer) : null;
 }
 
+// Whether TMDB answered with no streaming service for the show: the row's
+// "Unavailable" (CRI-97), marked with a yellow dot in the logos' place
+// (owner, 2026-10-22). Not when TMDB does not know the show, or before it
+// answers.
+export function rowIsUnavailable(
+  answer: ProviderAnswer | null | undefined,
+): boolean {
+  return Array.isArray(answer) && availableServices(answer).length === 0;
+}
+
 // The most service logos a row shows before its text (CRI-115).
 const ROW_SERVICE_LOGOS = 4;
 

@@ -125,6 +125,11 @@ describe("SearchResultRow", () => {
     expect(screen.getByTestId("search-result-service")).toHaveTextContent(
       "Unavailable",
     );
+    expect(
+      screen.getByTestId("service-unavailable-dot", {
+        includeHiddenElements: true,
+      }),
+    ).toBeTruthy();
     expect(screen.getByTestId("search-result-status")).toHaveTextContent(/^$/);
   });
 
