@@ -20,6 +20,10 @@ import { useFollowList } from "@/hooks/useFollowList";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useStreamingService } from "@/hooks/useStreamingService";
 import { useToday } from "@/hooks/useToday";
+import {
+  largestSavedQueries,
+  savedCacheBreakdown,
+} from "@/logic/saved-cache-breakdown";
 import { sortShowsByTitle } from "@/logic/shows-list";
 import { EpisodeMarkChip } from "@/components/Hero/EpisodeMarkChip";
 import { OpenInSlot } from "@/components/Hero/HeroPage";
@@ -415,22 +419,40 @@ const SAMPLE_FADE =
 // so its size is still worth watching. Read on a tap, as a JSON string:
 // its length is about its size in bytes.
 function SavedCacheSize() {
-  const [size, setSize] = useState<number | null>(null);
+  const [saved, setSaved] = useState<string | null | undefined>(undefined);
+  const mb = (bytes: number) => `${(bytes / 1024 / 1024).toFixed(2)} MB`;
   return (
-    <Pressable
-      accessibilityRole="button"
-      onPress={async () => {
-        const saved = await savedCacheStorage.getItem(QUERY_CACHE_STORAGE_KEY);
-        setSize(saved?.length ?? 0);
-      }}
-      style={styles.followAll}
-    >
-      <Text style={styles.followAllLabel}>
-        {size === null
-          ? "Saved cache: tap to measure"
-          : `Saved cache: ${(size / 1024 / 1024).toFixed(2)} MB`}
-      </Text>
-    </Pressable>
+    <View>
+      <Pressable
+        accessibilityRole="button"
+        onPress={async () =>
+          setSaved(await savedCacheStorage.getItem(QUERY_CACHE_STORAGE_KEY))
+        }
+        style={styles.followAll}
+      >
+        <Text style={styles.followAllLabel}>
+          {saved === undefined
+            ? "Saved cache: tap to measure"
+            : `Saved cache: ${mb(saved?.length ?? 0)}`}
+        </Text>
+      </Pressable>
+      {saved !== undefined && (
+        // Per kind of data, largest first, then the largest entries.
+        <View style={styles.cacheBreakdown}>
+          {savedCacheBreakdown(saved).map(({ kind, count, bytes }) => (
+            <Text key={kind} style={styles.meta}>
+              {`${kind}: ${count} × · ${mb(bytes)}`}
+            </Text>
+          ))}
+          <Text style={styles.meta}>Largest entries:</Text>
+          {largestSavedQueries(saved, 5).map(({ key, bytes }) => (
+            <Text key={key} style={styles.meta}>
+              {`${key} · ${mb(bytes)}`}
+            </Text>
+          ))}
+        </View>
+      )}
+    </View>
   );
 }
 
@@ -517,6 +539,7 @@ const styles = StyleSheet.create({
     borderRadius: t.radiusPill,
   },
   followAllLabel: { color: t.ink, fontWeight: "600" },
+  cacheBreakdown: { gap: 2, marginTop: 8 },
   forcedSection: { gap: 16, marginTop: 4 },
   forcedRow: { gap: 4 },
   skeletonRow: { flexDirection: "row", gap: 8 },
