@@ -133,7 +133,7 @@ size fetched. If w1920 fails to load, the same image is fetched at
   are unchanged.
 
 ## Amendment: when there is no backdrop (CRI-100, 2026-10-22)
-Status: Proposed
+Status: Accepted (approved with #106, 2026-10-22)
 
 ### Context
 A few small shows have no TMDB backdrop (5 of 142 matched in a sample of
