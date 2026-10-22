@@ -13,6 +13,7 @@ import {
   queryClient,
   shouldSaveToPhone,
 } from "@/hooks/query-client";
+import { setRootBackground } from "@/theme/root-background";
 import { t } from "@/theme/tokens";
 
 // CRI-95: Home hides the splash once its data is ready (at once from the
@@ -22,6 +23,9 @@ const SPLASH_MAX_MS = 2000;
 
 export default function RootLayout() {
   useEffect(() => setUpAppStateFocus(), []);
+  useEffect(() => {
+    setRootBackground();
+  }, []);
   useEffect(() => {
     const cap = setTimeout(() => SplashScreen.hide(), SPLASH_MAX_MS);
     return () => clearTimeout(cap);

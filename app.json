@@ -7,6 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "onnow",
     "userInterfaceStyle": "dark",
+    "backgroundColor": "#0b0c0f",
     "ios": {
       "icon": "./assets/expo.icon"
     },
