@@ -15,6 +15,11 @@ jest.mock("@/hooks/useListPoster", () => ({
     pending: false,
   }),
 }));
+// IMDb rating by the title (owner, 2026-10-22).
+const mockImdbRating = jest.fn(() => ({ data: null, imdbId: null }));
+jest.mock("@/hooks/useImdbRating", () => ({
+  useImdbRating: () => mockImdbRating(),
+}));
 jest.mock("@/hooks/useShow", () => ({
   useShow: jest.fn(),
 }));
@@ -169,5 +174,30 @@ describe("SearchResultRow", () => {
     });
 
     expect(mockToggle).toHaveBeenCalledTimes(1);
+  });
+
+  // Owner, 2026-10-22: the show's IMDb rating by its title, where it reads
+  // as the show's, to help decide what to follow; not a link, so a tap on
+  // the row still opens Show detail.
+  it("shows the IMDb rating by the title, not as a link", async () => {
+    mockImdbRating.mockReturnValue({
+      data: "8.2",
+      imdbId: "tt5875444",
+    } as never);
+    await render(
+      <SearchResultRow show={showSlowHorsesFixture as unknown as TvMazeShow} />,
+    );
+    const rating = screen.getByTestId("search-result-row-title-row");
+    expect(rating).toHaveTextContent(/Slow Horses.*IMDb.*8\.2/);
+    expect(screen.queryByRole("link")).toBeNull();
+    mockImdbRating.mockReturnValue({ data: null, imdbId: null });
+  });
+
+  it("shows no rating when there is none", async () => {
+    mockImdbRating.mockReturnValue({ data: null, imdbId: null });
+    await render(
+      <SearchResultRow show={showSlowHorsesFixture as unknown as TvMazeShow} />,
+    );
+    expect(screen.queryByText("IMDb")).toBeNull();
   });
 });

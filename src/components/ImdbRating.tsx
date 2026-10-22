@@ -1,12 +1,16 @@
 // CRI-87, ADR 0013: the IMDb rating from OMDb, linking to the title on
-// IMDb. Nothing at all without a rating. Show detail only (the Home hero
-// dropped its own chip: too easy to read as the episode's rating, not the
-// show's).
+// IMDb. Nothing at all without a rating. In Show detail, and by a Search
+// row's title, where it reads as the show's and helps decide what to
+// follow (owner, 2026-10-22); not a link there, so a tap on the row still
+// opens Show detail. Not on the Home hero: by the episode line it read as
+// the episode's rating. Not in Shows: OMDb's free key is shared by every
+// user (CRI-116).
 
 import {
   Pressable,
   StyleSheet,
   Text,
+  View,
   type StyleProp,
   type TextStyle,
 } from "react-native";
@@ -23,13 +27,29 @@ const MARK_LINE_HEIGHT = 14;
 export function ImdbRating({
   show,
   textStyle,
+  linked = true,
 }: {
   show: TvMazeShow;
   textStyle?: StyleProp<TextStyle>;
+  // A link to the title on IMDb (Show detail), or only the rating (a
+  // Search row, which is itself a button).
+  linked?: boolean;
 }) {
   const { data: rating, imdbId } = useImdbRating(show);
   if (!rating || !imdbId) {
     return null;
+  }
+  if (!linked) {
+    return (
+      <View
+        style={styles.row}
+        accessibilityLabel={`IMDb rating ${rating}`}
+        testID="imdb-rating"
+      >
+        <Text style={styles.mark}>IMDb</Text>
+        <Text style={textStyle}>{rating}</Text>
+      </View>
+    );
   }
   return (
     <Pressable

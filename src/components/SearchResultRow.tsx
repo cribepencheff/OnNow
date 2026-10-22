@@ -6,7 +6,10 @@
 // opening it (PRD 5.4, 5.5, CRI-79). Screen reader users get the row as
 // one button, with follow or unfollow as an accessibility action (NFR-008).
 
+import { StyleSheet } from "react-native";
+
 import { FollowCircle } from "./FollowCircle";
+import { ImdbRating } from "./ImdbRating";
 import { ShowRow, ShowRowLine, ShowRowServiceLine } from "./ShowRow";
 import { useFollowToggle } from "@/hooks/useFollowList";
 import { useShow } from "@/hooks/useShow";
@@ -17,6 +20,7 @@ import { plainTextSummary, searchResultMetaLine } from "@/logic/search-results";
 import { showState, showStateLabel } from "@/logic/show-state";
 import { rowServiceLogos, rowServiceText } from "@/logic/streaming-service";
 import type { TvMazeShow } from "@/api/tvmaze-types";
+import { t, type } from "@/theme/tokens";
 
 interface SearchResultRowProps {
   show: TvMazeShow;
@@ -41,6 +45,9 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
       posterUri={poster.uri}
       posterPending={poster.pending}
       summary={plainTextSummary(show.summary)}
+      titleAccessory={
+        <ImdbRating show={show} linked={false} textStyle={styles.rating} />
+      }
       testID="search-result-row"
       onPress={onPress}
       accessibilityLabel={show.name}
@@ -93,3 +100,11 @@ function StatusLine({ showId }: { showId: number }) {
     : "";
   return <ShowRowLine testID="search-result-status">{label}</ShowRowLine>;
 }
+
+const styles = StyleSheet.create({
+  // The rating at the row's small size, muted beside the title.
+  rating: {
+    ...type.meta,
+    color: t.inkMuted,
+  },
+});

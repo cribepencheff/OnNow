@@ -30,6 +30,8 @@ interface ShowRowProps {
   // Two lines about the show, right under the title (owner, 2026-10-22):
   // the show first. Nothing, and no gap, without one.
   summary?: string | null;
+  // After the title, on its line (a Search row's IMDb rating).
+  titleAccessory?: ReactNode;
   children?: ReactNode;
   trailing?: ReactNode;
   onPress?: () => void;
@@ -46,6 +48,7 @@ export function ShowRow({
   posterUri,
   posterPending = false,
   summary,
+  titleAccessory,
   children,
   trailing,
   onPress,
@@ -80,9 +83,12 @@ export function ShowRow({
         <NoImage icon style={styles.poster} />
       )}
       <View style={styles.details}>
-        <Text style={styles.title} numberOfLines={1}>
-          {title}
-        </Text>
+        <View style={styles.titleRow} testID={testID && `${testID}-title-row`}>
+          <Text style={styles.title} numberOfLines={1}>
+            {title}
+          </Text>
+          {titleAccessory}
+        </View>
         {summary ? (
           <Text
             style={styles.summary}
@@ -189,10 +195,16 @@ const styles = StyleSheet.create({
   },
   // Smaller than headline (owner, CRI-115), in its weight.
   title: {
+    flexShrink: 1,
     ...type.headline,
     fontSize: ROW_TITLE_SIZE,
     lineHeight: ROW_TITLE_LINE_HEIGHT,
     color: t.ink,
+  },
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
   },
   // Muted, as the lines under it (owner).
   summary: {
