@@ -173,15 +173,17 @@ describe("heroLayout (CRI-124)", () => {
   });
 });
 
-describe("heroImageSize (CRI-124)", () => {
-  it("fetches the original on a 3x phone, where only the middle third of the image shows", () => {
+describe("heroImageSize (CRI-124, CRI-140)", () => {
+  // The owner saw no difference from "original" (CRI-140): w1920 is the
+  // largest size fetched, at a third of the file.
+  it("fetches w1920 on a 3x phone, where only the middle third of the image shows", () => {
     // 390pt wide box overscanned for the parallax, 714pt tall: a 16:9 image
     // is drawn about 1269pt wide, 3808 pixels at 3x.
-    expect(heroImageSize(975, 714, 3)).toBe("original");
+    expect(heroImageSize(975, 714, 3)).toBe("w1920");
   });
 
-  it("fetches the original at 2x too, since the drawn width is set by the hero's height", () => {
-    expect(heroImageSize(390, 537, 2)).toBe("original");
+  it("fetches w1920 at 2x too, since the drawn width is set by the hero's height", () => {
+    expect(heroImageSize(390, 537, 2)).toBe("w1920");
   });
 
   it("takes a smaller size when it is sharp enough", () => {

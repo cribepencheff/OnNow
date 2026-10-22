@@ -1,8 +1,7 @@
 import { Animated, PixelRatio, StyleSheet } from "react-native";
-import { act, fireEvent, render, screen } from "@testing-library/react-native";
+import { fireEvent, render, screen } from "@testing-library/react-native";
 
 import type { TvMazeEpisode, TvMazeShow } from "@/api/tvmaze-types";
-import { setHeroW1920 } from "@/hooks/useHeroW1920";
 import { useShowImages } from "@/hooks/useShowImages";
 import { IMAGE_TOP_MARGIN } from "@/logic/hero-layout";
 import { HeroPage } from "./HeroPage";
@@ -71,9 +70,14 @@ describe("HeroPage backdrop readiness (CRI-94)", () => {
     await renderPage(onBackdropLoad);
 
     expect(onBackdropLoad).not.toHaveBeenCalled();
-    await fireEvent(screen.getByTestId("hero-backdrop-image"), "error", {
-      nativeEvent: { error: "404" },
-    });
+    // The first failure tries the fallback size (CRI-140); the second is
+    // final.
+    const fail = () =>
+      fireEvent(screen.getByTestId("hero-backdrop-image"), "error", {
+        nativeEvent: { error: "404" },
+      });
+    await fail();
+    await fail();
     expect(onBackdropLoad).toHaveBeenCalledWith(3);
   });
 });
@@ -150,32 +154,37 @@ describe("HeroPage sharp image only when nearby (CRI-136)", () => {
   });
 });
 
-// CRI-140: the dev switch draws "original" at TMDB's w1920 instead.
-describe("HeroPage w1920 dev switch (CRI-140)", () => {
+// CRI-140: the hero fetches w1920, and falls back to "original" if that
+// undocumented size fails, before it counts as ready.
+describe("HeroPage w1920 with an original fallback (CRI-140)", () => {
   beforeEach(() => {
-    // Today's phones: "original" fits (heroImageSize).
+    // Today's phones: the largest size (heroImageSize).
     jest.spyOn(PixelRatio, "get").mockReturnValue(3);
     mockedImages.mockReturnValue({
       data: { highestRatedBackdrop: { file_path: "/backdrop.jpg" } },
       isLoading: false,
     });
   });
-  afterEach(async () => {
+  afterEach(() => {
     jest.restoreAllMocks();
-    await act(async () => setHeroW1920(false));
   });
 
-  const sharpSource = () =>
-    JSON.stringify(screen.getByTestId("hero-backdrop-image").props.source);
+  const sharp = () => screen.getByTestId("hero-backdrop-image");
 
-  it("draws original when off", async () => {
-    await renderPage(jest.fn());
-    expect(sharpSource()).toContain("/original/backdrop.jpg");
-  });
+  it("draws w1920, and original once w1920 fails", async () => {
+    const onBackdropLoad = jest.fn();
+    await renderPage(onBackdropLoad);
+    expect(JSON.stringify(sharp().props.source)).toContain(
+      "/w1920/backdrop.jpg",
+    );
 
-  it("draws w1920 when on", async () => {
-    await act(async () => setHeroW1920(true));
-    await renderPage(jest.fn());
-    expect(sharpSource()).toContain("/w1920/backdrop.jpg");
+    await fireEvent(sharp(), "error", { nativeEvent: { error: "404" } });
+    expect(JSON.stringify(sharp().props.source)).toContain(
+      "/original/backdrop.jpg",
+    );
+    expect(onBackdropLoad).not.toHaveBeenCalled();
+
+    await fireEvent(sharp(), "error", { nativeEvent: { error: "404" } });
+    expect(onBackdropLoad).toHaveBeenCalledWith(3);
   });
 });

@@ -3,6 +3,7 @@
 // has a fixed height, so the content's position is computed, never
 // measured, and nothing moves from one slide to the next.
 
+import { LARGE_BACKDROP_SIZE } from "@/api/tmdb-types";
 import { t, type } from "@/theme/tokens";
 import { HEADER_BAR_HEIGHT } from "./header";
 import { POSTER_ROW_TOP_MARGIN } from "./poster-snap";
@@ -157,8 +158,10 @@ export function heroLayout(windowHeight: number, topInset: number): HeroLayout {
 // parallax, so a landscape image is drawn wider than the screen and only
 // its middle shows (about 40% on a phone).
 // It must stay sharp on the screen's pixels at that drawn width, so the
-// size is the smallest TMDB size at least that many pixels wide, else
-// "original". Assumes 16:9, TMDB's backdrop and still shape.
+// size is the smallest TMDB size at least that many pixels wide, else the
+// largest fetched, w1920 (LARGE_BACKDROP_SIZE, CRI-140): on today's phones
+// that is a little under the drawn width, which the owner could not tell
+// from "original". Assumes 16:9, TMDB's backdrop and still shape.
 const SIZES: [name: string, width: number][] = [
   ["w780", 780],
   ["w1280", 1280],
@@ -172,7 +175,7 @@ export function heroImageSize(
   const drawnWidth = Math.max(boxWidth, (boxHeight * 16) / 9);
   const neededPixels = drawnWidth * pixelRatio;
   const fit = SIZES.find(([, width]) => width >= neededPixels);
-  return fit ? fit[0] : "original";
+  return fit ? fit[0] : LARGE_BACKDROP_SIZE;
 }
 
 // The progressive blur's mask (CRI-124): from clear at the blur's top to
