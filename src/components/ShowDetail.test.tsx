@@ -5,7 +5,10 @@ import {
   within,
 } from "@testing-library/react-native";
 
-import { StyleSheet } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
+import { HEADER_BAR_HEIGHT } from "@/logic/header";
+import { t } from "@/theme/tokens";
+import { releaseNavigation } from "@/hooks/navigation-lock";
 import * as Linking from "expo-linking";
 
 import { ShowDetail } from "./ShowDetail";
@@ -22,6 +25,10 @@ import showKillingEveFixture from "@/api/fixtures/show-killing-eve.json";
 import showNeagleyFixture from "@/api/fixtures/show-neagley.json";
 import showTheDiplomatFixture from "@/api/fixtures/show-the-diplomat.json";
 
+const mockBack = jest.fn();
+jest.mock("expo-router", () => ({
+  useRouter: () => ({ back: mockBack, push: jest.fn() }),
+}));
 jest.mock("expo-linking", () => ({
   openURL: jest.fn(),
 }));
@@ -539,7 +546,9 @@ describe("ShowDetail", () => {
     const section = StyleSheet.flatten(
       screen.getByTestId("show-detail-section").props.style,
     );
-    expect(content.paddingTop).toBe(section.paddingTop);
+    // Measured from the floating header's bottom (CRI-129); Jest's top
+    // inset is 0.
+    expect(content.paddingTop).toBe(HEADER_BAR_HEIGHT + section.paddingTop);
   });
 
   it("CRI-140: falls back to the original backdrop if w1920 fails", async () => {
@@ -711,5 +720,48 @@ describe("ShowDetail", () => {
     await render(<ShowDetail showId={45039} />);
 
     expect(screen.getByText("Loading…")).toBeTruthy();
+  });
+
+  // CRI-129 (owner, 2026-10-22; Apple TV and Instagram as references): the
+  // backdrop runs up under the status bar, and a round back button floats
+  // over it, staying put while the page scrolls.
+  describe("floating header (CRI-129)", () => {
+    it("runs the backdrop up under the status bar", async () => {
+      mockShow(showSlowHorsesFixture);
+      await render(<ShowDetail showId={45039} />);
+      const image = StyleSheet.flatten(
+        screen.getByTestId("show-detail-backdrop").props.style,
+      );
+      // The square, plus the status bar and the header's bar above it
+      // (Jest's top inset is 0).
+      expect(image.height).toBe(
+        Dimensions.get("window").width + HEADER_BAR_HEIGHT,
+      );
+    });
+
+    it("floats a round back button that goes back", async () => {
+      mockShow(showSlowHorsesFixture);
+      await render(<ShowDetail showId={45039} />);
+      const circle = StyleSheet.flatten(
+        screen.getByTestId("floating-back").props.style,
+      );
+      expect(circle.borderRadius).toBe(circle.width / 2);
+      expect(circle.borderColor).toBe(t.imageControlEdge);
+      releaseNavigation();
+      await fireEvent.press(screen.getByRole("button", { name: "Back" }));
+      expect(mockBack).toHaveBeenCalled();
+    });
+
+    it("keeps the title clear of the floating header without an image", async () => {
+      mockShow({ ...showSlowHorsesFixture, image: null });
+      mockShowImages.mockReturnValue({
+        data: { highestRatedBackdrop: null, logo: null },
+      });
+      await render(<ShowDetail showId={45039} />);
+      const content = StyleSheet.flatten(
+        screen.getByTestId("show-detail-hero-content").props.style,
+      );
+      expect(content.paddingTop).toBeGreaterThanOrEqual(HEADER_BAR_HEIGHT);
+    });
   });
 });

@@ -65,7 +65,9 @@ export default function RootLayout() {
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen
             name="show/[id]"
-            options={{ title: "", headerBackButtonDisplayMode: "minimal" }}
+            // Show detail draws its own floating header over the backdrop
+            // (CRI-129).
+            options={{ headerShown: false }}
           />
           <Stack.Screen
             name="region"

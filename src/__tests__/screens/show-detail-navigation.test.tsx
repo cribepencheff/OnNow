@@ -110,10 +110,10 @@ describe("Show detail (real navigation)", () => {
     await fireEvent.press(screen.getByTestId("shows-row"));
     expect(rendered.getPathname()).toBe("/show/45039");
 
-    // Pushed, not replaced: going back returns to Shows. The back arrow
-    // itself is drawn by the native header, which this test renderer does
-    // not render; the Maestro flow covers it.
-    await act(() => router.back());
+    // Pushed, not replaced: the floating back button (CRI-129) returns to
+    // Shows.
+    releaseNavigation();
+    await fireEvent.press(screen.getByRole("button", { name: "Back" }));
     expect(rendered.getPathname()).toBe("/shows");
   });
 
@@ -150,11 +150,10 @@ describe("Show detail (real navigation)", () => {
     expect(rendered.getPathname()).toBe("/search/show/45039");
     expect(screen.getByTestId("show-detail-next")).toBeTruthy();
 
-    // Only the back arrow, in a header of fixed height (CRI-133).
+    // Only the floating back button over the backdrop (CRI-129), no close
+    // button.
     expect(screen.queryByRole("button", { name: "Close" })).toBeNull();
-    expect(screen.getByTestId("back-header").props.style).toMatchObject({
-      height: 44,
-    });
+    expect(screen.getByTestId("floating-back")).toBeTruthy();
     await fireEvent.press(screen.getByRole("button", { name: "Back" }));
     expect(rendered.getPathname()).toBe("/search");
   });

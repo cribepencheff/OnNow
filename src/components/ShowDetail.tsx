@@ -8,7 +8,15 @@
 import { Image } from "expo-image";
 import { SymbolView } from "expo-symbols";
 import { useRef, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {
   IMAGE_BASE,
@@ -49,11 +57,14 @@ import {
 } from "@/logic/show-detail";
 import { showState, showStateLabel } from "@/logic/show-state";
 import { TAB_BAR_HEIGHT } from "@/logic/tab-bar";
+import { HEADER_BAR_HEIGHT } from "@/logic/header";
+import { heroLayout, topScrimGradient } from "@/logic/hero-layout";
 import {
   availabilityText,
   openInAccessibilityLabel,
   openInLink,
 } from "@/logic/streaming-service";
+import { FloatingBackButton } from "./FloatingBackButton";
 import { followHaptic } from "./followHaptic";
 import { followSymbol } from "./followSymbols";
 import { ImdbRating } from "./ImdbRating";
@@ -78,15 +89,43 @@ export function ShowDetail({
 }) {
   const { data: show, isLoading } = useShow(showId);
 
-  if (!show) {
-    return (
-      <Text style={styles.quietLine}>
-        {isLoading ? "Loading…" : "Couldn't load this show."}
-      </Text>
-    );
-  }
+  return (
+    <View style={styles.frame}>
+      {show ? (
+        <ShowDetailContent show={show} overTabBar={overTabBar} />
+      ) : (
+        <Text style={styles.quietLine}>
+          {isLoading ? "Loading…" : "Couldn't load this show."}
+        </Text>
+      )}
+      <FloatingHeader />
+    </View>
+  );
+}
 
-  return <ShowDetailContent show={show} overTabBar={overTabBar} />;
+// Over the page, staying put while it scrolls (CRI-129, owner 2026-10-22;
+// Apple TV and Instagram as references): the Home hero's dark gradient
+// behind the status bar and the header's bar, so the clock and the back
+// button read on bright images, and the round back button. The backdrop
+// runs up under both.
+function FloatingHeader() {
+  const insets = useSafeAreaInsets();
+  const { height } = useWindowDimensions();
+  return (
+    <>
+      <View
+        pointerEvents="none"
+        style={[
+          styles.topScrim,
+          {
+            height: heroLayout(height, insets.top).topGradientHeight,
+            experimental_backgroundImage: topScrimGradient(insets.top),
+          },
+        ]}
+      />
+      <FloatingBackButton />
+    </>
+  );
 }
 
 function ShowDetailContent({
@@ -130,6 +169,11 @@ function ShowDetailContent({
       `${IMAGE_BASE}/${LARGE_BACKDROP_FALLBACK_SIZE}${backdropPath}`,
   );
   const noImage = shown?.kind === "none";
+  // The square, plus the status bar and the header's bar above it: the
+  // backdrop runs up under the floating header (CRI-129).
+  const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  const headerHeight = insets.top + HEADER_BAR_HEIGHT;
   const logo = images?.logo;
   const { link, availability } = useOpenIn(show);
   const { data: originCountries } = useOriginCountries(show);
@@ -154,7 +198,7 @@ function ShowDetailContent({
           <Image
             source={backdrop.uri}
             onError={backdrop.onError}
-            style={styles.heroImage}
+            style={[styles.heroImage, { height: width + headerHeight }]}
             testID="show-detail-backdrop"
             contentFit="cover"
             // A poster from the top, where its title usually is not.
@@ -166,7 +210,15 @@ function ShowDetailContent({
             backdrop, in every state (CRI-86). */}
         {!noImage && <View pointerEvents="none" style={styles.heroScrim} />}
         <View
-          style={noImage ? styles.heroContentPlain : styles.heroContent}
+          style={
+            noImage
+              ? [
+                  styles.heroContentPlain,
+                  // Clear of the floating header.
+                  { paddingTop: headerHeight + SECTION_TOP },
+                ]
+              : styles.heroContent
+          }
           testID="show-detail-hero-content"
         >
           {logo ? (
@@ -520,6 +572,10 @@ const STILL_ASPECT_RATIO = 16 / 9;
 const SECTION_TOP = 20;
 
 const styles = StyleSheet.create({
+  frame: {
+    flex: 1,
+    backgroundColor: t.bg,
+  },
   screen: {
     backgroundColor: t.bg,
   },
@@ -595,7 +651,12 @@ const styles = StyleSheet.create({
   },
   heroImage: {
     width: "100%",
-    aspectRatio: 1,
+  },
+  topScrim: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
   },
   section: {
     paddingHorizontal: t.contentInset,
@@ -744,11 +805,12 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     overflow: "hidden",
   },
+  // Below the floating header.
   quietLine: {
     ...type.body,
     textAlign: "center",
     color: t.inkMuted,
     paddingHorizontal: t.space10,
-    paddingTop: t.space6,
+    paddingTop: 120,
   },
 });

@@ -1,10 +1,9 @@
 // The Search tab's own stack (PRD 5.4, 5.6, CRI-133): the results, and
-// Show detail pushed over them with only a back arrow, no close button, in
-// a header of fixed height (BackHeader). The tab bar stays in view.
+// Show detail pushed over them with its own floating back button, no close
+// button (CRI-129). The tab bar stays in view.
 
 import { Stack } from "expo-router";
 
-import { BackHeader } from "@/components/BackHeader";
 import { releaseNavigation } from "@/hooks/navigation-lock";
 import { t } from "@/theme/tokens";
 
@@ -23,10 +22,7 @@ export default function SearchLayout() {
       screenListeners={{ transitionEnd: releaseNavigation }}
     >
       <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen
-        name="show/[id]"
-        options={{ header: () => <BackHeader /> }}
-      />
+      <Stack.Screen name="show/[id]" options={{ headerShown: false }} />
     </Stack>
   );
 }
