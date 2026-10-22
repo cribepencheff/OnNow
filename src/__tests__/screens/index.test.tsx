@@ -517,6 +517,47 @@ describe("HomeScreen", () => {
     }
   });
 
+  // CRI-136: every slide stays mounted, but only the settled slide and its
+  // neighbours, across the loop, draw the sharp backdrop.
+  it("draws the sharp backdrop only on the first slide and its neighbours (CRI-136)", async () => {
+    const shows = [1, 2, 3, 4, 5].map((id) =>
+      makeShow({ id, name: `Show ${id}` }),
+    );
+    (useShowImages as jest.Mock).mockImplementation((show) => ({
+      data: { highestRatedBackdrop: { file_path: `/b${show.id}.jpg` } },
+      isLoading: false,
+    }));
+    mockFollowedEpisodes({
+      followedShows: shows.map((show) => ({
+        show,
+        episodes: [makeEpisode()],
+      })),
+    });
+
+    try {
+      await render(<HomeScreen />);
+      const sources = screen
+        .getAllByTestId("hero-backdrop-image", { includeHiddenElements: true })
+        .map((image) => JSON.stringify(image.props.source));
+      const backdropOf = (source: string) => source.match(/\/b(\d)\.jpg/)![1];
+      const sharp = new Set(
+        sources.filter((s) => !s.includes("/w300/")).map(backdropOf),
+      );
+      const small = new Set(
+        sources.filter((s) => s.includes("/w300/")).map(backdropOf),
+      );
+      // Slide 1 is settled; slide 5 comes before it in the loop.
+      expect([...sharp].sort()).toEqual(["1", "2", "5"]);
+      expect([...small].sort()).toEqual(["3", "4"]);
+    } finally {
+      (useShowImages as jest.Mock).mockImplementation(() => ({
+        data: undefined,
+        isLoading: false,
+        isError: false,
+      }));
+    }
+  });
+
   // The hero marks a premiere or a finale in a chip after the episode
   // line, the same facts Show detail marks; mid-season, no chip.
   it("marks a premiere and a finale after the episode line, and nothing mid-season", async () => {

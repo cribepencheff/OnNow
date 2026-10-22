@@ -194,6 +194,7 @@ export const HeroPage = memo(function HeroPage({
   scrollX,
   reduceMotionEnabled,
   pullDistance,
+  nearby,
   onBackdropLoad,
 }: {
   item: HeroSlide;
@@ -203,6 +204,11 @@ export const HeroPage = memo(function HeroPage({
   scrollX: Animated.Value;
   reduceMotionEnabled: boolean;
   pullDistance: Animated.AnimatedInterpolation<number>;
+  // The settled slide or one of its neighbours (CRI-136): only these draw
+  // the sharp image. Every slide stays mounted (HeroPager, CRI-134), so
+  // without this each one would hold a full-size decoded image (about
+  // 33 MB at "original") although at most two show at once.
+  nearby: boolean;
   // Takes this instance's own (physical) index, rather than being called
   // with no arguments: lets HeroPager pass the exact same function to
   // every instance (see handleBackdropLoad), instead of a fresh closure
@@ -397,13 +403,18 @@ export const HeroPage = memo(function HeroPage({
                 transform: [{ translateX }],
               }}
             >
+              {/* A slide further away has only the small copy, and is not
+                  ready (auto-advance) until it is nearby and sharp. The
+                  small copy also shows while the sharp one is still
+                  decoding, as on a launch, rather than black. */}
               <ImageColumn
-                uri={`${IMAGE_BASE}/${imageSize}${displayPath}`}
+                uri={`${IMAGE_BASE}/${nearby ? imageSize : BLURRED_COPY_SIZE}${displayPath}`}
+                placeholder={`${IMAGE_BASE}/${BLURRED_COPY_SIZE}${displayPath}`}
                 width={columnWidth}
                 left={columnLeft}
                 imageTop={imageTop}
                 boxHeight={imageBoxHeight}
-                onLoad={handleLoad}
+                onLoad={nearby ? handleLoad : undefined}
               />
               {/* Android has no progressive BlurView (ProgressiveBlur): a
                   blurred copy of the column shows through the same eased
@@ -488,6 +499,7 @@ export const HeroPage = memo(function HeroPage({
 // sharp, and on Android once more, blurred, for the masked blur.
 function ImageColumn({
   uri,
+  placeholder,
   width,
   left,
   imageTop,
@@ -496,6 +508,8 @@ function ImageColumn({
   onLoad,
 }: {
   uri: string;
+  // Shown until uri has loaded.
+  placeholder?: string;
   width: number;
   // From the left of the backdrop box: the column is centred in it.
   left: number;
@@ -509,6 +523,8 @@ function ImageColumn({
   const image = (flipped: boolean, testID?: string) => (
     <Image
       source={uri}
+      placeholder={placeholder}
+      placeholderContentFit="cover"
       style={[{ width, height: boxHeight }, flipped && styles.flipped]}
       contentFit="cover"
       // Centred: anchoring the crop at the image's top edge kept more hair

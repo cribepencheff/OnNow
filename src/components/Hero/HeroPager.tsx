@@ -253,6 +253,12 @@ export function HeroPager({
     ? [pageIndex]
     : contentMountFrames(pageCount, pageIndex);
 
+  // Which LOGICAL slides draw their sharp backdrop (HeroPage's nearby,
+  // CRI-136): the same settled page and neighbours, also under Reduce
+  // Motion, so a swipe lands on an image already loaded. Joined into a
+  // string so renderItem below changes only when the set does.
+  const nearbyFrames = contentMountFrames(pageCount, pageIndex).join(",");
+
   // The shared basis for every mounted ContentLayer's own crossfade
   // (logicalCrossfadePosition on each one, below): a slide's continuous
   // LOGICAL position, 0..pageCount, periodic in scrollX. Built once here
@@ -327,6 +333,9 @@ export function HeroPager({
         scrollX={scrollX}
         reduceMotionEnabled={reduceMotionEnabled}
         pullDistance={pullDistance}
+        nearby={nearbyFrames
+          .split(",")
+          .includes(String(physicalToLogical(index, pageCount)))}
         onBackdropLoad={handleBackdropLoad}
       />
     ),
@@ -336,6 +345,8 @@ export function HeroPager({
       scrollX,
       reduceMotionEnabled,
       pullDistance,
+      nearbyFrames,
+      pageCount,
       handleBackdropLoad,
     ],
   );

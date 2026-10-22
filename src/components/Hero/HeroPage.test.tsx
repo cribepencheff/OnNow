@@ -17,7 +17,7 @@ const mockedImages = useShowImages as jest.Mock;
 const show = { id: 92764, name: "JAŸ-Z IN 8" } as TvMazeShow;
 const episode = { season: 1, number: 1 } as TvMazeEpisode;
 
-async function renderPage(onBackdropLoad: jest.Mock) {
+async function renderPage(onBackdropLoad: jest.Mock, nearby = true) {
   await render(
     <HeroPage
       item={{
@@ -36,6 +36,7 @@ async function renderPage(onBackdropLoad: jest.Mock) {
           0,
         ) as unknown as Animated.AnimatedInterpolation<number>
       }
+      nearby={nearby}
       onBackdropLoad={onBackdropLoad}
     />,
   );
@@ -116,5 +117,34 @@ describe("HeroPage mirror (CRI-124)", () => {
       screen.getByTestId("hero-backdrop-top-mirror-box").props.style,
     );
     expect(topBox.top).toBe(IMAGE_TOP - sharpHeight);
+  });
+});
+
+// CRI-136: every slide stays mounted, but only the settled one and its
+// neighbours draw the sharp image; the small copy stands in until then.
+describe("HeroPage sharp image only when nearby (CRI-136)", () => {
+  beforeEach(() => {
+    mockedImages.mockReturnValue({
+      data: { highestRatedBackdrop: { file_path: "/backdrop.jpg" } },
+      isLoading: false,
+    });
+  });
+
+  it("draws the sharp image nearby, over the small copy", async () => {
+    await renderPage(jest.fn());
+    const sharp = screen.getByTestId("hero-backdrop-image");
+    expect(JSON.stringify(sharp.props.source)).not.toContain("/w300/");
+    expect(JSON.stringify(sharp.props.placeholder)).toContain(
+      "/w300/backdrop.jpg",
+    );
+  });
+
+  it("draws only the small copy further away, and is not ready", async () => {
+    const onBackdropLoad = jest.fn();
+    await renderPage(onBackdropLoad, false);
+    const image = screen.getByTestId("hero-backdrop-image");
+    expect(JSON.stringify(image.props.source)).toContain("/w300/backdrop.jpg");
+    await fireEvent(image, "load", { nativeEvent: {} });
+    expect(onBackdropLoad).not.toHaveBeenCalled();
   });
 });
