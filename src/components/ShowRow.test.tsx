@@ -131,8 +131,8 @@ describe("ShowRow", () => {
   });
 
   // Owner, 2026-10-22: the service line at the bottom, its text at the
-  // app's smallest size, in ink, with some room above it.
-  it("CRI-115: sets the service text at the smallest size, in ink, with room above", async () => {
+  // app's smallest size, in ink, spaced as the other lines.
+  it("CRI-115: sets the service text at the smallest size, in ink, spaced as the other lines", async () => {
     await render(
       <ShowRowServiceLine logos={[]} text="On Netflix" testID="service" />,
     );
@@ -141,7 +141,7 @@ describe("ShowRow", () => {
     expect(text.color).toBe(t.ink);
     expect(
       StyleSheet.flatten(screen.getByTestId("service").props.style).marginTop,
-    ).toBeGreaterThan(0);
+    ).toBeUndefined();
   });
 
   it("CRI-115: shows the text alone without logos, and keeps the line's height", async () => {

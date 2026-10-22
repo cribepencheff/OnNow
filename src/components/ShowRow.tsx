@@ -232,7 +232,7 @@ const POSTER_WIDTH = 60;
 const POSTER_HEIGHT = 90;
 // A Search row's poster (owner, 2026-10-22): bigger, balancing its taller
 // row (summary, year and genres, status, services); 2:3, as posters are.
-export const LARGE_POSTER = { width: 74, height: 114 };
+export const LARGE_POSTER = { width: 77, height: 117 };
 export const POSTER_ACCESSORY_INSET = 6;
 
 const styles = StyleSheet.create({
@@ -276,13 +276,11 @@ const styles = StyleSheet.create({
     minHeight: type.meta.lineHeight,
     color: t.inkMuted,
   },
-  // At the bottom, with some room above it (owner): where to watch, apart
-  // from the lines about the show.
+  // At the bottom, spaced as the other lines (owner, 2026-10-22).
   serviceLine: {
     flexDirection: "row",
     alignItems: "center",
     minHeight: type.meta.lineHeight,
-    marginTop: 8,
     gap: 6,
   },
   // At the poster's top left (owner, 2026-10-22), a little closer to the
