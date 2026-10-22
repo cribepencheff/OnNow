@@ -66,3 +66,17 @@ show gets its first rating. We accept the gap and add no fallback source.
 - Request budget: a show without a rating costs at most one request per
   device per day instead of per week. Few followed shows are new enough to
   lack a rating, so the shared 1,000 a day stays far off.
+
+## Amendment: ratings kept a month (CRI-116, 2026-10-22)
+Status: Accepted (approved with #114, 2026-10-22)
+
+Search rows now show the rating too (on the poster), so a user can use
+many more lookups a day than Show detail alone did. A found rating is kept
+**30 days** instead of 7; a "no rating" answer stays 1 day. Ratings move
+slowly, so a month is fresh enough.
+
+This stretches the shared free key; it does not remove its limit, and the
+key bundled in the app can be read out of it. Before a wider release the
+owner expects a backend of the app's own (a small shared cache in front of
+OMDb, which would also keep the key off devices). That needs a decision on
+ADR 0002 ("no backend") and is tracked in CRI-116.
