@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     minHeight: type.meta.lineHeight,
-    marginTop: 4,
+    marginTop: 8,
     gap: 6,
   },
   serviceLogos: {
