@@ -68,7 +68,7 @@ show gets its first rating. We accept the gap and add no fallback source.
   lack a rating, so the shared 1,000 a day stays far off.
 
 ## Amendment: ratings kept a month (CRI-116, 2026-10-22)
-Status: Proposed
+Status: Accepted (approved with #114, 2026-10-22)
 
 Search rows now show the rating too (on the poster), so a user can use
 many more lookups a day than Show detail alone did. A found rating is kept
