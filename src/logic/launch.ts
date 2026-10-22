@@ -15,32 +15,7 @@ export function homeIsReady(input: {
   );
 }
 
-const MINUTE_MS = 60 * 1000;
-const HOUR_MS = 60 * MINUTE_MS;
-const DAY_MS = 24 * HOUR_MS;
-
-function plural(count: number, unit: string): string {
-  return `${count} ${unit}${count === 1 ? "" : "s"}`;
-}
-
-// NFR-002: "Updated 5 min ago". Relative only, never a time of day
-// (ADR 0001).
-export function updatedAgoLabel(
-  updatedAt: number | null,
-  now: number,
-): string | null {
-  if (updatedAt === null) {
-    return null;
-  }
-  const age = Math.max(0, now - updatedAt);
-  if (age < MINUTE_MS) {
-    return "Updated just now";
-  }
-  if (age < HOUR_MS) {
-    return `Updated ${Math.floor(age / MINUTE_MS)} min ago`;
-  }
-  if (age < DAY_MS) {
-    return `Updated ${plural(Math.floor(age / HOUR_MS), "hour")} ago`;
-  }
-  return `Updated ${plural(Math.floor(age / DAY_MS), "day")} ago`;
-}
+// The shortest turn of Home's pull-to-refresh spinner: a pull with nothing
+// stale is done at once (CRI-85), and a spinner that never turns reads as
+// stuck. As long as a new row batch's skeleton (MIN_LOAD_MORE_MS).
+export const MIN_REFRESH_SPIN_MS = 700;
