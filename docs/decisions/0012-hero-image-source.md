@@ -97,7 +97,7 @@ the tie-break. No episode stills on the hero.
   change that.
 
 ## Amendment: the backdrop's size (CRI-140, 2026-10-22)
-Status: Proposed
+Status: Accepted (approved with #102, 2026-10-22)
 
 ### Context
 The hero fetched its backdrop at "original", often 3840×2160 and about
