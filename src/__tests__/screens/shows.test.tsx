@@ -278,7 +278,7 @@ describe("ShowsScreen", () => {
 
     await render(<ShowsScreen />);
 
-    expect(screen.getByTestId("shows-row-service").props.children).toBe("");
+    expect(screen.getByTestId("shows-row-service")).toHaveTextContent(/^$/);
   });
 
   it('reveals "Unfollow" on swipe and removes the show only on press (FR-002)', async () => {

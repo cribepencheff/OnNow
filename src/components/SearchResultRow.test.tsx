@@ -110,7 +110,7 @@ describe("SearchResultRow", () => {
 
     await render(<SearchResultRow show={show} />);
 
-    expect(screen.getByTestId("search-result-service").props.children).toBe("");
+    expect(screen.getByTestId("search-result-service")).toHaveTextContent(/^$/);
   });
 
   it.each([false, true])(

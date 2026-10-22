@@ -19,6 +19,7 @@ import {
 
 import { t, type } from "@/theme/tokens";
 import { NoImage } from "./NoImage";
+import { ServiceLogo } from "./ServiceLogo";
 
 interface ShowRowProps {
   title: string;
@@ -101,6 +102,44 @@ export function ShowRowLine({
   );
 }
 
+// The service line (Shows, Search; CRI-115): each service's logo, small,
+// before the service text, so a service you have is seen at a glance; the
+// text gives the detail and is what screen readers read. Without logos
+// ("Unavailable", or before TMDB answers), the text alone. The line keeps
+// its height either way.
+const SERVICE_LOGO_SIZE = 16;
+
+export function ShowRowServiceLine({
+  logos,
+  text,
+  testID,
+}: {
+  logos: { name: string; logoPath: string }[];
+  text: string;
+  testID?: string;
+}) {
+  return (
+    <View style={styles.serviceLine} testID={testID}>
+      {logos.length > 0 && (
+        <View
+          style={styles.serviceLogos}
+          accessibilityElementsHidden
+          importantForAccessibility="no-hide-descendants"
+        >
+          {logos.map(({ name, logoPath }) => (
+            <View key={name} testID="service-logo">
+              <ServiceLogo logoPath={logoPath} size={SERVICE_LOGO_SIZE} />
+            </View>
+          ))}
+        </View>
+      )}
+      <Text style={[styles.line, styles.serviceText]} numberOfLines={1}>
+        {text}
+      </Text>
+    </View>
+  );
+}
+
 const POSTER_WIDTH = 60;
 const POSTER_HEIGHT = 90;
 
@@ -130,5 +169,18 @@ const styles = StyleSheet.create({
     ...type.meta,
     minHeight: type.meta.lineHeight,
     color: t.inkMuted,
+  },
+  serviceLine: {
+    flexDirection: "row",
+    alignItems: "center",
+    minHeight: type.meta.lineHeight,
+    gap: 6,
+  },
+  serviceLogos: {
+    flexDirection: "row",
+    gap: 4,
+  },
+  serviceText: {
+    flexShrink: 1,
   },
 });

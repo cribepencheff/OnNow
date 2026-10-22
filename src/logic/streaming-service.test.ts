@@ -5,6 +5,7 @@ import {
   streamingOnLabel,
   openInLink,
   regionProviders,
+  rowServiceLogos,
   rowServiceText,
   tmdbOriginCountries,
   tmdbTvId,
@@ -212,6 +213,62 @@ describe("rowServiceText (FR-027, CRI-97, CRI-102)", () => {
     expect(rowServiceText(NOT_ON_TMDB)).toBeNull();
     expect(rowServiceText(null)).toBeNull();
     expect(rowServiceText(undefined)).toBeNull();
+  });
+});
+
+// CRI-115 (owner, 2026-10-22): a row's services as small logos before its
+// text, so one of your own is seen at a glance: every service, in the
+// text's order, up to four.
+describe("rowServiceLogos (CRI-115)", () => {
+  const p = (
+    providerId: number,
+    providerName: string,
+    logoPath: string | null,
+  ) => ({
+    providerId,
+    providerName,
+    logoPath,
+  });
+
+  it("gives each named service's logo, in the text's order", () => {
+    const providers = [
+      p(8, "Netflix", "/netflix.png"),
+      p(76, "Viaplay", "/viaplay.png"),
+      p(1773, "SkyShowtime", "/sky.png"),
+    ];
+    expect(rowServiceText(providers)).toBe("On Netflix, Viaplay, SkyShowtime");
+    expect(rowServiceLogos(providers)).toEqual([
+      { name: "Netflix", logoPath: "/netflix.png" },
+      { name: "Viaplay", logoPath: "/viaplay.png" },
+      { name: "SkyShowtime", logoPath: "/sky.png" },
+    ]);
+  });
+
+  it("shows a service once, by its own listing's logo over its channel's", () => {
+    expect(
+      rowServiceLogos([
+        p(2243, "Apple TV Amazon Channel", "/apple-channel.png"),
+        p(350, "Apple TV", "/apple.png"),
+      ]),
+    ).toEqual([{ name: "Apple TV", logoPath: "/apple.png" }]);
+  });
+
+  it("keeps at most four, and leaves out a service TMDB has no logo for", () => {
+    const logos = rowServiceLogos([
+      p(1, "A", "/a.png"),
+      p(2, "B", null),
+      p(3, "C", "/c.png"),
+      p(4, "D", "/d.png"),
+      p(5, "E", "/e.png"),
+      p(6, "F", "/f.png"),
+    ]);
+    expect(logos.map(({ name }) => name)).toEqual(["A", "C", "D", "E"]);
+  });
+
+  it('is none for "Unavailable", for a show TMDB does not know, or before it answers', () => {
+    expect(rowServiceLogos([])).toEqual([]);
+    expect(rowServiceLogos(NOT_ON_TMDB)).toEqual([]);
+    expect(rowServiceLogos(undefined)).toEqual([]);
   });
 });
 

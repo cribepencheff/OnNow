@@ -7,7 +7,7 @@
 // one button, with follow or unfollow as an accessibility action (NFR-008).
 
 import { FollowCircle } from "./FollowCircle";
-import { ShowRow, ShowRowLine } from "./ShowRow";
+import { ShowRow, ShowRowLine, ShowRowServiceLine } from "./ShowRow";
 import { useFollowToggle } from "@/hooks/useFollowList";
 import { useShow } from "@/hooks/useShow";
 import { useStreamingService } from "@/hooks/useStreamingService";
@@ -15,7 +15,7 @@ import { useListPoster } from "@/hooks/useListPoster";
 import { useToday } from "@/hooks/useToday";
 import { searchResultMetaLine } from "@/logic/search-results";
 import { showState, showStateLabel } from "@/logic/show-state";
-import { rowServiceText } from "@/logic/streaming-service";
+import { rowServiceLogos, rowServiceText } from "@/logic/streaming-service";
 import type { TvMazeShow } from "@/api/tvmaze-types";
 
 interface SearchResultRowProps {
@@ -62,7 +62,11 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
       {metaLine !== "" && <ShowRowLine>{metaLine}</ShowRowLine>}
       <StatusLine showId={show.id} />
       {/* Its line is kept while TMDB answers, so the row does not grow. */}
-      <ShowRowLine testID="search-result-service">{service ?? ""}</ShowRowLine>
+      <ShowRowServiceLine
+        logos={rowServiceLogos(providers)}
+        text={service ?? ""}
+        testID="search-result-service"
+      />
     </ShowRow>
   );
 }

@@ -286,26 +286,42 @@ export function streamingOnLabel(service: string): string {
 // its own service ("hayu"), and is left out when TMDB also lists that
 // service directly ("Apple TV" and "Apple TV Amazon Channel" read "On
 // Apple TV").
+// The services a show is on, each once, in TMDB's order: the names
+// availabilityText reads, with each one's logo (CRI-115). A service's own
+// listing gives its name and logo, also for its channel variant.
+function availableServices(
+  providers: StreamingProvider[],
+): { name: string; logoPath: string | null }[] {
+  const entries = providers.filter(isStreaming).map((provider) => {
+    const channel = addOnChannel(provider);
+    return {
+      name: channel ? channel.name : provider.providerName,
+      direct: !channel,
+      logoPath: provider.logoPath,
+    };
+  });
+  const direct = new Map(
+    entries
+      .filter((entry) => entry.direct)
+      .map((entry) => [entry.name.toLowerCase(), entry]),
+  );
+  const seen = new Set<string>();
+  const services: { name: string; logoPath: string | null }[] = [];
+  for (const entry of entries) {
+    const own = direct.get(entry.name.toLowerCase()) ?? entry;
+    if (!seen.has(own.name)) {
+      seen.add(own.name);
+      services.push({ name: own.name, logoPath: own.logoPath });
+    }
+  }
+  return services;
+}
+
 export function availabilityText(
   providers: StreamingProvider[],
   region?: string,
 ): string {
-  const entries = providers.filter(isStreaming).map((provider) => {
-    const channel = addOnChannel(provider);
-    return channel
-      ? { name: channel.name, direct: false }
-      : { name: provider.providerName, direct: true };
-  });
-  // A service's own listing gives its name, also for its channel variant.
-  const directNames = new Map(
-    entries
-      .filter((entry) => entry.direct)
-      .map((entry) => [entry.name.toLowerCase(), entry.name]),
-  );
-  const names = entries.map(
-    (entry) => directNames.get(entry.name.toLowerCase()) ?? entry.name,
-  );
-  const unique = [...new Set(names)];
+  const unique = availableServices(providers).map(({ name }) => name);
   if (unique.length > 0) {
     return `On ${unique.join(", ")}`;
   }
@@ -321,4 +337,25 @@ export function rowServiceText(
   answer: ProviderAnswer | null | undefined,
 ): string | null {
   return Array.isArray(answer) ? availabilityText(answer) : null;
+}
+
+// The most service logos a row shows before its text (CRI-115).
+const ROW_SERVICE_LOGOS = 4;
+
+// A row's services as logos before its text (CRI-115, owner 2026-10-22):
+// so a service you have is seen at a glance, the text giving the detail.
+// Every service with a TMDB logo, in the text's order, up to four; none
+// for "Unavailable" or when TMDB does not know the show.
+export function rowServiceLogos(
+  answer: ProviderAnswer | null | undefined,
+): { name: string; logoPath: string }[] {
+  if (!Array.isArray(answer)) {
+    return [];
+  }
+  return availableServices(answer)
+    .filter(
+      (service): service is { name: string; logoPath: string } =>
+        service.logoPath !== null,
+    )
+    .slice(0, ROW_SERVICE_LOGOS);
 }

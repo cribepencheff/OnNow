@@ -11,10 +11,10 @@
 import { Pressable, StyleSheet, Text } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 
-import { ShowRow, ShowRowLine } from "./ShowRow";
+import { ShowRow, ShowRowLine, ShowRowServiceLine } from "./ShowRow";
 import { useStreamingService } from "@/hooks/useStreamingService";
 import { useListPoster } from "@/hooks/useListPoster";
-import { rowServiceText } from "@/logic/streaming-service";
+import { rowServiceLogos, rowServiceText } from "@/logic/streaming-service";
 import type { TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 import { t, type } from "@/theme/tokens";
 
@@ -62,7 +62,11 @@ export function ShowsRow({
       >
         <ShowRowLine>{statusLine}</ShowRowLine>
         {/* Its line is kept while TMDB answers, so the row does not grow. */}
-        <ShowRowLine testID="shows-row-service">{service ?? ""}</ShowRowLine>
+        <ShowRowServiceLine
+          logos={rowServiceLogos(providers)}
+          text={service ?? ""}
+          testID="shows-row-service"
+        />
       </ShowRow>
     </Swipeable>
   );

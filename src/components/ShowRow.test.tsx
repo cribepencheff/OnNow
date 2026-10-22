@@ -1,7 +1,7 @@
 import { StyleSheet, Text } from "react-native";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
-import { ShowRow, ShowRowLine } from "./ShowRow";
+import { ShowRow, ShowRowLine, ShowRowServiceLine } from "./ShowRow";
 import { type } from "@/theme/tokens";
 
 // CRI-118: the one row behind Search, Shows and Calendar (PRD 5.2, 5.3,
@@ -102,5 +102,38 @@ describe("ShowRow", () => {
       />,
     );
     expect(screen.queryByTestId("no-image")).toBeNull();
+  });
+
+  // CRI-115: the services as small logos before the text, so a service
+  // you have is seen at a glance; screen readers get the text.
+  it("CRI-115: shows each service's logo before the service text", async () => {
+    await render(
+      <ShowRowServiceLine
+        logos={[
+          { name: "Netflix", logoPath: "/netflix.png" },
+          { name: "Viaplay", logoPath: "/viaplay.png" },
+        ]}
+        text="On Netflix, Viaplay"
+        testID="service"
+      />,
+    );
+    expect(screen.getByText("On Netflix, Viaplay")).toBeTruthy();
+    expect(
+      screen.getAllByTestId("service-logo", { includeHiddenElements: true }),
+    ).toHaveLength(2);
+    expect(screen.queryAllByTestId("service-logo")).toHaveLength(0);
+  });
+
+  it("CRI-115: shows the text alone without logos, and keeps the line's height", async () => {
+    await render(
+      <ShowRowServiceLine logos={[]} text="Unavailable" testID="service" />,
+    );
+    expect(screen.getByText("Unavailable")).toBeTruthy();
+    expect(
+      screen.queryAllByTestId("service-logo", { includeHiddenElements: true }),
+    ).toHaveLength(0);
+    expect(
+      StyleSheet.flatten(screen.getByTestId("service").props.style).minHeight,
+    ).toBe(type.meta.lineHeight);
   });
 });
