@@ -32,6 +32,8 @@ interface ShowRowProps {
   summary?: string | null;
   // After the title, on its line (a Search row's IMDb rating).
   titleAccessory?: ReactNode;
+  // The bigger poster (a Search row's, LARGE_POSTER).
+  largePoster?: boolean;
   children?: ReactNode;
   trailing?: ReactNode;
   onPress?: () => void;
@@ -49,6 +51,7 @@ export function ShowRow({
   posterPending = false,
   summary,
   titleAccessory,
+  largePoster = false,
   children,
   trailing,
   onPress,
@@ -71,16 +74,20 @@ export function ShowRow({
       {posterUri ? (
         <Image
           source={posterUri}
-          style={styles.poster}
+          style={[styles.poster, largePoster && LARGE_POSTER]}
+          testID={testID && `${testID}-poster`}
           contentFit="cover"
           accessibilityIgnoresInvertColors
         />
       ) : posterPending ? (
-        <View style={styles.poster} testID="poster-pending" />
+        <View
+          style={[styles.poster, largePoster && LARGE_POSTER]}
+          testID="poster-pending"
+        />
       ) : (
         // No image: the still surface with the "no image" symbol
         // (CRI-100); the title beside it names the show.
-        <NoImage icon style={styles.poster} />
+        <NoImage icon style={[styles.poster, largePoster && LARGE_POSTER]} />
       )}
       <View style={styles.details}>
         <View style={styles.titleRow} testID={testID && `${testID}-title-row`}>
@@ -174,6 +181,9 @@ const ROW_TITLE_LINE_HEIGHT = 22;
 
 const POSTER_WIDTH = 60;
 const POSTER_HEIGHT = 90;
+// A Search row's poster (owner, 2026-10-22): bigger, balancing its taller
+// row (summary, year and genres, status, services). 2:3, as posters are.
+export const LARGE_POSTER = { width: 80, height: 120 };
 
 const styles = StyleSheet.create({
   row: {
@@ -229,13 +239,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 4,
   },
-  // The app's smallest size (label's), in the line's regular weight
-  // (owner): the logos carry the glance, the text the detail.
+  // The app's smallest size (label's), in the line's regular weight, in
+  // ink (owner): the logos carry the glance, the text the detail.
   serviceText: {
     fontSize: type.label.fontSize,
     lineHeight: type.label.lineHeight,
     fontWeight: type.meta.fontWeight,
-    color: t.inkMuted,
+    color: t.ink,
     flexShrink: 1,
   },
 });

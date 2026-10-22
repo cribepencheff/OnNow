@@ -221,8 +221,9 @@ first user is the author, who currently uses Next Episode.
   shown only in Show detail, to save OMDb calls (ADR 0013). The original
   network is not shown.
 - **Follow control:** a circle at the right edge of each row, aligned in one
-  column. Not followed: hollow circle with a "+" at lower opacity. Followed:
-  filled with the accent colour and a check. A light haptic on follow and a
+  column: the poster cards' own circle, exactly (owner, 2026-10-22), a
+  translucent dark fill with a light hairline edge, a white "+" morphing
+  into a white check once followed. A light haptic on follow and a
   lighter one on unfollow, the same for every follow control (the circles
   in Search and on poster cards, and Show detail's Follow button). The
   filled state is a status, not a competing action.

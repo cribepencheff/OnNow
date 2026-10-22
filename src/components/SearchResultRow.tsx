@@ -8,7 +8,7 @@
 
 import { StyleSheet } from "react-native";
 
-import { FollowCircle } from "./FollowCircle";
+import { PosterFollowCircle } from "./PosterFollowCircle";
 import { ImdbRating } from "./ImdbRating";
 import { ShowRow, ShowRowLine, ShowRowServiceLine } from "./ShowRow";
 import { useFollowToggle } from "@/hooks/useFollowList";
@@ -45,6 +45,7 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
       posterUri={poster.uri}
       posterPending={poster.pending}
       summary={plainTextSummary(show.summary)}
+      largePoster
       titleAccessory={
         <ImdbRating show={show} linked={false} textStyle={styles.rating} />
       }
@@ -60,7 +61,7 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
         }
       }}
       trailing={
-        <FollowCircle
+        <PosterFollowCircle
           followed={followed}
           onPress={toggle}
           testID={`follow-${show.id}`}

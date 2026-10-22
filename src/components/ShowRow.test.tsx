@@ -192,4 +192,15 @@ describe("ShowRow", () => {
     await render(<ShowRow title="Slow Horses" accessibilityLabel="x" />);
     expect(screen.queryByTestId("show-row-summary")).toBeNull();
   });
+
+  // Owner, 2026-10-22: the service text in ink, the logos and it reading
+  // as one line about where to watch.
+  it("sets the service text in ink", async () => {
+    await render(
+      <ShowRowServiceLine logos={[]} text="On Netflix" testID="service" />,
+    );
+    expect(
+      StyleSheet.flatten(screen.getByText("On Netflix").props.style).color,
+    ).toBe(t.ink);
+  });
 });

@@ -1,6 +1,9 @@
+import { StyleSheet } from "react-native";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
 import { SearchResultRow } from "./SearchResultRow";
+import { LARGE_POSTER } from "./ShowRow";
+import { t } from "@/theme/tokens";
 import { useShow } from "@/hooks/useShow";
 import { useStreamingService } from "@/hooks/useStreamingService";
 import { NOT_ON_TMDB } from "@/logic/streaming-service";
@@ -199,5 +202,30 @@ describe("SearchResultRow", () => {
       <SearchResultRow show={showSlowHorsesFixture as unknown as TvMazeShow} />,
     );
     expect(screen.queryByText("IMDb")).toBeNull();
+  });
+
+  // Owner, 2026-10-22: the poster cards' follow circle, exactly; a bigger
+  // poster, for the taller row.
+  it("follows from the poster cards' own circle", async () => {
+    await render(
+      <SearchResultRow show={showSlowHorsesFixture as unknown as TvMazeShow} />,
+    );
+    const circle = StyleSheet.flatten(
+      screen.getByTestId(`follow-${showSlowHorsesFixture.id}-circle`).props
+        .style,
+    );
+    expect(circle.backgroundColor).toBe(t.imageControlBackdrop);
+    expect(circle.borderColor).toBe(t.imageControlEdge);
+  });
+
+  it("draws a bigger poster than a Shows row's", async () => {
+    await render(
+      <SearchResultRow show={showSlowHorsesFixture as unknown as TvMazeShow} />,
+    );
+    const poster = StyleSheet.flatten(
+      screen.getByTestId("search-result-row-poster").props.style,
+    );
+    expect(poster.width).toBe(LARGE_POSTER.width);
+    expect(LARGE_POSTER.height / LARGE_POSTER.width).toBe(1.5);
   });
 });

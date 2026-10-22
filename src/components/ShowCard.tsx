@@ -3,7 +3,7 @@
 // tap opens Show detail (inside the sheet when shown in Search, PRD 5.6);
 // the follow circle follows at once.
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Animated,
   Easing,
@@ -13,7 +13,6 @@ import {
   View,
 } from "react-native";
 import { Image } from "expo-image";
-import { SymbolView } from "expo-symbols";
 
 import { IMAGE_BASE } from "@/api/tmdb-types";
 import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
@@ -22,14 +21,12 @@ import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import type { PosterItem } from "@/logic/top-picks";
 import { POSTER_CARD_WIDTH } from "@/logic/poster-snap";
 import { t, type } from "@/theme/tokens";
-import { followHaptic } from "./followHaptic";
-import { FOLLOW_CHECK_SYMBOL, FOLLOW_PLUS_SYMBOL } from "./followSymbols";
+import { PosterFollowCircle } from "./PosterFollowCircle";
 import { PosterDimOverlay } from "./PosterDim";
 
 // About 150 wide: two full cards and a peek of the third (CRI-127).
 export const POSTER_WIDTH = POSTER_CARD_WIDTH;
 export const POSTER_HEIGHT = POSTER_WIDTH * 1.5;
-const FOLLOW_CIRCLE_SIZE = 32;
 // How long a poster takes to fade in once loaded.
 const POSTER_FADE_IN_MS = 300;
 
@@ -106,118 +103,6 @@ export function ShowCard({
             {caption}
           </Text>
         )}
-      </View>
-    </Pressable>
-  );
-}
-
-// The follow circle on a poster (CRI-127), Apple TV style: a translucent
-// dark fill, no blur, a light hairline edge, the same followed or not; a
-// white plus, or a white check once followed, morphing between the two
-// (crossfade + scale) rather than swapping instantly. Every poster card
-// has it, on Home and in Search's rows alike; Search's typed results
-// (FollowCircle) and Show detail's Follow button do not morph, but share
-// the same haptic (followHaptic). expo-symbols has no native SF
-// Symbol "replace" transition exposed (checked before building this), so
-// this fakes the morph with two overlaid SymbolViews instead, the same
-// crossfade technique PosterRow's own skeleton-to-cards transition uses.
-function PosterFollowCircle({
-  followed,
-  onPress,
-  testID,
-}: {
-  followed: boolean;
-  onPress: () => void;
-  testID: string;
-}) {
-  const { reduceMotionEnabled } = useAccessibilityFlags();
-  // 0 = plus shown, 1 = check shown; everything below is derived from
-  // this one value, so the two icons can never fall out of sync with
-  // each other mid-morph.
-  const [progress] = useState(() => new Animated.Value(followed ? 1 : 0));
-  // Starts the spring toward `toFollowed`'s value. Called twice for one
-  // tap: eagerly from handlePress's own event handler (below), so the
-  // morph begins on the very same tick as the tap rather than waiting on
-  // a render round trip (setState -> re-render -> commit -> this effect),
-  // a round trip that can land a frame or more later than the other
-  // direction's when the tap also triggers heavier re-render work
-  // elsewhere (owner noticed this specifically toward plus, unfollow,
-  // which is also where Home's row-settling logic has more to do); and
-  // reactively here, as the source of truth for whenever `followed`
-  // changes from anything other than this component's own tap. Calling
-  // .start() a second time toward a toValue a running spring is already
-  // headed to is harmless, so the two triggers never fight each other.
-  const morphTo = useCallback(
-    (toFollowed: boolean) => {
-      if (reduceMotionEnabled) {
-        progress.setValue(toFollowed ? 1 : 0);
-        return;
-      }
-      Animated.spring(progress, {
-        toValue: toFollowed ? 1 : 0,
-        useNativeDriver: true,
-        damping: 14,
-        stiffness: 260,
-        mass: 0.6,
-      }).start();
-    },
-    [reduceMotionEnabled, progress],
-  );
-  useEffect(() => {
-    morphTo(followed);
-  }, [followed, morphTo]);
-  const plusOpacity = progress.interpolate({
-    inputRange: [0, 1],
-    outputRange: [1, 0],
-  });
-  const plusScale = progress.interpolate({
-    inputRange: [0, 1],
-    outputRange: [1, 0.5],
-  });
-  const checkOpacity = progress;
-  const checkScale = progress.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0.5, 1],
-  });
-
-  const handlePress = useCallback(() => {
-    const next = !followed;
-    followHaptic(next);
-    morphTo(next);
-    onPress();
-  }, [followed, onPress, morphTo]);
-
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={followed ? "Followed" : "Follow"}
-      accessibilityState={{ selected: followed }}
-      onPress={handlePress}
-      // A 44pt tap target around the 32pt circle.
-      hitSlop={6}
-      testID={testID}
-    >
-      <View style={styles.circle}>
-        <Animated.View
-          style={[
-            styles.circleIcon,
-            { opacity: plusOpacity, transform: [{ scale: plusScale }] },
-          ]}
-        >
-          <SymbolView name={FOLLOW_PLUS_SYMBOL} tintColor="#FFFFFF" size={15} />
-        </Animated.View>
-        <Animated.View
-          style={[
-            styles.circleIcon,
-            { opacity: checkOpacity, transform: [{ scale: checkScale }] },
-          ]}
-        >
-          <SymbolView
-            name={FOLLOW_CHECK_SYMBOL}
-            tintColor="#FFFFFF"
-            size={15}
-          />
-        </Animated.View>
       </View>
     </Pressable>
   );
@@ -351,28 +236,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: t.space2,
     right: t.space2,
-  },
-  // One material, followed or not; only the icon changes.
-  circle: {
-    width: FOLLOW_CIRCLE_SIZE,
-    height: FOLLOW_CIRCLE_SIZE,
-    borderRadius: FOLLOW_CIRCLE_SIZE / 2,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: t.imageControlEdge,
-    backgroundColor: t.imageControlBackdrop,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  // Both follow-circle icons stack here, absolutely, so their crossfade
-  // overlaps instead of the incoming one pushing the outgoing one aside.
-  circleIcon: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    alignItems: "center",
-    justifyContent: "center",
   },
   name: {
     ...type.meta,
