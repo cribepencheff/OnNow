@@ -29,8 +29,7 @@ export interface ShowImages {
   tmdbId: number | null;
   // The highest-rated backdrop currently available
   // (chooseHighestRatedBackdrop): the hero's image. Recomputed fresh every
-  // time this query runs
-  // (once a day per show, via todayDate in the query key).
+  // time this query runs (showImagesStaleTime).
   highestRatedBackdrop: TmdbImage | null;
   // The most and second most voted textless backdrops, and how many textless
   // backdrops exist: shown side by side on the dev images screen to review
@@ -44,6 +43,14 @@ export interface ShowImages {
   posterPath: string | null;
 }
 
+// How long an answer is fresh (ADR 0017, owner 2026-10-22): a week when
+// the show has a backdrop, since a new top-voted one is no hurry; a day
+// when it has none (a poster or nothing, often a show just out), so its
+// backdrop comes in soon after TMDB gets one.
+export function showImagesStaleTime(data: ShowImages | undefined): number {
+  return data?.highestRatedBackdrop ? 7 * DAY_MS : DAY_MS;
+}
+
 export function useShowImages(
   show: TvMazeShow,
   // A list asks only when TVmaze has no poster (useListPoster).
@@ -51,15 +58,17 @@ export function useShowImages(
 ) {
   return useQuery({
     enabled: options.enabled ?? true,
-    // Refreshed daily, kept and saved 21 days (ADR 0017): after time away
-    // the hero shows the images it had at once, replaced if TMDB's now
-    // differ. v6: posterPath added (CRI-100). v5: the key no longer carries the day (v4 did, which meant a
-    // new fetch, and no image meanwhile, on every new day); bump this
+    // Refreshed weekly, or daily without a backdrop (showImagesStaleTime),
+    // kept and saved 21 days (ADR 0017): after time away the hero shows
+    // the images it had at once, replaced if TMDB's now differ. Bump this
     // suffix whenever ShowImages' shape changes, since answers are kept.
+    // v6: posterPath added (CRI-100). v5: the key no longer carries the
+    // day (v4 did, which meant a new fetch, and no image meanwhile, on
+    // every new day).
     // Earlier: v3 dropped the stored "official" backdrop pick, v4 the "no
     // TMDB match" answers from before the name match (CRI-99).
     queryKey: ["hero-images-v6", show.id],
-    staleTime: DAY_MS,
+    staleTime: (query) => showImagesStaleTime(query.state.data),
     gcTime: KEEP_MS,
     // Without a key the lookup cannot work, so say so at once.
     retry: HAS_KEY ? 3 : false,

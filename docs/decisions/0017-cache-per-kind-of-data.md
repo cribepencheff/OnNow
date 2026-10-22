@@ -40,7 +40,7 @@ Limits that apply to any choice:
 |---|---|---|---|---|
 | Followed shows (TVmaze show, episodes, seasons) | hero, Calendar, Shows: the core promise | often: new episodes, moved dates | 1 h; an ended show 1 week (CRI-107) | 1 day, saved |
 | TMDB match (`/find`) | the start of every TMDB lookup | almost never | 30 days; a miss 1 day (CRI-107) | 1 day, saved |
-| Hero images (backdrop, logo) | the hero | rarely | every day (the key has the date) | 1 day, saved |
+| Hero images (backdrop, logo) | the hero | rarely | every day (the key has the date); see the amendment: weekly | 1 day, saved |
 | Streaming services | "Open in" | now and then | 30 days in plain storage; a miss 1 day | plain storage, 30 days |
 | IMDb rating | Show detail | rarely; the OMDb quota matters | 7 days in plain storage; none yet 1 day | plain storage, 7 days |
 | Discovery rows (Top picks, Airing this week) | Home and Search rows | by the day | by the day (the keys have the date) | 1 day, saved (see the amendment: the pages are not) |
@@ -85,10 +85,8 @@ Limits that apply to any choice:
   keep showing old slides until a pull.
 
 ## Still open
-- **Hero images weekly instead of daily.** It would save about one request
-  per followed show a day. They stay daily until the owner decides: "once
-  a day" was CRI-124's choice, as the highest-rated backdrop can change as
-  votes come in.
+- ~~Hero images weekly instead of daily.~~ Decided, see the amendment
+  below.
 
 21 days was accepted over 7: it covers a holiday, and works the same way.
 
@@ -138,3 +136,29 @@ candidates and their TVmaze info.
 - The followed shows remain most of the saved copy (4.33 MB of 5.94 MB
   with 58 shows), since each holds all its episodes for Show detail.
   Left as is: SQLite has no size limit (CRI-139).
+
+## Amendment: hero images weekly (2026-10-22)
+Status: Proposed
+
+### Context
+The hero's images (backdrop, logo, and since CRI-100 TMDB's poster) were
+asked for again every day per show shown: about one TMDB request per show
+a day. "Once a day" was CRI-124's choice, since the highest-rated
+backdrop can change as votes come in. A show just out often has no
+backdrop yet and shows a poster instead (CRI-100), and should get its
+backdrop soon after TMDB does.
+
+### Decision
+- A show with a backdrop: asked again after **7 days**. A new top-voted
+  backdrop replacing a good one is no hurry.
+- A show without one (a poster or nothing): asked again after **1 day**,
+  the same split as the TMDB match (found 30 days, a miss 1 day).
+- Kept and saved 21 days, as before.
+
+### Consequences
+- Most image requests go: a typical day's hero needs one or two instead
+  of one per slide.
+- A newly top-voted backdrop shows within a week instead of a day.
+- TMDB has no request for several shows at once. Several requests for one
+  show can be joined (`append_to_response`), but the parts are kept for
+  different times; left as an idea alongside the `/updates/shows` spike.
