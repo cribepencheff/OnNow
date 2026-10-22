@@ -246,7 +246,10 @@ first user is the author, who currently uses Next Episode.
   A show without an image gets a still, dark surface with the "no image"
   symbol in the poster's place (design system, CRI-100); the title stays
   in its column. Running
-  shows rank above ended ones.
+  shows rank above ended ones. A show TVmaze still lists as "In
+  Development" but has not updated for two years is left out: it has most
+  likely not gone ahead, and it comes back once TVmaze updates it. A show
+  already followed stays in Shows (owner, 2026-10-22).
 
 ### 5.5 Show detail (PoC slice, complete in MVP)
 The PoC has a slice of this view with TVmaze data only: the network instead
@@ -397,7 +400,7 @@ Reached from an icon. Territory and notifications.
 | FR-021 | Direct links to the show for more services | After MVP |
 | FR-022 | Explore: "what is releasing" feed with filters, starting with streaming service | After MVP |
 | FR-023 | Android widget | After MVP |
-| FR-024 | Search results show poster, title, a meta line with year and genres, Show detail's status line (FR-025), the service slot (FR-027) and a follow circle at the right edge. PoC: year and status, and a two line summary. MVP: no summary, no TVmaze status in the meta line and no IMDb rating (the rating is in Show detail only). Results appear after a short pause in typing (about 250 ms), each show once, and are not filtered by region or show type. A clear button (X) inside the field on iOS and Android | PoC, MVP |
+| FR-024 | Search results show poster, title, a meta line with year and genres, Show detail's status line (FR-025), the service slot (FR-027) and a follow circle at the right edge. PoC: year and status, and a two line summary. MVP: no summary, no TVmaze status in the meta line and no IMDb rating (the rating is in Show detail only). Results appear after a short pause in typing (about 250 ms), each show once, and are not filtered by region or show type; a show still "In Development" with no TVmaze update for two years is left out (PRD 5.4). A clear button (X) inside the field on iOS and Android | PoC, MVP |
 | FR-025 | After following, the result row shows the next episode or "No date yet" (PoC). MVP: every result row shows Show detail's status line, followed or not, the same as the Shows row (FR-035), from the cached show lookup | PoC, MVP |
 | FR-026 | Before the user types, Search shows Home's rows as they are: "Top picks for you" (FR-038), then "Airing this week" (FR-039), each sharing what it has loaded with Home; only "Airing this week" when the follow list is empty. No "Search more" in Search: both rows end with "All caught up", shown only when the end is reached there. Region filtered as on Home (CRI-98) | MVP |
 | FR-027 | Search results and Shows rows show the services that carry the show in the user's territory, or plain "Unavailable" when there is none, and nothing when TMDB does not know the show; the row does not name the region, unlike Show detail (CRI-91, CRI-97, CRI-102) | MVP |

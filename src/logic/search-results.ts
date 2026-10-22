@@ -1,12 +1,30 @@
 // Derived values for the Search sheet's result rows (FR-024, PRD 5.4).
 // TVmaze's own search ranking (`score`) is trusted as-is (data first); this
 // module only re-orders running shows above ended ones, lists each show
-// once, and derives display text; it does not re-rank by relevance.
+// once, leaves out shows long stuck in development, and derives display
+// text; it does not re-rank by relevance.
 
 import type { TvMazeSearchResult, TvMazeShow } from "@/api/tvmaze-types";
 
+// A show TVmaze still lists as "In Development" but has not updated for
+// this long has most likely not gone ahead (owner, 2026-10-22): a project
+// that moves on gets news (cast, channel, a date), which updates its
+// record. Search leaves it out; it comes back once TVmaze updates it. A
+// show already followed stays in Shows.
+const STALE_DEVELOPMENT_MS = 2 * 365 * 24 * 60 * 60 * 1000;
+
+function isStaleDevelopment(show: TvMazeShow, nowMs: number): boolean {
+  return (
+    show.status === "In Development" &&
+    show.updated !== undefined &&
+    nowMs - show.updated * 1000 > STALE_DEVELOPMENT_MS
+  );
+}
+
 export function rankSearchResults(
   results: TvMazeSearchResult[],
+  // When the search ran: the age is judged then (CLAUDE.md, clock time).
+  nowMs: number = Date.now(),
 ): TvMazeSearchResult[] {
   // A stable sort with a single narrow rule: a Running show ranks above an
   // Ended show. Every other status pairing (including Running vs. Running,
@@ -15,7 +33,10 @@ export function rankSearchResults(
   // twice keeps its first place (PRD 5.4: each show once).
   const seen = new Set<number>();
   const unique = results.filter(
-    ({ show }) => !seen.has(show.id) && seen.add(show.id),
+    ({ show }) =>
+      !isStaleDevelopment(show, nowMs) &&
+      !seen.has(show.id) &&
+      seen.add(show.id),
   );
   return unique.sort((a, b) => {
     if (a.show.status === "Running" && b.show.status === "Ended") {

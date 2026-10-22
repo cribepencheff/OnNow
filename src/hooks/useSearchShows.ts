@@ -1,6 +1,7 @@
 // Search results while typing (FR-001, ADR 0009). Views never call the API
 // directly; this wraps TVmaze's own search and ranking (spike 0001), only
-// re-ordering running shows above ended ones (FR-024 edge case).
+// re-ordering running shows above ended ones and leaving out shows long
+// stuck in development (rankSearchResults, PRD 5.4).
 
 import {
   keepPreviousData,
