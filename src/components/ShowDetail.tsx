@@ -102,7 +102,7 @@ function ShowDetailContent({
   const tabs = seasonTabs(seasons, episodes, todayDate);
   const state = showState(show, episodes, seasons, timeZone, todayDate);
   // A TMDB backdrop, textless first (ADR 0012): no title text in the image.
-  const { data: images } = useShowImages(show, timeZone, todayDate);
+  const { data: images } = useShowImages(show);
   const backdropPath = images?.highestRatedBackdrop?.file_path;
   const logo = images?.logo;
   const { link, availability } = useOpenIn(show);

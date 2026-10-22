@@ -305,6 +305,22 @@ describe("HomeScreen", () => {
       expect(screen.getByLabelText("Show 1 of 3")).toBeTruthy();
     });
 
+    // ADR 0017: Home opens on a saved copy up to 21 days old, so the hero
+    // takes in what the refresh it opened with brings, once it is done.
+    it("takes the change once the refresh it opened with is done", async () => {
+      mockFollowedEpisodes({ followedShows: two, isRefetching: true });
+      const { rerender } = await render(<HomeScreen />);
+      expect(screen.getByLabelText("Show 1 of 2")).toBeTruthy();
+
+      mockFollowedEpisodes({ followedShows: three, isRefetching: true });
+      await rerender(<HomeScreen />);
+      expect(screen.getByLabelText("Show 1 of 2")).toBeTruthy();
+
+      mockFollowedEpisodes({ followedShows: three, isRefetching: false });
+      await rerender(<HomeScreen />);
+      expect(screen.getByLabelText("Show 1 of 3")).toBeTruthy();
+    });
+
     it("takes the change on a pull", async () => {
       mockFollowedEpisodes({ followedShows: two });
       const { rerender } = await render(<HomeScreen />);

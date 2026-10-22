@@ -20,8 +20,10 @@ import {
   textlessBackdrops,
 } from "@/logic/hero-images";
 import { NOT_ON_TMDB } from "@/logic/streaming-service";
+import { KEEP_MS } from "./query-client";
 
 const HAS_KEY = Boolean(process.env.EXPO_PUBLIC_TMDB_API_KEY);
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 export interface ShowImages {
   tmdbId: number | null;
@@ -39,25 +41,18 @@ export interface ShowImages {
   logo: TmdbImage | null;
 }
 
-export function useShowImages(
-  show: TvMazeShowWithEmbeds,
-  timeZone: string,
-  todayDate: string,
-) {
+export function useShowImages(show: TvMazeShowWithEmbeds) {
   return useQuery({
-    // -v3: bump this suffix whenever ShowImages' shape changes. The cache is
-    // persisted to AsyncStorage (onnow.queryCache, hooks/query-client.ts)
-    // with staleTime: Infinity and a key that otherwise only changes once a
-    // day (todayDate), so an old cached entry from before a shape change can
-    // outlive the code that reads it; bumping the version forces a fresh
-    // fetch immediately. Bumped to v3 when the stored "official" backdrop
-    // pick and its fields (backdrop, airingNow, pickReason, ...) and the
-    // /tv/{id}/changes "newest upload" machinery were removed, in favour of
-    // episode-still-first with a highest-rated backdrop fallback.
-    // Nothing else in the app reads this key.
-    // v4: drops "no TMDB match" answers cached before the name match (CRI-99).
-    queryKey: ["proto-images-v4", show.id, todayDate],
-    staleTime: Infinity,
+    // Refreshed daily, kept and saved 21 days (ADR 0017): after time away
+    // the hero shows the images it had at once, replaced if TMDB's now
+    // differ. v5: the key no longer carries the day (v4 did, which meant a
+    // new fetch, and no image meanwhile, on every new day); bump this
+    // suffix whenever ShowImages' shape changes, since answers are kept.
+    // Earlier: v3 dropped the stored "official" backdrop pick, v4 the "no
+    // TMDB match" answers from before the name match (CRI-99).
+    queryKey: ["hero-images-v5", show.id],
+    staleTime: DAY_MS,
+    gcTime: KEEP_MS,
     // Without a key the lookup cannot work, so say so at once.
     retry: HAS_KEY ? 3 : false,
     queryFn: async (): Promise<ShowImages> => {

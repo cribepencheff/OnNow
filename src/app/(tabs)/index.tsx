@@ -32,6 +32,7 @@ import { PosterDimContext } from "@/components/PosterDim";
 import { TopPicksRow } from "@/components/TopPicksRow";
 import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
+import { useAfterLaunchRefresh } from "@/hooks/useAfterLaunchRefresh";
 import { useSettledValue } from "@/hooks/useSettledValue";
 import { useOpenSearch } from "@/hooks/useOpenSearch";
 import {
@@ -112,6 +113,7 @@ export default function HomeScreen() {
     showsWithEpisodeToday,
     nextDayEpisodes,
     refetch,
+    isRefetching,
   } = useFollowedEpisodes();
 
   // The spinner is for a pull only (CRI-95): a background refresh on launch
@@ -146,6 +148,11 @@ export default function HomeScreen() {
     todayDate,
     heroGetsItsFirstSlides,
   );
+  // Also once the background refresh the app opened with (or came back to
+  // the foreground with) is done: Home opens on a saved copy up to 21 days
+  // old (ADR 0017), and the hero would otherwise keep its old slides until
+  // a pull.
+  useAfterLaunchRefresh(isRefetching, settleHero);
   // A tap on the app logo, or on Home's tab while on Home: the latest
   // slides, and the hero back at its first slide (owner: no swiping all
   // the way back by hand). The hero fades to the page's background first

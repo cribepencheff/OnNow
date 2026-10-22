@@ -84,10 +84,6 @@ export function useHeroLayout() {
   return heroLayout(height, insets.top);
 }
 
-function deviceTimeZone(): string {
-  return Intl.DateTimeFormat().resolvedOptions().timeZone;
-}
-
 // The "Open in" slot itself, one component for all four HeroAvailability
 // states, exported so the dev images screen can render the same look for
 // forced, synthetic states that are hard or unsafe to reproduce live (a
@@ -223,11 +219,7 @@ export const HeroPage = memo(function HeroPage({
   } = useHeroLayout();
   const router = useGuardedRouter();
   const show = item.show as TvMazeShowWithEmbeds;
-  const { data: images, isLoading: imagesLoading } = useShowImages(
-    show,
-    deviceTimeZone(),
-    todayDate,
-  );
+  const { data: images, isLoading: imagesLoading } = useShowImages(show);
   // The show's highest-rated backdrop (chooseHighestRatedBackdrop:
   // textless first, then vote_average, vote_count as tie-break), the same
   // image on every visit to the slide (ADR 0012, amended for CRI-124).
@@ -609,7 +601,7 @@ export const ContentLayer = memo(function ContentLayer({
   // Shares its query key (show id + todayDate) with HeroPage's own call
   // for the same slide, so this never double-fetches: TanStack Query
   // serves both subscribers from the one cached result.
-  const { data: images } = useShowImages(show, deviceTimeZone(), todayDate);
+  const { data: images } = useShowImages(show);
   const {
     data: providers,
     isLoading: providersLoading,
