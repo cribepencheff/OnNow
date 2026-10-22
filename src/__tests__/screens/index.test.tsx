@@ -14,6 +14,7 @@ import {
 import * as SplashScreen from "expo-splash-screen";
 import HomeScreen from "@/app/(tabs)/index";
 import { EPISODE_LINE_HEIGHT, POSTER_REST_DIM } from "@/logic/hero-layout";
+import { MIN_REFRESH_SPIN_MS } from "@/logic/launch";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useShowImages } from "@/hooks/useShowImages";
 import type { TvMazeEpisode, TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
@@ -329,8 +330,10 @@ describe("HomeScreen", () => {
       expect(screen.getByLabelText("Show 1 of 2")).toBeTruthy();
 
       await act(async () => {
-        await refreshControlProps().onRefresh?.();
+        void refreshControlProps().onRefresh?.();
       });
+      // Past the spinner's shortest turn (MIN_REFRESH_SPIN_MS).
+      await act(async () => jest.advanceTimersByTime(MIN_REFRESH_SPIN_MS));
       expect(screen.getByLabelText("Show 1 of 3")).toBeTruthy();
     });
 
@@ -934,6 +937,28 @@ describe("HomeScreen", () => {
       expect(refetch).toHaveBeenCalled();
 
       await act(async () => finish());
+      await act(async () => jest.advanceTimersByTime(MIN_REFRESH_SPIN_MS));
+      expect(control().refreshing).toBe(false);
+    });
+
+    // A pull with nothing stale is done at once (CRI-85): the spinner still
+    // turns for a moment, so the pull reads as done, not stuck.
+    it("turns the spinner for a minimum time, however quick the refetch", async () => {
+      mockFollowedEpisodes({
+        followedShows: [{ show, episodes: [makeEpisode()] }],
+      });
+      await render(<HomeScreen />);
+      const control = refreshControlProps;
+
+      await act(async () => {
+        void control().onRefresh?.();
+      });
+      expect(control().refreshing).toBe(true);
+      await act(async () =>
+        jest.advanceTimersByTime(MIN_REFRESH_SPIN_MS - 100),
+      );
+      expect(control().refreshing).toBe(true);
+      await act(async () => jest.advanceTimersByTime(100));
       expect(control().refreshing).toBe(false);
     });
   });

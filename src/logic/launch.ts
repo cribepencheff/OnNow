@@ -14,3 +14,8 @@ export function homeIsReady(input: {
     input.followedCount === 0 || input.loadedCount > 0 || !input.anyShowLoading
   );
 }
+
+// The shortest turn of Home's pull-to-refresh spinner: a pull with nothing
+// stale is done at once (CRI-85), and a spinner that never turns reads as
+// stuck. As long as a new row batch's skeleton (MIN_LOAD_MORE_MS).
+export const MIN_REFRESH_SPIN_MS = 700;

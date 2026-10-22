@@ -55,6 +55,7 @@ import {
   posterDimAt,
   posterDimEndScroll,
 } from "@/logic/hero-layout";
+import { MIN_REFRESH_SPIN_MS } from "@/logic/launch";
 import { t as tokens } from "@/theme/tokens";
 
 // How far Home must be scrolled down to count as away from its top
@@ -269,7 +270,12 @@ export default function HomeScreen() {
     settleHero();
     setRefreshing(true);
     try {
-      await refetch();
+      // The spinner turns at least MIN_REFRESH_SPIN_MS, however quick the
+      // refetch.
+      await Promise.all([
+        refetch(),
+        new Promise((done) => setTimeout(done, MIN_REFRESH_SPIN_MS)),
+      ]);
     } finally {
       settleHero();
       setRefreshing(false);
