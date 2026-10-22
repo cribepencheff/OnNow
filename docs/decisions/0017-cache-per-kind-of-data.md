@@ -1,6 +1,6 @@
 # 0017. What the app refreshes, keeps and saves, per kind of data
 
-Status: Proposed (CRI-138)
+Status: Accepted (CRI-138)
 
 ## Context
 The app has two caches:
@@ -63,7 +63,7 @@ Limits that apply to any choice:
   nothing above. Left for when Android or the widget comes closer, or
   sooner if the saved copy nears 6 MB.
 
-## Decision (proposed)
+## Decision
 - **Followed shows:** refresh as today (1 h; an ended show 1 week). Keep
   and save for **21 days**.
 - **TMDB match** and **hero images:** keep and save for **21 days**.
@@ -84,12 +84,13 @@ Limits that apply to any choice:
   a launch, or after coming back to the app, brings; otherwise it would
   keep showing old slides until a pull.
 
-## For the owner to decide
-- **21 days, or 7.** 21 covers a holiday; 7 covers a week away. Either
-  works the same way.
-- **Hero images weekly instead of daily.** Saves about one request per
-  followed show a day. "Once a day" was CRI-124's choice: the highest
-  rated backdrop can change as votes come in.
+## Still open
+- **Hero images weekly instead of daily.** It would save about one request
+  per followed show a day. They stay daily until the owner decides: "once
+  a day" was CRI-124's choice, as the highest-rated backdrop can change as
+  votes come in.
+
+21 days was accepted over 7: it covers a holiday, and works the same way.
 
 ## Follow-up, not part of this decision
 - **Only changed followed shows.** TVmaze has an endpoint that lists the
