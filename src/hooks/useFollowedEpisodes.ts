@@ -20,7 +20,11 @@ import { findNextDayWithEpisodes, type NextDayEpisodes } from "@/logic/home";
 import { homeIsReady } from "@/logic/launch";
 import { nextForShow, type NextForShow } from "@/logic/next-episode";
 import type { TvMazeEpisode, TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
-import { showStaleTime } from "@/logic/show-staleness";
+import {
+  isInHeroWeek,
+  showStaleTime,
+  type StaleShow,
+} from "@/logic/show-staleness";
 import { KEEP_MS } from "./query-client";
 import { showQueryKey } from "./useShow";
 import { useToday } from "./useToday";
@@ -153,10 +157,11 @@ export function useFollowedEpisodes(): FollowedEpisodesResult {
     [loadedShows, showsWithEpisodeTodayIds, timeZone, todayDate],
   );
 
-  // CRI-85: a pull refetches only shows that are stale by now (an hour, or
-  // about a week for an ended show: showStaleTime), judged now rather than
-  // at the last render; a pull right after another has nothing to fetch.
-  // The follow list is local, so it is always reread.
+  // A pull is the user asking for news (ADR 0017 amendment, owner
+  // 2026-10-22): it refetches every show in the hero's week at once, and
+  // any other show only once stale by now (a week: showStaleTime), judged
+  // now rather than at the last render (CRI-85). The follow list is local,
+  // so it is always reread.
   async function refetch(): Promise<void> {
     const { data: ids = [] } = await followedIdsQuery.refetch();
     await Promise.all(
@@ -164,10 +169,11 @@ export function useFollowedEpisodes(): FollowedEpisodesResult {
         const query = queryClient
           .getQueryCache()
           .find({ queryKey: showQueryKey(showId), exact: true });
+        const data = query?.state.data as StaleShow | undefined;
         return !query ||
-          query.isStaleByTime(
-            showStaleTime(query.state.data as { status?: string } | undefined),
-          )
+          !data ||
+          isInHeroWeek(data) ||
+          query.isStaleByTime(showStaleTime(data))
           ? queryClient.refetchQueries({
               queryKey: showQueryKey(showId),
               exact: true,

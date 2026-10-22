@@ -38,7 +38,7 @@ Limits that apply to any choice:
 ## The kinds of data
 | Kind | What it is used for | Changes | Refresh, today | Keep and save, today |
 |---|---|---|---|---|
-| Followed shows (TVmaze show, episodes, seasons) | hero, Calendar, Shows: the core promise | often: new episodes, moved dates | 1 h; an ended show 1 week (CRI-107) | 1 day, saved |
+| Followed shows (TVmaze show, episodes, seasons) | hero, Calendar, Shows: the core promise | often: new episodes, moved dates | 1 h; an ended show 1 week (CRI-107); see the amendment: by the hero's week | 1 day, saved |
 | TMDB match (`/find`) | the start of every TMDB lookup | almost never | 30 days; a miss 1 day (CRI-107) | 1 day, saved |
 | Hero images (backdrop, logo) | the hero | rarely | every day (the key has the date); see the amendment: weekly | 1 day, saved |
 | Streaming services | "Open in" | now and then | 30 days in plain storage; a miss 1 day | plain storage, 30 days |
@@ -162,3 +162,43 @@ backdrop soon after TMDB does.
 - TMDB has no request for several shows at once. Several requests for one
   show can be joined (`append_to_response`), but the parts are kept for
   different times; left as an idea alongside the `/updates/shows` spike.
+
+## Amendment: followed shows by the hero's week (2026-10-22)
+Status: Proposed
+
+### Context
+A followed show was asked again an hour after its last answer, the
+length of TVmaze's own cache. Each answer carries all the show's episodes,
+about 75 kB on average (0.55 MB for the largest). With 41 running shows,
+opening the app after an hour away refetched about 3 MB, queued by
+TVmaze's rate limit (20 requests per 10 seconds) for about 20 seconds, and
+the hero waits for that refresh before it takes the new slides. Most of it
+had not changed. The owner: hourly is excessive, and the service the hero
+links to has the exact details.
+
+### Decision
+By what the hero needs, never more often than daily:
+- **A show with an episode in the hero's week** (today and the next six
+  days): asked again after **1 day**.
+- **Any other running show** (a break, between seasons, TBA): after **1
+  week**.
+- **An ended show:** after 1 week, as before (CRI-107).
+- **A pull** refetches every show in the hero's week at once, as the user
+  asking for news (amends CRI-85, where a pull fetched only stale shows);
+  other shows only when stale.
+
+Whether a show is in the week is judged from its cached episodes when the
+check runs, so a show entering the week becomes daily by itself. TVmaze's
+`/updates/shows` (which shows changed) was considered and left aside: with
+this rule its gain is small.
+
+### Consequences
+- About ten shows a day instead of every show on each launch after an
+  hour: well under 1 MB a day instead of about 3 MB a launch, and a launch
+  refresh of seconds, not about 20.
+- A show in the week may be a day old: a date moved the same day, or a
+  new episode title. "Today" is worked out on the phone from each
+  episode's air time, so the day stays right; a pull refetches at once.
+- A show on a break is checked weekly: an episode announced with less
+  than a week's notice may reach the hero late.
+- `SHOW_STALE_TIME_MS` (1 hour) stays the default for other kinds of data.

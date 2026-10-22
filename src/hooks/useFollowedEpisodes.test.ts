@@ -6,6 +6,7 @@ import showSlowHorsesFixture from "@/api/fixtures/show-slow-horses.json";
 import showTheBearFixture from "@/api/fixtures/show-the-bear.json";
 import {
   ENDED_SHOW_STALE_TIME_MS,
+  HERO_WEEK_SHOW_STALE_TIME_MS,
   SHOW_STALE_TIME_MS,
 } from "@/logic/show-staleness";
 import { useFollowedEpisodes } from "./useFollowedEpisodes";
@@ -255,8 +256,10 @@ describe("useFollowedEpisodes", () => {
     client.unmount();
   });
 
-  // CRI-95, CRI-85: cache-first launch and a pull that refetches only
-  // stale shows.
+  // CRI-95, CRI-85, ADR 0017 amendment (owner, 2026-10-22): cache-first
+  // launch; a show in the hero's week is fresh a day, any other a week; a
+  // pull refetches the hero's week at once, and any other show only once
+  // stale. Slow Horses airs today (in the week); The Bear has ended.
   describe("cache (CRI-95, CRI-85)", () => {
     const slowHorses = showSlowHorsesFixture.id;
     const theBear = showTheBearFixture.id;
@@ -282,7 +285,7 @@ describe("useFollowedEpisodes", () => {
       );
     });
 
-    it("fresh cache: ready at once, no fetch on launch or on a pull", async () => {
+    it("fresh cache: ready at once, no fetch on launch; a pull refetches only the hero's week", async () => {
       const client = createTestQueryClient();
       seed(client, slowHorses, showSlowHorsesFixture, 0);
       seed(client, theBear, showTheBearFixture, 0);
@@ -293,34 +296,8 @@ describe("useFollowedEpisodes", () => {
       );
       await waitFor(() => expect(result.current.isReady).toBe(true));
       expect(result.current.followedShows).toHaveLength(2);
-
-      await act(() => result.current.refetch());
       expect(mockedGetShow).not.toHaveBeenCalled();
 
-      await unmount();
-      client.unmount();
-    });
-
-    it("stale cache: shown at once, refreshed in the background, and a pull refetches only the stale show", async () => {
-      const client = createTestQueryClient();
-      seed(client, slowHorses, showSlowHorsesFixture, 1000);
-      // The Bear has ended: stale only after about a week (CRI-107).
-      seed(client, theBear, showTheBearFixture, ENDED_SHOW_STALE_TIME_MS + 1);
-
-      const { result, unmount } = await renderHook(
-        () => useFollowedEpisodes(),
-        { wrapper: wrapperWithQueryClient(client) },
-      );
-      await waitFor(() => expect(result.current.isReady).toBe(true));
-      // The stale show refreshes on its own on launch; the fresh one does not.
-      await waitFor(() => expect(mockedGetShow).toHaveBeenCalledWith(theBear));
-      expect(mockedGetShow).not.toHaveBeenCalledWith(slowHorses);
-      await waitFor(() => expect(result.current.isRefetching).toBe(false));
-
-      // Time passes with no re-render: Slow Horses goes stale, The Bear
-      // (just refreshed) stays fresh. The pull must judge that now.
-      mockedGetShow.mockClear();
-      jest.setSystemTime(Date.now() + SHOW_STALE_TIME_MS + 1 - 1000);
       await act(() => result.current.refetch());
       expect(mockedGetShow).toHaveBeenCalledTimes(1);
       expect(mockedGetShow).toHaveBeenCalledWith(slowHorses);
@@ -329,11 +306,40 @@ describe("useFollowedEpisodes", () => {
       client.unmount();
     });
 
-    // CRI-107: an ended show is refetched about weekly, not hourly.
-    it("refetches an ended show after a week, not after an hour, on launch and on a pull", async () => {
+    it("launch: refreshes a show in the hero's week after a day, not after an hour", async () => {
+      for (const [age, fetched] of [
+        [SHOW_STALE_TIME_MS + 1, false],
+        [HERO_WEEK_SHOW_STALE_TIME_MS + 1, true],
+      ] as const) {
+        mockedGetShow.mockClear();
+        const client = createTestQueryClient();
+        seed(client, slowHorses, showSlowHorsesFixture, age);
+        seed(client, theBear, showTheBearFixture, 0);
+        const { result, unmount } = await renderHook(
+          () => useFollowedEpisodes(),
+          { wrapper: wrapperWithQueryClient(client) },
+        );
+        await waitFor(() => expect(result.current.isReady).toBe(true));
+        await waitFor(() => expect(result.current.isRefetching).toBe(false));
+        expect(mockedGetShow.mock.calls.some(([id]) => id === slowHorses)).toBe(
+          fetched,
+        );
+        await unmount();
+        client.unmount();
+      }
+    });
+
+    // CRI-107: an ended show is refetched about weekly, on launch and on a
+    // pull alike.
+    it("refetches an ended show after a week, not after a day, on a pull", async () => {
       const client = createTestQueryClient();
       seed(client, slowHorses, showSlowHorsesFixture, 0);
-      seed(client, theBear, showTheBearFixture, SHOW_STALE_TIME_MS + 1);
+      seed(
+        client,
+        theBear,
+        showTheBearFixture,
+        HERO_WEEK_SHOW_STALE_TIME_MS + 1,
+      );
 
       const { result, unmount } = await renderHook(
         () => useFollowedEpisodes(),
@@ -341,7 +347,7 @@ describe("useFollowedEpisodes", () => {
       );
       await waitFor(() => expect(result.current.isReady).toBe(true));
       await act(() => result.current.refetch());
-      expect(mockedGetShow).not.toHaveBeenCalled();
+      expect(mockedGetShow).not.toHaveBeenCalledWith(theBear);
 
       jest.setSystemTime(Date.now() + ENDED_SHOW_STALE_TIME_MS);
       await act(() => result.current.refetch());
