@@ -138,7 +138,7 @@ candidates and their TVmaze info.
   Left as is: SQLite has no size limit (CRI-139).
 
 ## Amendment: hero images weekly (2026-10-22)
-Status: Proposed
+Status: Accepted (approved with #108, 2026-10-22)
 
 ### Context
 The hero's images (backdrop, logo, and since CRI-100 TMDB's poster) were
