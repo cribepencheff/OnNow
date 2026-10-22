@@ -223,23 +223,27 @@ describe("pullStretchTransform", () => {
   // the element's own center, so a point at local offset `y` from an
   // untransformed backdropHeight-tall element's top maps to
   // center + (y - center) * scale + translateY, relative to the wrapper's
-  // own container. containerY is constant (not containerRestY +
-  // pullDistance): this function assumes its container is already pinned
-  // at a fixed screen position by a separate transform (HeroPager's own
-  // pagerPinTranslateY), which is exactly what these tests are checking
-  // this function's formula is consistent with.
+  // own container. The container moves down with the pull, as the whole
+  // page does (no pin, since the pager's frame reaches above the hero,
+  // HERO_PULL_ROOM): containerRestY + pullDistance.
   function absoluteEdge(
     localY: number,
     pullDistance: number,
     backdropHeight: number,
-    containerY: number,
+    containerRestY: number,
   ): number {
     const { translateY, scale } = pullStretchTransform(
       pullDistance,
       backdropHeight,
     );
     const center = backdropHeight / 2;
-    return containerY + center + (localY - center) * scale + translateY;
+    return (
+      containerRestY +
+      pullDistance +
+      center +
+      (localY - center) * scale +
+      translateY
+    );
   }
 
   it("is the identity transform at rest (no pull)", () => {
@@ -253,7 +257,7 @@ describe("pullStretchTransform", () => {
     expect(pullStretchTransform(50, BACKDROP_HEIGHT).scale).toBeGreaterThan(1);
   });
 
-  it("keeps the backdrop's absolute top edge pinned regardless of pull distance, given an already-pinned container", () => {
+  it("keeps the backdrop's absolute top edge where it rests, while the page moves down with the pull", () => {
     const containerY = 100;
     for (const pullDistance of [0, 10, 40, 132.5]) {
       expect(
@@ -262,7 +266,7 @@ describe("pullStretchTransform", () => {
     }
   });
 
-  it("grows the backdrop's absolute bottom edge by exactly the pull distance, matching the foreground's own (separate, unpinned) shift", () => {
+  it("moves the backdrop's absolute bottom edge down by exactly the pull, with the rest of the hero", () => {
     const containerY = 100;
     for (const pullDistance of [0, 10, 40, 132.5]) {
       expect(

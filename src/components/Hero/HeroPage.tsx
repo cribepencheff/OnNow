@@ -61,6 +61,7 @@ import {
   NOTE_LINE,
   PILL_HEIGHT,
   TITLE_BLOCK_HEIGHT,
+  HERO_PULL_ROOM,
   heroImageSize,
   heroLayout,
 } from "@/logic/hero-layout";
@@ -355,10 +356,10 @@ export const HeroPage = memo(function HeroPage({
 
   // Pull-to-refresh stretch (Apple TV Store tab style): applies
   // pullStretchTransform's translateY/scale formula (see hero-carousel.ts
-  // for the derivation) to a wrapper around the whole backdrop, below; the
-  // pager itself is pinned separately (HeroPager's pagerPinTranslateY), so
-  // this only owns the top-anchored zoom, not a container-shift
-  // cancellation. It never has any visible effect unless pullDistance is
+  // for the derivation) to a wrapper around the whole backdrop, below. The
+  // slide moves down with the page; the backdrop grows up into the room
+  // above it (HERO_PULL_ROOM), its top staying where it rests on the
+  // screen, its bottom moving down with the hero. It never has any visible effect unless pullDistance is
   // nonzero (index.tsx's interpolation clamps it to 0 outside overscroll),
   // so nothing changes at rest or scrolling into the page either way.
   //
@@ -368,11 +369,9 @@ export const HeroPage = memo(function HeroPage({
   // (no horizontal overscan margin, since there's no parallax there to
   // cover either) — so a `scale` > 1 would grow a neighbouring slide's own
   // full-opacity backdrop past its own item bounds and spill it into view
-  // at the screen edges during a hard pull. With the pager itself still
-  // pinned regardless (HeroPager's own gate matches this one, so the two
-  // stay in sync: no separate zoom AND no separate pin, together), the
-  // backdrop still just moves down with the pull like the rest of the
-  // (already unpinned) content, the same as before this feature existed.
+  // at the screen edges during a hard pull. The backdrop then just moves
+  // down with the pull like the rest of the content, the same as before
+  // this feature existed.
   //
   // Built once via useMemo, not inline: Animated.multiply/add/divide build
   // a NEW native-graph node every call, and this component re-renders far
@@ -391,7 +390,7 @@ export const HeroPage = memo(function HeroPage({
       reduceMotionEnabled
         ? { translateY: 0, scale: 1 }
         : {
-            translateY: Animated.multiply(pullDistance, 0.5),
+            translateY: Animated.multiply(pullDistance, -0.5),
             scale: Animated.add(
               1,
               Animated.divide(pullDistance, backdropHeight),
@@ -405,10 +404,10 @@ export const HeroPage = memo(function HeroPage({
     // for the horizontal parallax overscan to bleed past this View's own
     // width under normal motion (pre-existing, unrelated to the pull); with
     // no overscan margin left under Reduce Motion (backdropWidth above),
-    // there's simply nothing left to clip there either way. The pull's own
-    // zoom (below) never renders outside this View's bounds: the pager
-    // itself is what's pinned (HeroPager's pagerPinTranslateY), so this
-    // View's own top never moves relative to it, at rest or mid-pull.
+    // there's simply nothing left to clip there either way. The slide is
+    // HERO_PULL_ROOM taller than the hero, reaching above it (HeroPager's
+    // frame), so the pull's stretch draws up into that room; the backdrop
+    // and its overlays sit below it, where the hero is.
     // FR-030: a tap opens Show detail; a swipe still pages (the list owns the drag).
     <Pressable
       accessibilityRole="button"
@@ -417,11 +416,22 @@ export const HeroPage = memo(function HeroPage({
       onPress={() =>
         router.push({ pathname: "/show/[id]", params: { id: show.id } })
       }
-      style={{ width, height: heroHeight, overflow: "visible" }}
+      style={{
+        width,
+        height: heroHeight + HERO_PULL_ROOM,
+        overflow: "visible",
+      }}
       testID="home-card"
     >
       <Animated.View
-        style={[StyleSheet.absoluteFill, { opacity: backdropOpacity }]}
+        style={{
+          position: "absolute",
+          top: HERO_PULL_ROOM,
+          left: 0,
+          right: 0,
+          height: heroHeight,
+          opacity: backdropOpacity,
+        }}
       >
         {/* No image anywhere: the still, dark placeholder, with the
             slide's own pill, title and button over it (CRI-100). */}
