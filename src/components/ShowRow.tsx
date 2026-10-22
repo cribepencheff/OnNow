@@ -149,6 +149,10 @@ export function ShowRowServiceLine({
   );
 }
 
+// The row's title, a touch smaller than headline (20/25).
+export const ROW_TITLE_SIZE = 18;
+const ROW_TITLE_LINE_HEIGHT = 23;
+
 const POSTER_WIDTH = 60;
 const POSTER_HEIGHT = 90;
 
@@ -170,8 +174,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 2,
   },
+  // A touch smaller than headline (owner, CRI-115), in its weight.
   title: {
     ...type.headline,
+    fontSize: ROW_TITLE_SIZE,
+    lineHeight: ROW_TITLE_LINE_HEIGHT,
     color: t.ink,
   },
   line: {
@@ -179,10 +186,13 @@ const styles = StyleSheet.create({
     minHeight: type.meta.lineHeight,
     color: t.inkMuted,
   },
+  // Some room above it (owner): the services, apart from the lines about
+  // the show itself.
   serviceLine: {
     flexDirection: "row",
     alignItems: "center",
     minHeight: type.meta.lineHeight,
+    marginTop: 4,
     gap: 6,
   },
   serviceLogos: {

@@ -1,7 +1,12 @@
 import { StyleSheet, Text } from "react-native";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
-import { ShowRow, ShowRowLine, ShowRowServiceLine } from "./ShowRow";
+import {
+  ROW_TITLE_SIZE,
+  ShowRow,
+  ShowRowLine,
+  ShowRowServiceLine,
+} from "./ShowRow";
 import { type } from "@/theme/tokens";
 
 // CRI-118: the one row behind Search, Shows and Calendar (PRD 5.2, 5.3,
@@ -146,5 +151,23 @@ describe("ShowRow", () => {
     expect(
       StyleSheet.flatten(screen.getByTestId("service").props.style).minHeight,
     ).toBe(type.meta.lineHeight);
+  });
+
+  // Owner, CRI-115: the title a touch smaller than headline, and some room
+  // above the service line, setting it apart from the lines above.
+  it("sets the title a touch smaller than headline, and room above the service line", async () => {
+    await render(
+      <ShowRow title="Slow Horses" accessibilityLabel="x">
+        <ShowRowServiceLine logos={[]} text="On Apple TV" testID="service" />
+      </ShowRow>,
+    );
+    const title = StyleSheet.flatten(
+      screen.getByText("Slow Horses").props.style,
+    );
+    expect(title.fontSize).toBe(ROW_TITLE_SIZE);
+    expect(ROW_TITLE_SIZE).toBeLessThan(type.headline.fontSize);
+    expect(
+      StyleSheet.flatten(screen.getByTestId("service").props.style).marginTop,
+    ).toBeGreaterThan(0);
   });
 });
