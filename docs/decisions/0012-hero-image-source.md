@@ -165,7 +165,7 @@ sample TVmaze had an image for every show it would have covered.
   is refreshed within an hour, TMDB's images within a day.
 
 ### Revised: TMDB's poster after all (2026-10-22, with #107)
-Status: Proposed
+Status: Accepted (approved with #107, 2026-10-22)
 
 TMDB's main poster turned out to cost no request: it is in the answer to
 the find step the backdrop lookup already makes (`poster_path`, in any
