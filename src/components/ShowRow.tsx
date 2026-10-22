@@ -35,8 +35,8 @@ interface ShowRowProps {
   // Right under the title, before the summary: where to watch
   // (ShowRowServiceLine; owner, 2026-10-22).
   subtitle?: ReactNode;
-  // Over the poster's top right, as on the poster cards (a Search row's
-  // follow circle; owner, 2026-10-22).
+  // Over the poster's top left (a Search row's follow circle; owner,
+  // 2026-10-22).
   posterAccessory?: ReactNode;
   // The bigger poster (a Search row's, LARGE_POSTER).
   largePoster?: boolean;
@@ -253,12 +253,12 @@ const styles = StyleSheet.create({
     minHeight: type.meta.lineHeight,
     gap: 6,
   },
-  // Near the poster's corner, a little closer than on the poster cards
-  // (owner, 2026-10-22): the poster is smaller.
+  // At the poster's top left (owner, 2026-10-22), a little closer to the
+  // corner than on the poster cards: the poster is smaller.
   posterAccessory: {
     position: "absolute",
     top: POSTER_ACCESSORY_INSET,
-    right: POSTER_ACCESSORY_INSET,
+    left: POSTER_ACCESSORY_INSET,
   },
   serviceLogos: {
     flexDirection: "row",

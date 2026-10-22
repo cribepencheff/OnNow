@@ -183,7 +183,7 @@ describe("ShowRow", () => {
 
   // Owner, 2026-10-22: a Search row's follow circle on its poster, as on
   // the poster cards.
-  it("draws a poster accessory over the poster's top right", async () => {
+  it("draws a poster accessory over the poster's top left", async () => {
     await render(
       <ShowRow
         title="Slow Horses"
@@ -198,7 +198,7 @@ describe("ShowRow", () => {
     expect(StyleSheet.flatten(accessory.props.style)).toMatchObject({
       position: "absolute",
       top: POSTER_ACCESSORY_INSET,
-      right: POSTER_ACCESSORY_INSET,
+      left: POSTER_ACCESSORY_INSET,
     });
     expect(POSTER_ACCESSORY_INSET).toBeLessThan(t.space2);
   });

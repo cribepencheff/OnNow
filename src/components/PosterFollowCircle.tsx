@@ -8,6 +8,9 @@ import { followHaptic } from "./followHaptic";
 import { FOLLOW_CHECK_SYMBOL, FOLLOW_PLUS_SYMBOL } from "./followSymbols";
 
 const FOLLOW_CIRCLE_SIZE = 32;
+// How much darker a followed circle's fill is (owner, 2026-10-22): the
+// page's bg over the material at this opacity, fading in with the check.
+export const FOLLOWED_SHADE = 0.35;
 // The icon's share of the circle (15 in 32).
 const ICON_SHARE = 15 / 32;
 
@@ -110,6 +113,19 @@ export function PosterFollowCircle({
       >
         <Animated.View
           style={[
+            styles.followedShade,
+            {
+              borderRadius: size / 2,
+              opacity: progress.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, FOLLOWED_SHADE],
+              }),
+            },
+          ]}
+          testID={`${testID}-followed-shade`}
+        />
+        <Animated.View
+          style={[
             styles.circleIcon,
             { opacity: plusOpacity, transform: [{ scale: plusScale }] },
           ]}
@@ -138,7 +154,16 @@ export function PosterFollowCircle({
 }
 
 const styles = StyleSheet.create({
-  // One material, followed or not; only the icon changes.
+  followedShade: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: t.bg,
+  },
+  // One material, followed or not; a followed one a little darker
+  // (followedShade).
   circle: {
     width: FOLLOW_CIRCLE_SIZE,
     height: FOLLOW_CIRCLE_SIZE,
