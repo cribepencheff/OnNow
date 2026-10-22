@@ -217,8 +217,9 @@ first user is the author, who currently uses Next Episode.
   the service slot on its own line, by the same rules as the Shows row: "On [service]", or plain
   "Unavailable" when there is none (Show detail and the Home hero name the
   region, rows do not), and nothing when TMDB does not know the show
-  (FR-027, CRI-97, CRI-102). No summary and no IMDb rating: the rating is
-  shown only in Show detail, to save OMDb calls (ADR 0013). The original
+  (FR-027, CRI-97, CRI-102). Two lines about the show under the title,
+  muted, and the show's IMDb rating after the title (owner, 2026-10-22;
+  not in Shows, to save OMDb calls, ADR 0013, CRI-116). The original
   network is not shown.
 - **Follow control:** a circle at the right edge of each row, aligned in one
   column: the poster cards' own circle, exactly (owner, 2026-10-22), a
