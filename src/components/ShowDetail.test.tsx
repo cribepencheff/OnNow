@@ -160,7 +160,7 @@ describe("ShowDetail", () => {
       screen.getByText("2022 · United Kingdom · Drama, Thriller, Espionage"),
     ).toBeTruthy();
     expect(screen.getByTestId("show-detail-status")).toHaveTextContent(
-      "Airing · next ep Wed 30 Sep",
+      "Next ep Wed 30 Sep",
     );
     expect(screen.getByText(/Slow Horses follows the story/)).toBeTruthy();
   });

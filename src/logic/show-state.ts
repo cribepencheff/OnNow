@@ -114,11 +114,11 @@ export function showState(
 export function showStateLabel(state: ShowState, todayDate: LocalDate): string {
   switch (state.kind) {
     case "airing":
-      return `Airing · next ep ${formatLabelDate(state.nextDate, todayDate)}`;
+      return `Next ep ${formatLabelDate(state.nextDate, todayDate)}`;
     case "airing-today":
-      return "Airing · new ep today";
+      return "New ep today";
     case "airing-tba":
-      return "Airing · next ep TBA";
+      return "Next ep TBA";
     case "season-dated":
       return `Season ${state.season} · ${formatLabelDate(state.date, todayDate)}`;
     case "season-tba":

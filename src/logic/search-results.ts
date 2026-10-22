@@ -49,14 +49,6 @@ export function rankSearchResults(
   });
 }
 
-// "2022 · Drama, Thriller": premiere year and up to three genres, as in
-// Show detail's meta line; a missing part is left out (PRD 5.4, FR-024).
-export function searchResultMetaLine(show: TvMazeShow): string {
-  const year = show.premiered ? show.premiered.slice(0, 4) : null;
-  const genres = (show.genres ?? []).slice(0, 3).join(", ");
-  return [year, genres].filter(Boolean).join(" · ");
-}
-
 export function searchResultNetworkName(show: TvMazeShow): string | null {
   return show.network?.name ?? show.webChannel?.name ?? null;
 }

@@ -11,16 +11,24 @@
 import { Pressable, StyleSheet, Text } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 
-import { ShowRow, ShowRowLine } from "./ShowRow";
+import { ShowRow, ShowRowServiceLine } from "./ShowRow";
 import { useStreamingService } from "@/hooks/useStreamingService";
 import { useListPoster } from "@/hooks/useListPoster";
-import { rowServiceText } from "@/logic/streaming-service";
+import { plainTextSummary } from "@/logic/search-results";
+import {
+  rowIsUnavailable,
+  rowServiceLogos,
+  rowServiceText,
+} from "@/logic/streaming-service";
 import type { TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 import { t, type } from "@/theme/tokens";
 
 interface ShowsRowProps {
   show: TvMazeShowWithEmbeds;
-  // Show detail's status line ("Airing · next ep Fri 9 Oct").
+  // Show detail's status line ("Next ep Fri 9 Oct"): for screen readers
+  // only. The row shows no status line (owner, 2026-10-22): Shows is for
+  // managing the follow list, and when a show is on is the hero's and the
+  // Calendar's job.
   statusLine: string;
   onUnfollow: () => void;
   onPress?: () => void;
@@ -49,6 +57,7 @@ export function ShowsRow({
         title={show.name}
         posterUri={poster.uri}
         posterPending={poster.pending}
+        summary={plainTextSummary(show.summary)}
         style={styles.row}
         accessibilityLabel={label}
         onPress={onPress}
@@ -60,9 +69,14 @@ export function ShowsRow({
         }}
         testID="shows-row"
       >
-        <ShowRowLine>{statusLine}</ShowRowLine>
-        {/* Its line is kept while TMDB answers, so the row does not grow. */}
-        <ShowRowLine testID="shows-row-service">{service ?? ""}</ShowRowLine>
+        {/* At the bottom; its line is kept while TMDB answers, so the row
+            does not grow. */}
+        <ShowRowServiceLine
+          logos={rowServiceLogos(providers)}
+          text={service ?? ""}
+          unavailable={rowIsUnavailable(providers)}
+          testID="shows-row-service"
+        />
       </ShowRow>
     </Swipeable>
   );

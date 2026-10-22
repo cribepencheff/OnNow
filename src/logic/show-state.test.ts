@@ -252,9 +252,10 @@ describe("showState (FR-028, FR-034)", () => {
 
 describe("showStateLabel (FR-028)", () => {
   it.each<[ShowState, string]>([
-    [{ kind: "airing", nextDate: "2026-10-11" }, "Airing · next ep Sun 11 Oct"],
-    [{ kind: "airing-today" }, "Airing · new ep today"],
-    [{ kind: "airing-tba" }, "Airing · next ep TBA"],
+    // Owner, 2026-10-22: no "Airing ·", which "next ep" already says.
+    [{ kind: "airing", nextDate: "2026-10-11" }, "Next ep Sun 11 Oct"],
+    [{ kind: "airing-today" }, "New ep today"],
+    [{ kind: "airing-tba" }, "Next ep TBA"],
     [
       { kind: "season-dated", season: 3, date: "2027-07-09" },
       "Season 3 · Fri 9 Jul 2027",

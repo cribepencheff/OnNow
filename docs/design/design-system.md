@@ -16,14 +16,14 @@ On Now is a stripped, cinematic iOS app that answers one question in two seconds
 - Fill a destructive action (Unfollow, revealed by a swipe) with `destructive`, with `ink` text. Use it nowhere else.
 - Draw the focus ring as a solid 2px `accent` ring; it holds 3:1 on every surface.
 - Use `hairline` for dividers only, never as the only edge of a control.
-- Put `image-control-backdrop` behind a small control drawn on an image, so it reads on light and busy images: the date pill on the Home hero (with a background blur), the follow circle on a poster card when not followed (no blur), the pull-to-refresh spinner over the hero.
+- Put `image-control-backdrop` behind a small control drawn on an image, so it reads on light and busy images: the date pill on the Home hero (with a background blur), the follow circle on a poster (no blur; once followed, `bg` at 35% over it, a little darker: owner, 2026-10-22), the pull-to-refresh spinner over the hero.
 - Edge the date pill, the follow circle on a Home poster card, and the poster cards themselves with a hairline of `image-control-edge` (white at 16%, the thinnest line the screen draws), as Apple TV does. One token for all three. The circle keeps the same material followed or not; only its white icon changes, a plus to a check (a transition between them may come later).
 
 ## Type
 
 - The typeface is the iOS system font (SF Pro). It is not bundled; the stack falls back to the platform sans.
 - Trial: button labels (`button`, for example "Open in [service]") are set in Manrope ExtraBold at -3% letter spacing, bundled with the app. Only the `button` family points at Manrope, so rolling back is one change.
-- On Home the show's logo replaces the title. Use `display` for the title only when a show has no logo. `title` names a Show detail and the Calendar month; `headline` names cards and rows.
+- On Home the show's logo replaces the title. Use `display` for the title only when a show has no logo. `title` names a Show detail and the Calendar month; `headline` names cards and rows; a row (Shows, Search, Calendar) sets it smaller, 17 on 22, with lines about the show under it in `meta`, `ink-muted` (CRI-115): two in Shows, three in Search, beside its bigger poster. A Search row's poster is bigger, 78 × 120, and its follow circle is the poster cards' own, on the poster's top left, a little smaller (28) and 6 from the corner. The service line is the row's last, 4 more above it than the other lines. In Search, the status line comes right under the title, in `meta`, `ink`; year and genres are left to Show detail. The show's IMDb rating sits on the poster's bottom right, 6 from the corner, a pill 20 high on `bg` at 80% (darker than the follow circle's) with its `image-control-edge` hairline: the number alone at 12 semibold, `ink`, no "IMDb" and no star.
 - Set badges in `label`, uppercase: "TOMORROW", "FINALE". The Home hero's date is a pill in sentence case instead (see Home below).
 - Write English, with original show titles. Never show a time of day. Use the data's own words, made readable: "Future uncertain", "Season 3 · TBA", "Season 4 premiere · Fri 9 Jul 2027". No em dashes.
 
@@ -44,12 +44,12 @@ On Now is a stripped, cinematic iOS app that answers one question in two seconds
 - No image anywhere (CRI-100), such as a show announced but not out: no words. It never pulses, so it never reads as a skeleton.
   - The hero: a still, dark gradient from `surface` to `bg`, under the slide's own pill, title and button.
   - Show detail: no image area at all. The title opens the page, with as much space above it as below it.
-  - A list's small poster (60 × 90): the same gradient, with the SF Symbol `photo.slash` (`photo` before iOS 27) in `ink-subtle` at half opacity, 22, and the poster cards' hairline edge (`image-control-edge`).
+  - A list's small poster (60 × 90; 78 × 120 in Search): the same gradient, with the SF Symbol `photo.slash` (`photo` before iOS 27) in `ink-subtle` at half opacity, 22, and the poster cards' hairline edge (`image-control-edge`).
 
 ## Iconography
 
 - Use SF Symbols, as iOS does. The one exception is the tab bar's four icons, drawn for the app so they share one stroke and can fill when active (see Tab bar below). The My shows icon holds the follow controls' own SF Symbol check.
-- Service names appear as text, not logos, until each service's brand guidelines are checked.
+- Services appear as TMDB's provider icons, clipped to a squircle with a thin dark ring (CRI-132, CRI-115): in the hero's "Open in" button; and in Shows and Search rows, before the service text, one per service in the text's order, up to four, 16 wide, 4 apart and 6 before the text, with the Premiere/Finale chip's light hairline (`episode-mark-edge`) instead of the dark ring, so a service the user has is seen at a glance. The text keeps the names, at `label`'s size (12) in a regular weight, `ink`, and is what screen readers read. "Unavailable" has a dot in the logos' place, 8 wide, in `service-unavailable` (a muted yellow, a warning).
 
 ## Home, direction B (chosen over A, the portrait poster)
 

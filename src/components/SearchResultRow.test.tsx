@@ -1,6 +1,15 @@
-import { fireEvent, render, screen } from "@testing-library/react-native";
+import { StyleSheet } from "react-native";
+import {
+  fireEvent,
+  render,
+  screen,
+  within,
+} from "@testing-library/react-native";
 
 import { SearchResultRow } from "./SearchResultRow";
+import { LARGE_POSTER, POSTER_ACCESSORY_INSET } from "./ShowRow";
+import { POSTER_RATING_FILL } from "./PosterRating";
+import { t } from "@/theme/tokens";
 import { useShow } from "@/hooks/useShow";
 import { useStreamingService } from "@/hooks/useStreamingService";
 import { NOT_ON_TMDB } from "@/logic/streaming-service";
@@ -14,6 +23,11 @@ jest.mock("@/hooks/useListPoster", () => ({
     uri: show.image?.medium ?? undefined,
     pending: false,
   }),
+}));
+// The show's IMDb rating on the poster (owner, 2026-10-22).
+const mockImdbRating = jest.fn(() => ({ data: null, imdbId: null }));
+jest.mock("@/hooks/useImdbRating", () => ({
+  useImdbRating: () => mockImdbRating(),
 }));
 jest.mock("@/hooks/useShow", () => ({
   useShow: jest.fn(),
@@ -72,14 +86,22 @@ describe("SearchResultRow", () => {
     jest.useRealTimers();
   });
 
-  it("shows the title and year · genres, no summary, status or network (PRD 5.4)", async () => {
+  // Owner, 2026-10-22: two lines about the show under the title again
+  // (the MVP had dropped the PoC's summary).
+  // Owner, 2026-10-22: no year and genres in the row (too much room);
+  // Show detail's meta line has them.
+  it("shows the title and two lines about the show; no year · genres, TVmaze status or network (PRD 5.4)", async () => {
     const show = showSlowHorsesFixture as unknown as TvMazeShow;
 
     await render(<SearchResultRow show={show} />);
 
     expect(screen.getByText("Slow Horses")).toBeTruthy();
-    expect(screen.getByText("2022 · Drama, Thriller, Espionage")).toBeTruthy();
-    expect(screen.queryByText(/Slow Horses follows the story/)).toBeNull();
+    expect(screen.queryByText(/2022 · Drama/)).toBeNull();
+    // Three lines (owner, 2026-10-22): room for them once year and genres
+    // went, matching the poster's height.
+    expect(
+      screen.getByText(/Slow Horses follows the story/).props.numberOfLines,
+    ).toBe(3);
     expect(screen.queryByText(/Running/)).toBeNull();
     expect(screen.queryByText("Apple TV")).toBeNull();
   });
@@ -89,19 +111,53 @@ describe("SearchResultRow", () => {
 
     await render(<SearchResultRow show={show} />);
 
-    expect(screen.getByTestId("search-result-status").props.children).toBe("");
+    expect(screen.getByTestId("search-result-status")).toHaveTextContent(/^$/);
   });
 
-  it('shows the service, or plain "Unavailable" without the region (FR-027, CRI-97)', async () => {
+  // Owner, 2026-10-22: the show's status under the title; "Unavailable"
+  // belongs with the services, at the bottom.
+  it('shows the service, or plain "Unavailable", at the bottom (FR-027, CRI-97)', async () => {
     const show = showSlowHorsesFixture as unknown as TvMazeShow;
     mockProviders([{ providerId: 350, providerName: "Apple TV" }]);
 
     const { rerender } = await render(<SearchResultRow show={show} />);
-    expect(screen.getByText("On Apple TV")).toBeTruthy();
+    expect(screen.getByTestId("search-result-service")).toHaveTextContent(
+      "On Apple TV",
+    );
 
     mockProviders([]);
     await rerender(<SearchResultRow show={show} />);
-    expect(screen.getByText("Unavailable")).toBeTruthy();
+    expect(screen.getByTestId("search-result-service")).toHaveTextContent(
+      "Unavailable",
+    );
+    expect(
+      screen.getByTestId("service-unavailable-dot", {
+        includeHiddenElements: true,
+      }),
+    ).toBeTruthy();
+    expect(screen.getByTestId("search-result-status")).toHaveTextContent(/^$/);
+  });
+
+  it("puts the status right under the title, and the services last", async () => {
+    mockedUseShow.mockReturnValue({ data: showSlowHorsesFixture } as never);
+    await render(
+      <SearchResultRow show={showSlowHorsesFixture as unknown as TvMazeShow} />,
+    );
+    const order = screen
+      .getByTestId("search-result-row-details")
+      .children.map((child) =>
+        typeof child === "string" ? child : child.props.testID,
+      );
+    // The status right under the title, in ink.
+    expect(order.slice(0, 2)).toEqual([
+      "search-result-row-title-row",
+      "search-result-status",
+    ]);
+    expect(order[order.length - 1]).toBe("search-result-service");
+    expect(
+      StyleSheet.flatten(screen.getByTestId("search-result-status").props.style)
+        .color,
+    ).toBe(t.ink);
   });
 
   it("shows no service when TMDB does not know the show (CRI-102)", async () => {
@@ -110,7 +166,7 @@ describe("SearchResultRow", () => {
 
     await render(<SearchResultRow show={show} />);
 
-    expect(screen.getByTestId("search-result-service").props.children).toBe("");
+    expect(screen.getByTestId("search-result-service")).toHaveTextContent(/^$/);
   });
 
   it.each([false, true])(
@@ -165,5 +221,84 @@ describe("SearchResultRow", () => {
     });
 
     expect(mockToggle).toHaveBeenCalledTimes(1);
+  });
+
+  // Owner, 2026-10-22: the show's IMDb rating on its poster, bottom right:
+  // the number alone, on a darker fill than the follow circle's.
+  it("shows the rating on the poster's bottom right, the number alone, on a darker fill", async () => {
+    mockImdbRating.mockReturnValue({
+      data: "8.2",
+      imdbId: "tt5875444",
+    } as never);
+    await render(
+      <SearchResultRow show={showSlowHorsesFixture as unknown as TvMazeShow} />,
+    );
+    const badge = screen.getByTestId("search-result-row-poster-badge");
+    expect(badge).toHaveTextContent("8.2");
+    expect(screen.queryByText("IMDb")).toBeNull();
+    expect(StyleSheet.flatten(badge.props.style)).toMatchObject({
+      position: "absolute",
+      bottom: POSTER_ACCESSORY_INSET,
+      right: POSTER_ACCESSORY_INSET,
+    });
+    const pill = StyleSheet.flatten(
+      screen.getByTestId("poster-rating").props.style,
+    );
+    expect(pill.backgroundColor).toBe(POSTER_RATING_FILL);
+    expect(pill.backgroundColor).not.toBe(t.imageControlBackdrop);
+    expect(
+      screen
+        .getByTestId("poster-rating")
+        .children.map((child) =>
+          typeof child === "string" ? child : child.props.children,
+        ),
+    ).toEqual(["8.2"]);
+    expect(pill.borderColor).toBe(t.imageControlEdge);
+    expect(screen.getByTestId("poster-rating").props.accessibilityLabel).toBe(
+      "IMDb rating 8.2",
+    );
+    mockImdbRating.mockReturnValue({ data: null, imdbId: null });
+  });
+
+  it("shows no rating badge without a rating", async () => {
+    mockImdbRating.mockReturnValue({ data: null, imdbId: null });
+    await render(
+      <SearchResultRow show={showSlowHorsesFixture as unknown as TvMazeShow} />,
+    );
+    expect(screen.queryByTestId("poster-rating")).toBeNull();
+  });
+
+  // Owner, 2026-10-22: the poster cards' follow circle, exactly; a taller
+  // poster for the taller row.
+  it("follows from the poster cards' own circle", async () => {
+    await render(
+      <SearchResultRow show={showSlowHorsesFixture as unknown as TvMazeShow} />,
+    );
+    const circle = StyleSheet.flatten(
+      screen.getByTestId(`follow-${showSlowHorsesFixture.id}-circle`).props
+        .style,
+    );
+    expect(circle.backgroundColor).toBe(t.imageControlBackdrop);
+    // A little smaller than the cards' 32 on the row's poster.
+    expect(circle.width).toBe(28);
+    expect(circle.borderColor).toBe(t.imageControlEdge);
+    // On the poster, as on the cards.
+    expect(
+      within(
+        screen.getByTestId("search-result-row-poster-accessory"),
+      ).getByTestId(`follow-${showSlowHorsesFixture.id}`),
+    ).toBeTruthy();
+  });
+
+  it("draws a taller poster than a Shows row's", async () => {
+    await render(
+      <SearchResultRow show={showSlowHorsesFixture as unknown as TvMazeShow} />,
+    );
+    const poster = StyleSheet.flatten(
+      screen.getByTestId("search-result-row-poster").props.style,
+    );
+    expect(poster.width).toBe(LARGE_POSTER.width);
+    expect(poster.height).toBe(LARGE_POSTER.height);
+    expect(LARGE_POSTER.height).toBeGreaterThan(90);
   });
 });

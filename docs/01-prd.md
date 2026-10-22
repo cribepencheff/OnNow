@@ -42,7 +42,8 @@ first user is the author, who currently uses Next Episode.
   "Finale" when its last episode is the last of a season (known only from
   TVmaze's episode order, never guessed), "Premiere" when it is both. The
   same facts Show detail marks (ADR 0015). Otherwise the line alone is
-  centred. The IMDb rating is in Show detail only (ADR 0013). No network:
+  centred. No IMDb rating on the hero: by the episode line it reads as the
+  episode's (ADR 0013; it is in Show detail). No network:
   where to watch is "Open in". Tapping the card
   opens Show detail (FR-030). No search entry on Home while shows are
   followed: Search is its own tab (FR-007).
@@ -168,9 +169,13 @@ first user is the author, who currently uses Next Episode.
     listed without an airstamp yet), a dated next season, or a new season
     listed without a date (TBA).
   - **Inactive:** between seasons, future uncertain, ended.
-- **Row (FR-010, FR-035):** poster, title, the status line from Show detail
-  in its wording ("Airing · next ep Fri 9 Oct", "Season 3 · TBA", "Ended",
-  5.5), and the service slot: "On [service]" or plain "Unavailable", without
+- **Row (FR-010, FR-035):** poster, title, two lines about the show
+  (TVmaze's summary, muted; nothing without one), and the service slot as
+  the row's last line. No
+  status line (owner, 2026-10-22): Shows is for managing the follow list,
+  and when a show is on is the hero's and the Calendar's job; screen
+  readers still hear Show detail's status line ("Next ep Fri 9 Oct",
+  "Season 3 · TBA", "Ended", 5.5) in the row's label. The service slot: "On [service]" or plain "Unavailable", without
   the region name (FR-027, CRI-97). Nothing when TMDB does not know the
   show (CRI-102). Tapping the row opens Show detail (FR-030).
 - **Unfollow (FR-002):** swiping a row left reveals an "Unfollow" button;
@@ -208,22 +213,28 @@ first user is the author, who currently uses Next Episode.
   return key ("Search") closes it. Autocorrect and spell check are off, so
   original titles are not rewritten.
 - **Result row (references: PlayPilot, Spotify "Add to playlist"):** large
-  portrait poster on the left. Next to it: title in bold, a meta line with
-  year and genres ("2026 · Drama, Thriller"), the status line (below), and
-  the service slot on its own line, by the same rules as the Shows row: "On [service]", or plain
+  portrait poster on the left, the follow circle on it. Next to it: title
+  in bold, the status line (below), and
+  the service slot as the row's last line, by the same rules as the Shows
+  row (the show's status line right under the title, in `ink`: owner,
+  2026-10-22): "On [service]", or plain
   "Unavailable" when there is none (Show detail and the Home hero name the
   region, rows do not), and nothing when TMDB does not know the show
-  (FR-027, CRI-97, CRI-102). No summary and no IMDb rating: the rating is
-  shown only in Show detail, to save OMDb calls (ADR 0013). The original
+  (FR-027, CRI-97, CRI-102). The status line right under the title in `ink`, then three lines about
+  the show, muted; show, muted; no year and genres, which Show detail's meta line has
+  (owner, 2026-10-22). The show's IMDb rating on the poster's bottom right,
+  the number alone, no "IMDb" (not in Shows while OMDb's free key is
+  shared by every user, ADR 0013, CRI-116). The original
   network is not shown.
 - **Follow control:** a circle at the right edge of each row, aligned in one
-  column. Not followed: hollow circle with a "+" at lower opacity. Followed:
-  filled with the accent colour and a check. A light haptic on follow and a
+  column: the poster cards' own circle, exactly (owner, 2026-10-22), a
+  translucent dark fill with a light hairline edge, a white "+" morphing
+  into a white check once followed. A light haptic on follow and a
   lighter one on unfollow, the same for every follow control (the circles
   in Search and on poster cards, and Show detail's Follow button). The
   filled state is a status, not a competing action.
 - **Status line (FR-025):** every row shows the status line from Show
-  detail, the same as the Shows row ("Airing · next ep Fri 9 Oct",
+  detail, the same as the Shows row ("Next ep Fri 9 Oct",
   "Season 3 · TBA", "Ended", 5.5), followed or not, so it helps decide what
   to follow and the row does not change height when followed. It comes
   from the same cached show lookup as Show detail; the pause in typing and
@@ -298,11 +309,11 @@ per season come in the MVP.
   stays out of the UI), the status line,
   then a "Follow" / "Following" toggle button that updates at once.
 - **Status line (CRI-86):** one state derived from TVmaze's status,
-  episodes and seasons, dated facts first: "Airing · next ep <date>" (next
-  episode in the season that is airing), "Airing · new ep today" (the
-  latest episode is out today and nothing is dated after it), "Airing ·
-  next ep TBA" (the next episode in the season that is airing is listed
-  without a date), "Season <n> · <date>" (a dated
+  episodes and seasons, dated facts first: "Next ep <date>" (next episode
+  in the season that is airing), "New ep today" (the latest episode is out
+  today and nothing is dated after it), "Next ep TBA" (the next episode in
+  the season that is airing is listed without a date; no "Airing", which
+  "next ep" already says: owner, 2026-10-22), "Season <n> · <date>" (a dated
   next season), "Season <n> · TBA" (a new season listed without a date),
   "Between seasons" (Running, nothing listed; no renewal implied), "Future
   uncertain" (To Be Determined), "Ended". It alone says whether anything is
@@ -400,10 +411,10 @@ Reached from an icon. Territory and notifications.
 | FR-021 | Direct links to the show for more services | After MVP |
 | FR-022 | Explore: "what is releasing" feed with filters, starting with streaming service | After MVP |
 | FR-023 | Android widget | After MVP |
-| FR-024 | Search results show poster, title, a meta line with year and genres, Show detail's status line (FR-025), the service slot (FR-027) and a follow circle at the right edge. PoC: year and status, and a two line summary. MVP: no summary, no TVmaze status in the meta line and no IMDb rating (the rating is in Show detail only). Results appear after a short pause in typing (about 250 ms), each show once, and are not filtered by region or show type; a show still "In Development" with no TVmaze update for two years is left out (PRD 5.4). A clear button (X) inside the field on iOS and Android | PoC, MVP |
+| FR-024 | Search results show poster, title, Show detail's status line (FR-025), the service slot (FR-027) and a follow circle at the right edge. PoC: year and status, and a two line summary. MVP: the two line summary right under the title, muted (owner, 2026-10-22), no TVmaze status in the meta line and the show's IMDb rating on the poster, the number alone (ADR 0013; not in Shows, CRI-116); the status line right under the title in `ink`, no year and genres (they are in Show detail's meta line; owner, 2026-10-22). Results appear after a short pause in typing (about 250 ms), each show once, and are not filtered by region or show type; a show still "In Development" with no TVmaze update for two years is left out (PRD 5.4). A clear button (X) inside the field on iOS and Android | PoC, MVP |
 | FR-025 | After following, the result row shows the next episode or "No date yet" (PoC). MVP: every result row shows Show detail's status line, followed or not, the same as the Shows row (FR-035), from the cached show lookup | PoC, MVP |
 | FR-026 | Before the user types, Search shows Home's rows as they are: "Top picks for you" (FR-038), then "Airing this week" (FR-039), each sharing what it has loaded with Home; only "Airing this week" when the follow list is empty. No "Search more" in Search: both rows end with "All caught up", shown only when the end is reached there. Region filtered as on Home (CRI-98) | MVP |
-| FR-027 | Search results and Shows rows show the services that carry the show in the user's territory, or plain "Unavailable" when there is none, and nothing when TMDB does not know the show; the row does not name the region, unlike Show detail (CRI-91, CRI-97, CRI-102) | MVP |
+| FR-027 | Search results and Shows rows show the services that carry the show in the user's territory, or plain "Unavailable" when there is none, and nothing when TMDB does not know the show; the row does not name the region, unlike Show detail (CRI-91, CRI-97, CRI-102). Before the services' names, each service's logo, small, up to four, so a service the user has is seen at a glance (CRI-115) | MVP |
 | FR-028 | Show detail view with image, title, year, status, service, summary, next and latest episode. PoC shows the network instead of the service. MVP: a meta line with the premiere year, the first origin country from TMDB and up to three genres from TVmaze ("2026 · Philippines · Drama, Thriller"), any missing part left out; the country is the show's origin, kept on purpose, and the original network stays out of the UI. MVP adds the IMDb rating from OMDb (ADR 0013) | PoC, MVP |
 | FR-029 | Show detail has a "Follow" / "Following" toggle button and, followed or not, "Open in [service]" as a full button when the show has a service in the user's territory (CRI-86). PoC: "Follow", and a quiet "Following" that unfollows; "Open in [service]" only when followed, for the show's Swedish service (FR-014); the service list in the user's territory is MVP | PoC, MVP |
 | FR-030 | Show detail opens from Search, Home, Calendar and Shows | PoC |
@@ -411,7 +422,7 @@ Reached from an icon. Territory and notifications.
 | FR-032 | Show detail has season tabs with the current season preselected and episodes marked aired, today, upcoming (muted), not in territory yet (muted) and finale. PoC and MVP: all but "not in territory yet", which comes after MVP (ADR 0015) | PoC, After MVP |
 | FR-033 | Announced future seasons appear as muted tabs with premiere date or "Announced" | PoC |
 | FR-034 | Between seasons, the next episode card shows the next announced episode or season with its date, otherwise the show status from the data source | PoC |
-| FR-035 | In Shows, a show between seasons shows its next announced date or its status from the data source instead of a next episode (PoC). MVP: every Shows row uses Show detail's status line in its wording ("Airing · next ep Fri 9 Oct", "Season 3 · TBA", "Ended") | PoC, MVP |
+| FR-035 | In Shows, a show between seasons shows its next announced date or its status from the data source instead of a next episode (PoC). MVP: every Shows row uses Show detail's status line in its wording ("Next ep Fri 9 Oct", "Season 3 · TBA", "Ended"), for screen readers; the row shows none (owner, 2026-10-22) | PoC, MVP |
 
 ## 7. Non-functional requirements
 
