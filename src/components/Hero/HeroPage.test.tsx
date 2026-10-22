@@ -3,7 +3,7 @@ import { fireEvent, render, screen } from "@testing-library/react-native";
 
 import type { TvMazeEpisode, TvMazeShow } from "@/api/tvmaze-types";
 import { useShowImages } from "@/hooks/useShowImages";
-import { IMAGE_TOP_MARGIN } from "@/logic/hero-layout";
+import { HERO_PULL_ROOM, IMAGE_TOP_MARGIN } from "@/logic/hero-layout";
 import { HeroPage } from "./HeroPage";
 
 // Where the sharp image starts with Jest's zero safe-area inset.
@@ -245,5 +245,34 @@ describe("HeroPage image fallback (CRI-100)", () => {
     await renderPage(jest.fn(), true, newlyweds);
     expect(screen.queryByTestId("hero-backdrop-image")).toBeNull();
     expect(screen.queryByTestId("no-image")).toBeNull();
+  });
+});
+
+// Owner, 2026-10-22: on a long pull the stretched backdrop was cut off at
+// the bottom. The slide reaches HERO_PULL_ROOM above the hero, so the
+// stretch grows up into the room the pull opens, and the backdrop rests
+// below that room, where the hero is.
+describe("HeroPage pull room", () => {
+  it("is taller than the hero by the pull room, with the backdrop below it", async () => {
+    mockedImages.mockReturnValue({
+      data: { highestRatedBackdrop: { file_path: "/backdrop.jpg" } },
+      isLoading: false,
+    });
+    await renderPage(jest.fn());
+    const slide = StyleSheet.flatten(
+      screen.getByTestId("home-card").props.style,
+    );
+    const backdrop = screen.getByTestId("hero-backdrop-image");
+    let layer = backdrop.parent;
+    while (
+      layer &&
+      StyleSheet.flatten(layer.props.style)?.top !== HERO_PULL_ROOM
+    ) {
+      layer = layer.parent;
+    }
+    expect(layer).toBeTruthy();
+    expect(slide.height).toBe(
+      StyleSheet.flatten(layer!.props.style).height + HERO_PULL_ROOM,
+    );
   });
 });

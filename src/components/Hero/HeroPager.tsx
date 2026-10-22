@@ -28,7 +28,7 @@ import {
   physicalToLogical,
   type HeroSlide,
 } from "@/logic/hero-carousel";
-import { topScrimGradient } from "@/logic/hero-layout";
+import { HERO_PULL_ROOM, topScrimGradient } from "@/logic/hero-layout";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ProgressiveBlur } from "../ProgressiveBlur";
 import { ContentLayer, HeroPage, useHeroLayout } from "./HeroPage";
@@ -216,26 +216,18 @@ export function HeroPager({
     y: 0,
   }));
 
-  // Pull-to-refresh: pins the pager itself (the FlatList below, wrapped in
-  // an Animated.View since AnimatedFlatList's own style prop is cast back
-  // to plain FlatList typing and won't accept an animated transform) at a
-  // fixed screen position during overscroll, countering the outer
-  // ScrollView's own pullDistance downward shift. This has to happen at
-  // the pager level, not by drawing HeroPage's backdrop "above" its own
-  // slide: the pager is a horizontal FlatList, a native UIScrollView on
-  // iOS, which clips to its own frame regardless of any `overflow` style
-  // on a child, so nothing can render outside it. With the pager itself
-  // pinned, each HeroPage's own backdrop only needs the top-anchored zoom
-  // pullStretchTransform computes (hero-carousel.ts), not a second
-  // cancellation for this same container shift.
+  // Pull-to-refresh: the pager moves down with the page, and each slide's
+  // backdrop grows up into the room above the hero that the pull opens
+  // (pullStretchTransform, HERO_PULL_ROOM), its top edge staying where it
+  // rests on the screen. Only the top scrim is held at the screen's top,
+  // over the backdrop's top edge. (Pinning the whole pager instead, as
+  // before, left its frame's bottom fixed while the page moved down, and a
+  // long pull cut the stretched image off there: the pager is a native
+  // scroll view that clips to its own frame.)
   //
-  // Off (translateY stays 0) under Reduce Motion: the scrim/content
-  // overlays are siblings of the pager, not pinned, and still move down
-  // with the pull as ever (unaffected either way); pinning ONLY the
-  // pager while leaving those unpinned would separate the backdrop from
-  // them instead of matching the pre-feature look Reduce Motion should
-  // keep (see HeroPage's own reduceMotionEnabled gate on pullTransform).
-  const pagerPinTranslateY = useMemo(
+  // Off (translateY stays 0) under Reduce Motion, as the backdrop's
+  // stretch is (HeroPage): everything moves down with the pull together.
+  const topScrimPinY = useMemo(
     () => (reduceMotionEnabled ? 0 : Animated.multiply(pullDistance, -1)),
     [reduceMotionEnabled, pullDistance],
   );
@@ -614,8 +606,15 @@ export function HeroPager({
 
   return (
     <View style={{ height: heroHeight }}>
-      <Animated.View
-        style={{ flex: 1, transform: [{ translateY: pagerPinTranslateY }] }}
+      {/* The pager's frame reaches HERO_PULL_ROOM above the hero, so a
+          pull's stretched backdrop draws up into the room the pull opens
+          instead of being cut off (pullStretchTransform); above the screen
+          at rest. */}
+      <View
+        style={{
+          marginTop: -HERO_PULL_ROOM,
+          height: heroHeight + HERO_PULL_ROOM,
+        }}
       >
         <AnimatedFlatList
           ref={listRef}
@@ -687,30 +686,29 @@ export function HeroPager({
           onMomentumScrollEnd={handleScrollEnd}
           renderItem={renderItem}
         />
-        {/* Pinned with the backdrop, so it stays at the image's top during
-            a pull. */}
-        {/* Dark behind the status bar and the logo row, so the clock,
-            the icons and the logo read on bright images; over each slide's
-            image-toned top blur (HeroPage), and fading out below the logo
-            row (topScrimGradient). */}
-        <View
-          pointerEvents="none"
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width,
-            height: topGradientHeight,
-            experimental_backgroundImage: topScrim,
-          }}
-          testID="hero-top-scrim"
-        />
-      </Animated.View>
+      </View>
+      {/* Dark behind the status bar and the logo row, so the clock, the
+          icons and the logo read on bright images; over each slide's
+          image-toned top blur (HeroPage), and fading out below the logo
+          row (topScrimGradient). Held at the screen's top during a pull,
+          with the backdrop's top edge. */}
+      <Animated.View
+        pointerEvents="none"
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width,
+          height: topGradientHeight,
+          experimental_backgroundImage: topScrim,
+          transform: [{ translateY: topScrimPinY }],
+        }}
+        testID="hero-top-scrim"
+      />
 
       {/* Over the hero's lower part, once for all slides rather than per
-          slide, and not part of the pinned pager: on a pull the backdrop
-          stretches down from its pinned top, so its seam moves down with
-          the pull, as these do. First the progressive blur, which starts
+          slide: on a pull the backdrop's seam moves down with the page,
+          as these do. First the progressive blur, which starts
           at the pill's top on the image itself and is full by the seam, so
           the mirror's symmetry does not read; then the fade into bg. Both horizontally uniform, so nothing slides or
           seams with a swipe. One point past the end covers a rounding

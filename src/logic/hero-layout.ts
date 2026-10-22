@@ -49,6 +49,12 @@ export const CONTENT_GAP = t.space2;
 // the logo has room (owner, CRI-124).
 export const TITLE_GAP = t.space4;
 
+// How far the hero pager's frame reaches above the hero (HeroPager), so a
+// pull's stretched backdrop can draw up into the room the pull opens
+// (pullStretchTransform). Above the screen at rest, where nothing can be
+// touched; beyond any pull in practice.
+export const HERO_PULL_ROOM = 600;
+
 // Where the sharp image's top edge sits relative to the bottom of the top
 // safe area: 15 above it (owner, CRI-124). The image is zoomed out to fit
 // between there and the bottom seam, so faces near the pill barely move

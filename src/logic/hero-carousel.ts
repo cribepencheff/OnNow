@@ -277,36 +277,34 @@ export function contentMountFrames(count: number, pageIndex: number): number[] {
   );
 }
 
-// The top-anchored-zoom transform for HeroPage's own backdrop on
-// pull-to-refresh overscroll (Apple TV Store tab style: the backdrop's top
-// edge stays screen-pinned while its height grows by exactly pullDistance).
-// Pure and unit tested, since the derivation is easy to get subtly wrong: a
-// transform's scale is anchored at an element's OWN CENTER, not its top, so
-// scaling a backdropHeight-tall element by `scale` moves its top up by
-// (scale - 1) * backdropHeight / 2 and its bottom down by the same amount.
+// The pull-to-refresh stretch for HeroPage's own backdrop (Apple TV Store
+// tab style): the backdrop's top edge stays where it rests on the screen
+// while the page, the backdrop's bottom and everything over it move down
+// with the pull; so the whole hero grows by exactly pullDistance. Pure and
+// unit tested, since the derivation is easy to get subtly wrong: a
+// transform's scale is anchored at an element's OWN CENTER, so scaling a
+// backdropHeight-tall element by `scale` moves its top up and its bottom
+// down by (scale - 1) * backdropHeight / 2 each.
 //
-// This assumes its own container is ALREADY held at a fixed screen
-// position, not moving with the pull: that's HeroPager's job (a separate
-// -pullDistance translateY on the pager itself, not this function's
-// concern), because the pager is a horizontal FlatList, a native
-// UIScrollView on iOS that clips to its own frame regardless of any
-// `overflow` style on a child — so nothing can be drawn "above" it to
-// simulate a pin the way this function's first version tried to. With the
-// container itself fixed, all this function needs to do is cancel the
-// scale's own top-rise: translateY = +pullDistance / 2. What's left, the
-// bottom edge, ends up pullDistance below its resting position, the same
-// shift the (separately positioned, unpinned) scrim/content overlays get
-// for free from the outer ScrollView's own overscroll, so the two stay
-// aligned exactly as they do at rest. HeroPage applies this same pair of
-// values via Animated.multiply/add/divide on pullDistance (an Animated
-// node, so this exact arithmetic can't run on it directly); this function
-// is the worked-out formula those calls mirror.
+// The container moves down with the pull (the pager is not pinned), so the
+// top has to rise by pullDistance in all: half from the scale, half from
+// translateY = -pullDistance / 2; the bottom then ends up pullDistance
+// lower, with the page. The backdrop draws above the hero's top while it
+// does so: the pager's frame reaches HERO_PULL_ROOM above the hero
+// (HeroPager), since the pager is a native scroll view that clips to its
+// own frame. (Pinning the pager instead, as before, left its frame's
+// bottom fixed, and a long pull cut the stretched image off there.)
+// HeroPage applies this same pair of values via Animated.multiply/add/
+// divide on pullDistance (an Animated node, so this exact arithmetic can't
+// run on it directly); this function is the worked-out formula those
+// calls mirror.
 export function pullStretchTransform(
   pullDistance: number,
   backdropHeight: number,
 ): { translateY: number; scale: number } {
   return {
-    translateY: pullDistance / 2,
+    // 0 - pull, not -pull: no -0 at rest.
+    translateY: (0 - pullDistance) / 2,
     scale: 1 + pullDistance / backdropHeight,
   };
 }
