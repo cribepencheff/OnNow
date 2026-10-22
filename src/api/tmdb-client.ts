@@ -104,7 +104,9 @@ export interface TmdbClient {
   findImages: (
     show: TmdbShowRef,
   ) => Promise<
-    { tvId: number; images: TmdbImages } | typeof NOT_ON_TMDB | null
+    | { tvId: number; images: TmdbImages; posterPath: string | null }
+    | typeof NOT_ON_TMDB
+    | null
   >;
   // Shows on a streaming service in the region with an episode on a day
   // (TMDB discover), soaps excluded, the 20 most popular (FR-039); null
@@ -269,11 +271,16 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
 
   async function findImages(
     show: TmdbShowRef,
-  ): Promise<{ tvId: number; images: TmdbImages } | typeof NOT_ON_TMDB | null> {
+  ): Promise<
+    | { tvId: number; images: TmdbImages; posterPath: string | null }
+    | typeof NOT_ON_TMDB
+    | null
+  > {
     if (!apiKey) {
       return null;
     }
-    const tvId = tmdbTvId(await lookUp(show, apiKey));
+    const found = await lookUp(show, apiKey);
+    const tvId = tmdbTvId(found);
     if (tvId === null) {
       return NOT_ON_TMDB;
     }
@@ -281,7 +288,10 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
       `/tv/${tvId}/images?include_image_language=en,null,xx`,
       apiKey,
     );
-    return { tvId, images };
+    // The main poster from the find step already made: in any language,
+    // where /images above keeps only English and textless ones (CRI-100).
+    const posterPath = found.tv_results?.[0]?.poster_path ?? null;
+    return { tvId, images, posterPath };
   }
 
   async function externalIdsById(tmdbId: number): Promise<ExternalIds | null> {

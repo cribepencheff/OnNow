@@ -36,6 +36,7 @@ import {
 import { ShowRow, ShowRowLine } from "@/components/ShowRow";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
 import { useGuardedRouter } from "@/hooks/useGuardedRouter";
+import { useListPoster } from "@/hooks/useListPoster";
 import { useToday } from "@/hooks/useToday";
 import { useWeekStart } from "@/hooks/useWeekStart";
 import {
@@ -304,11 +305,13 @@ function MonthHeader({
 function CalendarRow({ show, episodes }: ShowEpisodesToday) {
   const router = useGuardedRouter();
   const line = calendarRowLine(episodes);
+  const poster = useListPoster(show);
 
   return (
     <ShowRow
       title={show.name}
-      posterUri={show.image?.medium}
+      posterUri={poster.uri}
+      posterPending={poster.pending}
       style={styles.row}
       accessibilityLabel={line ? `${show.name}, ${line}` : show.name}
       onPress={() =>

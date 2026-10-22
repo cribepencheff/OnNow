@@ -11,6 +11,7 @@ import { ShowRow, ShowRowLine } from "./ShowRow";
 import { useFollowToggle } from "@/hooks/useFollowList";
 import { useShow } from "@/hooks/useShow";
 import { useStreamingService } from "@/hooks/useStreamingService";
+import { useListPoster } from "@/hooks/useListPoster";
 import { useToday } from "@/hooks/useToday";
 import { searchResultMetaLine } from "@/logic/search-results";
 import { showState, showStateLabel } from "@/logic/show-state";
@@ -32,11 +33,13 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
   const metaLine = searchResultMetaLine(show);
   const { data: providers } = useStreamingService(show, true);
   const service = rowServiceText(providers);
+  const poster = useListPoster(show);
 
   return (
     <ShowRow
       title={show.name}
-      posterUri={show.image?.medium}
+      posterUri={poster.uri}
+      posterPending={poster.pending}
       testID="search-result-row"
       onPress={onPress}
       accessibilityLabel={show.name}

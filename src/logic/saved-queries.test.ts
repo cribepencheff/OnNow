@@ -13,7 +13,7 @@ describe("shouldSaveQuery", () => {
   it("saves TMDB matches, hero images and what the discovery rows are filled from", () => {
     for (const key of [
       ["tmdbFind", "v1", "tt1", null],
-      ["hero-images-v5", 1],
+      ["hero-images-v6", 1],
       ["recommendations", "v1", 1],
       ["airingThisWeek", "v1", "SE", "2026-10-22", "UTC"],
       ["tvmazeWeekInfo", "v1", 5],

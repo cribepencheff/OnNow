@@ -12,7 +12,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { tmdbClient, tmdbShowRef } from "@/api/tmdb-client";
-import type { TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
+import type { TvMazeShow } from "@/api/tvmaze-types";
 import type { TmdbImage } from "@/api/tmdb-types";
 import {
   chooseHighestRatedBackdrop,
@@ -39,18 +39,26 @@ export interface ShowImages {
   secondMostVoted: TmdbImage | null;
   textlessCount: number;
   logo: TmdbImage | null;
+  // TMDB's main poster (CRI-100): a fallback where a show has no backdrop,
+  // and for a list's poster where TVmaze has none.
+  posterPath: string | null;
 }
 
-export function useShowImages(show: TvMazeShowWithEmbeds) {
+export function useShowImages(
+  show: TvMazeShow,
+  // A list asks only when TVmaze has no poster (useListPoster).
+  options: { enabled?: boolean } = {},
+) {
   return useQuery({
+    enabled: options.enabled ?? true,
     // Refreshed daily, kept and saved 21 days (ADR 0017): after time away
     // the hero shows the images it had at once, replaced if TMDB's now
-    // differ. v5: the key no longer carries the day (v4 did, which meant a
+    // differ. v6: posterPath added (CRI-100). v5: the key no longer carries the day (v4 did, which meant a
     // new fetch, and no image meanwhile, on every new day); bump this
     // suffix whenever ShowImages' shape changes, since answers are kept.
     // Earlier: v3 dropped the stored "official" backdrop pick, v4 the "no
     // TMDB match" answers from before the name match (CRI-99).
-    queryKey: ["hero-images-v5", show.id],
+    queryKey: ["hero-images-v6", show.id],
     staleTime: DAY_MS,
     gcTime: KEEP_MS,
     // Without a key the lookup cannot work, so say so at once.
@@ -69,9 +77,10 @@ export function useShowImages(show: TvMazeShowWithEmbeds) {
           secondMostVoted: null,
           textlessCount: 0,
           logo: null,
+          posterPath: null,
         };
       }
-      const { tvId, images } = found;
+      const { tvId, images, posterPath } = found;
       const textless = textlessBackdrops(images);
       return {
         tmdbId: tvId,
@@ -80,6 +89,7 @@ export function useShowImages(show: TvMazeShowWithEmbeds) {
         secondMostVoted: textless[1] ?? null,
         textlessCount: textless.length,
         logo: chooseLogo(images),
+        posterPath,
       };
     },
   });

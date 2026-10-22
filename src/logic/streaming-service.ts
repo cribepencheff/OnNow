@@ -21,7 +21,12 @@ export type ProviderAnswer = StreamingProvider[] | typeof NOT_ON_TMDB;
 
 // The parts of TMDB's responses this app reads, as returned.
 export interface TmdbFindResponse {
-  tv_results?: { id: number; origin_country?: string[] }[];
+  tv_results?: {
+    id: number;
+    origin_country?: string[];
+    // TMDB's main poster, in any language (CRI-100).
+    poster_path?: string | null;
+  }[];
 }
 
 interface TmdbProvider {

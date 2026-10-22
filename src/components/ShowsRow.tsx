@@ -13,6 +13,7 @@ import { Swipeable } from "react-native-gesture-handler";
 
 import { ShowRow, ShowRowLine } from "./ShowRow";
 import { useStreamingService } from "@/hooks/useStreamingService";
+import { useListPoster } from "@/hooks/useListPoster";
 import { rowServiceText } from "@/logic/streaming-service";
 import type { TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 import { t, type } from "@/theme/tokens";
@@ -35,6 +36,7 @@ export function ShowsRow({
 }: ShowsRowProps) {
   const { data: providers } = useStreamingService(show, true);
   const service = rowServiceText(providers);
+  const poster = useListPoster(show);
   const label = [show.name, statusLine, service].filter(Boolean).join(", ");
 
   return (
@@ -45,7 +47,8 @@ export function ShowsRow({
     >
       <ShowRow
         title={show.name}
-        posterUri={show.image?.medium}
+        posterUri={poster.uri}
+        posterPending={poster.pending}
         style={styles.row}
         accessibilityLabel={label}
         onPress={onPress}

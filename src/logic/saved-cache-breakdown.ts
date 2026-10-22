@@ -1,7 +1,7 @@
 // What the saved query cache holds, per kind of data (ADR 0017): each
 // kind's share of the saved copy, for the dev readout (Images (dev)), to
 // see which kind takes the space. A kind is a query key's first part
-// ("show", "hero-images-v5", ...). Sizes are JSON lengths, about bytes.
+// ("show", "hero-images-v6", ...). Sizes are JSON lengths, about bytes.
 
 export type SavedKind = { kind: string; count: number; bytes: number };
 

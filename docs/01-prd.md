@@ -243,9 +243,9 @@ first user is the author, who currently uses Next Episode.
   opens or regains focus. The poster rows deliberately look different
   from search results.
 - **Edge cases:** no results gives a short hint to try the original title.
-  A show without an image gets a still, dark surface with the "no image"
-  symbol in the poster's place (design system, CRI-100); the title stays
-  in its column. Running
+  The poster is TVmaze's, else TMDB's; a show with neither gets a still,
+  dark surface with the "no image" symbol in the poster's place (design
+  system, CRI-100); the title stays in its column. Running
   shows rank above ended ones. A show TVmaze still lists as "In
   Development" but has not updated for two years is left out: it has most
   likely not gone ahead, and it comes back once TVmaze updates it. A show
