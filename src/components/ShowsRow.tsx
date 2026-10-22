@@ -11,7 +11,7 @@
 import { Pressable, StyleSheet, Text } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 
-import { ShowRow, ShowRowLine, ShowRowServiceLine } from "./ShowRow";
+import { ShowRow, ShowRowServiceLine } from "./ShowRow";
 import { useStreamingService } from "@/hooks/useStreamingService";
 import { useListPoster } from "@/hooks/useListPoster";
 import { plainTextSummary } from "@/logic/search-results";
@@ -21,7 +21,10 @@ import { t, type } from "@/theme/tokens";
 
 interface ShowsRowProps {
   show: TvMazeShowWithEmbeds;
-  // Show detail's status line ("Next ep Fri 9 Oct").
+  // Show detail's status line ("Next ep Fri 9 Oct"): for screen readers
+  // only. The row shows no status line (owner, 2026-10-22): Shows is for
+  // managing the follow list, and when a show is on is the hero's and the
+  // Calendar's job.
   statusLine: string;
   onUnfollow: () => void;
   onPress?: () => void;
@@ -62,7 +65,6 @@ export function ShowsRow({
         }}
         testID="shows-row"
       >
-        <ShowRowLine>{statusLine}</ShowRowLine>
         {/* Its line is kept while TMDB answers, so the row does not grow. */}
         <ShowRowServiceLine
           logos={rowServiceLogos(providers)}

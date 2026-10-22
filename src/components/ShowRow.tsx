@@ -194,10 +194,10 @@ const styles = StyleSheet.create({
     lineHeight: ROW_TITLE_LINE_HEIGHT,
     color: t.ink,
   },
-  // In ink, apart from the muted lines under it (owner).
+  // Muted, as the lines under it (owner).
   summary: {
     ...type.meta,
-    color: t.ink,
+    color: t.inkMuted,
   },
   line: {
     ...type.meta,

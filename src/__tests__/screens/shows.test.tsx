@@ -188,14 +188,18 @@ describe("ShowsScreen", () => {
     mockProviders(undefined);
   });
 
-  it("shows Show detail's status line for an airing show (FR-010, FR-035)", async () => {
+  // Owner, 2026-10-22: Shows is for managing the follow list; when a show
+  // is on is the hero's and the Calendar's job, so the row shows no status
+  // line. Screen readers still hear it, in the row's label.
+  it("shows no status line in the row, and gives it to screen readers (FR-010, FR-035)", async () => {
     const show = airingShow(1, "Silo");
     mockShows([show]);
 
     await render(<ShowsScreen />);
 
     expect(screen.getByText("Silo")).toBeTruthy();
-    expect(screen.getByText("Next ep Thu 24 Sep")).toBeTruthy();
+    expect(screen.queryByText("Next ep Thu 24 Sep")).toBeNull();
+    expect(screen.getByLabelText(/^Silo, Next ep Thu 24 Sep/)).toBeTruthy();
   });
 
   it("puts airing shows and confirmed seasons in Active, the rest in Inactive, with counts (PRD 5.3)", async () => {
@@ -213,7 +217,7 @@ describe("ShowsScreen", () => {
 
     expect(screen.getByLabelText("Active, 2")).toBeTruthy();
     expect(screen.getByLabelText("Inactive, 1")).toBeTruthy();
-    expect(screen.getByText("Season 4 · TBA")).toBeTruthy();
+    expect(screen.getByLabelText(/^Foundation, Season 4 · TBA/)).toBeTruthy();
   });
 
   it("shows Inactive rows without a tap, with sticky segment headers (PRD 5.3)", async () => {
@@ -225,7 +229,7 @@ describe("ShowsScreen", () => {
     await render(<ShowsScreen />);
 
     expect(screen.getByText("The Bear")).toBeTruthy();
-    expect(screen.getByText("Ended")).toBeTruthy();
+    expect(screen.getByLabelText(/^The Bear, Ended/)).toBeTruthy();
     expect(
       screen.getByTestId("shows-segment-inactive").props.accessibilityRole,
     ).toBe("header");

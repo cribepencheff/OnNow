@@ -172,8 +172,8 @@ describe("ShowRow", () => {
   });
 
   // Owner, 2026-10-22: the show first, so two lines about it right under
-  // the title, in ink to set it apart from the muted lines.
-  it("shows two lines about the show under the title, in ink", async () => {
+  // the title, muted like the lines under it.
+  it("shows two lines about the show under the title, muted", async () => {
     await render(
       <ShowRow
         title="Slow Horses"
@@ -185,7 +185,7 @@ describe("ShowRow", () => {
     );
     const summary = screen.getByText(/Follows a team/);
     expect(summary.props.numberOfLines).toBe(2);
-    expect(StyleSheet.flatten(summary.props.style).color).toBe(t.ink);
+    expect(StyleSheet.flatten(summary.props.style).color).toBe(t.inkMuted);
   });
 
   it("leaves no gap without a summary", async () => {
