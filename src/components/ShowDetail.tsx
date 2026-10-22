@@ -31,6 +31,7 @@ import { useStreamingService } from "@/hooks/useStreamingService";
 import { useToday } from "@/hooks/useToday";
 import type { LocalDate } from "@/logic/local-date";
 import { plainTextSummary } from "@/logic/search-results";
+import { chooseShowImage } from "@/logic/show-image";
 import {
   allEpisodesAvailable,
   currentSeasonNumber,
@@ -106,16 +107,25 @@ function ShowDetailContent({
   const next = nextCard(show, episodes, seasons, timeZone, todayDate);
   const tabs = seasonTabs(seasons, episodes, todayDate);
   const state = showState(show, episodes, seasons, timeZone, todayDate);
-  // A TMDB backdrop, textless first (ADR 0012): no title text in the image.
-  const { data: images } = useShowImages(show);
-  const backdropPath = images?.highestRatedBackdrop?.file_path;
+  // A TMDB backdrop, textless first (ADR 0012): no title text in the
+  // image. Without one, TVmaze's poster, cropped from the top; without any
+  // image, "No image" (chooseShowImage, CRI-100). Nothing is chosen while
+  // TMDB's answer is on its way, so a poster never flashes in first.
+  const { data: images, isLoading: imagesLoading } = useShowImages(show);
+  const shown = imagesLoading
+    ? null
+    : chooseShowImage(images?.highestRatedBackdrop, show.image);
+  const backdropPath = shown?.kind === "tmdb" ? shown.path : undefined;
   // Drawn square, about 1,180 px tall on a 3x phone: w1920 (1080 px tall),
   // with "original" if that undocumented size fails (CRI-140).
   const backdrop = useFallbackUri(
-    backdropPath && `${IMAGE_BASE}/${LARGE_BACKDROP_SIZE}${backdropPath}`,
+    shown?.kind === "tvmaze"
+      ? shown.sharp
+      : backdropPath && `${IMAGE_BASE}/${LARGE_BACKDROP_SIZE}${backdropPath}`,
     backdropPath &&
       `${IMAGE_BASE}/${LARGE_BACKDROP_FALLBACK_SIZE}${backdropPath}`,
   );
+  const noImage = shown?.kind === "none";
   const logo = images?.logo;
   const { link, availability } = useOpenIn(show);
   const { data: originCountries } = useOriginCountries(show);
@@ -134,18 +144,27 @@ function ShowDetailContent({
       ]}
     >
       <View style={styles.hero} testID="show-detail-hero">
-        <Image
-          source={backdrop.uri}
-          onError={backdrop.onError}
-          style={styles.heroImage}
-          testID="show-detail-backdrop"
-          contentFit="cover"
-          accessibilityIgnoresInvertColors
-        />
+        {/* No image anywhere: no square at all; the title opens the page
+            (CRI-100). */}
+        {!noImage && (
+          <Image
+            source={backdrop.uri}
+            onError={backdrop.onError}
+            style={styles.heroImage}
+            testID="show-detail-backdrop"
+            contentFit="cover"
+            // A poster from the top, where its title usually is not.
+            contentPosition={shown?.kind === "tvmaze" ? "top" : "center"}
+            accessibilityIgnoresInvertColors
+          />
+        )}
         {/* The Home hero's scrim, logo or title, and "Open in" on the
             backdrop, in every state (CRI-86). */}
-        <View pointerEvents="none" style={styles.heroScrim} />
-        <View style={styles.heroContent}>
+        {!noImage && <View pointerEvents="none" style={styles.heroScrim} />}
+        <View
+          style={noImage ? styles.heroContentPlain : styles.heroContent}
+          testID="show-detail-hero-content"
+        >
           {logo ? (
             <Image
               source={`${IMAGE_BASE}/w500${logo.file_path}`}
@@ -187,7 +206,7 @@ function ShowDetailContent({
         </View>
       </View>
 
-      <View style={styles.section}>
+      <View style={styles.section} testID="show-detail-section">
         <ImdbRating show={show} textStyle={styles.meta} />
         {metaLine !== "" && <Text style={styles.meta}>{metaLine}</Text>}
         <Text style={styles.meta} testID="show-detail-status">
@@ -492,6 +511,10 @@ function EpisodeList({
 
 const STILL_ASPECT_RATIO = 16 / 9;
 
+// The space above a section, and above the title when there is no image
+// (CRI-100).
+const SECTION_TOP = 20;
+
 const styles = StyleSheet.create({
   screen: {
     backgroundColor: t.bg,
@@ -526,6 +549,13 @@ const styles = StyleSheet.create({
   heroLogo: {
     width: 240,
     height: 88,
+  },
+  // No image (CRI-100): the title in the page's flow, as much space above
+  // it as below it (the section's top), balanced under the header.
+  heroContentPlain: {
+    paddingHorizontal: t.contentInset,
+    paddingTop: SECTION_TOP,
+    gap: 8,
   },
   heroTitleBand: {
     height: 88,
@@ -565,7 +595,7 @@ const styles = StyleSheet.create({
   },
   section: {
     paddingHorizontal: t.contentInset,
-    paddingTop: 20,
+    paddingTop: SECTION_TOP,
     gap: 6,
   },
   meta: {

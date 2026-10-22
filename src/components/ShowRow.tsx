@@ -18,6 +18,7 @@ import {
 } from "react-native";
 
 import { t, type } from "@/theme/tokens";
+import { NoImage } from "./NoImage";
 
 interface ShowRowProps {
   title: string;
@@ -55,12 +56,18 @@ export function ShowRow({
       accessibilityActions={accessibilityActions}
       onAccessibilityAction={onAccessibilityAction}
     >
-      <Image
-        source={posterUri ?? undefined}
-        style={styles.poster}
-        contentFit="cover"
-        accessibilityIgnoresInvertColors
-      />
+      {posterUri ? (
+        <Image
+          source={posterUri}
+          style={styles.poster}
+          contentFit="cover"
+          accessibilityIgnoresInvertColors
+        />
+      ) : (
+        // No image: the still surface with the "no image" symbol
+        // (CRI-100); the title beside it names the show.
+        <NoImage icon style={styles.poster} />
+      )}
       <View style={styles.details}>
         <Text style={styles.title} numberOfLines={1}>
           {title}
@@ -99,8 +106,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: t.contentInset,
     gap: t.space2 + 4,
   },
-  // No image: nothing, never a grey box (design system); the space stays
-  // so titles line up.
   poster: {
     width: POSTER_WIDTH,
     height: POSTER_HEIGHT,

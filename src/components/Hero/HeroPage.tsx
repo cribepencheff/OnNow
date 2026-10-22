@@ -34,6 +34,8 @@ import {
   openInAccessibilityLabel,
   streamingOnLabel,
 } from "@/logic/streaming-service";
+import { chooseShowImage } from "@/logic/show-image";
+import { NoImage } from "../NoImage";
 import { PaidSubscriptionMarker } from "../PaidSubscriptionMarker";
 import { ServiceLogo } from "../ServiceLogo";
 import { ProgressiveMask } from "../ProgressiveBlur";
@@ -234,10 +236,24 @@ export const HeroPage = memo(function HeroPage({
   const { data: images, isLoading: imagesLoading } = useShowImages(show);
   // The show's highest-rated backdrop (chooseHighestRatedBackdrop:
   // textless first, then vote_average, vote_count as tie-break), the same
-  // image on every visit to the slide (ADR 0012, amended for CRI-124).
-  // Nothing below this line (parallax, crossfade, pull-zoom, mirror, blur)
-  // depends on which image it is.
-  const displayPath = images?.highestRatedBackdrop?.file_path;
+  // image on every visit to the slide (ADR 0012, amended for CRI-124);
+  // without one, TVmaze's poster, cropped from the top; without any image,
+  // "No image" (chooseShowImage, CRI-100). Nothing is chosen while TMDB's
+  // answer is still on its way, so a poster never flashes in before the
+  // backdrop. Nothing below this line (parallax, crossfade, pull-zoom,
+  // mirror, blur) depends on which image it is.
+  const shown = imagesLoading
+    ? null
+    : chooseShowImage(images?.highestRatedBackdrop, show.image);
+  const tmdbPath = shown?.kind === "tmdb" ? shown.path : undefined;
+  // The small copy: the far slides, the placeholder while the sharp one
+  // decodes, and the blurred edges.
+  const smallUri =
+    shown?.kind === "tmdb"
+      ? `${IMAGE_BASE}/${BLURRED_COPY_SIZE}${shown.path}`
+      : shown?.kind === "tvmaze"
+        ? shown.small
+        : undefined;
   // The sharp image runs from under the top safe area down to the title
   // slot's bottom (heroLayout), mirrored above and below it (Apple TV
   // style); HeroPager's progressive blurs, one at each end for all slides,
@@ -251,7 +267,7 @@ export const HeroPage = memo(function HeroPage({
     () => onBackdropLoad(index),
     [onBackdropLoad, index],
   );
-  const noImage = !displayPath && !imagesLoading;
+  const noImage = shown?.kind === "none";
   useEffect(() => {
     if (noImage) {
       onBackdropLoad(index);
@@ -272,9 +288,10 @@ export const HeroPage = memo(function HeroPage({
   // Zoomed out to fit the box's height, centred: the image's bottom edge
   // stays on the bottom seam and its top edge on imageTop, so more of its
   // width shows. Never narrower than the screen.
-  const backdrop = images?.highestRatedBackdrop;
-  const aspectRatio =
-    backdrop && backdrop.height > 0 ? backdrop.width / backdrop.height : 16 / 9;
+  // A TVmaze poster's size is not in the data: posters are 2:3. Cropped
+  // from the top, where a poster's title usually is not.
+  const aspectRatio = shown?.kind === "tmdb" ? shown.aspectRatio : 2 / 3;
+  const crop = shown?.kind === "tvmaze" ? "top" : "center";
   const columnWidth = Math.max(width, imageBoxHeight * aspectRatio);
   const columnLeft = (backdropWidth - columnWidth) / 2;
   // Sharp on this screen's pixels at the width the image is drawn
@@ -286,9 +303,11 @@ export const HeroPage = memo(function HeroPage({
     PixelRatio.get(),
   );
   const sharpImage = useFallbackUri(
-    displayPath && `${IMAGE_BASE}/${imageSize}${displayPath}`,
-    displayPath && imageSize === LARGE_BACKDROP_SIZE
-      ? `${IMAGE_BASE}/${LARGE_BACKDROP_FALLBACK_SIZE}${displayPath}`
+    shown?.kind === "tvmaze"
+      ? shown.sharp
+      : tmdbPath && `${IMAGE_BASE}/${imageSize}${tmdbPath}`,
+    tmdbPath && imageSize === LARGE_BACKDROP_SIZE
+      ? `${IMAGE_BASE}/${LARGE_BACKDROP_FALLBACK_SIZE}${tmdbPath}`
       : undefined,
   );
   const { onError: tryFallback } = sharpImage;
@@ -400,7 +419,20 @@ export const HeroPage = memo(function HeroPage({
       <Animated.View
         style={[StyleSheet.absoluteFill, { opacity: backdropOpacity }]}
       >
-        {displayPath && (
+        {/* No image anywhere: the still, dark placeholder, with the
+            slide's own pill, title and button over it (CRI-100). */}
+        {noImage && (
+          <NoImage
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              height: backdropHeight,
+            }}
+          />
+        )}
+        {smallUri && (
           <Animated.View
             style={{
               position: "absolute",
@@ -429,12 +461,9 @@ export const HeroPage = memo(function HeroPage({
                   small copy also shows while the sharp one is still
                   decoding, as on a launch, rather than black. */}
               <ImageColumn
-                uri={
-                  nearby && sharpImage.uri
-                    ? sharpImage.uri
-                    : `${IMAGE_BASE}/${BLURRED_COPY_SIZE}${displayPath}`
-                }
-                placeholder={`${IMAGE_BASE}/${BLURRED_COPY_SIZE}${displayPath}`}
+                uri={nearby && sharpImage.uri ? sharpImage.uri : smallUri}
+                placeholder={smallUri}
+                contentPosition={crop}
                 width={columnWidth}
                 left={columnLeft}
                 imageTop={imageTop}
@@ -468,7 +497,8 @@ export const HeroPage = memo(function HeroPage({
                       style={{ position: "absolute", top: -blurTop, left: 0 }}
                     >
                       <ImageColumn
-                        uri={`${IMAGE_BASE}/${BLURRED_COPY_SIZE}${displayPath}`}
+                        uri={smallUri}
+                        contentPosition={crop}
                         width={columnWidth}
                         left={columnLeft}
                         imageTop={imageTop}
@@ -502,7 +532,8 @@ export const HeroPage = memo(function HeroPage({
                 }
               >
                 <ImageColumn
-                  uri={`${IMAGE_BASE}/${BLURRED_COPY_SIZE}${displayPath}`}
+                  uri={smallUri}
+                  contentPosition={crop}
                   width={columnWidth}
                   left={columnLeft}
                   imageTop={imageTop}
@@ -526,6 +557,7 @@ export const HeroPage = memo(function HeroPage({
 function ImageColumn({
   uri,
   placeholder,
+  contentPosition = "center",
   width,
   left,
   imageTop,
@@ -537,6 +569,9 @@ function ImageColumn({
   uri: string;
   // Shown until uri has loaded.
   placeholder?: string;
+  // Where the crop anchors: the centre for a backdrop, the top for a
+  // poster, whose title is usually near its bottom (CRI-100).
+  contentPosition?: "center" | "top";
   width: number;
   // From the left of the backdrop box: the column is centred in it.
   left: number;
@@ -555,9 +590,9 @@ function ImageColumn({
       placeholderContentFit="cover"
       style={[{ width, height: boxHeight }, flipped && styles.flipped]}
       contentFit="cover"
-      // Centred: anchoring the crop at the image's top edge kept more hair
-      // but moved faces down onto the pill (owner, CRI-124).
-      contentPosition="center"
+      // A backdrop centred: anchoring the crop at the image's top edge kept
+      // more hair but moved faces down onto the pill (owner, CRI-124).
+      contentPosition={contentPosition}
       accessibilityIgnoresInvertColors
       blurRadius={blurRadius}
       onLoad={flipped ? undefined : onLoad}

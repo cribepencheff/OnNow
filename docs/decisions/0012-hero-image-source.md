@@ -131,3 +131,35 @@ size fetched. If w1920 fails to load, the same image is fetched at
   fallback to "original" keeps every backdrop showing if it does.
 - The posters (w500, TVmaze medium) already match their drawn size and
   are unchanged.
+
+## Amendment: when there is no backdrop (CRI-100, 2026-10-22)
+Status: Accepted (approved with #106, 2026-10-22)
+
+### Context
+A few small shows have no TMDB backdrop (5 of 142 matched in a sample of
+197 scripted, animation and documentary shows airing that week); TVmaze
+had an image for every one of them. A show announced but not out yet,
+such as *The Girl with the Dragon Tattoo*, often has no image anywhere.
+The hero then showed its text on black, and Show detail an empty square.
+
+### Decision
+The hero and Show detail take the first there is:
+1. TMDB's highest-rated backdrop, as above.
+2. TVmaze's poster, already in the show's data, so no request. Cropped
+   from the top, where a poster's title usually is not; a title that
+   still shows is accepted as rare.
+3. No image (design system), never a guess at a picture: the hero shows
+   a still, dark gradient under its own text; Show detail has no image
+   area, and its title opens the page.
+
+TMDB's poster is not used: it would take another request, and in the
+sample TVmaze had an image for every show it would have covered.
+
+### Consequences
+- Nothing is chosen while TMDB's answer is on its way, so a poster never
+  flashes in before the backdrop.
+- A list's small poster (Shows, Search, Calendar) already used TVmaze's
+  poster; without one it shows the dark surface with the "no image"
+  symbol.
+- Once a show gets its images, they appear by themselves: TVmaze's data
+  is refreshed within an hour, TMDB's images within a day.

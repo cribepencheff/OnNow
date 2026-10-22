@@ -243,9 +243,9 @@ first user is the author, who currently uses Next Episode.
   opens or regains focus. The poster rows deliberately look different
   from search results.
 - **Edge cases:** no results gives a short hint to try the original title.
-  A show without an image gets no poster, as everywhere in the app (design
-  system: "No image: show nothing, never a grey placeholder box"): the
-  poster space stays empty and the title stays in its column. Running
+  A show without an image gets a still, dark surface with the "no image"
+  symbol in the poster's place (design system, CRI-100); the title stays
+  in its column. Running
   shows rank above ended ones.
 
 ### 5.5 Show detail (PoC slice, complete in MVP)

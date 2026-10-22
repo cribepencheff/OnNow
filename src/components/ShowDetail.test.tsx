@@ -5,6 +5,7 @@ import {
   within,
 } from "@testing-library/react-native";
 
+import { StyleSheet } from "react-native";
 import * as Linking from "expo-linking";
 
 import { ShowDetail } from "./ShowDetail";
@@ -506,6 +507,41 @@ describe("ShowDetail", () => {
 
   // CRI-140: w1920 is not a documented TMDB size; if it fails, the same
   // image at "original".
+  // CRI-100: without a TMDB backdrop, TVmaze's poster; without any image,
+  // "No image".
+  it("CRI-100: shows TVmaze's poster when TMDB has no backdrop", async () => {
+    mockShow(showSlowHorsesFixture);
+    mockShowImages.mockReturnValue({
+      data: { highestRatedBackdrop: null, logo: null },
+    });
+    await render(<ShowDetail showId={45039} />);
+
+    expect(
+      JSON.stringify(screen.getByTestId("show-detail-backdrop").props.source),
+    ).toContain(showSlowHorsesFixture.image!.original as string);
+    expect(screen.queryByText("No image")).toBeNull();
+  });
+
+  it("CRI-100: without any image, no square: the title opens the page, as much space above it as below", async () => {
+    mockShow({ ...showSlowHorsesFixture, image: null });
+    mockShowImages.mockReturnValue({
+      data: { highestRatedBackdrop: null, logo: null },
+    });
+    await render(<ShowDetail showId={45039} />);
+
+    expect(screen.queryByTestId("show-detail-backdrop")).toBeNull();
+    expect(screen.queryByTestId("no-image")).toBeNull();
+    expect(screen.getByText("Slow Horses")).toBeTruthy();
+    const content = StyleSheet.flatten(
+      screen.getByTestId("show-detail-hero-content").props.style,
+    );
+    expect(content.position).toBeUndefined();
+    const section = StyleSheet.flatten(
+      screen.getByTestId("show-detail-section").props.style,
+    );
+    expect(content.paddingTop).toBe(section.paddingTop);
+  });
+
   it("CRI-140: falls back to the original backdrop if w1920 fails", async () => {
     mockShow(showSlowHorsesFixture);
     await render(<ShowDetail showId={45039} />);
