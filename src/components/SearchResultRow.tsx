@@ -18,11 +18,7 @@ import { useListPoster } from "@/hooks/useListPoster";
 import { useToday } from "@/hooks/useToday";
 import { plainTextSummary, searchResultMetaLine } from "@/logic/search-results";
 import { showState, showStateLabel } from "@/logic/show-state";
-import {
-  rowIsUnavailable,
-  rowServiceLogos,
-  rowServiceText,
-} from "@/logic/streaming-service";
+import { rowServiceLogos, rowServiceText } from "@/logic/streaming-service";
 import type { TvMazeShow } from "@/api/tvmaze-types";
 import { t, type } from "@/theme/tokens";
 
@@ -49,13 +45,8 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
       posterUri={poster.uri}
       posterPending={poster.pending}
       summary={plainTextSummary(show.summary)}
-      // Every status right under the title (owner, 2026-10-22).
-      subtitle={
-        <StatusLine
-          showId={show.id}
-          unavailable={rowIsUnavailable(providers)}
-        />
-      }
+      // The show's status right under the title (owner, 2026-10-22).
+      subtitle={<StatusLine showId={show.id} />}
       largePoster
       titleAccessory={
         <ImdbRating show={show} linked={false} textStyle={styles.rating} />
@@ -82,10 +73,10 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
     >
       {metaLine !== "" && <ShowRowLine>{metaLine}</ShowRowLine>}
       {/* At the bottom; its line is kept while TMDB answers, so the row
-          does not grow. "Unavailable" is with the status instead. */}
+          does not grow. */}
       <ShowRowServiceLine
         logos={rowServiceLogos(providers)}
-        text={rowIsUnavailable(providers) ? "" : (service ?? "")}
+        text={service ?? ""}
         testID="search-result-service"
       />
     </ShowRow>
@@ -93,17 +84,10 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
 }
 
 // FR-025: Show detail's status line ("Next ep Fri 9 Oct"), from the same
-// cached show lookup as Show detail, with "Unavailable" when the show has
-// no service (owner, 2026-10-22: every status together, under the title,
-// in ink). Its line is kept while the lookup answers, so the row does not
-// grow.
-function StatusLine({
-  showId,
-  unavailable,
-}: {
-  showId: number;
-  unavailable: boolean;
-}) {
+// cached show lookup as Show detail, right under the title in ink (owner,
+// 2026-10-22). Its line is kept while the lookup answers, so the row does
+// not grow.
+function StatusLine({ showId }: { showId: number }) {
   const { data } = useShow(showId);
   const todayDate = useToday();
 
@@ -121,7 +105,7 @@ function StatusLine({
     : "";
   return (
     <ShowRowLine testID="search-result-status" style={styles.status}>
-      {[label, unavailable ? "Unavailable" : ""].filter(Boolean).join(" · ")}
+      {label}
     </ShowRowLine>
   );
 }

@@ -109,9 +109,9 @@ describe("SearchResultRow", () => {
     expect(screen.getByTestId("search-result-status")).toHaveTextContent(/^$/);
   });
 
-  // Owner, 2026-10-22: every status under the title, "Unavailable" with
-  // the show's own; the services at the bottom.
-  it('shows the service at the bottom, or plain "Unavailable" with the status under the title (FR-027, CRI-97)', async () => {
+  // Owner, 2026-10-22: the show's status under the title; "Unavailable"
+  // belongs with the services, at the bottom.
+  it('shows the service, or plain "Unavailable", at the bottom (FR-027, CRI-97)', async () => {
     const show = showSlowHorsesFixture as unknown as TvMazeShow;
     mockProviders([{ providerId: 350, providerName: "Apple TV" }]);
 
@@ -119,24 +119,19 @@ describe("SearchResultRow", () => {
     expect(screen.getByTestId("search-result-service")).toHaveTextContent(
       "On Apple TV",
     );
-    expect(screen.getByTestId("search-result-status")).toHaveTextContent(/^$/);
 
     mockProviders([]);
     await rerender(<SearchResultRow show={show} />);
-    expect(screen.getByTestId("search-result-status")).toHaveTextContent(
+    expect(screen.getByTestId("search-result-service")).toHaveTextContent(
       "Unavailable",
     );
-    expect(screen.getByTestId("search-result-service")).toHaveTextContent(/^$/);
+    expect(screen.getByTestId("search-result-status")).toHaveTextContent(/^$/);
   });
 
-  it('joins the show\'s status and "Unavailable" under the title', async () => {
+  it("puts the status right under the title and the services last", async () => {
     mockedUseShow.mockReturnValue({ data: showSlowHorsesFixture } as never);
-    mockProviders([]);
     await render(
       <SearchResultRow show={showSlowHorsesFixture as unknown as TvMazeShow} />,
-    );
-    expect(screen.getByTestId("search-result-status")).toHaveTextContent(
-      "Season 6 · Wed 16 Sep · Unavailable",
     );
     const order = screen
       .getByTestId("search-result-row-details")

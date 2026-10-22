@@ -216,8 +216,8 @@ first user is the author, who currently uses Next Episode.
   portrait poster on the left. Next to it: title in bold, a meta line with
   year and genres ("2026 · Drama, Thriller"), the status line (below), and
   the service slot as the row's last line, by the same rules as the Shows
-  row (every status, including "Unavailable", right under the title in
-  `ink`, joined with " · ": owner, 2026-10-22): "On [service]", or plain
+  row (the show's status line right under the title, in `ink`: owner,
+  2026-10-22): "On [service]", or plain
   "Unavailable" when there is none (Show detail and the Home hero name the
   region, rows do not), and nothing when TMDB does not know the show
   (FR-027, CRI-97, CRI-102). Two lines about the show under the title,
