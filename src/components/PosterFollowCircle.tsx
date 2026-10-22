@@ -8,6 +8,8 @@ import { followHaptic } from "./followHaptic";
 import { FOLLOW_CHECK_SYMBOL, FOLLOW_PLUS_SYMBOL } from "./followSymbols";
 
 const FOLLOW_CIRCLE_SIZE = 32;
+// The icon's share of the circle (15 in 32).
+const ICON_SHARE = 15 / 32;
 
 // The follow circle (CRI-127), Apple TV style: a translucent dark fill, no
 // blur, a light hairline edge, the same followed or not; a white plus, or
@@ -23,11 +25,15 @@ export function PosterFollowCircle({
   followed,
   onPress,
   testID,
+  size = FOLLOW_CIRCLE_SIZE,
 }: {
   followed: boolean;
   onPress: () => void;
   testID: string;
+  // A little smaller on a Search row's poster (owner, 2026-10-22).
+  size?: number;
 }) {
+  const iconSize = Math.round(size * ICON_SHARE);
   const { reduceMotionEnabled } = useAccessibilityFlags();
   // 0 = plus shown, 1 = check shown; everything below is derived from
   // this one value, so the two icons can never fall out of sync with
@@ -95,14 +101,24 @@ export function PosterFollowCircle({
       hitSlop={6}
       testID={testID}
     >
-      <View style={styles.circle} testID={`${testID}-circle`}>
+      <View
+        style={[
+          styles.circle,
+          { width: size, height: size, borderRadius: size / 2 },
+        ]}
+        testID={`${testID}-circle`}
+      >
         <Animated.View
           style={[
             styles.circleIcon,
             { opacity: plusOpacity, transform: [{ scale: plusScale }] },
           ]}
         >
-          <SymbolView name={FOLLOW_PLUS_SYMBOL} tintColor="#FFFFFF" size={15} />
+          <SymbolView
+            name={FOLLOW_PLUS_SYMBOL}
+            tintColor="#FFFFFF"
+            size={iconSize}
+          />
         </Animated.View>
         <Animated.View
           style={[
@@ -113,7 +129,7 @@ export function PosterFollowCircle({
           <SymbolView
             name={FOLLOW_CHECK_SYMBOL}
             tintColor="#FFFFFF"
-            size={15}
+            size={iconSize}
           />
         </Animated.View>
       </View>

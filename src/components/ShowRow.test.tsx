@@ -2,6 +2,7 @@ import { StyleSheet, Text } from "react-native";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
 import {
+  POSTER_ACCESSORY_INSET,
   ROW_TITLE_SIZE,
   ShowRow,
   ShowRowLine,
@@ -196,9 +197,10 @@ describe("ShowRow", () => {
     expect(accessory).toHaveTextContent("circle");
     expect(StyleSheet.flatten(accessory.props.style)).toMatchObject({
       position: "absolute",
-      top: t.space2,
-      right: t.space2,
+      top: POSTER_ACCESSORY_INSET,
+      right: POSTER_ACCESSORY_INSET,
     });
+    expect(POSTER_ACCESSORY_INSET).toBeLessThan(t.space2);
   });
 
   // Owner, 2026-10-22: the show first, so two lines about it right under

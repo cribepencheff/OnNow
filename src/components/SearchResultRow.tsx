@@ -73,6 +73,7 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
           followed={followed}
           onPress={toggle}
           testID={`follow-${show.id}`}
+          size={SEARCH_FOLLOW_CIRCLE_SIZE}
         />
       }
     >
@@ -103,6 +104,10 @@ function StatusLine({ showId }: { showId: number }) {
     : "";
   return <ShowRowLine testID="search-result-status">{label}</ShowRowLine>;
 }
+
+// The poster cards' follow circle, a little smaller on the row's poster
+// (owner, 2026-10-22).
+const SEARCH_FOLLOW_CIRCLE_SIZE = 28;
 
 const styles = StyleSheet.create({
   // The rating at the row's small size, muted beside the title.

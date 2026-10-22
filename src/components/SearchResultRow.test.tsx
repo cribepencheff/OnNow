@@ -220,6 +220,8 @@ describe("SearchResultRow", () => {
         .style,
     );
     expect(circle.backgroundColor).toBe(t.imageControlBackdrop);
+    // A little smaller than the cards' 32 on the row's poster.
+    expect(circle.width).toBe(28);
     expect(circle.borderColor).toBe(t.imageControlEdge);
     // On the poster, as on the cards.
     expect(

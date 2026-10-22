@@ -204,6 +204,7 @@ const POSTER_HEIGHT = 90;
 // A Search row's poster (owner, 2026-10-22): bigger, balancing its taller
 // row (summary, year and genres, status, services); 2:3, as posters are.
 export const LARGE_POSTER = { width: 96, height: 144 };
+export const POSTER_ACCESSORY_INSET = 6;
 
 const styles = StyleSheet.create({
   row: {
@@ -252,11 +253,12 @@ const styles = StyleSheet.create({
     minHeight: type.meta.lineHeight,
     gap: 6,
   },
-  // As on the poster cards (ShowCard's follow).
+  // Near the poster's corner, a little closer than on the poster cards
+  // (owner, 2026-10-22): the poster is smaller.
   posterAccessory: {
     position: "absolute",
-    top: t.space2,
-    right: t.space2,
+    top: POSTER_ACCESSORY_INSET,
+    right: POSTER_ACCESSORY_INSET,
   },
   serviceLogos: {
     flexDirection: "row",
