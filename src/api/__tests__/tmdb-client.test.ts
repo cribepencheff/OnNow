@@ -317,28 +317,25 @@ describe("TmdbClient recommendations (FR-038)", () => {
   });
 });
 
-describe("TmdbClient.findAiringThisWeek (FR-039)", () => {
-  it("asks discover for the region and the week, streaming only, no soaps, pages 1 and 2", async () => {
-    const fetchFn = jest
-      .fn()
-      .mockResolvedValueOnce(jsonResponse(onTheAirPage))
-      .mockResolvedValueOnce(jsonResponse({ results: [] }));
+describe("TmdbClient.findAiringOn (FR-039)", () => {
+  it("asks discover for the region and one day, streaming only, no soaps, one page", async () => {
+    const fetchFn = jest.fn().mockResolvedValueOnce(jsonResponse(onTheAirPage));
     const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
 
-    const shows = await client.findAiringThisWeek({
+    const shows = await client.findAiringOn({
       region: "SE",
       timeZone: "Europe/Stockholm",
-      from: "2026-10-05",
-      to: "2026-10-11",
+      day: "2026-10-05",
     });
     expect(shows).toHaveLength(onTheAirPage.results.length);
+    expect(fetchFn).toHaveBeenCalledTimes(1);
     const [url] = fetchFn.mock.calls[0];
     for (const part of [
       "/3/discover/tv?",
       "watch_region=SE",
       "with_watch_monetization_types=flatrate%7Cfree%7Cads",
       "air_date.gte=2026-10-05",
-      "air_date.lte=2026-10-11",
+      "air_date.lte=2026-10-05",
       "with_type=0%7C2%7C4",
       "without_genres=10766",
       "sort_by=popularity.desc",
@@ -347,7 +344,6 @@ describe("TmdbClient.findAiringThisWeek (FR-039)", () => {
     ]) {
       expect(url).toContain(part);
     }
-    expect(fetchFn.mock.calls[1][0]).toContain("page=2");
   });
 
   it("is null without a key", async () => {
@@ -358,11 +354,10 @@ describe("TmdbClient.findAiringThisWeek (FR-039)", () => {
       wait: noWait,
     });
     await expect(
-      client.findAiringThisWeek({
+      client.findAiringOn({
         region: "SE",
         timeZone: "UTC",
-        from: "2026-10-05",
-        to: "2026-10-11",
+        day: "2026-10-05",
       }),
     ).resolves.toBeNull();
     expect(fetchFn).not.toHaveBeenCalled();

@@ -2,7 +2,6 @@
 // week) is the candidate source, in its popularity order; TVmaze decides. A show is in
 // the row only if it would be in the hero if followed (CRI-110).
 
-import { HOME_HERO_HORIZON_DAYS } from "./hero-carousel";
 import { addDays, localDateFromAirstamp, type LocalDate } from "./local-date";
 import { WEEKDAYS } from "./next-episode-label";
 import type { RankedRecommendation } from "./recommendations";
@@ -43,16 +42,27 @@ export function airingThisWeek(
     }));
 }
 
-// The row's order (CRI-122): what airs today first, then tomorrow, then
-// the weekdays. The cards are chosen in popularity order (airingThisWeek),
-// and the sort is stable, so the more popular show comes first within a
-// day.
-export function byAiringDate<Card extends { date: LocalDate }>(
-  cards: Card[],
-): Card[] {
-  return [...cards].sort((a, b) =>
-    a.date < b.date ? -1 : a.date > b.date ? 1 : 0,
-  );
+// The row's order (CRI-122, owner 2026-10-22): day by day, today first,
+// the most popular first within a day, so the row leads with what can be
+// watched now and loading more moves on to later days. Each day's
+// candidates come from their own discover request, added only when the
+// row needs that day; a show listed on several days is kept on its first.
+// Adding a day appends to the ranking, so no earlier place moves. dayOf is
+// the day each show is listed for.
+export function airingByDay(
+  days: { day: LocalDate; results: TmdbOnTheAir[] }[],
+): { ranking: RankedRecommendation[]; dayOf: Map<number, LocalDate> } {
+  const dayOf = new Map<number, LocalDate>();
+  const ranking: RankedRecommendation[] = [];
+  for (const { day, results } of days) {
+    for (const entry of airingThisWeek(results)) {
+      if (!dayOf.has(entry.recommendation.id)) {
+        dayOf.set(entry.recommendation.id, day);
+        ranking.push(entry);
+      }
+    }
+  }
+  return { ranking, dayOf };
 }
 
 // The hero's day words: "Today", "Tomorrow", then the weekday ("Fri");
@@ -89,21 +99,19 @@ export interface WeekEpisode {
   number: number | null;
 }
 
-// The first day this week with a regular episode, in the user's time zone,
-// over the same window as the hero (today and the next 6 days); null when
-// none, so the show would not be in the hero if followed.
-export function firstEpisodeDayThisWeek(
+// Whether TVmaze has a regular episode on a day, in the user's time zone:
+// a show is on that day's part of the row only then, as the hero would
+// show it if followed (CRI-110). TVmaze decides when it and TMDB's listing
+// disagree; the show is then left out of that day.
+export function airsOn(
   episodes: WeekEpisode[],
   timeZone: string,
-  todayDate: LocalDate,
-): LocalDate | null {
-  const horizonEnd = addDays(todayDate, HOME_HERO_HORIZON_DAYS - 1);
-  const days = episodes
-    .filter((episode) => episode.number !== null && episode.airstamp)
-    .map((episode) =>
-      localDateFromAirstamp(episode.airstamp as string, timeZone),
-    )
-    .filter((day) => day >= todayDate && day <= horizonEnd)
-    .sort();
-  return days[0] ?? null;
+  day: LocalDate,
+): boolean {
+  return episodes.some(
+    (episode) =>
+      episode.number !== null &&
+      episode.airstamp !== null &&
+      localDateFromAirstamp(episode.airstamp, timeZone) === day,
+  );
 }

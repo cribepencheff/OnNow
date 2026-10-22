@@ -16,7 +16,7 @@ import { useAiringThisWeek } from "./useAiringThisWeek";
 import { createTestQueryClient, wrapperWithQueryClient } from "./test-utils";
 
 jest.mock("@/api/tmdb-client", () => ({
-  tmdbClient: { findAiringThisWeek: jest.fn() },
+  tmdbClient: { findAiringOn: jest.fn() },
 }));
 jest.mock("@/api/region-service", () => ({ hasServiceInRegion: jest.fn() }));
 jest.mock("./useRegion", () => ({ useRegion: () => ({ region: "SE" }) }));
@@ -34,7 +34,16 @@ jest.mock("./useFollowList", () => ({
 // 2026-10-05 is a Monday.
 jest.mock("./useToday", () => ({ useToday: () => "2026-10-05" }));
 
-const findAiringThisWeek = tmdbClient.findAiringThisWeek as jest.Mock;
+const findAiringOn = tmdbClient.findAiringOn as jest.Mock;
+// Discover's answer per day: the candidates listed for each day, none on
+// the others.
+function listed(byDay: Record<string, unknown[]>) {
+  findAiringOn.mockImplementation(
+    async ({ day }: { day: string }) => byDay[day] ?? [],
+  );
+}
+// The default: every candidate on Friday 9 Oct, as TVmaze has them.
+const onFriday = (shows: unknown[]) => listed({ "2026-10-09": shows });
 const hasService = hasServiceInRegion as jest.Mock;
 const getWeekInfo = tvMazeClient.getWeekInfo as jest.Mock;
 const resolve = resolveTvMazeId as jest.Mock;
@@ -75,7 +84,8 @@ async function render() {
 describe("useAiringThisWeek (FR-039, CRI-110)", () => {
   beforeEach(() => {
     mockFollowed = { ids: new Set(), isLoaded: true };
-    findAiringThisWeek.mockReset().mockResolvedValue(onTheAir);
+    findAiringOn.mockReset();
+    onFriday(onTheAir);
     hasService.mockReset().mockResolvedValue(true);
     resolve.mockReset().mockImplementation(async (id: number) => id + 1000);
     getWeekInfo.mockReset().mockResolvedValue(airsFriday);
@@ -95,12 +105,16 @@ describe("useAiringThisWeek (FR-039, CRI-110)", () => {
     client.unmount();
   });
 
-  it("CRI-122: shows the ten in date order, Today first, popularity order within a day", async () => {
-    // The two most popular air on Friday, the 3rd today, the 4th on
-    // Wednesday; the rest on Friday too.
+  it("CRI-122: shows the row day by day, Today first, popularity order within a day", async () => {
     const airsOn = (date: string) => ({
       type: "Scripted",
       episodes: [{ airstamp: `${date}T12:00:00+00:00`, number: 3 }],
+    });
+    // 203 today, 204 on Wednesday, the rest on Friday.
+    listed({
+      "2026-10-05": [onTheAir[2]],
+      "2026-10-07": [onTheAir[3]],
+      "2026-10-09": onTheAir.filter((_, i) => i !== 2 && i !== 3),
     });
     getWeekInfo.mockImplementation(async (tvmazeId: number) => {
       if (tvmazeId === 1203) return airsOn("2026-10-05");
@@ -120,16 +134,37 @@ describe("useAiringThisWeek (FR-039, CRI-110)", () => {
     client.unmount();
   });
 
-  it("asks discover for the region and the week (today and six days)", async () => {
+  it("asks discover for one day at a time, from today, only until the batch is full", async () => {
     const { result, unmount, client } = await render();
     await waitFor(() => expect(result.current).toHaveLength(10));
-    expect(findAiringThisWeek).toHaveBeenCalledWith(
-      expect.objectContaining({
-        region: "SE",
-        from: "2026-10-05",
-        to: "2026-10-11",
-      }),
+    expect(findAiringOn.mock.calls.map(([request]) => request.day)).toEqual([
+      "2026-10-05",
+      "2026-10-06",
+      "2026-10-07",
+      "2026-10-08",
+      "2026-10-09",
+    ]);
+    expect(findAiringOn).toHaveBeenCalledWith(
+      expect.objectContaining({ region: "SE" }),
     );
+    await unmount();
+    client.unmount();
+  });
+
+  it("leaves out a show on a day TVmaze has no episode, though discover lists it", async () => {
+    listed({ "2026-10-05": onTheAir });
+    getWeekInfo.mockImplementation(async (tvmazeId: number) =>
+      tvmazeId === 1201
+        ? airsFriday
+        : {
+            type: "Scripted",
+            episodes: [{ airstamp: "2026-10-05T12:00:00+00:00", number: 3 }],
+          },
+    );
+    const { result, unmount, client } = await render();
+    await waitFor(() => expect(result.current).toHaveLength(10));
+    expect(ids(result.current)).not.toContain(201);
+    expect(result.current.every((card) => card.day === "Today")).toBe(true);
     await unmount();
     client.unmount();
   });
@@ -241,7 +276,7 @@ describe("useAiringThisWeek (FR-039, CRI-110)", () => {
     const slow = { timeout: MIN_LOAD_MORE_MS + 1000 };
 
     it("appends a batch of six; earlier cards stay where they are", async () => {
-      findAiringThisWeek.mockResolvedValue(thirty);
+      onFriday(thirty);
       const { result, unmount, client } = await renderRow();
       await waitFor(() => expect(result.current.cards).toHaveLength(10));
       const first = ids(result.current.cards);
@@ -256,8 +291,50 @@ describe("useAiringThisWeek (FR-039, CRI-110)", () => {
       client.unmount();
     });
 
+    // Owner, 2026-10-22: loading more goes on with today's shows, then
+    // tomorrow's, so a later batch never puts Today after Tomorrow.
+    it("goes on with today's shows, then tomorrow's, always in date order", async () => {
+      const airsOn = (date: string) => ({
+        type: "Scripted",
+        episodes: [{ airstamp: `${date}T12:00:00+00:00`, number: 3 }],
+      });
+      // 12 today (201–212), the rest tomorrow; tomorrow's are the most
+      // popular, which must not put them first.
+      const today = thirty.slice(0, 12).map((show) => ({
+        ...show,
+        popularity: 10,
+      }));
+      const tomorrow = thirty.slice(12);
+      listed({ "2026-10-05": today, "2026-10-06": tomorrow });
+      getWeekInfo.mockImplementation(async (tvmazeId: number) =>
+        airsOn(tvmazeId <= 1212 ? "2026-10-05" : "2026-10-06"),
+      );
+      const { result, unmount, client } = await renderRow();
+      await waitFor(() => expect(result.current.cards).toHaveLength(10));
+      // Today's ten; tomorrow not asked for yet.
+      expect(result.current.cards.every((card) => card.day === "Today")).toBe(
+        true,
+      );
+      expect(findAiringOn).toHaveBeenCalledTimes(1);
+
+      await act(async () => result.current.loadMore());
+      await waitFor(() => expect(result.current.cards).toHaveLength(16), slow);
+      const days = result.current.cards.map((card) => card.date);
+      expect(days).toEqual([...days].sort());
+      expect(result.current.cards.slice(10).map((card) => card.day)).toEqual([
+        "Today",
+        "Today",
+        "Tomorrow",
+        "Tomorrow",
+        "Tomorrow",
+        "Tomorrow",
+      ]);
+      await unmount();
+      client.unmount();
+    });
+
     it("fetches nothing ahead of a drag", async () => {
-      findAiringThisWeek.mockResolvedValue(thirty);
+      onFriday(thirty);
       const { result, unmount, client } = await renderRow();
       await waitFor(() => expect(result.current.cards).toHaveLength(10));
       // The first batch's checks end with 212 (three at a time); no further.
@@ -274,7 +351,7 @@ describe("useAiringThisWeek (FR-039, CRI-110)", () => {
 
     // The fast-drag test: drags while a batch is on its way add nothing.
     it("adds exactly one batch for repeated drags while a fetch is running", async () => {
-      findAiringThisWeek.mockResolvedValue(thirty);
+      onFriday(thirty);
       // The second batch's checks wait until released.
       let release: () => void = () => {};
       const held = new Promise<void>((resolve) => (release = resolve));
@@ -304,7 +381,7 @@ describe("useAiringThisWeek (FR-039, CRI-110)", () => {
     });
 
     it("leaves out of a new batch a show followed since the last one", async () => {
-      findAiringThisWeek.mockResolvedValue(thirty);
+      onFriday(thirty);
       const { result, rerender, unmount, client } = await renderRow();
       await waitFor(() => expect(result.current.cards).toHaveLength(10));
 
@@ -319,7 +396,7 @@ describe("useAiringThisWeek (FR-039, CRI-110)", () => {
     });
 
     it("shows skeleton cards at the end while a batch is on its way", async () => {
-      findAiringThisWeek.mockResolvedValue(thirty);
+      onFriday(thirty);
       const { result, unmount, client } = await renderRow();
       await waitFor(() => expect(result.current.cards).toHaveLength(10));
 
@@ -360,7 +437,7 @@ describe("useAiringThisWeek (FR-039, CRI-110)", () => {
         popularity: 100 - i,
         genre_ids: [18],
       }));
-      findAiringThisWeek.mockResolvedValue(forty);
+      onFriday(forty);
       const { result, unmount, client } = await renderRow();
       await waitFor(() => expect(result.current.cards).toHaveLength(10));
 
@@ -449,7 +526,7 @@ describe("useAiringThisWeek (FR-039, CRI-110)", () => {
     }
 
     it("leaves out the shows followed when the rows were settled", async () => {
-      findAiringThisWeek.mockResolvedValue(thirty);
+      onFriday(thirty);
       const settled = { current: new Set<number>() as ReadonlySet<number> };
       const { result, rerender, unmount, client } =
         await renderSettled(settled);
@@ -464,7 +541,7 @@ describe("useAiringThisWeek (FR-039, CRI-110)", () => {
     });
 
     it("loads one more batch, without a drag, when that leaves fewer cards than fit", async () => {
-      findAiringThisWeek.mockResolvedValue(thirty);
+      onFriday(thirty);
       const settled = { current: new Set<number>() as ReadonlySet<number> };
       const { result, rerender, unmount, client } =
         await renderSettled(settled);

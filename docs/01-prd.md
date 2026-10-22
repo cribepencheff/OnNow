@@ -76,22 +76,25 @@ first user is the author, who currently uses Next Episode.
   before typing (FR-026), and what it has loaded there is loaded on Home
   too.
 - **Second row:** "Airing this week" (FR-039, ADR 0016): candidates from
-  TMDB discover for the user's region and the week (on a streaming service
-  there, an episode within the 7 days), in TMDB's popularity order, soaps
-  excluded; each must have a streaming service in the region by the same
-  rule as "Open in", and TVmaze decides: a show is in the row only if it
-  would be in the hero if followed (a TVmaze episode within the 7 days),
+  TMDB discover for the user's region, one day of the 7 at a time (on a
+  streaming service there, an episode that day), in TMDB's popularity
+  order, soaps excluded; each must have a streaming service in the region
+  by the same rule as "Open in", and TVmaze decides: a show is in the row
+  only if TVmaze has an episode on the day it is listed for (so it would
+  be in the hero if followed),
   and only scripted shows and documentaries, no reality, talk shows, news,
   game shows, sports or soaps. Not filtered by origin country or language.
   Shows the user follows are left out. The same cards as
   "Top picks for you", plus the next episode's air date in the window in
   the hero's words ("Today", "Tomorrow", then the weekday, "Fri"). The
-  cards are in date order: what airs today first, then tomorrow, then the
-  following weekdays, and the more popular show first within a day
-  (CRI-122) within each batch. A show followed from the row stays in it,
+  row goes day by day: today's shows first, the most popular first, then
+  tomorrow's, then the following weekdays; loading more goes on where the
+  last batch stopped, so the cards are always in date order (CRI-122,
+  owner 2026-10-22). A later day's candidates are asked for only when the
+  row reaches that day. A show followed from the row stays in it,
   marked as followed, until Home's tab is selected again, as on "Top picks
-  for you". A drag past the end appends the next most popular shows not
-  yet followed, 6 at a time, up to 28 (CRI-131). At the end of the week's
+  for you". A drag past the end appends the next shows not yet followed,
+  day by day, 6 at a time, up to 28 (CRI-131). At the end of the week's
   shows, or at 28, "All caught up" appears on the row's title line. The row
   never holds fewer cards than fit on the screen: when followed shows
   leave it and that would leave fewer, it loads one more batch in their
@@ -379,7 +382,7 @@ Reached from an icon. Territory and notifications.
 | FR-036 | Calendar swipes between months and shows a "Today" button when away from today | PoC |
 | FR-037 | Specials are never shown, only regular episodes. No setting | PoC |
 | FR-038 | Under the hero, Home shows one row, "Top picks for you": TMDB recommendations for each followed show, followed shows removed, ranked by how many followed shows recommend the same title, cached for a day, only shows with at least one streaming service in the user's region (subscription, free or ads, add-on channels included; pay-TV never counts, the same rule as "Open in"), not filtered by origin country or language. The cards are built from the app's existing components and design system tokens; each follows at once from its circle and opens Show detail on a tap, and a show followed from the row stays in it, marked as followed, until Home's tab is selected again after another tab. The row starts with 10 picks; each drag past its end appends the next 6, without followed shows, up to 28 (CRI-131). Each day it starts from a different part of the ranking, the same all day, with no fetch of its own; a new day takes effect when Home regains focus or on pull to refresh, from the first batch. At the end of the picks or at 28, "Search more" on its title line opens Search. Hidden when it has no picks to show: an empty follow list (ADR 0016), or every pick followed or without a service in the region; when it gets picks it expands in with skeleton cards, and what is on screen stays in place | MVP |
-| FR-039 | Under "Top picks for you", Home shows "Airing this week": candidates from TMDB discover for the user's region and the week (on a streaming service there, an episode within the 7 days, soaps excluded) in TMDB's popularity order, kept only when the show has a streaming service in the region by the same rule as "Open in", TVmaze has an episode within the hero's 7 days (it would be in the hero if followed) and TVmaze's type is scripted, animation or documentary (no reality, talk, news, game shows, sports or soaps), not filtered by origin country or language, followed shows left out, each card with the next episode's air date ("Today", "Tomorrow", "Fri"), the cards in date order with Today first and popularity order within a day (CRI-122), following at once from its circle and opening Show detail; a show followed from the row stays in it, marked as followed, until Home's tab is selected again after another tab; the row starts with 10 shows, each drag past its end appends the next 6 most popular shows not yet followed, up to 28, and at the end of the week's shows or at 28 "All caught up" appears on its title line (CRI-131). Always shown, also with an empty follow list (ADR 0016), with at least as many cards as fit on the screen | MVP |
+| FR-039 | Under "Top picks for you", Home shows "Airing this week": candidates from TMDB discover for the user's region, one day of the 7 at a time (on a streaming service there, an episode that day, soaps excluded) in TMDB's popularity order, kept only when the show has a streaming service in the region by the same rule as "Open in", TVmaze has an episode on the day it is listed for (it would be in the hero if followed) and TVmaze's type is scripted, animation or documentary (no reality, talk, news, game shows, sports or soaps), not filtered by origin country or language, followed shows left out, each card with the next episode's air date ("Today", "Tomorrow", "Fri"), the row day by day, Today first and popularity order within a day, so the cards stay in date order as more load (CRI-122), following at once from its circle and opening Show detail; a show followed from the row stays in it, marked as followed, until Home's tab is selected again after another tab; the row starts with 10 shows, each drag past its end appends the next 6 shows not yet followed, continuing day by day, up to 28, and at the end of the week's shows or at 28 "All caught up" appears on its title line (CRI-131). Always shown, also with an empty follow list (ADR 0016), with at least as many cards as fit on the screen | MVP |
 | FR-010 | Shows lists followed series in two segments with counts, "Active" (airing, including an episode out today with nothing dated after it and a next episode listed without an airstamp; a dated next season; a next season listed without a date) and "Inactive" (between seasons, future uncertain, ended), alphabetical within each, both always open, each header sticky while its rows scroll, a segment without shows left out. Each row: poster, title, Show detail's status line (FR-035) and the service slot, "On [service]" or plain "Unavailable", nothing when TMDB does not know the show (CRI-97, CRI-102). With no followed shows, a button opens Search | PoC, MVP |
 | FR-011 | Data refreshes on app start when stale, and on pull to refresh | PoC |
 | FR-012 | Several episodes of one show on the same day appear as one item. On the Home hero, all of a show's episodes within the 7 days are one slide with a date and episode range (CRI-94) | PoC, MVP |

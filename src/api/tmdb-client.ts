@@ -106,14 +106,13 @@ export interface TmdbClient {
   ) => Promise<
     { tvId: number; images: TmdbImages } | typeof NOT_ON_TMDB | null
   >;
-  // Shows on a streaming service in the region with an episode in the
-  // week (TMDB discover), soaps excluded, by popularity, pages 1 and 2
-  // (FR-039); null without a key.
-  findAiringThisWeek: (week: {
+  // Shows on a streaming service in the region with an episode on a day
+  // (TMDB discover), soaps excluded, the 20 most popular (FR-039); null
+  // without a key. The row asks one day at a time, as it needs it.
+  findAiringOn: (request: {
     region: string;
     timeZone: string;
-    from: string;
-    to: string;
+    day: string;
   }) => Promise<TmdbOnTheAir[] | null>;
   // A show's services in a region by its TMDB id (FR-038, FR-039).
   providersById: (
@@ -297,11 +296,10 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     );
   }
 
-  async function findAiringThisWeek(week: {
+  async function findAiringOn(request: {
     region: string;
     timeZone: string;
-    from: string;
-    to: string;
+    day: string;
   }): Promise<TmdbOnTheAir[] | null> {
     if (!apiKey) {
       return null;
@@ -309,24 +307,20 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     // Subscription, free and ads (channels included); documentary,
     // miniseries and scripted types (0, 2, 4); no soaps (10766).
     const query = [
-      `watch_region=${week.region}`,
+      `watch_region=${request.region}`,
       "with_watch_monetization_types=flatrate%7Cfree%7Cads",
-      `air_date.gte=${week.from}`,
-      `air_date.lte=${week.to}`,
+      `air_date.gte=${request.day}`,
+      `air_date.lte=${request.day}`,
       "with_type=0%7C2%7C4",
       "without_genres=10766",
       "sort_by=popularity.desc",
-      `timezone=${encodeURIComponent(week.timeZone)}`,
+      `timezone=${encodeURIComponent(request.timeZone)}`,
     ].join("&");
-    const pages = await Promise.all(
-      [1, 2].map((page) =>
-        requestJson<{ results?: TmdbOnTheAir[] }>(
-          `/discover/tv?${query}&page=${page}`,
-          apiKey,
-        ),
-      ),
+    const page = await requestJson<{ results?: TmdbOnTheAir[] }>(
+      `/discover/tv?${query}&page=1`,
+      apiKey,
     );
-    return pages.flatMap((page) => page.results ?? []);
+    return page.results ?? [];
   }
 
   async function providersById(
@@ -343,7 +337,7 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
   }
 
   return {
-    findAiringThisWeek,
+    findAiringOn,
     providersById,
     findStreamingProviders,
     findOriginCountries,
