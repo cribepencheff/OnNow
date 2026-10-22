@@ -4,8 +4,10 @@
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// Ratings move slowly; a week keeps OMDb requests far below the free tier.
-export const RATING_CACHE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+// Ratings move slowly: a month (CRI-116; a week before Search rows showed
+// ratings too) keeps the free OMDb key, shared by every install, going
+// further. "No rating" stays a day, so a new show picks up its rating soon.
+export const RATING_CACHE_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
 export const NO_RATING_CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
 interface CachedRating {

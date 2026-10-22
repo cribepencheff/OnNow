@@ -43,7 +43,10 @@ describe("IMDb rating cache (CRI-87, ADR 0013)", () => {
     );
   });
 
-  it("expires after a week", async () => {
+  // CRI-116 (owner, 2026-10-22): a month, not a week, so the shared free
+  // OMDb key goes further now that Search rows show ratings too.
+  it("keeps a rating a month, then expires it", async () => {
+    expect(RATING_CACHE_MAX_AGE_MS).toBe(30 * 24 * 60 * 60 * 1000);
     await saveRating(MOBLAND, "8.3", 0);
     expect(await getCachedRating(MOBLAND, RATING_CACHE_MAX_AGE_MS)).toBe("8.3");
     expect(
