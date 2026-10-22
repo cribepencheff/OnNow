@@ -7,7 +7,7 @@ import {
 } from "@testing-library/react-native";
 
 import { SearchResultRow } from "./SearchResultRow";
-import { LARGE_POSTER } from "./ShowRow";
+import { LARGE_POSTER, POSTER_ACCESSORY_INSET } from "./ShowRow";
 import { t } from "@/theme/tokens";
 import { useShow } from "@/hooks/useShow";
 import { useStreamingService } from "@/hooks/useStreamingService";
@@ -22,6 +22,11 @@ jest.mock("@/hooks/useListPoster", () => ({
     uri: show.image?.medium ?? undefined,
     pending: false,
   }),
+}));
+// The show's IMDb rating on the poster (owner, 2026-10-22).
+const mockImdbRating = jest.fn(() => ({ data: null, imdbId: null }));
+jest.mock("@/hooks/useImdbRating", () => ({
+  useImdbRating: () => mockImdbRating(),
 }));
 jest.mock("@/hooks/useShow", () => ({
   useShow: jest.fn(),
@@ -217,12 +222,41 @@ describe("SearchResultRow", () => {
     expect(mockToggle).toHaveBeenCalledTimes(1);
   });
 
-  // Owner, 2026-10-22: no IMDb rating in Search for now.
-  it("shows no IMDb rating", async () => {
+  // Owner, 2026-10-22: the show's IMDb rating on its poster, bottom right,
+  // in the follow circle's material: a star and the number, no "IMDb".
+  it("shows the rating on the poster's bottom right, a star and the number", async () => {
+    mockImdbRating.mockReturnValue({
+      data: "8.2",
+      imdbId: "tt5875444",
+    } as never);
     await render(
       <SearchResultRow show={showSlowHorsesFixture as unknown as TvMazeShow} />,
     );
+    const badge = screen.getByTestId("search-result-row-poster-badge");
+    expect(badge).toHaveTextContent("8.2");
     expect(screen.queryByText("IMDb")).toBeNull();
+    expect(StyleSheet.flatten(badge.props.style)).toMatchObject({
+      position: "absolute",
+      bottom: POSTER_ACCESSORY_INSET,
+      right: POSTER_ACCESSORY_INSET,
+    });
+    const pill = StyleSheet.flatten(
+      screen.getByTestId("poster-rating").props.style,
+    );
+    expect(pill.backgroundColor).toBe(t.imageControlBackdrop);
+    expect(pill.borderColor).toBe(t.imageControlEdge);
+    expect(screen.getByTestId("poster-rating").props.accessibilityLabel).toBe(
+      "IMDb rating 8.2",
+    );
+    mockImdbRating.mockReturnValue({ data: null, imdbId: null });
+  });
+
+  it("shows no rating badge without a rating", async () => {
+    mockImdbRating.mockReturnValue({ data: null, imdbId: null });
+    await render(
+      <SearchResultRow show={showSlowHorsesFixture as unknown as TvMazeShow} />,
+    );
+    expect(screen.queryByTestId("poster-rating")).toBeNull();
   });
 
   // Owner, 2026-10-22: the poster cards' follow circle, exactly; a taller

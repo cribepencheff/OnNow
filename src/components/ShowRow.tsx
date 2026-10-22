@@ -40,6 +40,9 @@ interface ShowRowProps {
   // Over the poster's top left (a Search row's follow circle; owner,
   // 2026-10-22).
   posterAccessory?: ReactNode;
+  // Over the poster's bottom right (a Search row's IMDb rating; owner,
+  // 2026-10-22).
+  posterBadge?: ReactNode;
   // The bigger poster (a Search row's, LARGE_POSTER).
   largePoster?: boolean;
   children?: ReactNode;
@@ -61,6 +64,7 @@ export function ShowRow({
   summaryLines = 2,
   subtitle,
   posterAccessory,
+  posterBadge,
   largePoster = false,
   children,
   trailing,
@@ -100,6 +104,14 @@ export function ShowRow({
           // (CRI-100); the title beside it names the show.
           <NoImage icon style={[styles.poster, largePoster && LARGE_POSTER]} />
         )}
+        {posterBadge ? (
+          <View
+            style={styles.posterBadge}
+            testID={testID && `${testID}-poster-badge`}
+          >
+            {posterBadge}
+          </View>
+        ) : null}
         {posterAccessory ? (
           <View
             style={styles.posterAccessory}
@@ -275,6 +287,11 @@ const styles = StyleSheet.create({
   },
   // At the poster's top left (owner, 2026-10-22), a little closer to the
   // corner than on the poster cards: the poster is smaller.
+  posterBadge: {
+    position: "absolute",
+    bottom: POSTER_ACCESSORY_INSET,
+    right: POSTER_ACCESSORY_INSET,
+  },
   posterAccessory: {
     position: "absolute",
     top: POSTER_ACCESSORY_INSET,

@@ -10,6 +10,7 @@
 import { StyleSheet } from "react-native";
 
 import { PosterFollowCircle } from "./PosterFollowCircle";
+import { PosterRating } from "./PosterRating";
 import { ShowRow, ShowRowLine, ShowRowServiceLine } from "./ShowRow";
 import { useFollowToggle } from "@/hooks/useFollowList";
 import { useShow } from "@/hooks/useShow";
@@ -64,6 +65,7 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
           toggle();
         }
       }}
+      posterBadge={<PosterRating show={show} />}
       posterAccessory={
         <PosterFollowCircle
           followed={followed}
