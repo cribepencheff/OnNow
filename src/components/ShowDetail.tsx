@@ -187,6 +187,9 @@ function ShowDetailContent({
   return (
     <ScrollView
       style={styles.screen}
+      // As on Home: an image page, read as a whole (owner, 2026-10-22).
+      showsVerticalScrollIndicator={false}
+      testID="show-detail-scroll"
       contentContainerStyle={[
         styles.scrollContent,
         overTabBar && styles.scrollContentOverTabBar,
