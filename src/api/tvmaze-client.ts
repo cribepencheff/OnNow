@@ -13,8 +13,8 @@ const BASE_URL = "https://api.tvmaze.com";
 // section 8), and this is that floor exactly, not under it. Revisited in
 // CRI-107 and kept: going past it risks 429s, and a 429 costs more than the
 // wait (the retry below backs off 1, 2 and 4 seconds). The queue is
-// shortened by asking less instead (an ended show about weekly,
-// showStaleTime).
+// shortened by asking less instead (a show daily if in the hero's week,
+// otherwise weekly: showStaleTime).
 const RATE_LIMIT_MAX_REQUESTS = 20;
 const RATE_LIMIT_WINDOW_MS = 10_000;
 

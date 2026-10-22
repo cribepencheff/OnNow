@@ -14,8 +14,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import SQLiteStorage from "expo-sqlite/kv-store";
 
 // TVmaze's own cache is one hour (NFR-005, spike 0001), so data is never
-// refetched more often than that; an ended show only about weekly
-// (showStaleTime, logic/show-staleness.ts, CRI-107).
+// refetched more often than that by default; a followed show daily or
+// weekly, by what the hero needs (showStaleTime, logic/show-staleness.ts,
+// ADR 0017).
 import { shouldSaveQuery } from "@/logic/saved-queries";
 import { SHOW_STALE_TIME_MS } from "@/logic/show-staleness";
 
