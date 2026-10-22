@@ -10,19 +10,29 @@ describe("shouldSaveQuery", () => {
     expect(shouldSaveQuery(["show", 1], undefined)).toBe(false);
   });
 
-  it("saves TMDB matches, hero images and the discovery rows", () => {
+  it("saves TMDB matches, hero images and what the discovery rows are filled from", () => {
     for (const key of [
       ["tmdbFind", "v1", "tt1", null],
       ["hero-images-v5", 1],
       ["recommendations", "v1", 1],
-      ["topPicksPage", "v3", "launch", "SE", "2026-10-22", 0],
-      ["topPicksPageIndex", "launch", "2026-10-22"],
       ["airingThisWeek", "v1", "SE", "2026-10-22", "UTC"],
-      ["airingThisWeekPage", "v6", "launch", "SE", "2026-10-22", 0],
-      ["airingThisWeekPageIndex", "launch"],
       ["tvmazeWeekInfo", "v1", 5],
     ]) {
       expect(shouldSaveQuery(key, followed)).toBe(true);
+    }
+  });
+
+  // ADR 0017 amendment: a row's pages belong to one launch (their keys
+  // have the launch time), so a saved page is never read again, and saving
+  // them piled up one set per launch.
+  it("does not save the discovery rows' pages, which belong to one launch", () => {
+    for (const key of [
+      ["topPicksPage", "v3", 1761130000000, "SE", "2026-10-22", 0],
+      ["topPicksPageIndex", 1761130000000, "2026-10-22"],
+      ["airingThisWeekPage", "v6", 1761130000000, "SE", "2026-10-22", 0],
+      ["airingThisWeekPageIndex", 1761130000000],
+    ]) {
+      expect(shouldSaveQuery(key, followed)).toBe(false);
     }
   });
 

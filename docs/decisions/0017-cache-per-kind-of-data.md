@@ -43,7 +43,7 @@ Limits that apply to any choice:
 | Hero images (backdrop, logo) | the hero | rarely | every day (the key has the date) | 1 day, saved |
 | Streaming services | "Open in" | now and then | 30 days in plain storage; a miss 1 day | plain storage, 30 days |
 | IMDb rating | Show detail | rarely; the OMDb quota matters | 7 days in plain storage; none yet 1 day | plain storage, 7 days |
-| Discovery rows (Top picks, Airing this week) | Home and Search rows | by the day | by the day (the keys have the date) | 1 day, saved |
+| Discovery rows (Top picks, Airing this week) | Home and Search rows | by the day | by the day (the keys have the date) | 1 day, saved (see the amendment: the pages are not) |
 | Passing (search results; a show only looked at in Show detail; its origin countries and IDs) | the moment | does not matter | 1 h | 1 day, saved |
 | Follow list, region | everything | only by the user | never fetched (local) | plain storage, always |
 
@@ -110,3 +110,31 @@ Limits that apply to any choice:
   built.
 - CLAUDE.md's rule that a fix changing a cached answer changes its cache
   key matters more, since answers are kept longer.
+
+## Amendment: the discovery rows' pages are not saved (2026-10-22)
+Status: Proposed
+
+### Context
+The decision saved the discovery rows "for the day they belong to, so the
+rows also appear at once on a second launch the same day". That never
+worked: a row's pages and page number have the launch time in their keys
+too, on purpose, so each launch starts the row from the top again
+(CRI-96). A launch never reads the pages saved by an earlier one. They
+were still saved again on every launch, so they piled up: after a day of
+reloads, 564 entries and about 0.6 MB of 5.94 MB, never used (measured on
+Images (dev)).
+
+### Decision
+The rows' pages and page numbers (`topPicksPage`, `topPicksPageIndex`,
+`airingThisWeekPage`, `airingThisWeekPageIndex`) are **not saved**. What
+the rows are filled from is still saved: the recommendations, the week's
+candidates and their TVmaze info.
+
+### Consequences
+- The rows behave as they already did: each launch fills them again,
+  from saved answers, without fetching them again.
+- The saved copy stops growing with each launch. The entries already
+  saved drop out with the next save.
+- The followed shows remain most of the saved copy (4.33 MB of 5.94 MB
+  with 58 shows), since each holds all its episodes for Show detail.
+  Left as is: SQLite has no size limit (CRI-139).
