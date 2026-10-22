@@ -22,6 +22,7 @@ import MaskedView from "@react-native-masked-view/masked-view";
 
 import { IMAGE_BASE } from "@/api/tmdb-types";
 import type { TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
+import { useHeroW1920 } from "@/hooks/useHeroW1920";
 import { openExternalUrl, useGuardedRouter } from "@/hooks/useGuardedRouter";
 import { useStreamingService } from "@/hooks/useStreamingService";
 import { useShowImages } from "@/hooks/useShowImages";
@@ -272,12 +273,16 @@ export const HeroPage = memo(function HeroPage({
   const columnWidth = Math.max(width, imageBoxHeight * aspectRatio);
   const columnLeft = (backdropWidth - columnWidth) / 2;
   // Sharp on this screen's pixels at the width the image is drawn
-  // (heroImageSize): "original" on today's phones.
-  const imageSize = heroImageSize(
+  // (heroImageSize): "original" on today's phones, or w1920 with the dev
+  // switch on (CRI-140).
+  const heroW1920 = useHeroW1920();
+  const fittedSize = heroImageSize(
     columnWidth,
     imageBoxHeight,
     PixelRatio.get(),
   );
+  const imageSize =
+    heroW1920 && fittedSize === "original" ? "w1920" : fittedSize;
 
   const translateX = reduceMotionEnabled
     ? 0
