@@ -1,7 +1,8 @@
 // The shared TanStack Query client (ADR 0009). Its cache is persisted to
-// the phone (SQLite, hooks/saved-cache-storage.ts) so Home can show cached data immediately on start and the
-// app works offline (NFR-001, NFR-002). The follow list itself is not
-// stored here: it lives in src/storage (ADR 0009 boundary).
+// the phone (SQLite, hooks/saved-cache-storage.ts) so Home can show cached
+// data immediately on start and the app works offline (NFR-001, NFR-002).
+// The follow list itself is not stored here: it lives in src/storage
+// (ADR 0009 boundary).
 
 import {
   QueryClient,
