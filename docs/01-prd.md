@@ -158,7 +158,7 @@ first user is the author, who currently uses Next Episode.
 - **Concept:** the list of followed series with their status, and swipe to
   unfollow. A search field on top opens Search (5.4).
 - **Header:** "My shows", as the tab, left aligned with the content
-  (owner, 2026-10-22).
+  (owner, 2026-10-22), as Calendar's.
 - **Search field:** always visible at the top, looking exactly as Search's
   own (the same frame and text size). Tapping it goes to the Search tab
   with the keyboard open (FR-007). It does not filter the list.
