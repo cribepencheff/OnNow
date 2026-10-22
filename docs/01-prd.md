@@ -223,7 +223,7 @@ first user is the author, who currently uses Next Episode.
   (FR-027, CRI-97, CRI-102). The status line right under the title in `ink`, then three lines about
   the show, muted; show, muted; no year and genres, which Show detail's meta line has
   (owner, 2026-10-22). The show's IMDb rating on the poster's bottom right,
-  a star and the number, no "IMDb" (not in Shows while OMDb's free key is
+  the number alone, no "IMDb" (not in Shows while OMDb's free key is
   shared by every user, ADR 0013, CRI-116). The original
   network is not shown.
 - **Follow control:** a circle at the right edge of each row, aligned in one
@@ -411,7 +411,7 @@ Reached from an icon. Territory and notifications.
 | FR-021 | Direct links to the show for more services | After MVP |
 | FR-022 | Explore: "what is releasing" feed with filters, starting with streaming service | After MVP |
 | FR-023 | Android widget | After MVP |
-| FR-024 | Search results show poster, title, Show detail's status line (FR-025), the service slot (FR-027) and a follow circle at the right edge. PoC: year and status, and a two line summary. MVP: the two line summary right under the title, muted (owner, 2026-10-22), no TVmaze status in the meta line and the show's IMDb rating on the poster, a star and the number (ADR 0013; not in Shows, CRI-116); the status line right under the title in `ink`, no year and genres (they are in Show detail's meta line; owner, 2026-10-22). Results appear after a short pause in typing (about 250 ms), each show once, and are not filtered by region or show type; a show still "In Development" with no TVmaze update for two years is left out (PRD 5.4). A clear button (X) inside the field on iOS and Android | PoC, MVP |
+| FR-024 | Search results show poster, title, Show detail's status line (FR-025), the service slot (FR-027) and a follow circle at the right edge. PoC: year and status, and a two line summary. MVP: the two line summary right under the title, muted (owner, 2026-10-22), no TVmaze status in the meta line and the show's IMDb rating on the poster, the number alone (ADR 0013; not in Shows, CRI-116); the status line right under the title in `ink`, no year and genres (they are in Show detail's meta line; owner, 2026-10-22). Results appear after a short pause in typing (about 250 ms), each show once, and are not filtered by region or show type; a show still "In Development" with no TVmaze update for two years is left out (PRD 5.4). A clear button (X) inside the field on iOS and Android | PoC, MVP |
 | FR-025 | After following, the result row shows the next episode or "No date yet" (PoC). MVP: every result row shows Show detail's status line, followed or not, the same as the Shows row (FR-035), from the cached show lookup | PoC, MVP |
 | FR-026 | Before the user types, Search shows Home's rows as they are: "Top picks for you" (FR-038), then "Airing this week" (FR-039), each sharing what it has loaded with Home; only "Airing this week" when the follow list is empty. No "Search more" in Search: both rows end with "All caught up", shown only when the end is reached there. Region filtered as on Home (CRI-98) | MVP |
 | FR-027 | Search results and Shows rows show the services that carry the show in the user's territory, or plain "Unavailable" when there is none, and nothing when TMDB does not know the show; the row does not name the region, unlike Show detail (CRI-91, CRI-97, CRI-102). Before the services' names, each service's logo, small, up to four, so a service the user has is seen at a glance (CRI-115) | MVP |

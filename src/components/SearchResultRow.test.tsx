@@ -8,6 +8,7 @@ import {
 
 import { SearchResultRow } from "./SearchResultRow";
 import { LARGE_POSTER, POSTER_ACCESSORY_INSET } from "./ShowRow";
+import { POSTER_RATING_FILL } from "./PosterRating";
 import { t } from "@/theme/tokens";
 import { useShow } from "@/hooks/useShow";
 import { useStreamingService } from "@/hooks/useStreamingService";
@@ -222,9 +223,9 @@ describe("SearchResultRow", () => {
     expect(mockToggle).toHaveBeenCalledTimes(1);
   });
 
-  // Owner, 2026-10-22: the show's IMDb rating on its poster, bottom right,
-  // in the follow circle's material: a star and the number, no "IMDb".
-  it("shows the rating on the poster's bottom right, a star and the number", async () => {
+  // Owner, 2026-10-22: the show's IMDb rating on its poster, bottom right:
+  // the number alone, on a darker fill than the follow circle's.
+  it("shows the rating on the poster's bottom right, the number alone, on a darker fill", async () => {
     mockImdbRating.mockReturnValue({
       data: "8.2",
       imdbId: "tt5875444",
@@ -243,7 +244,15 @@ describe("SearchResultRow", () => {
     const pill = StyleSheet.flatten(
       screen.getByTestId("poster-rating").props.style,
     );
-    expect(pill.backgroundColor).toBe(t.imageControlBackdrop);
+    expect(pill.backgroundColor).toBe(POSTER_RATING_FILL);
+    expect(pill.backgroundColor).not.toBe(t.imageControlBackdrop);
+    expect(
+      screen
+        .getByTestId("poster-rating")
+        .children.map((child) =>
+          typeof child === "string" ? child : child.props.children,
+        ),
+    ).toEqual(["8.2"]);
     expect(pill.borderColor).toBe(t.imageControlEdge);
     expect(screen.getByTestId("poster-rating").props.accessibilityLabel).toBe(
       "IMDb rating 8.2",
