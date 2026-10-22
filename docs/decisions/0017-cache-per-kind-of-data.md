@@ -164,7 +164,7 @@ backdrop soon after TMDB does.
   different times; left as an idea alongside the `/updates/shows` spike.
 
 ## Amendment: followed shows by the hero's week (2026-10-22)
-Status: Proposed
+Status: Accepted (approved with #111, 2026-10-22)
 
 ### Context
 A followed show was asked again an hour after its last answer, the
