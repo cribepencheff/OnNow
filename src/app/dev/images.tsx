@@ -5,7 +5,6 @@
 // side for reviewing the ranking. Opened by a long press on the Shows tab.
 
 import { useState } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   FlatList,
   Pressable,
@@ -35,7 +34,10 @@ import { heroAvailability, type HeroAvailability } from "@/logic/hero-carousel";
 import { openInAccessibilityLabel } from "@/logic/streaming-service";
 import { IMAGE_BASE, type TmdbImage } from "@/api/tmdb-types";
 import type { TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
-import { QUERY_CACHE_STORAGE_KEY } from "@/hooks/query-client";
+import {
+  QUERY_CACHE_STORAGE_KEY,
+  savedCacheStorage,
+} from "@/hooks/query-client";
 import { useShowImages } from "@/hooks/useShowImages";
 import { t, type } from "@/theme/tokens";
 
@@ -407,17 +409,18 @@ const SAMPLE_FADE =
 
 // The Premiere/Finale chip on a real backdrop with the hero's fade over
 // it, where the chip sits, to judge its look.
-// How big the query cache saved to the phone is (ADR 0017): Android's
-// AsyncStorage holds about 6 MB by default, and raising it needs a native
-// setting, so the saved copy should stay well under that. Read on a tap,
-// as a JSON string: its length is about its size in bytes.
+// How big the query cache saved to the phone is (ADR 0017). It is kept in
+// SQLite (CRI-139), which has no size limit like AsyncStorage's 6 MB on
+// Android, but the whole copy is written on a change and read on a launch,
+// so its size is still worth watching. Read on a tap, as a JSON string:
+// its length is about its size in bytes.
 function SavedCacheSize() {
   const [size, setSize] = useState<number | null>(null);
   return (
     <Pressable
       accessibilityRole="button"
       onPress={async () => {
-        const saved = await AsyncStorage.getItem(QUERY_CACHE_STORAGE_KEY);
+        const saved = await savedCacheStorage.getItem(QUERY_CACHE_STORAGE_KEY);
         setSize(saved?.length ?? 0);
       }}
       style={styles.followAll}
@@ -425,7 +428,7 @@ function SavedCacheSize() {
       <Text style={styles.followAllLabel}>
         {size === null
           ? "Saved cache: tap to measure"
-          : `Saved cache: ${(size / 1024 / 1024).toFixed(2)} MB (Android limit about 6 MB)`}
+          : `Saved cache: ${(size / 1024 / 1024).toFixed(2)} MB`}
       </Text>
     </Pressable>
   );
