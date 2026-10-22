@@ -1,5 +1,5 @@
 // The shared TanStack Query client (ADR 0009). Its cache is persisted to
-// AsyncStorage so Home can show cached data immediately on start and the
+// the phone (SQLite, hooks/saved-cache-storage.ts) so Home can show cached data immediately on start and the
 // app works offline (NFR-001, NFR-002). The follow list itself is not
 // stored here: it lives in src/storage (ADR 0009 boundary).
 
@@ -10,12 +10,15 @@ import {
 } from "@tanstack/react-query";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import SQLiteStorage from "expo-sqlite/kv-store";
 
 // TVmaze's own cache is one hour (NFR-005, spike 0001), so data is never
 // refetched more often than that; an ended show only about weekly
 // (showStaleTime, logic/show-staleness.ts, CRI-107).
 import { shouldSaveQuery } from "@/logic/saved-queries";
 import { SHOW_STALE_TIME_MS } from "@/logic/show-staleness";
+
+import { createSavedCacheStorage } from "./saved-cache-storage";
 
 export { SHOW_STALE_TIME_MS };
 
@@ -37,8 +40,13 @@ export const KEEP_MS = 21 * DAY_MS;
 export const DEFAULT_GC_TIME_MS = DAY_MS;
 export const PERSISTED_CACHE_MAX_AGE_MS = KEEP_MS;
 
-// Where the saved copy lives in AsyncStorage.
+// The saved copy's key, in SQLite (and, before CRI-139, AsyncStorage).
 export const QUERY_CACHE_STORAGE_KEY = "onnow.queryCache";
+
+export const savedCacheStorage = createSavedCacheStorage(
+  SQLiteStorage,
+  AsyncStorage,
+);
 
 export function createQueryClient(): QueryClient {
   return new QueryClient({
@@ -54,7 +62,7 @@ export function createQueryClient(): QueryClient {
 export const queryClient = createQueryClient();
 
 export const asyncStoragePersister = createAsyncStoragePersister({
-  storage: AsyncStorage,
+  storage: savedCacheStorage,
   key: QUERY_CACHE_STORAGE_KEY,
 });
 

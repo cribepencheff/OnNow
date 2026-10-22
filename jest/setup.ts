@@ -19,3 +19,19 @@ jest.mock("react-native-worklets", () =>
 jest.mock("react-native-reanimated", () =>
   require("react-native-reanimated/mock"),
 );
+
+// The saved query cache's SQLite key-value store (CRI-139) is native;
+// tests keep it in memory.
+jest.mock("expo-sqlite/kv-store", () => {
+  const values = new Map<string, string>();
+  const Storage = {
+    getItem: async (key: string) => values.get(key) ?? null,
+    setItem: async (key: string, value: string) => {
+      values.set(key, value);
+    },
+    removeItem: async (key: string) => {
+      values.delete(key);
+    },
+  };
+  return { __esModule: true, default: Storage, AsyncStorage: Storage };
+});
