@@ -902,16 +902,18 @@ describe("HomeScreen", () => {
       expect(SplashScreen.hide).toHaveBeenCalled();
     });
 
-    it("says when the data was last updated, under the pull spinner", async () => {
+    // CRI-108 (owner, 2026-10-22): no "Updated X ago" under the pull
+    // spinner. It told the data's age just as the pull replaced it, and
+    // only confused; the spinner says the app is updating.
+    it("shows no last-updated line under the pull spinner", async () => {
       mockFollowedEpisodes({
         dataUpdatedAt: Date.now() - 5 * 60 * 1000,
         followedShows: [{ show, episodes: [makeEpisode()] }],
       });
       await render(<HomeScreen />);
 
-      expect(screen.getByTestId("home-updated")).toHaveTextContent(
-        "Updated 5 min ago",
-      );
+      expect(screen.queryByTestId("home-updated")).toBeNull();
+      expect(screen.queryByText(/^Updated /)).toBeNull();
     });
 
     it("shows the spinner for a pull, for as long as the refetch runs", async () => {

@@ -55,8 +55,7 @@ import {
   posterDimAt,
   posterDimEndScroll,
 } from "@/logic/hero-layout";
-import { updatedAgoLabel } from "@/logic/launch";
-import { t as tokens, type } from "@/theme/tokens";
+import { t as tokens } from "@/theme/tokens";
 
 // How far Home must be scrolled down to count as away from its top
 // (maintainVisibleContentPosition below).
@@ -108,7 +107,6 @@ export default function HomeScreen() {
     isReady,
     isLoading,
     isError,
-    dataUpdatedAt,
     followedShows,
     showsWithEpisodeToday,
     nextDayEpisodes,
@@ -275,7 +273,6 @@ export default function HomeScreen() {
     } finally {
       settleHero();
       setRefreshing(false);
-      setNow(Date.now());
     }
   }, [refetch, settleDay, settleHero]);
 
@@ -285,14 +282,6 @@ export default function HomeScreen() {
       SplashScreen.hide();
     }
   }, [isReady]);
-
-  // NFR-002: "Updated X ago" under the pull spinner, kept current.
-  const [now, setNow] = useState(() => Date.now());
-  useEffect(() => {
-    const tick = setInterval(() => setNow(Date.now()), 60 * 1000);
-    return () => clearInterval(tick);
-  }, []);
-  const updatedLabel = updatedAgoLabel(dataUpdatedAt, now);
 
   const state = deriveHomeViewState({
     followedCount,
@@ -668,7 +657,6 @@ export default function HomeScreen() {
       <PullToRefreshIndicator
         pullDistance={pullDistance}
         refreshing={refreshing}
-        updatedLabel={updatedLabel}
         reduceMotionEnabled={reduceMotionEnabled}
         topInset={insets.top}
       />
@@ -688,13 +676,11 @@ const PULL_INDICATOR_REVEAL = 56;
 function PullToRefreshIndicator({
   pullDistance,
   refreshing,
-  updatedLabel,
   reduceMotionEnabled,
   topInset,
 }: {
   pullDistance: Animated.AnimatedInterpolation<number>;
   refreshing: boolean;
-  updatedLabel: string | null;
   reduceMotionEnabled: boolean;
   topInset: number;
 }) {
@@ -766,14 +752,6 @@ function PullToRefreshIndicator({
           size="small"
         />
       </View>
-      {/* NFR-002: discreet, only while the pull indicator shows. */}
-      {updatedLabel && (
-        <View style={styles.pullUpdated}>
-          <Text style={styles.pullUpdatedText} testID="home-updated">
-            {updatedLabel}
-          </Text>
-        </View>
-      )}
     </Animated.View>
   );
 }
@@ -819,18 +797,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: "center",
-  },
-  // The "Updated X ago" pill, on the same scrim as the spinner circle.
-  pullUpdated: {
-    marginTop: 6,
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    borderRadius: 12,
-    backgroundColor: tokens.imageControlBackdrop,
-  },
-  pullUpdatedText: {
-    ...type.label,
-    color: "#FFFFFF",
   },
   // A small circle on the image-control backdrop behind the white spinner,
   // with a soft shadow, so it stays legible over a bright backdrop image.

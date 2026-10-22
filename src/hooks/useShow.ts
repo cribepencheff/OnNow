@@ -1,6 +1,4 @@
 // One query per followed show, keyed by its TVmaze show ID (ADR 0009).
-// Views read `dataUpdatedAt` to show when the data was last refreshed
-// (NFR-002).
 
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 

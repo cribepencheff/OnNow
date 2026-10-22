@@ -418,7 +418,7 @@ Reached from an icon. Territory and notifications.
 | ID      | Requirement |
 | ------- | ----------- |
 | NFR-001 | Home shows cached data immediately and answers the core promise within two seconds of opening the app |
-| NFR-002 | The app works offline with cached data and shows when it was last updated |
+| NFR-002 | The app works offline with cached data. It does not show when it was last updated (CRI-108, owner 2026-10-22): "today" is worked out on the phone from each episode's air time, so data a few days old still shows the right episodes, and a pull's spinner says the app is updating |
 | NFR-003 | No backend and no running cost |
 | NFR-004 | No account. The follow list never leaves the device |
 | NFR-005 | API rate limits are respected, with backoff on HTTP 429 |
