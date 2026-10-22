@@ -355,7 +355,10 @@ per season come in the MVP.
 
 ### 5.6 Navigation rules
 - **Going deeper gives a back arrow.** Views pushed on top of another (Show
-  detail) have a back arrow top left and support the edge swipe back.
+  detail) have a back arrow top left and support the edge swipe back. In
+  Show detail it is a round button floating over the backdrop, which runs
+  up under the status bar, and it stays put while the page scrolls
+  (CRI-129, owner 2026-10-22; Apple TV and Instagram as references).
 - **Inside Search, going deeper gives only a back arrow.** Show detail
   opened from Search (a result or a poster card) has a back arrow to Search
   and no close button, with the tab bar still in view (CRI-133).
