@@ -1,8 +1,8 @@
 import onTheAir from "@/api/fixtures/tmdb-on-the-air.json";
 import {
+  airingByDay,
   airingThisWeek,
-  byAiringDate,
-  firstEpisodeDayThisWeek,
+  airsOn,
   isAiringType,
   weekDayWord,
 } from "./airing-this-week";
@@ -59,36 +59,31 @@ describe("isAiringType (FR-039)", () => {
   });
 });
 
-describe("firstEpisodeDayThisWeek (FR-039, CRI-110)", () => {
+// A show is on a day's part of the row only if TVmaze has an episode
+// that day (CRI-110: as the hero would show it if followed).
+describe("airsOn (FR-039, CRI-110)", () => {
   // 2026-10-05 is a Monday; Stockholm is UTC+2.
   const TZ = "Europe/Stockholm";
 
-  it("is the day of an episode in the hero's 7-day window", () => {
-    expect(
-      firstEpisodeDayThisWeek(
-        [{ airstamp: "2026-10-09T01:00:00+00:00", number: 3 }],
-        TZ,
-        "2026-10-05",
-      ),
-    ).toBe("2026-10-09");
+  it("is true on the day of an episode, in the user's time zone", () => {
+    const episodes = [{ airstamp: "2026-10-08T23:00:00+00:00", number: 3 }];
+    expect(airsOn(episodes, TZ, "2026-10-09")).toBe(true);
+    expect(airsOn(episodes, TZ, "2026-10-08")).toBe(false);
   });
 
   it("counts an episode that aired earlier today, as the hero does", () => {
     expect(
-      firstEpisodeDayThisWeek(
-        [
-          { airstamp: "2026-10-05T06:00:00+00:00", number: 2 },
-          { airstamp: "2026-10-12T06:00:00+00:00", number: 3 },
-        ],
+      airsOn(
+        [{ airstamp: "2026-10-05T06:00:00+00:00", number: 2 }],
         TZ,
         "2026-10-05",
       ),
-    ).toBe("2026-10-05");
+    ).toBe(true);
   });
 
-  it("is nothing for Family Guy, whose next episode is in February 2027", () => {
+  it("is false for Family Guy, whose next episode is in February 2027", () => {
     expect(
-      firstEpisodeDayThisWeek(
+      airsOn(
         [
           { airstamp: "2026-05-11T00:00:00+00:00", number: 20 },
           { airstamp: "2027-02-22T01:00:00+00:00", number: 1 },
@@ -96,20 +91,20 @@ describe("firstEpisodeDayThisWeek (FR-039, CRI-110)", () => {
         TZ,
         "2026-10-05",
       ),
-    ).toBeNull();
+    ).toBe(false);
   });
 
   it("leaves out specials and episodes without an airstamp", () => {
     expect(
-      firstEpisodeDayThisWeek(
+      airsOn(
         [
           { airstamp: "2026-10-06T18:00:00+00:00", number: null },
           { airstamp: null, number: 4 },
         ],
         TZ,
-        "2026-10-05",
+        "2026-10-06",
       ),
-    ).toBeNull();
+    ).toBe(false);
   });
 });
 
@@ -128,42 +123,44 @@ describe("weekDayWord (FR-039)", () => {
   });
 });
 
-// CRI-122: what airs today first, then tomorrow, then the weekdays.
-describe("byAiringDate (FR-039, CRI-122)", () => {
-  it("orders the cards by air date, today first", () => {
-    const cards = [
-      { name: "MobLand", date: "2026-10-09" },
-      { name: "NCIS", date: "2026-10-07" },
-      { name: "The Simpsons", date: "2026-10-05" },
-      { name: "Silo", date: "2026-10-06" },
-    ];
-    expect(byAiringDate(cards).map((card) => card.name)).toEqual([
-      "The Simpsons",
-      "Silo",
-      "NCIS",
-      "MobLand",
-    ]);
+// The row day by day (owner, 2026-10-22): today's shows first, the most
+// popular first, then tomorrow's, and so on.
+describe("airingByDay (FR-039, CRI-122)", () => {
+  const show = (id: number, popularity: number) => ({
+    id,
+    name: `Show ${id}`,
+    popularity,
+    genre_ids: [18],
   });
 
-  it("keeps popularity order within a day", () => {
-    const cards = [
-      { name: "Law & Order", date: "2026-10-09" },
-      { name: "The Simpsons", date: "2026-10-05" },
-      { name: "MobLand", date: "2026-10-09" },
-    ];
-    expect(byAiringDate(cards).map((card) => card.name)).toEqual([
-      "The Simpsons",
-      "Law & Order",
-      "MobLand",
+  it("lists each day in turn, the most popular first within a day", () => {
+    const { ranking, dayOf } = airingByDay([
+      { day: "2026-10-05", results: [show(1, 10), show(2, 90)] },
+      { day: "2026-10-06", results: [show(3, 99)] },
     ]);
+    expect(names(ranking)).toEqual(["Show 2", "Show 1", "Show 3"]);
+    expect(dayOf.get(1)).toBe("2026-10-05");
+    expect(dayOf.get(3)).toBe("2026-10-06");
   });
 
-  it("leaves the cards it is given unchanged", () => {
-    const cards = [
-      { name: "MobLand", date: "2026-10-09" },
-      { name: "The Simpsons", date: "2026-10-05" },
-    ];
-    byAiringDate(cards);
-    expect(cards[0].name).toBe("MobLand");
+  it("lists a show on several days once, on its first", () => {
+    const { ranking, dayOf } = airingByDay([
+      { day: "2026-10-05", results: [show(1, 10)] },
+      { day: "2026-10-09", results: [show(1, 10), show(2, 20)] },
+    ]);
+    expect(names(ranking)).toEqual(["Show 1", "Show 2"]);
+    expect(dayOf.get(1)).toBe("2026-10-05");
+  });
+
+  // Days are added as the row needs them: a place in the ranking never
+  // moves when a later day is added.
+  it("keeps every earlier place when a day is added", () => {
+    const today = { day: "2026-10-05", results: [show(1, 10), show(2, 90)] };
+    const before = names(airingByDay([today]).ranking);
+    const after = names(
+      airingByDay([today, { day: "2026-10-06", results: [show(3, 99)] }])
+        .ranking,
+    );
+    expect(after.slice(0, before.length)).toEqual(before);
   });
 });
