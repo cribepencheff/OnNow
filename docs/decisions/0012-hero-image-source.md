@@ -95,3 +95,39 @@ the tie-break. No episode stills on the hero.
 - The hero draws the backdrop over its upper part, mirrored and blurred
   below (design system, Home refinement round); the image source does not
   change that.
+
+## Amendment: the backdrop's size (CRI-140, 2026-10-22)
+Status: Accepted (approved with #102, 2026-10-22)
+
+### Context
+The hero fetched its backdrop at "original", often 3840×2160 and about
+800 kB, chosen for sharpness (CRI-124). The hero's image box is tall, so
+the image fills it by height: on an iPhone 15 Pro it needs about 1,370
+pixels of image height. TMDB's documented backdrop sizes are w300, w780,
+w1280 and "original"; w1280 (720 pixels tall) is enlarged about 1.9 times
+and visibly softer. TMDB's image server also serves w1920 (1920×1080,
+about 255 kB for the same image), which TMDB's own website uses but its
+`/configuration` does not list. Query strings are ignored, and other
+sizes are refused.
+
+With only the settled slide and its neighbours drawing the sharp image
+(CRI-136), the owner compared "original" with w1920 on the phone and saw
+no difference.
+
+### Decision
+The hero and Show detail fetch their backdrop at **w1920**, the largest
+size fetched. If w1920 fails to load, the same image is fetched at
+"original" instead.
+
+### Consequences
+- A third of the download per backdrop, and about a quarter of the
+  decoding work and its passing memory (about 8 MB per image instead of
+  33 MB), so a launch shows the sharp image sooner.
+- w1920 is enlarged about 1.3 times on today's phones; the owner could
+  not tell it from "original".
+- Show detail's square backdrop goes from w1280 (enlarged about 1.6
+  times) to w1920 (about 1.1 times).
+- The size is not documented, so TMDB may drop it without notice; the
+  fallback to "original" keeps every backdrop showing if it does.
+- The posters (w500, TVmaze medium) already match their drawn size and
+  are unchanged.

@@ -18,7 +18,6 @@ import { Image } from "expo-image";
 
 import { useFollowList } from "@/hooks/useFollowList";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
-import { setHeroW1920, useHeroW1920 } from "@/hooks/useHeroW1920";
 import { useStreamingService } from "@/hooks/useStreamingService";
 import { useToday } from "@/hooks/useToday";
 import { sortShowsByTitle } from "@/logic/shows-list";
@@ -134,8 +133,6 @@ export default function DevImagesScreen() {
             </Pressable>
 
             <SavedCacheSize />
-
-            <HeroSizeSwitch />
 
             {shows[0] && (
               <EpisodeMarkSamples show={shows[0].show} todayDate={todayDate} />
@@ -417,27 +414,6 @@ const SAMPLE_FADE =
 // Android, but the whole copy is written on a change and read on a launch,
 // so its size is still worth watching. Read on a tap, as a JSON string:
 // its length is about its size in bytes.
-// The hero's sharp image at "original" or TMDB's w1920 (CRI-140), to
-// compare sharpness and cold-start memory. Saved: it holds over a cold
-// start.
-function HeroSizeSwitch() {
-  const w1920 = useHeroW1920();
-  return (
-    <Pressable
-      accessibilityRole="switch"
-      accessibilityState={{ checked: w1920 }}
-      onPress={() => setHeroW1920(!w1920)}
-      style={styles.followAll}
-    >
-      <Text style={styles.followAllLabel}>
-        {w1920
-          ? "Hero image: w1920 (1920×1080). Tap for original"
-          : "Hero image: original. Tap for w1920"}
-      </Text>
-    </Pressable>
-  );
-}
-
 function SavedCacheSize() {
   const [size, setSize] = useState<number | null>(null);
   return (

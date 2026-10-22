@@ -10,7 +10,11 @@ import { SymbolView } from "expo-symbols";
 import { useRef, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
-import { IMAGE_BASE } from "@/api/tmdb-types";
+import {
+  IMAGE_BASE,
+  LARGE_BACKDROP_FALLBACK_SIZE,
+  LARGE_BACKDROP_SIZE,
+} from "@/api/tmdb-types";
 import type {
   TvMazeEpisode,
   TvMazeSeason,
@@ -18,6 +22,7 @@ import type {
   TvMazeShowWithEmbeds,
 } from "@/api/tvmaze-types";
 import { useFollowToggle } from "@/hooks/useFollowList";
+import { useFallbackUri } from "@/hooks/useFallbackUri";
 import { openExternalUrl } from "@/hooks/useGuardedRouter";
 import { useOriginCountries } from "@/hooks/useOriginCountries";
 import { useShow } from "@/hooks/useShow";
@@ -104,6 +109,13 @@ function ShowDetailContent({
   // A TMDB backdrop, textless first (ADR 0012): no title text in the image.
   const { data: images } = useShowImages(show);
   const backdropPath = images?.highestRatedBackdrop?.file_path;
+  // Drawn square, about 1,180 px tall on a 3x phone: w1920 (1080 px tall),
+  // with "original" if that undocumented size fails (CRI-140).
+  const backdrop = useFallbackUri(
+    backdropPath && `${IMAGE_BASE}/${LARGE_BACKDROP_SIZE}${backdropPath}`,
+    backdropPath &&
+      `${IMAGE_BASE}/${LARGE_BACKDROP_FALLBACK_SIZE}${backdropPath}`,
+  );
   const logo = images?.logo;
   const { link, availability } = useOpenIn(show);
   const { data: originCountries } = useOriginCountries(show);
@@ -123,9 +135,8 @@ function ShowDetailContent({
     >
       <View style={styles.hero} testID="show-detail-hero">
         <Image
-          source={
-            backdropPath ? `${IMAGE_BASE}/w1280${backdropPath}` : undefined
-          }
+          source={backdrop.uri}
+          onError={backdrop.onError}
           style={styles.heroImage}
           testID="show-detail-backdrop"
           contentFit="cover"

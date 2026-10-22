@@ -20,9 +20,13 @@ import { Image } from "expo-image";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MaskedView from "@react-native-masked-view/masked-view";
 
-import { IMAGE_BASE } from "@/api/tmdb-types";
+import {
+  IMAGE_BASE,
+  LARGE_BACKDROP_FALLBACK_SIZE,
+  LARGE_BACKDROP_SIZE,
+} from "@/api/tmdb-types";
 import type { TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
-import { useHeroW1920 } from "@/hooks/useHeroW1920";
+import { useFallbackUri } from "@/hooks/useFallbackUri";
 import { openExternalUrl, useGuardedRouter } from "@/hooks/useGuardedRouter";
 import { useStreamingService } from "@/hooks/useStreamingService";
 import { useShowImages } from "@/hooks/useShowImages";
@@ -208,7 +212,8 @@ export const HeroPage = memo(function HeroPage({
   // The settled slide or one of its neighbours (CRI-136): only these draw
   // the sharp image. Every slide stays mounted (HeroPager, CRI-134), so
   // without this each one would hold a full-size decoded image (about
-  // 33 MB at "original") although at most two show at once.
+  // 8 MB at w1920, 33 MB at "original") although at most two show at
+  // once.
   nearby: boolean;
   // Takes this instance's own (physical) index, rather than being called
   // with no arguments: lets HeroPager pass the exact same function to
@@ -273,16 +278,27 @@ export const HeroPage = memo(function HeroPage({
   const columnWidth = Math.max(width, imageBoxHeight * aspectRatio);
   const columnLeft = (backdropWidth - columnWidth) / 2;
   // Sharp on this screen's pixels at the width the image is drawn
-  // (heroImageSize): "original" on today's phones, or w1920 with the dev
-  // switch on (CRI-140).
-  const heroW1920 = useHeroW1920();
-  const fittedSize = heroImageSize(
+  // (heroImageSize): w1920 on today's phones, and "original" if that
+  // undocumented size fails (useFallbackUri, CRI-140).
+  const imageSize = heroImageSize(
     columnWidth,
     imageBoxHeight,
     PixelRatio.get(),
   );
-  const imageSize =
-    heroW1920 && fittedSize === "original" ? "w1920" : fittedSize;
+  const sharpImage = useFallbackUri(
+    displayPath && `${IMAGE_BASE}/${imageSize}${displayPath}`,
+    displayPath && imageSize === LARGE_BACKDROP_SIZE
+      ? `${IMAGE_BASE}/${LARGE_BACKDROP_FALLBACK_SIZE}${displayPath}`
+      : undefined,
+  );
+  const { onError: tryFallback } = sharpImage;
+  // A failed image counts as ready, but only once its fallback has failed
+  // too.
+  const handleError = useCallback(() => {
+    if (!tryFallback()) {
+      handleLoad();
+    }
+  }, [tryFallback, handleLoad]);
 
   const translateX = reduceMotionEnabled
     ? 0
@@ -413,13 +429,18 @@ export const HeroPage = memo(function HeroPage({
                   small copy also shows while the sharp one is still
                   decoding, as on a launch, rather than black. */}
               <ImageColumn
-                uri={`${IMAGE_BASE}/${nearby ? imageSize : BLURRED_COPY_SIZE}${displayPath}`}
+                uri={
+                  nearby && sharpImage.uri
+                    ? sharpImage.uri
+                    : `${IMAGE_BASE}/${BLURRED_COPY_SIZE}${displayPath}`
+                }
                 placeholder={`${IMAGE_BASE}/${BLURRED_COPY_SIZE}${displayPath}`}
                 width={columnWidth}
                 left={columnLeft}
                 imageTop={imageTop}
                 boxHeight={imageBoxHeight}
                 onLoad={nearby ? handleLoad : undefined}
+                onError={nearby ? handleError : undefined}
               />
               {/* Android has no progressive BlurView (ProgressiveBlur): a
                   blurred copy of the column shows through the same eased
@@ -511,6 +532,7 @@ function ImageColumn({
   boxHeight,
   blurRadius,
   onLoad,
+  onError,
 }: {
   uri: string;
   // Shown until uri has loaded.
@@ -523,6 +545,7 @@ function ImageColumn({
   blurRadius?: number;
   // Only the sharp column reports its load (auto-advance waits for it).
   onLoad?: () => void;
+  onError?: () => void;
 }) {
   const sharp = blurRadius === undefined;
   const image = (flipped: boolean, testID?: string) => (
@@ -538,7 +561,7 @@ function ImageColumn({
       accessibilityIgnoresInvertColors
       blurRadius={blurRadius}
       onLoad={flipped ? undefined : onLoad}
-      onError={flipped ? undefined : onLoad}
+      onError={flipped ? undefined : onError}
       testID={sharp ? testID : undefined}
     />
   );

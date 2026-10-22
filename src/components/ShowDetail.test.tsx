@@ -501,7 +501,21 @@ describe("ShowDetail", () => {
 
     expect(
       JSON.stringify(screen.getByTestId("show-detail-backdrop").props.source),
-    ).toContain("/w1280/textless.jpg");
+    ).toContain("/w1920/textless.jpg");
+  });
+
+  // CRI-140: w1920 is not a documented TMDB size; if it fails, the same
+  // image at "original".
+  it("CRI-140: falls back to the original backdrop if w1920 fails", async () => {
+    mockShow(showSlowHorsesFixture);
+    await render(<ShowDetail showId={45039} />);
+
+    await fireEvent(screen.getByTestId("show-detail-backdrop"), "error", {
+      nativeEvent: { error: "404" },
+    });
+    expect(
+      JSON.stringify(screen.getByTestId("show-detail-backdrop").props.source),
+    ).toContain("/original/textless.jpg");
   });
 
   it("FR-014: uses the Swedish service, not the US network (MobLand: SkyShowtime; Killing Eve: Netflix)", async () => {
