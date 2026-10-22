@@ -58,6 +58,10 @@ const MIRROR_BLUR_INTENSITY = 80;
 
 // Whether the app is in the foreground. Auto-advance pauses in the
 // background (CRI-124).
+// How long after a slide change the sharp backdrops move along (see
+// nearbyFrames in HeroPager): past the dots' own transition.
+const NEARBY_DELAY_MS = 300;
+
 function useAppActive(): boolean {
   const [active, setActive] = useState(AppState.currentState !== "background");
   useEffect(() => {
@@ -256,8 +260,19 @@ export function HeroPager({
   // Which LOGICAL slides draw their sharp backdrop (HeroPage's nearby,
   // CRI-136): the same settled page and neighbours, also under Reduce
   // Motion, so a swipe lands on an image already loaded. Joined into a
-  // string so renderItem below changes only when the set does.
-  const nearbyFrames = contentMountFrames(pageCount, pageIndex).join(",");
+  // string so renderItem below changes only when the set does. It moves
+  // along NEARBY_DELAY_MS after a slide change, not with it: the change
+  // re-renders the pager's cells and starts a large decode, which at the
+  // same moment stalled the dots' animation (JS-driven, PageIndicator).
+  // The page just landed on was already a neighbour, so is already sharp.
+  const [nearbyFrames, setNearbyFrames] = useState(() =>
+    contentMountFrames(pageCount, pageIndex).join(","),
+  );
+  useEffect(() => {
+    const next = contentMountFrames(pageCount, pageIndex).join(",");
+    const timer = setTimeout(() => setNearbyFrames(next), NEARBY_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, [pageCount, pageIndex]);
 
   // The shared basis for every mounted ContentLayer's own crossfade
   // (logicalCrossfadePosition on each one, below): a slide's continuous

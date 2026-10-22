@@ -558,6 +558,57 @@ describe("HomeScreen", () => {
     }
   });
 
+  // The next neighbour waits until the slide change (the dots' animation
+  // on the JS thread) is over, so it does not stall it.
+  it("moves the sharp backdrops along only after a slide change is over (CRI-136)", async () => {
+    const shows = [1, 2, 3, 4, 5].map((id) =>
+      makeShow({ id, name: `Show ${id}` }),
+    );
+    (useShowImages as jest.Mock).mockImplementation((show) => ({
+      data: { highestRatedBackdrop: { file_path: `/b${show.id}.jpg` } },
+      isLoading: false,
+    }));
+    mockFollowedEpisodes({
+      followedShows: shows.map((show) => ({
+        show,
+        episodes: [makeEpisode()],
+      })),
+    });
+    const sharpBackdrops = () =>
+      [
+        ...new Set(
+          screen
+            .getAllByTestId("hero-backdrop-image", {
+              includeHiddenElements: true,
+            })
+            .map((image) => JSON.stringify(image.props.source))
+            .filter((source) => !source.includes("/w300/"))
+            .map((source) => source.match(/\/b(\d)\.jpg/)![1]),
+        ),
+      ].sort();
+
+    try {
+      await render(<HomeScreen />);
+      for (const image of screen.getAllByTestId("hero-backdrop-image", {
+        includeHiddenElements: true,
+      })) {
+        await fireEvent(image, "load", { nativeEvent: {} });
+      }
+      await act(async () => jest.advanceTimersByTime(6500));
+      expect(screen.getByLabelText("Show 2 of 5")).toBeTruthy();
+      expect(sharpBackdrops()).toEqual(["1", "2", "5"]);
+
+      await act(async () => jest.advanceTimersByTime(400));
+      expect(sharpBackdrops()).toEqual(["1", "2", "3"]);
+    } finally {
+      (useShowImages as jest.Mock).mockImplementation(() => ({
+        data: undefined,
+        isLoading: false,
+        isError: false,
+      }));
+    }
+  });
+
   // The hero marks a premiere or a finale in a chip after the episode
   // line, the same facts Show detail marks; mid-season, no chip.
   it("marks a premiere and a finale after the episode line, and nothing mid-season", async () => {
