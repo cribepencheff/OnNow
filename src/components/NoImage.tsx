@@ -14,6 +14,7 @@ import { t } from "@/theme/tokens";
 
 const NO_IMAGE_GRADIENT = `linear-gradient(to bottom, ${t.surface} 0%, ${t.bg} 100%)`;
 const ICON_SIZE = 22;
+const ICON_OPACITY = 0.5;
 const PHOTO_SLASH = "photo.slash" as ComponentProps<typeof SymbolView>["name"];
 
 export function NoImage({
@@ -25,7 +26,7 @@ export function NoImage({
 }) {
   return (
     <View
-      style={[styles.surface, style]}
+      style={[styles.surface, icon && styles.edge, style]}
       testID="no-image"
       accessibilityLabel={icon ? "No image" : undefined}
     >
@@ -39,11 +40,13 @@ export function NoImage({
               name="photo"
               size={ICON_SIZE}
               tintColor={t.inkSubtle}
+              style={styles.icon}
               testID="no-image-icon"
             />
           }
           size={ICON_SIZE}
           tintColor={t.inkSubtle}
+          style={styles.icon}
           testID="no-image-icon"
         />
       )}
@@ -57,5 +60,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     overflow: "hidden",
+  },
+  // A small poster's hairline edge, as on the poster cards and the
+  // skeleton cards (owner).
+  edge: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: t.imageControlEdge,
+  },
+  // Dimmed under ink-subtle (owner): it marks the place, quieter than the
+  // row's text.
+  icon: {
+    opacity: ICON_OPACITY,
   },
 });

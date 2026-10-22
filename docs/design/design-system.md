@@ -43,7 +43,7 @@ On Now is a stripped, cinematic iOS app that answers one question in two seconds
 - No image anywhere (CRI-100), such as a show announced but not out: no words. It never pulses, so it never reads as a skeleton.
   - The hero: a still, dark gradient from `surface` to `bg`, under the slide's own pill, title and button.
   - Show detail: no image area at all. The title opens the page, with as much space above it as below it.
-  - A list's small poster (60 × 90): the same gradient, with the SF Symbol `photo.slash` (`photo` before iOS 27) in `ink-subtle`, 22.
+  - A list's small poster (60 × 90): the same gradient, with the SF Symbol `photo.slash` (`photo` before iOS 27) in `ink-subtle` at half opacity, 22, and the poster cards' hairline edge (`image-control-edge`).
 
 ## Iconography
 
