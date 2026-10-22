@@ -112,7 +112,7 @@ Limits that apply to any choice:
   key matters more, since answers are kept longer.
 
 ## Amendment: the discovery rows' pages are not saved (2026-10-22)
-Status: Proposed
+Status: Accepted (approved with #103, 2026-10-22)
 
 ### Context
 The decision saved the discovery rows "for the day they belong to, so the
