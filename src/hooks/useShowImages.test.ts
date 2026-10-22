@@ -38,10 +38,9 @@ describe("useShowImages", () => {
 
   async function render() {
     const client = createTestQueryClient();
-    const hook = await renderHook(
-      () => useShowImages(SHOW, "UTC", "2026-10-21"),
-      { wrapper: wrapperWithQueryClient(client) },
-    );
+    const hook = await renderHook(() => useShowImages(SHOW), {
+      wrapper: wrapperWithQueryClient(client),
+    });
     return { ...hook, client };
   }
 

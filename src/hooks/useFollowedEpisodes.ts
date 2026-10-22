@@ -21,6 +21,7 @@ import { homeIsReady } from "@/logic/launch";
 import { nextForShow, type NextForShow } from "@/logic/next-episode";
 import type { TvMazeEpisode, TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 import { showStaleTime } from "@/logic/show-staleness";
+import { KEEP_MS } from "./query-client";
 import { showQueryKey } from "./useShow";
 import { useToday } from "./useToday";
 
@@ -94,6 +95,8 @@ export function useFollowedEpisodes(): FollowedEpisodesResult {
       // An hour, or about a week for an ended show (CRI-107).
       staleTime: (query: { state: { data?: { status?: string } } }) =>
         showStaleTime(query.state.data),
+      // Kept, and saved, 21 days (ADR 0017).
+      gcTime: KEEP_MS,
     })),
     combine: combineShowQueries,
   });

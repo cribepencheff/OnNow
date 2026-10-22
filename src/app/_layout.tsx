@@ -7,7 +7,12 @@ import { Manrope_800ExtraBold, useFonts } from "@expo-google-fonts/manrope";
 
 import { setUpAppStateFocus } from "@/hooks/app-state-focus";
 import { releaseNavigation } from "@/hooks/navigation-lock";
-import { asyncStoragePersister, queryClient } from "@/hooks/query-client";
+import {
+  asyncStoragePersister,
+  PERSISTED_CACHE_MAX_AGE_MS,
+  queryClient,
+  shouldSaveToPhone,
+} from "@/hooks/query-client";
 import { t } from "@/theme/tokens";
 
 // CRI-95: Home hides the splash once its data is ready (at once from the
@@ -37,7 +42,12 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <PersistQueryClientProvider
         client={queryClient}
-        persistOptions={{ persister: asyncStoragePersister }}
+        persistOptions={{
+          persister: asyncStoragePersister,
+          maxAge: PERSISTED_CACHE_MAX_AGE_MS,
+          // Only the kinds of data ADR 0017 saves.
+          dehydrateOptions: { shouldDehydrateQuery: shouldSaveToPhone },
+        }}
       >
         <Stack
           // Pushed views (Show detail, Region) get a header on bg with an
