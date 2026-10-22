@@ -23,11 +23,6 @@ jest.mock("@/hooks/useListPoster", () => ({
     pending: false,
   }),
 }));
-// IMDb rating by the title (owner, 2026-10-22).
-const mockImdbRating = jest.fn(() => ({ data: null, imdbId: null }));
-jest.mock("@/hooks/useImdbRating", () => ({
-  useImdbRating: () => mockImdbRating(),
-}));
 jest.mock("@/hooks/useShow", () => ({
   useShow: jest.fn(),
 }));
@@ -133,7 +128,7 @@ describe("SearchResultRow", () => {
     expect(screen.getByTestId("search-result-status")).toHaveTextContent(/^$/);
   });
 
-  it("puts the status right under the title and the services last", async () => {
+  it("puts year and genres, then the status, right under the title, and the services last", async () => {
     mockedUseShow.mockReturnValue({ data: showSlowHorsesFixture } as never);
     await render(
       <SearchResultRow show={showSlowHorsesFixture as unknown as TvMazeShow} />,
@@ -143,8 +138,18 @@ describe("SearchResultRow", () => {
       .children.map((child) =>
         typeof child === "string" ? child : child.props.testID,
       );
-    expect(order[1]).toBe("search-result-status");
+    // Year and genres, then the status, right under the title, in ink.
+    expect(order.slice(0, 3)).toEqual([
+      "search-result-row-title-row",
+      "search-result-meta",
+      "search-result-status",
+    ]);
     expect(order[order.length - 1]).toBe("search-result-service");
+    for (const id of ["search-result-meta", "search-result-status"]) {
+      expect(StyleSheet.flatten(screen.getByTestId(id).props.style).color).toBe(
+        t.ink,
+      );
+    }
   });
 
   it("shows no service when TMDB does not know the show (CRI-102)", async () => {
@@ -210,34 +215,8 @@ describe("SearchResultRow", () => {
     expect(mockToggle).toHaveBeenCalledTimes(1);
   });
 
-  // Owner, 2026-10-22: the show's IMDb rating leads the status line, as the
-  // hero's chip did ("IMDb 8.2" in one hairline pill); not a link, so a tap
-  // on the row still opens Show detail.
-  it("leads the status line with the IMDb chip, not as a link", async () => {
-    mockImdbRating.mockReturnValue({
-      data: "8.2",
-      imdbId: "tt5875444",
-    } as never);
-    await render(
-      <SearchResultRow show={showSlowHorsesFixture as unknown as TvMazeShow} />,
-    );
-    expect(screen.getByTestId("search-result-status")).toHaveTextContent(
-      /^IMDb8\.2/,
-    );
-    expect(
-      screen.getByTestId("search-result-row-title-row"),
-    ).not.toHaveTextContent(/IMDb/);
-    const chip = StyleSheet.flatten(
-      screen.getByTestId("imdb-rating").props.style,
-    );
-    expect(chip.borderWidth).toBe(StyleSheet.hairlineWidth);
-    expect(chip.borderColor).toBe(t.imageControlEdge);
-    expect(screen.queryByRole("link")).toBeNull();
-    mockImdbRating.mockReturnValue({ data: null, imdbId: null });
-  });
-
-  it("shows no rating when there is none", async () => {
-    mockImdbRating.mockReturnValue({ data: null, imdbId: null });
+  // Owner, 2026-10-22: no IMDb rating in Search for now.
+  it("shows no IMDb rating", async () => {
     await render(
       <SearchResultRow show={showSlowHorsesFixture as unknown as TvMazeShow} />,
     );

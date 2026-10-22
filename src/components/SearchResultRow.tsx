@@ -6,10 +6,9 @@
 // opening it (PRD 5.4, 5.5, CRI-79). Screen reader users get the row as
 // one button, with follow or unfollow as an accessibility action (NFR-008).
 
-import { StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 
 import { PosterFollowCircle } from "./PosterFollowCircle";
-import { ImdbRating } from "./ImdbRating";
 import { ShowRow, ShowRowLine, ShowRowServiceLine } from "./ShowRow";
 import { useFollowToggle } from "@/hooks/useFollowList";
 import { useShow } from "@/hooks/useShow";
@@ -49,8 +48,18 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
       posterUri={poster.uri}
       posterPending={poster.pending}
       summary={plainTextSummary(show.summary)}
-      // The show's status right under the title (owner, 2026-10-22).
-      subtitle={<StatusLine show={show} />}
+      // Year and genres, then the status, right under the title, in ink
+      // (owner, 2026-10-22).
+      subtitle={
+        <>
+          {metaLine !== "" && (
+            <ShowRowLine testID="search-result-meta" style={styles.ink}>
+              {metaLine}
+            </ShowRowLine>
+          )}
+          <StatusLine showId={show.id} />
+        </>
+      }
       largePoster
       testID="search-result-row"
       onPress={onPress}
@@ -72,7 +81,6 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
         />
       }
     >
-      {metaLine !== "" && <ShowRowLine>{metaLine}</ShowRowLine>}
       {/* At the bottom; its line is kept while TMDB answers, so the row
           does not grow. */}
       <ShowRowServiceLine
@@ -89,8 +97,8 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
 // cached show lookup as Show detail, right under the title in ink (owner,
 // 2026-10-22). Its line is kept while the lookup answers, so the row does
 // not grow.
-function StatusLine({ show }: { show: TvMazeShow }) {
-  const { data } = useShow(show.id);
+function StatusLine({ showId }: { showId: number }) {
+  const { data } = useShow(showId);
   const todayDate = useToday();
 
   const label = data
@@ -105,12 +113,10 @@ function StatusLine({ show }: { show: TvMazeShow }) {
         todayDate,
       )
     : "";
-  // Led by the show's IMDb rating (owner, 2026-10-22), as a chip.
   return (
-    <View style={styles.statusLine} testID="search-result-status">
-      <ImdbRating show={show} linked={false} variant="chip" />
-      <ShowRowLine style={styles.status}>{label}</ShowRowLine>
-    </View>
+    <ShowRowLine testID="search-result-status" style={styles.ink}>
+      {label}
+    </ShowRowLine>
   );
 }
 
@@ -119,13 +125,8 @@ function StatusLine({ show }: { show: TvMazeShow }) {
 const SEARCH_FOLLOW_CIRCLE_SIZE = 28;
 
 const styles = StyleSheet.create({
-  statusLine: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  status: {
+  // The lines right under the title (owner, 2026-10-22).
+  ink: {
     color: t.ink,
-    flexShrink: 1,
   },
 });

@@ -43,7 +43,7 @@ first user is the author, who currently uses Next Episode.
   TVmaze's episode order, never guessed), "Premiere" when it is both. The
   same facts Show detail marks (ADR 0015). Otherwise the line alone is
   centred. No IMDb rating on the hero: by the episode line it reads as the
-  episode's (ADR 0013; it is in Show detail and by a Search row's title). No network:
+  episode's (ADR 0013; it is in Show detail). No network:
   where to watch is "Open in". Tapping the card
   opens Show detail (FR-030). No search entry on Home while shows are
   followed: Search is its own tab (FR-007).
@@ -220,9 +220,9 @@ first user is the author, who currently uses Next Episode.
   2026-10-22): "On [service]", or plain
   "Unavailable" when there is none (Show detail and the Home hero name the
   region, rows do not), and nothing when TMDB does not know the show
-  (FR-027, CRI-97, CRI-102). Two lines about the show under the title,
-  muted, and the show's IMDb rating leading the status line (owner, 2026-10-22;
-  not in Shows, to save OMDb calls, ADR 0013, CRI-116). The original
+  (FR-027, CRI-97, CRI-102). Year and genres, then the status line, right under the title in `ink`,
+  then two lines about the show, muted (owner, 2026-10-22). No IMDb rating
+  for now: it is in Show detail (ADR 0013, CRI-116). The original
   network is not shown.
 - **Follow control:** a circle at the right edge of each row, aligned in one
   column: the poster cards' own circle, exactly (owner, 2026-10-22), a
@@ -409,7 +409,7 @@ Reached from an icon. Territory and notifications.
 | FR-021 | Direct links to the show for more services | After MVP |
 | FR-022 | Explore: "what is releasing" feed with filters, starting with streaming service | After MVP |
 | FR-023 | Android widget | After MVP |
-| FR-024 | Search results show poster, title, a meta line with year and genres, Show detail's status line (FR-025), the service slot (FR-027) and a follow circle at the right edge. PoC: year and status, and a two line summary. MVP: the two line summary right under the title, muted (owner, 2026-10-22), no TVmaze status in the meta line and the show's IMDb rating leading the status line, where it reads as the show's and helps decide what to follow, not a link (owner, 2026-10-22; not in Shows while OMDb's free key is shared by every user, CRI-116). Results appear after a short pause in typing (about 250 ms), each show once, and are not filtered by region or show type; a show still "In Development" with no TVmaze update for two years is left out (PRD 5.4). A clear button (X) inside the field on iOS and Android | PoC, MVP |
+| FR-024 | Search results show poster, title, a meta line with year and genres, Show detail's status line (FR-025), the service slot (FR-027) and a follow circle at the right edge. PoC: year and status, and a two line summary. MVP: the two line summary right under the title, muted (owner, 2026-10-22), no TVmaze status in the meta line and no IMDb rating for now (it is in Show detail, ADR 0013); year and genres, then the status line, right under the title in `ink` (owner, 2026-10-22). Results appear after a short pause in typing (about 250 ms), each show once, and are not filtered by region or show type; a show still "In Development" with no TVmaze update for two years is left out (PRD 5.4). A clear button (X) inside the field on iOS and Android | PoC, MVP |
 | FR-025 | After following, the result row shows the next episode or "No date yet" (PoC). MVP: every result row shows Show detail's status line, followed or not, the same as the Shows row (FR-035), from the cached show lookup | PoC, MVP |
 | FR-026 | Before the user types, Search shows Home's rows as they are: "Top picks for you" (FR-038), then "Airing this week" (FR-039), each sharing what it has loaded with Home; only "Airing this week" when the follow list is empty. No "Search more" in Search: both rows end with "All caught up", shown only when the end is reached there. Region filtered as on Home (CRI-98) | MVP |
 | FR-027 | Search results and Shows rows show the services that carry the show in the user's territory, or plain "Unavailable" when there is none, and nothing when TMDB does not know the show; the row does not name the region, unlike Show detail (CRI-91, CRI-97, CRI-102). Before the services' names, each service's logo, small, up to four, so a service the user has is seen at a glance (CRI-115) | MVP |
