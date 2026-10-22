@@ -3,18 +3,17 @@
 // not passing data. A list of what is saved, not of what is not: a new
 // kind of data is saved only once it is added here, by choice.
 
-// Saved whenever there is one: TMDB matches, hero images, the discovery
-// rows (their keys change with the day), and the follow list and region,
-// tiny local reads whose saved copies keep the launch instant.
+// Saved whenever there is one: TMDB matches, hero images, what the
+// discovery rows are filled from (recommendations, the week's candidates
+// and their TVmaze info), and the follow list and region, tiny local
+// reads whose saved copies keep the launch instant. Not the rows' pages
+// and page numbers: they belong to one launch (their keys have the launch
+// time), so a saved one is never read again (ADR 0017 amendment).
 const SAVED_KINDS = new Set([
   "tmdbFind",
   "hero-images-v5",
   "recommendations",
-  "topPicksPage",
-  "topPicksPageIndex",
   "airingThisWeek",
-  "airingThisWeekPage",
-  "airingThisWeekPageIndex",
   "tvmazeWeekInfo",
   "followedIds",
   "storedRegion",
