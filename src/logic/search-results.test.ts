@@ -1,7 +1,6 @@
 import {
   plainTextSummary,
   rankSearchResults,
-  searchResultMetaLine,
   searchResultNetworkName,
 } from "./search-results";
 import searchTheBearFixture from "@/api/fixtures/search-the-bear.json";
@@ -113,41 +112,6 @@ describe("rankSearchResults", () => {
     expect(ranked.map((r) => r.show.name)).toEqual(
       results.map((r) => r.show.name),
     );
-  });
-});
-
-describe("searchResultMetaLine (FR-024)", () => {
-  it("combines the premiere year and up to three genres", () => {
-    const show = {
-      ...showWithStatus("Running"),
-      premiered: "2022-04-01",
-      genres: ["Drama", "Thriller", "Espionage", "Crime"],
-    };
-    expect(searchResultMetaLine(show)).toBe(
-      "2022 · Drama, Thriller, Espionage",
-    );
-  });
-
-  it("leaves out a missing year or missing genres", () => {
-    const base = showWithStatus("Running");
-    expect(
-      searchResultMetaLine({ ...base, premiered: null, genres: ["Drama"] }),
-    ).toBe("Drama");
-    expect(
-      searchResultMetaLine({ ...base, premiered: "2026-09-16", genres: [] }),
-    ).toBe("2026");
-    expect(searchResultMetaLine({ ...base, premiered: null, genres: [] })).toBe(
-      "",
-    );
-  });
-
-  it("does not show the status (PRD 5.4)", () => {
-    const show = {
-      ...showWithStatus("To Be Determined"),
-      premiered: "2026-09-16",
-      genres: [],
-    };
-    expect(searchResultMetaLine(show)).toBe("2026");
   });
 });
 

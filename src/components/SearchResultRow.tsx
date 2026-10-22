@@ -1,7 +1,8 @@
-// A single Search result row (PRD 5.4, FR-024, FR-025, FR-027): poster,
-// title, a meta line with year and genres, Show detail's status line, the
-// service slot, and a follow circle. The status line is on every row, so
-// it helps decide what to follow and rows keep their height.
+// A single Search result row (PRD 5.4, FR-024, FR-025, FR-027): poster
+// with the follow circle on it, title, Show detail's status line, two
+// lines about the show, and the service slot. The status line is on every
+// row, so it helps decide what to follow and rows keep their height. Year
+// and genres are in Show detail's meta line (owner, 2026-10-22).
 // Tapping the row opens Show detail; the circle still follows without
 // opening it (PRD 5.4, 5.5, CRI-79). Screen reader users get the row as
 // one button, with follow or unfollow as an accessibility action (NFR-008).
@@ -15,7 +16,7 @@ import { useShow } from "@/hooks/useShow";
 import { useStreamingService } from "@/hooks/useStreamingService";
 import { useListPoster } from "@/hooks/useListPoster";
 import { useToday } from "@/hooks/useToday";
-import { plainTextSummary, searchResultMetaLine } from "@/logic/search-results";
+import { plainTextSummary } from "@/logic/search-results";
 import { showState, showStateLabel } from "@/logic/show-state";
 import {
   rowIsUnavailable,
@@ -37,7 +38,6 @@ function deviceTimeZone(): string {
 export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
   // Only this show's follow state: a follow redraws this row, not the list.
   const { followed, toggle } = useFollowToggle(show.id);
-  const metaLine = searchResultMetaLine(show);
   const { data: providers } = useStreamingService(show, true);
   const service = rowServiceText(providers);
   const poster = useListPoster(show);
@@ -48,18 +48,9 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
       posterUri={poster.uri}
       posterPending={poster.pending}
       summary={plainTextSummary(show.summary)}
-      // Year and genres, then the status, right under the title, in ink
-      // (owner, 2026-10-22).
-      subtitle={
-        <>
-          {metaLine !== "" && (
-            <ShowRowLine testID="search-result-meta" style={styles.ink}>
-              {metaLine}
-            </ShowRowLine>
-          )}
-          <StatusLine showId={show.id} />
-        </>
-      }
+      // The show's status right under the title, in ink (owner,
+      // 2026-10-22).
+      subtitle={<StatusLine showId={show.id} />}
       largePoster
       testID="search-result-row"
       onPress={onPress}

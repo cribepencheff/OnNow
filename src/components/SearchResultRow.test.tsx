@@ -82,13 +82,15 @@ describe("SearchResultRow", () => {
 
   // Owner, 2026-10-22: two lines about the show under the title again
   // (the MVP had dropped the PoC's summary).
-  it("shows the title, two lines about the show, and year · genres; no TVmaze status or network (PRD 5.4)", async () => {
+  // Owner, 2026-10-22: no year and genres in the row (too much room);
+  // Show detail's meta line has them.
+  it("shows the title and two lines about the show; no year · genres, TVmaze status or network (PRD 5.4)", async () => {
     const show = showSlowHorsesFixture as unknown as TvMazeShow;
 
     await render(<SearchResultRow show={show} />);
 
     expect(screen.getByText("Slow Horses")).toBeTruthy();
-    expect(screen.getByText("2022 · Drama, Thriller, Espionage")).toBeTruthy();
+    expect(screen.queryByText(/2022 · Drama/)).toBeNull();
     expect(
       screen.getByText(/Slow Horses follows the story/).props.numberOfLines,
     ).toBe(2);
@@ -128,7 +130,7 @@ describe("SearchResultRow", () => {
     expect(screen.getByTestId("search-result-status")).toHaveTextContent(/^$/);
   });
 
-  it("puts year and genres, then the status, right under the title, and the services last", async () => {
+  it("puts the status right under the title, and the services last", async () => {
     mockedUseShow.mockReturnValue({ data: showSlowHorsesFixture } as never);
     await render(
       <SearchResultRow show={showSlowHorsesFixture as unknown as TvMazeShow} />,
@@ -138,18 +140,16 @@ describe("SearchResultRow", () => {
       .children.map((child) =>
         typeof child === "string" ? child : child.props.testID,
       );
-    // Year and genres, then the status, right under the title, in ink.
-    expect(order.slice(0, 3)).toEqual([
+    // The status right under the title, in ink.
+    expect(order.slice(0, 2)).toEqual([
       "search-result-row-title-row",
-      "search-result-meta",
       "search-result-status",
     ]);
     expect(order[order.length - 1]).toBe("search-result-service");
-    for (const id of ["search-result-meta", "search-result-status"]) {
-      expect(StyleSheet.flatten(screen.getByTestId(id).props.style).color).toBe(
-        t.ink,
-      );
-    }
+    expect(
+      StyleSheet.flatten(screen.getByTestId("search-result-status").props.style)
+        .color,
+    ).toBe(t.ink);
   });
 
   it("shows no service when TMDB does not know the show (CRI-102)", async () => {
