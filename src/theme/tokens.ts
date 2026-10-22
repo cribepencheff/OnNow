@@ -24,7 +24,7 @@ export const t = {
   episodeFinale: "#ff9f0a",
   // The dot before a row's "Unavailable" (owner, 2026-10-22): yellow, as a
   // warning, apart from red (a destructive action) and the Finale amber.
-  serviceUnavailable: "#ffd60a",
+  serviceUnavailable: "#c9ab4c",
   // The Premiere/Finale chip's outline: brighter than imageControlEdge
   // (owner), since it has no fill to set it off the fade.
   episodeMarkEdge: "rgba(255, 255, 255, 0.32)",

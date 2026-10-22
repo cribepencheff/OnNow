@@ -6,7 +6,7 @@
 // opening it (PRD 5.4, 5.5, CRI-79). Screen reader users get the row as
 // one button, with follow or unfollow as an accessibility action (NFR-008).
 
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 import { PosterFollowCircle } from "./PosterFollowCircle";
 import { ImdbRating } from "./ImdbRating";
@@ -24,7 +24,7 @@ import {
   rowServiceText,
 } from "@/logic/streaming-service";
 import type { TvMazeShow } from "@/api/tvmaze-types";
-import { t, type } from "@/theme/tokens";
+import { t } from "@/theme/tokens";
 
 interface SearchResultRowProps {
   show: TvMazeShow;
@@ -50,11 +50,8 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
       posterPending={poster.pending}
       summary={plainTextSummary(show.summary)}
       // The show's status right under the title (owner, 2026-10-22).
-      subtitle={<StatusLine showId={show.id} />}
+      subtitle={<StatusLine show={show} />}
       largePoster
-      titleAccessory={
-        <ImdbRating show={show} linked={false} textStyle={styles.rating} />
-      }
       testID="search-result-row"
       onPress={onPress}
       accessibilityLabel={show.name}
@@ -92,8 +89,8 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
 // cached show lookup as Show detail, right under the title in ink (owner,
 // 2026-10-22). Its line is kept while the lookup answers, so the row does
 // not grow.
-function StatusLine({ showId }: { showId: number }) {
-  const { data } = useShow(showId);
+function StatusLine({ show }: { show: TvMazeShow }) {
+  const { data } = useShow(show.id);
   const todayDate = useToday();
 
   const label = data
@@ -108,10 +105,12 @@ function StatusLine({ showId }: { showId: number }) {
         todayDate,
       )
     : "";
+  // Led by the show's IMDb rating (owner, 2026-10-22), as a chip.
   return (
-    <ShowRowLine testID="search-result-status" style={styles.status}>
-      {label}
-    </ShowRowLine>
+    <View style={styles.statusLine} testID="search-result-status">
+      <ImdbRating show={show} linked={false} variant="chip" />
+      <ShowRowLine style={styles.status}>{label}</ShowRowLine>
+    </View>
   );
 }
 
@@ -120,12 +119,13 @@ function StatusLine({ showId }: { showId: number }) {
 const SEARCH_FOLLOW_CIRCLE_SIZE = 28;
 
 const styles = StyleSheet.create({
-  // The rating at the row's small size, muted beside the title.
+  statusLine: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
   status: {
     color: t.ink,
-  },
-  rating: {
-    ...type.meta,
-    color: t.inkMuted,
+    flexShrink: 1,
   },
 });

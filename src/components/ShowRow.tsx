@@ -31,8 +31,6 @@ interface ShowRowProps {
   // Two lines about the show, right under the title (owner, 2026-10-22):
   // the show first. Nothing, and no gap, without one.
   summary?: string | null;
-  // After the title, on its line (a Search row's IMDb rating).
-  titleAccessory?: ReactNode;
   // Right under the title, before the summary (a Search row's status
   // line; owner, 2026-10-22).
   subtitle?: ReactNode;
@@ -57,7 +55,6 @@ export function ShowRow({
   posterUri,
   posterPending = false,
   summary,
-  titleAccessory,
   subtitle,
   posterAccessory,
   largePoster = false,
@@ -113,7 +110,6 @@ export function ShowRow({
           <Text style={styles.title} numberOfLines={1}>
             {title}
           </Text>
-          {titleAccessory}
         </View>
         {subtitle}
         {summary ? (

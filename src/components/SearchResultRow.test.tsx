@@ -210,10 +210,10 @@ describe("SearchResultRow", () => {
     expect(mockToggle).toHaveBeenCalledTimes(1);
   });
 
-  // Owner, 2026-10-22: the show's IMDb rating by its title, where it reads
-  // as the show's, to help decide what to follow; not a link, so a tap on
-  // the row still opens Show detail.
-  it("shows the IMDb rating by the title, not as a link", async () => {
+  // Owner, 2026-10-22: the show's IMDb rating leads the status line, as the
+  // hero's chip did ("IMDb 8.2" in one hairline pill); not a link, so a tap
+  // on the row still opens Show detail.
+  it("leads the status line with the IMDb chip, not as a link", async () => {
     mockImdbRating.mockReturnValue({
       data: "8.2",
       imdbId: "tt5875444",
@@ -221,8 +221,17 @@ describe("SearchResultRow", () => {
     await render(
       <SearchResultRow show={showSlowHorsesFixture as unknown as TvMazeShow} />,
     );
-    const rating = screen.getByTestId("search-result-row-title-row");
-    expect(rating).toHaveTextContent(/Slow Horses.*IMDb.*8\.2/);
+    expect(screen.getByTestId("search-result-status")).toHaveTextContent(
+      /^IMDb8\.2/,
+    );
+    expect(
+      screen.getByTestId("search-result-row-title-row"),
+    ).not.toHaveTextContent(/IMDb/);
+    const chip = StyleSheet.flatten(
+      screen.getByTestId("imdb-rating").props.style,
+    );
+    expect(chip.borderWidth).toBe(StyleSheet.hairlineWidth);
+    expect(chip.borderColor).toBe(t.imageControlEdge);
     expect(screen.queryByRole("link")).toBeNull();
     mockImdbRating.mockReturnValue({ data: null, imdbId: null });
   });
