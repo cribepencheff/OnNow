@@ -8,7 +8,7 @@ On Now is a stripped, cinematic iOS app that answers one question in two seconds
 
 ## Colour
 
-- Paint every screen `bg`. Put cards, rows and sheets on `surface`; the search field, season tabs and quiet round buttons on `surface-raised`.
+- Paint every screen `bg`. Put cards, rows and sheets on `surface`; the search field, season tabs and quiet round buttons on `surface-raised`. The search field has one look in Search and in My shows (its entry to Search): a pill, the magnifying glass at 16 in `ink-muted`, and its text in `headline` at regular weight.
 - Use `bg-tint` only for large ambient areas, like the glow behind the Home hero. It is the hint of colour, not a surface for content.
 - Set text in `ink`, meta lines in `ink-muted`, and upcoming episodes and data credits in `ink-subtle`. All three hold 4.5:1 on every ground above.
 - Over a show image, make the primary action a white pill: `ink` fill with `bg` text. The photo already brings the colour, so nothing on top of it is coloured. Spend `accent` only on the primary action of plain screens without an image, and on small status marks (the follow check, the calendar day line, the hero's Premiere dot). The one other colour over a show image is `episode-finale`, the hero's Finale dot, beside its word. If a view seems to need two accent elements, one of them is not primary.

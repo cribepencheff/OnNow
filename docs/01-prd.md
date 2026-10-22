@@ -157,8 +157,11 @@ first user is the author, who currently uses Next Episode.
 - **Needs:** see that the list is right, unfollow, and reach search.
 - **Concept:** the list of followed series with their status, and swipe to
   unfollow. A search field on top opens Search (5.4).
-- **Search field:** always visible at the top. Tapping it goes to the
-  Search tab with the keyboard open (FR-007). It does not filter the list.
+- **Header:** "My shows", as the tab, left aligned with the content
+  (owner, 2026-10-22).
+- **Search field:** always visible at the top, looking exactly as Search's
+  own (the same frame and text size). Tapping it goes to the Search tab
+  with the keyboard open (FR-007). It does not filter the list.
 - **Two segments (FR-010):** "Active" and "Inactive", each header with its
   count. Alphabetical by title within each. Both are always open, and each
   header stays at the top while its rows scroll. A segment without shows

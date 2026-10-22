@@ -36,6 +36,7 @@ import {
 } from "@/hooks/useSettledFollowed";
 import { TAB_BAR_HEIGHT } from "@/logic/tab-bar";
 import { t, type } from "@/theme/tokens";
+import { SearchFieldFrame, searchFieldText } from "@/components/SearchField";
 
 // The pause in typing before a search is sent (PRD 5.4).
 const SEARCH_DELAY_MS = 250;
@@ -93,12 +94,7 @@ export default function SearchScreen() {
   return (
     <View style={[styles.container, { paddingTop: insets.top + t.space4 }]}>
       <View style={styles.header} testID="search-header">
-        <View style={styles.searchField}>
-          <SymbolView
-            name={{ ios: "magnifyingglass", android: "search", web: "search" }}
-            tintColor={t.inkMuted}
-            size={16}
-          />
+        <SearchFieldFrame style={styles.searchField}>
           <TextInput
             ref={inputRef}
             autoFocus
@@ -107,7 +103,7 @@ export default function SearchScreen() {
             placeholder="Search shows"
             placeholderTextColor={t.inkMuted}
             selectionColor={t.accent}
-            style={styles.searchInput}
+            style={searchFieldText.input}
             returnKeyType="search"
             // The return key ("Search") closes the keyboard; results already
             // appear while typing.
@@ -138,7 +134,7 @@ export default function SearchScreen() {
               />
             </Pressable>
           )}
-        </View>
+        </SearchFieldFrame>
       </View>
 
       {query.trim().length === 0 ? (
@@ -229,19 +225,6 @@ const styles = StyleSheet.create({
   },
   searchField: {
     flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: t.space2,
-    paddingHorizontal: t.space4,
-    borderRadius: t.radiusPill,
-    backgroundColor: t.surfaceRaised,
-  },
-  searchInput: {
-    flex: 1,
-    ...type.headline,
-    fontWeight: "400",
-    paddingVertical: 12,
-    color: t.ink,
   },
   // The lists end above the tab bar.
   resultsContent: {

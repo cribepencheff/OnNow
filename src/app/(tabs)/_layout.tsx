@@ -48,8 +48,9 @@ export default function TabLayout() {
         name="shows"
         options={{
           title: "My shows",
-          // The screen's own header keeps its name.
-          headerTitle: "Shows",
+          // Left aligned with the content (owner, 2026-10-22).
+          headerTitleAlign: "left",
+          headerTitleContainerStyle: { marginHorizontal: t.contentInset },
           tabBarButtonTestID: "tab-shows",
           tabBarIcon: ({ focused }) => <MyShowsIcon active={focused} />,
           // The header on bg, like the screen under it.
