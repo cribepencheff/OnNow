@@ -27,6 +27,9 @@ interface ShowRowProps {
   // The poster is still being looked up (useListPoster): an empty space,
   // not the "no image" symbol yet.
   posterPending?: boolean;
+  // Two lines about the show, right under the title (owner, 2026-10-22):
+  // the show first. Nothing, and no gap, without one.
+  summary?: string | null;
   children?: ReactNode;
   trailing?: ReactNode;
   onPress?: () => void;
@@ -42,6 +45,7 @@ export function ShowRow({
   title,
   posterUri,
   posterPending = false,
+  summary,
   children,
   trailing,
   onPress,
@@ -79,6 +83,15 @@ export function ShowRow({
         <Text style={styles.title} numberOfLines={1}>
           {title}
         </Text>
+        {summary ? (
+          <Text
+            style={styles.summary}
+            numberOfLines={2}
+            testID="show-row-summary"
+          >
+            {summary}
+          </Text>
+        ) : null}
         {children}
       </View>
       {trailing}
@@ -150,8 +163,8 @@ export function ShowRowServiceLine({
 }
 
 // The row's title, a touch smaller than headline (20/25).
-export const ROW_TITLE_SIZE = 18;
-const ROW_TITLE_LINE_HEIGHT = 23;
+export const ROW_TITLE_SIZE = 17;
+const ROW_TITLE_LINE_HEIGHT = 22;
 
 const POSTER_WIDTH = 60;
 const POSTER_HEIGHT = 90;
@@ -174,11 +187,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 2,
   },
-  // A touch smaller than headline (owner, CRI-115), in its weight.
+  // Smaller than headline (owner, CRI-115), in its weight.
   title: {
     ...type.headline,
     fontSize: ROW_TITLE_SIZE,
     lineHeight: ROW_TITLE_LINE_HEIGHT,
+    color: t.ink,
+  },
+  // In ink, apart from the muted lines under it (owner).
+  summary: {
+    ...type.meta,
     color: t.ink,
   },
   line: {

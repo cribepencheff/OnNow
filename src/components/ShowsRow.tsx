@@ -14,13 +14,14 @@ import { Swipeable } from "react-native-gesture-handler";
 import { ShowRow, ShowRowLine, ShowRowServiceLine } from "./ShowRow";
 import { useStreamingService } from "@/hooks/useStreamingService";
 import { useListPoster } from "@/hooks/useListPoster";
+import { plainTextSummary } from "@/logic/search-results";
 import { rowServiceLogos, rowServiceText } from "@/logic/streaming-service";
 import type { TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 import { t, type } from "@/theme/tokens";
 
 interface ShowsRowProps {
   show: TvMazeShowWithEmbeds;
-  // Show detail's status line ("Airing · next ep Fri 9 Oct").
+  // Show detail's status line ("Next ep Fri 9 Oct").
   statusLine: string;
   onUnfollow: () => void;
   onPress?: () => void;
@@ -49,6 +50,7 @@ export function ShowsRow({
         title={show.name}
         posterUri={poster.uri}
         posterPending={poster.pending}
+        summary={plainTextSummary(show.summary)}
         style={styles.row}
         accessibilityLabel={label}
         onPress={onPress}

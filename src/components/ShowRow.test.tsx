@@ -7,7 +7,7 @@ import {
   ShowRowLine,
   ShowRowServiceLine,
 } from "./ShowRow";
-import { type } from "@/theme/tokens";
+import { t, type } from "@/theme/tokens";
 
 // CRI-118: the one row behind Search, Shows and Calendar (PRD 5.2, 5.3,
 // 5.4: "the same visual language").
@@ -169,5 +169,27 @@ describe("ShowRow", () => {
     expect(
       StyleSheet.flatten(screen.getByTestId("service").props.style).marginTop,
     ).toBeGreaterThan(0);
+  });
+
+  // Owner, 2026-10-22: the show first, so two lines about it right under
+  // the title, in ink to set it apart from the muted lines.
+  it("shows two lines about the show under the title, in ink", async () => {
+    await render(
+      <ShowRow
+        title="Slow Horses"
+        summary="Follows a team of British intelligence agents who serve in a dumping ground department of MI5."
+        accessibilityLabel="x"
+      >
+        <ShowRowLine>Next ep Wed 30 Sep</ShowRowLine>
+      </ShowRow>,
+    );
+    const summary = screen.getByText(/Follows a team/);
+    expect(summary.props.numberOfLines).toBe(2);
+    expect(StyleSheet.flatten(summary.props.style).color).toBe(t.ink);
+  });
+
+  it("leaves no gap without a summary", async () => {
+    await render(<ShowRow title="Slow Horses" accessibilityLabel="x" />);
+    expect(screen.queryByTestId("show-row-summary")).toBeNull();
   });
 });

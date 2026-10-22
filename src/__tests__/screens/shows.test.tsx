@@ -195,7 +195,7 @@ describe("ShowsScreen", () => {
     await render(<ShowsScreen />);
 
     expect(screen.getByText("Silo")).toBeTruthy();
-    expect(screen.getByText("Airing · next ep Thu 24 Sep")).toBeTruthy();
+    expect(screen.getByText("Next ep Thu 24 Sep")).toBeTruthy();
   });
 
   it("puts airing shows and confirmed seasons in Active, the rest in Inactive, with counts (PRD 5.3)", async () => {

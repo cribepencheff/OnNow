@@ -72,14 +72,18 @@ describe("SearchResultRow", () => {
     jest.useRealTimers();
   });
 
-  it("shows the title and year · genres, no summary, status or network (PRD 5.4)", async () => {
+  // Owner, 2026-10-22: two lines about the show under the title again
+  // (the MVP had dropped the PoC's summary).
+  it("shows the title, two lines about the show, and year · genres; no TVmaze status or network (PRD 5.4)", async () => {
     const show = showSlowHorsesFixture as unknown as TvMazeShow;
 
     await render(<SearchResultRow show={show} />);
 
     expect(screen.getByText("Slow Horses")).toBeTruthy();
     expect(screen.getByText("2022 · Drama, Thriller, Espionage")).toBeTruthy();
-    expect(screen.queryByText(/Slow Horses follows the story/)).toBeNull();
+    expect(
+      screen.getByText(/Slow Horses follows the story/).props.numberOfLines,
+    ).toBe(2);
     expect(screen.queryByText(/Running/)).toBeNull();
     expect(screen.queryByText("Apple TV")).toBeNull();
   });

@@ -13,7 +13,7 @@ import { useShow } from "@/hooks/useShow";
 import { useStreamingService } from "@/hooks/useStreamingService";
 import { useListPoster } from "@/hooks/useListPoster";
 import { useToday } from "@/hooks/useToday";
-import { searchResultMetaLine } from "@/logic/search-results";
+import { plainTextSummary, searchResultMetaLine } from "@/logic/search-results";
 import { showState, showStateLabel } from "@/logic/show-state";
 import { rowServiceLogos, rowServiceText } from "@/logic/streaming-service";
 import type { TvMazeShow } from "@/api/tvmaze-types";
@@ -40,6 +40,7 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
       title={show.name}
       posterUri={poster.uri}
       posterPending={poster.pending}
+      summary={plainTextSummary(show.summary)}
       testID="search-result-row"
       onPress={onPress}
       accessibilityLabel={show.name}
@@ -71,7 +72,7 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
   );
 }
 
-// FR-025: Show detail's status line ("Airing · next ep Fri 9 Oct"), from
+// FR-025: Show detail's status line ("Next ep Fri 9 Oct"), from
 // the same cached show lookup as Show detail. Its line is kept while the
 // lookup answers, so the row does not grow.
 function StatusLine({ showId }: { showId: number }) {
