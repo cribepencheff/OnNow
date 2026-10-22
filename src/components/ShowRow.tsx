@@ -64,9 +64,9 @@ export function ShowRow({
           accessibilityIgnoresInvertColors
         />
       ) : (
-        // No image: the still surface, too small for the words (CRI-100);
-        // the title beside it names the show.
-        <NoImage label={false} style={styles.poster} />
+        // No image: the still surface with the "no image" symbol
+        // (CRI-100); the title beside it names the show.
+        <NoImage icon style={styles.poster} />
       )}
       <View style={styles.details}>
         <Text style={styles.title} numberOfLines={1}>

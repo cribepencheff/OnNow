@@ -1,54 +1,51 @@
 // What stands in for a show's image when there is none anywhere (CRI-100,
 // owner 2026-10-22): a still, dark gradient, so it never reads as a
-// skeleton, whose pulse means loading; and "No image" where there is room
-// for it. It says the image is missing, never guesses at one. A show
-// announced but not out yet often has none.
+// skeleton, whose pulse means loading. Never a guess at a picture. On a
+// small poster (a list's, beside the show's name) it also has the "no
+// image" symbol; a large one (the hero) has the slide's own title and
+// button over it, which say enough. A show announced but not out yet
+// often has no image.
 
-import {
-  StyleSheet,
-  Text,
-  View,
-  type StyleProp,
-  type ViewStyle,
-} from "react-native";
+import { SymbolView } from "expo-symbols";
+import type { ComponentProps } from "react";
+import { StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
 
-import { t, type } from "@/theme/tokens";
+import { t } from "@/theme/tokens";
 
 const NO_IMAGE_GRADIENT = `linear-gradient(to bottom, ${t.surface} 0%, ${t.bg} 100%)`;
+const ICON_SIZE = 22;
+const PHOTO_SLASH = "photo.slash" as ComponentProps<typeof SymbolView>["name"];
 
 export function NoImage({
-  label = true,
-  labelTop,
+  icon = false,
   style,
 }: {
-  // "No image", or only the surface where the words do not fit (a list's
-  // small poster, with the show's name beside it).
-  label?: boolean;
-  // Where the words sit from the top, when the middle is taken (the
-  // hero's pill, title and button).
-  labelTop?: number;
+  icon?: boolean;
   style?: StyleProp<ViewStyle>;
 }) {
   return (
     <View
       style={[styles.surface, style]}
       testID="no-image"
-      accessibilityLabel={label ? "No image" : undefined}
+      accessibilityLabel={icon ? "No image" : undefined}
     >
-      {label && (
-        <Text
-          style={[
-            styles.label,
-            labelTop !== undefined && {
-              position: "absolute",
-              top: labelTop,
-              left: 0,
-              right: 0,
-            },
-          ]}
-        >
-          No image
-        </Text>
+      {icon && (
+        <SymbolView
+          // photo.slash is iOS 27's (SF Symbols 8), newer than expo-symbols'
+          // own list of names, hence the cast; earlier systems draw photo.
+          name={PHOTO_SLASH}
+          fallback={
+            <SymbolView
+              name="photo"
+              size={ICON_SIZE}
+              tintColor={t.inkSubtle}
+              testID="no-image-icon"
+            />
+          }
+          size={ICON_SIZE}
+          tintColor={t.inkSubtle}
+          testID="no-image-icon"
+        />
       )}
     </View>
   );
@@ -60,10 +57,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     overflow: "hidden",
-  },
-  label: {
-    ...type.meta,
-    color: t.inkSubtle,
-    textAlign: "center",
   },
 });

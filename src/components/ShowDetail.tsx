@@ -8,14 +8,7 @@
 import { Image } from "expo-image";
 import { SymbolView } from "expo-symbols";
 import { useRef, useState } from "react";
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-  useWindowDimensions,
-} from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import {
   IMAGE_BASE,
@@ -64,7 +57,6 @@ import {
 import { followHaptic } from "./followHaptic";
 import { followSymbol } from "./followSymbols";
 import { ImdbRating } from "./ImdbRating";
-import { NoImage } from "./NoImage";
 import { OmdbCredit } from "./OmdbCredit";
 import { PaidSubscriptionMarker } from "./PaidSubscriptionMarker";
 import { t, type } from "@/theme/tokens";
@@ -133,7 +125,7 @@ function ShowDetailContent({
     backdropPath &&
       `${IMAGE_BASE}/${LARGE_BACKDROP_FALLBACK_SIZE}${backdropPath}`,
   );
-  const { width } = useWindowDimensions();
+  const noImage = shown?.kind === "none";
   const logo = images?.logo;
   const { link, availability } = useOpenIn(show);
   const { data: originCountries } = useOriginCountries(show);
@@ -152,10 +144,9 @@ function ShowDetailContent({
       ]}
     >
       <View style={styles.hero} testID="show-detail-hero">
-        {shown?.kind === "none" ? (
-          // Its words between the header and the logo or title.
-          <NoImage style={styles.heroImage} labelTop={width * 0.35} />
-        ) : (
+        {/* No image anywhere: no square at all; the title opens the page
+            (CRI-100). */}
+        {!noImage && (
           <Image
             source={backdrop.uri}
             onError={backdrop.onError}
@@ -169,8 +160,11 @@ function ShowDetailContent({
         )}
         {/* The Home hero's scrim, logo or title, and "Open in" on the
             backdrop, in every state (CRI-86). */}
-        <View pointerEvents="none" style={styles.heroScrim} />
-        <View style={styles.heroContent}>
+        {!noImage && <View pointerEvents="none" style={styles.heroScrim} />}
+        <View
+          style={noImage ? styles.heroContentPlain : styles.heroContent}
+          testID="show-detail-hero-content"
+        >
           {logo ? (
             <Image
               source={`${IMAGE_BASE}/w500${logo.file_path}`}
@@ -212,7 +206,7 @@ function ShowDetailContent({
         </View>
       </View>
 
-      <View style={styles.section}>
+      <View style={styles.section} testID="show-detail-section">
         <ImdbRating show={show} textStyle={styles.meta} />
         {metaLine !== "" && <Text style={styles.meta}>{metaLine}</Text>}
         <Text style={styles.meta} testID="show-detail-status">
@@ -517,6 +511,10 @@ function EpisodeList({
 
 const STILL_ASPECT_RATIO = 16 / 9;
 
+// The space above a section, and above the title when there is no image
+// (CRI-100).
+const SECTION_TOP = 20;
+
 const styles = StyleSheet.create({
   screen: {
     backgroundColor: t.bg,
@@ -551,6 +549,13 @@ const styles = StyleSheet.create({
   heroLogo: {
     width: 240,
     height: 88,
+  },
+  // No image (CRI-100): the title in the page's flow, as much space above
+  // it as below it (the section's top), balanced under the header.
+  heroContentPlain: {
+    paddingHorizontal: t.contentInset,
+    paddingTop: SECTION_TOP,
+    gap: 8,
   },
   heroTitleBand: {
     height: 88,
@@ -590,7 +595,7 @@ const styles = StyleSheet.create({
   },
   section: {
     paddingHorizontal: t.contentInset,
-    paddingTop: 20,
+    paddingTop: SECTION_TOP,
     gap: 6,
   },
   meta: {

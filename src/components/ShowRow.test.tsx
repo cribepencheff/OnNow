@@ -72,9 +72,9 @@ describe("ShowRow", () => {
     });
   });
 
-  // CRI-100: a show with no image gets the still "No image" surface, too
-  // small for the words; the title beside it names the show.
-  it("CRI-100: shows the no-image surface, without words, for a show with no poster", async () => {
+  // CRI-100: a show with no image gets the still surface with the "no
+  // image" symbol; the title beside it names the show.
+  it("CRI-100: shows the no-image surface and symbol for a show with no poster", async () => {
     await render(
       <ShowRow
         title="The Girl with the Dragon Tattoo"
@@ -82,7 +82,7 @@ describe("ShowRow", () => {
       />,
     );
     expect(screen.getByTestId("no-image")).toBeTruthy();
-    expect(screen.queryByText("No image")).toBeNull();
+    expect(screen.getByTestId("no-image-icon")).toBeTruthy();
   });
 
   it("CRI-100: shows the poster, not the surface, when there is one", async () => {

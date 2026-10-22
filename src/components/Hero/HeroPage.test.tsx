@@ -194,7 +194,7 @@ describe("HeroPage w1920 with an original fallback (CRI-140)", () => {
 });
 
 // CRI-100: without a TMDB backdrop, TVmaze's poster, cropped from the top;
-// without any image, "No image".
+// without any image, the still placeholder, without words.
 describe("HeroPage image fallback (CRI-100)", () => {
   beforeEach(() => {
     mockedImages.mockReturnValue({
@@ -225,16 +225,17 @@ describe("HeroPage image fallback (CRI-100)", () => {
       top: "50%",
       left: "50%",
     });
-    expect(screen.queryByText("No image")).toBeNull();
+    expect(screen.queryByTestId("no-image")).toBeNull();
   });
 
-  it('says "No image" without any image, and is ready at once (The Girl with the Dragon Tattoo)', async () => {
+  it("draws the still placeholder, without words, without any image, and is ready at once", async () => {
     const onBackdropLoad = jest.fn();
     await renderPage(onBackdropLoad, true, {
       ...show,
       image: null,
     } as TvMazeShow);
-    expect(screen.getByText("No image")).toBeTruthy();
+    expect(screen.getByTestId("no-image")).toBeTruthy();
+    expect(screen.queryByText("No image")).toBeNull();
     expect(screen.queryByTestId("hero-backdrop-image")).toBeNull();
     expect(onBackdropLoad).toHaveBeenCalledWith(3);
   });
@@ -243,6 +244,6 @@ describe("HeroPage image fallback (CRI-100)", () => {
     mockedImages.mockReturnValue({ data: undefined, isLoading: true });
     await renderPage(jest.fn(), true, newlyweds);
     expect(screen.queryByTestId("hero-backdrop-image")).toBeNull();
-    expect(screen.queryByText("No image")).toBeNull();
+    expect(screen.queryByTestId("no-image")).toBeNull();
   });
 });

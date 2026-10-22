@@ -148,8 +148,9 @@ The hero and Show detail take the first there is:
 2. TVmaze's poster, already in the show's data, so no request. Cropped
    from the top, where a poster's title usually is not; a title that
    still shows is accepted as rare.
-3. A "No image" placeholder (design system): a still, dark gradient,
-   never a guess at a picture.
+3. No image (design system), never a guess at a picture: the hero shows
+   a still, dark gradient under its own text; Show detail has no image
+   area, and its title opens the page.
 
 TMDB's poster is not used: it would take another request, and in the
 sample TVmaze had an image for every show it would have covered.
@@ -157,7 +158,8 @@ sample TVmaze had an image for every show it would have covered.
 ### Consequences
 - Nothing is chosen while TMDB's answer is on its way, so a poster never
   flashes in before the backdrop.
-- A list's small poster (Shows, Search, Calendar) shows the placeholder's
-  surface without words; it already used TVmaze's poster.
+- A list's small poster (Shows, Search, Calendar) already used TVmaze's
+  poster; without one it shows the dark surface with the "no image"
+  symbol.
 - Once a show gets its images, they appear by themselves: TVmaze's data
   is refreshed within an hour, TMDB's images within a day.

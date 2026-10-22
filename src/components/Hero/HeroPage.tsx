@@ -230,7 +230,6 @@ export const HeroPage = memo(function HeroPage({
     blurTop,
     topBlurHeight,
     topBlurFullTo,
-    contentTop,
   } = useHeroLayout();
   const router = useGuardedRouter();
   const show = item.show as TvMazeShowWithEmbeds;
@@ -420,8 +419,8 @@ export const HeroPage = memo(function HeroPage({
       <Animated.View
         style={[StyleSheet.absoluteFill, { opacity: backdropOpacity }]}
       >
-        {/* No image anywhere: the placeholder, its words between the logo
-            bar and the pill (CRI-100). */}
+        {/* No image anywhere: the still, dark placeholder, with the
+            slide's own pill, title and button over it (CRI-100). */}
         {noImage && (
           <NoImage
             style={{
@@ -431,7 +430,6 @@ export const HeroPage = memo(function HeroPage({
               right: 0,
               height: backdropHeight,
             }}
-            labelTop={(imageTop + contentTop) / 2}
           />
         )}
         {smallUri && (

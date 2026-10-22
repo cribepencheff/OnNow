@@ -40,7 +40,10 @@ On Now is a stripped, cinematic iOS app that answers one question in two seconds
 - Fit the logo in a box of at most 240 × 88, left aligned, so wide and stacked logos both work.
 - No logo: set the title in `display`.
 - No backdrop (CRI-100): the hero and Show detail use TVmaze's poster instead, cropped from the top; a title in the poster may show, which is accepted as rare.
-- No image anywhere (CRI-100), such as a show announced but not out: a still, dark gradient from `surface` to `bg`, with "No image" in `meta`, `ink-subtle`, where there is room. It never pulses, so it never reads as a skeleton. A list's small poster (60 × 90) has only the surface, since the show's name is beside it.
+- No image anywhere (CRI-100), such as a show announced but not out: no words. It never pulses, so it never reads as a skeleton.
+  - The hero: a still, dark gradient from `surface` to `bg`, under the slide's own pill, title and button.
+  - Show detail: no image area at all. The title opens the page, with as much space above it as below it.
+  - A list's small poster (60 × 90): the same gradient, with the SF Symbol `photo.slash` (`photo` before iOS 27) in `ink-subtle`, 22.
 
 ## Iconography
 
