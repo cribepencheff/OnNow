@@ -204,8 +204,8 @@ describe("SearchResultRow", () => {
     expect(screen.queryByText("IMDb")).toBeNull();
   });
 
-  // Owner, 2026-10-22: the poster cards' follow circle, exactly; a bigger
-  // poster, for the taller row.
+  // Owner, 2026-10-22: the poster cards' follow circle, exactly; a taller
+  // poster for the taller row, a little narrower than 2:3 for the text.
   it("follows from the poster cards' own circle", async () => {
     await render(
       <SearchResultRow show={showSlowHorsesFixture as unknown as TvMazeShow} />,
@@ -218,7 +218,7 @@ describe("SearchResultRow", () => {
     expect(circle.borderColor).toBe(t.imageControlEdge);
   });
 
-  it("draws a bigger poster than a Shows row's", async () => {
+  it("draws a taller poster than a Shows row's, a little narrower than 2:3", async () => {
     await render(
       <SearchResultRow show={showSlowHorsesFixture as unknown as TvMazeShow} />,
     );
@@ -226,6 +226,8 @@ describe("SearchResultRow", () => {
       screen.getByTestId("search-result-row-poster").props.style,
     );
     expect(poster.width).toBe(LARGE_POSTER.width);
-    expect(LARGE_POSTER.height / LARGE_POSTER.width).toBe(1.5);
+    expect(poster.height).toBe(LARGE_POSTER.height);
+    expect(LARGE_POSTER.height).toBeGreaterThan(90);
+    expect(LARGE_POSTER.width).toBeLessThan((LARGE_POSTER.height * 2) / 3);
   });
 });
