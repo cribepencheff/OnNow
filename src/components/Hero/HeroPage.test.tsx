@@ -1,7 +1,8 @@
-import { Animated, StyleSheet } from "react-native";
-import { fireEvent, render, screen } from "@testing-library/react-native";
+import { Animated, PixelRatio, StyleSheet } from "react-native";
+import { act, fireEvent, render, screen } from "@testing-library/react-native";
 
 import type { TvMazeEpisode, TvMazeShow } from "@/api/tvmaze-types";
+import { setHeroW1920 } from "@/hooks/useHeroW1920";
 import { useShowImages } from "@/hooks/useShowImages";
 import { IMAGE_TOP_MARGIN } from "@/logic/hero-layout";
 import { HeroPage } from "./HeroPage";
@@ -146,5 +147,35 @@ describe("HeroPage sharp image only when nearby (CRI-136)", () => {
     expect(JSON.stringify(image.props.source)).toContain("/w300/backdrop.jpg");
     await fireEvent(image, "load", { nativeEvent: {} });
     expect(onBackdropLoad).not.toHaveBeenCalled();
+  });
+});
+
+// CRI-140: the dev switch draws "original" at TMDB's w1920 instead.
+describe("HeroPage w1920 dev switch (CRI-140)", () => {
+  beforeEach(() => {
+    // Today's phones: "original" fits (heroImageSize).
+    jest.spyOn(PixelRatio, "get").mockReturnValue(3);
+    mockedImages.mockReturnValue({
+      data: { highestRatedBackdrop: { file_path: "/backdrop.jpg" } },
+      isLoading: false,
+    });
+  });
+  afterEach(async () => {
+    jest.restoreAllMocks();
+    await act(async () => setHeroW1920(false));
+  });
+
+  const sharpSource = () =>
+    JSON.stringify(screen.getByTestId("hero-backdrop-image").props.source);
+
+  it("draws original when off", async () => {
+    await renderPage(jest.fn());
+    expect(sharpSource()).toContain("/original/backdrop.jpg");
+  });
+
+  it("draws w1920 when on", async () => {
+    await act(async () => setHeroW1920(true));
+    await renderPage(jest.fn());
+    expect(sharpSource()).toContain("/w1920/backdrop.jpg");
   });
 });
