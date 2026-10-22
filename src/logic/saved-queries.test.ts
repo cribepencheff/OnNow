@@ -14,7 +14,6 @@ describe("shouldSaveQuery", () => {
     for (const key of [
       ["tmdbFind", "v1", "tt1", null],
       ["hero-images-v6", 1],
-      ["recommendations", "v1", 1],
       ["airingThisWeek", "v1", "SE", "2026-10-22", "UTC"],
       ["tvmazeWeekInfo", "v1", 5],
     ]) {
@@ -34,6 +33,16 @@ describe("shouldSaveQuery", () => {
     ]) {
       expect(shouldSaveQuery(key, followed)).toBe(false);
     }
+  });
+
+  // A show's recommendations only while it is followed: an unfollowed
+  // show's stay in memory but are not saved (68 saved for 58 followed
+  // shows, measured on Images (dev)).
+  it("saves a followed show's recommendations, not an unfollowed one's", () => {
+    expect(shouldSaveQuery(["recommendations", "v1", 1], followed)).toBe(true);
+    expect(shouldSaveQuery(["recommendations", "v1", 99], followed)).toBe(
+      false,
+    );
   });
 
   it("saves the follow list and the region, for an instant launch", () => {

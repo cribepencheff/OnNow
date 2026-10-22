@@ -46,7 +46,6 @@ export interface FollowedEpisodesResult {
   isLoading: boolean;
   isRefetching: boolean;
   isError: boolean;
-  dataUpdatedAt: number | null;
   followedShows: FollowedShowEpisodes[];
   showsWithEpisodeToday: ShowEpisodesToday[];
   nextDayEpisodes: NextDayEpisodes | null;
@@ -62,14 +61,10 @@ export interface FollowedEpisodesResult {
 // it was when derived from useQueries' own result array, which is new on
 // every render (CRI-137).
 function combineShowQueries(results: UseQueryResult<TvMazeShowWithEmbeds>[]) {
-  const timestamps = results
-    .map((query) => query.dataUpdatedAt)
-    .filter((timestamp): timestamp is number => Boolean(timestamp));
   return {
     loadedShows: results
       .map((query) => query.data)
       .filter((show): show is TvMazeShowWithEmbeds => Boolean(show)),
-    dataUpdatedAt: timestamps.length === 0 ? null : Math.min(...timestamps),
     anyLoading: results.some((query) => query.isLoading),
     anyRefetching: results.some((query) => query.isRefetching),
     anyError: results.some((query) => query.isError),
@@ -104,7 +99,7 @@ export function useFollowedEpisodes(): FollowedEpisodesResult {
     })),
     combine: combineShowQueries,
   });
-  const { loadedShows, dataUpdatedAt } = shows;
+  const { loadedShows } = shows;
 
   const isLoading = followedIdsQuery.isLoading || shows.anyLoading;
   const isRefetching = followedIdsQuery.isRefetching || shows.anyRefetching;
@@ -196,7 +191,6 @@ export function useFollowedEpisodes(): FollowedEpisodesResult {
     isLoading,
     isRefetching,
     isError,
-    dataUpdatedAt,
     followedShows,
     showsWithEpisodeToday,
     nextDayEpisodes,

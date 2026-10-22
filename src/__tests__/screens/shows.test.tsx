@@ -162,7 +162,6 @@ function mockFollowedEpisodes(
     isLoading: false,
     isRefetching: false,
     isError: false,
-    dataUpdatedAt: null,
     followedShows: [],
     showsWithEpisodeToday: [],
     nextDayEpisodes: null,
