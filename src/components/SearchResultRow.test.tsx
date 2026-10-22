@@ -1,5 +1,10 @@
 import { StyleSheet } from "react-native";
-import { fireEvent, render, screen } from "@testing-library/react-native";
+import {
+  fireEvent,
+  render,
+  screen,
+  within,
+} from "@testing-library/react-native";
 
 import { SearchResultRow } from "./SearchResultRow";
 import { LARGE_POSTER } from "./ShowRow";
@@ -216,6 +221,12 @@ describe("SearchResultRow", () => {
     );
     expect(circle.backgroundColor).toBe(t.imageControlBackdrop);
     expect(circle.borderColor).toBe(t.imageControlEdge);
+    // On the poster, as on the cards.
+    expect(
+      within(
+        screen.getByTestId("search-result-row-poster-accessory"),
+      ).getByTestId(`follow-${showSlowHorsesFixture.id}`),
+    ).toBeTruthy();
   });
 
   it("draws a taller poster than a Shows row's", async () => {

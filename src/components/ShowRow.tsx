@@ -32,6 +32,12 @@ interface ShowRowProps {
   summary?: string | null;
   // After the title, on its line (a Search row's IMDb rating).
   titleAccessory?: ReactNode;
+  // Right under the title, before the summary: where to watch
+  // (ShowRowServiceLine; owner, 2026-10-22).
+  subtitle?: ReactNode;
+  // Over the poster's top right, as on the poster cards (a Search row's
+  // follow circle; owner, 2026-10-22).
+  posterAccessory?: ReactNode;
   // The bigger poster (a Search row's, LARGE_POSTER).
   largePoster?: boolean;
   children?: ReactNode;
@@ -51,6 +57,8 @@ export function ShowRow({
   posterPending = false,
   summary,
   titleAccessory,
+  subtitle,
+  posterAccessory,
   largePoster = false,
   children,
   trailing,
@@ -71,31 +79,42 @@ export function ShowRow({
       accessibilityActions={accessibilityActions}
       onAccessibilityAction={onAccessibilityAction}
     >
-      {posterUri ? (
-        <Image
-          source={posterUri}
-          style={[styles.poster, largePoster && LARGE_POSTER]}
-          testID={testID && `${testID}-poster`}
-          contentFit="cover"
-          accessibilityIgnoresInvertColors
-        />
-      ) : posterPending ? (
-        <View
-          style={[styles.poster, largePoster && LARGE_POSTER]}
-          testID="poster-pending"
-        />
-      ) : (
-        // No image: the still surface with the "no image" symbol
-        // (CRI-100); the title beside it names the show.
-        <NoImage icon style={[styles.poster, largePoster && LARGE_POSTER]} />
-      )}
-      <View style={styles.details}>
+      <View>
+        {posterUri ? (
+          <Image
+            source={posterUri}
+            style={[styles.poster, largePoster && LARGE_POSTER]}
+            testID={testID && `${testID}-poster`}
+            contentFit="cover"
+            accessibilityIgnoresInvertColors
+          />
+        ) : posterPending ? (
+          <View
+            style={[styles.poster, largePoster && LARGE_POSTER]}
+            testID="poster-pending"
+          />
+        ) : (
+          // No image: the still surface with the "no image" symbol
+          // (CRI-100); the title beside it names the show.
+          <NoImage icon style={[styles.poster, largePoster && LARGE_POSTER]} />
+        )}
+        {posterAccessory ? (
+          <View
+            style={styles.posterAccessory}
+            testID={testID && `${testID}-poster-accessory`}
+          >
+            {posterAccessory}
+          </View>
+        ) : null}
+      </View>
+      <View style={styles.details} testID={testID && `${testID}-details`}>
         <View style={styles.titleRow} testID={testID && `${testID}-title-row`}>
           <Text style={styles.title} numberOfLines={1}>
             {title}
           </Text>
           {titleAccessory}
         </View>
+        {subtitle}
         {summary ? (
           <Text
             style={styles.summary}
@@ -130,9 +149,10 @@ export function ShowRowLine({
 
 // The service line (Shows, Search; CRI-115): each service's logo, small,
 // before the service text, so a service you have is seen at a glance; the
-// text gives the detail and is what screen readers read. Without logos
-// ("Unavailable", or before TMDB answers), the text alone. The line keeps
-// its height either way.
+// text gives the detail and is what screen readers read. Right under the
+// title (ShowRow's subtitle), in ink, at the summary's size (owner,
+// 2026-10-22). Without logos ("Unavailable", or before TMDB answers), the
+// text alone. The line keeps its height either way.
 const SERVICE_LOGO_SIZE = 16;
 // The Premiere/Finale chip's light hairline (owner), on the dark page.
 const SERVICE_LOGO_RING = {
@@ -226,25 +246,26 @@ const styles = StyleSheet.create({
     minHeight: type.meta.lineHeight,
     color: t.inkMuted,
   },
-  // Some room above it (owner): the services, apart from the lines about
-  // the show itself.
   serviceLine: {
     flexDirection: "row",
     alignItems: "center",
     minHeight: type.meta.lineHeight,
-    marginTop: 8,
     gap: 6,
+  },
+  // As on the poster cards (ShowCard's follow).
+  posterAccessory: {
+    position: "absolute",
+    top: t.space2,
+    right: t.space2,
   },
   serviceLogos: {
     flexDirection: "row",
     gap: 4,
   },
-  // The app's smallest size (label's), in the line's regular weight, in
-  // ink (owner): the logos carry the glance, the text the detail.
+  // The summary's size, in ink (owner): right under the title, where to
+  // watch reads first.
   serviceText: {
-    fontSize: type.label.fontSize,
-    lineHeight: type.label.lineHeight,
-    fontWeight: type.meta.fontWeight,
+    ...type.meta,
     color: t.ink,
     flexShrink: 1,
   },

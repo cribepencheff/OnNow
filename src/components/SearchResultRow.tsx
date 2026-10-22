@@ -45,6 +45,14 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
       posterUri={poster.uri}
       posterPending={poster.pending}
       summary={plainTextSummary(show.summary)}
+      // Its line is kept while TMDB answers, so the row does not grow.
+      subtitle={
+        <ShowRowServiceLine
+          logos={rowServiceLogos(providers)}
+          text={service ?? ""}
+          testID="search-result-service"
+        />
+      }
       largePoster
       titleAccessory={
         <ImdbRating show={show} linked={false} textStyle={styles.rating} />
@@ -60,7 +68,7 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
           toggle();
         }
       }}
-      trailing={
+      posterAccessory={
         <PosterFollowCircle
           followed={followed}
           onPress={toggle}
@@ -70,12 +78,6 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
     >
       {metaLine !== "" && <ShowRowLine>{metaLine}</ShowRowLine>}
       <StatusLine showId={show.id} />
-      {/* Its line is kept while TMDB answers, so the row does not grow. */}
-      <ShowRowServiceLine
-        logos={rowServiceLogos(providers)}
-        text={service ?? ""}
-        testID="search-result-service"
-      />
     </ShowRow>
   );
 }

@@ -54,6 +54,14 @@ export function ShowsRow({
         posterUri={poster.uri}
         posterPending={poster.pending}
         summary={plainTextSummary(show.summary)}
+        // Its line is kept while TMDB answers, so the row does not grow.
+        subtitle={
+          <ShowRowServiceLine
+            logos={rowServiceLogos(providers)}
+            text={service ?? ""}
+            testID="shows-row-service"
+          />
+        }
         style={styles.row}
         accessibilityLabel={label}
         onPress={onPress}
@@ -64,14 +72,7 @@ export function ShowsRow({
           }
         }}
         testID="shows-row"
-      >
-        {/* Its line is kept while TMDB answers, so the row does not grow. */}
-        <ShowRowServiceLine
-          logos={rowServiceLogos(providers)}
-          text={service ?? ""}
-          testID="shows-row-service"
-        />
-      </ShowRow>
+      ></ShowRow>
     </Swipeable>
   );
 }

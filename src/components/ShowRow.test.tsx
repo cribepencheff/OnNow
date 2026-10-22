@@ -129,15 +129,15 @@ describe("ShowRow", () => {
     expect(screen.queryAllByTestId("service-logo")).toHaveLength(0);
   });
 
-  // Owner: the text beside the logos at the app's smallest size, in the
-  // line's regular weight.
-  it("CRI-115: sets the service text at the smallest size, regular weight", async () => {
+  // Owner, 2026-10-22: the service line right under the title, in ink,
+  // at the summary's size.
+  it("CRI-115: sets the service text at the summary's size, in ink", async () => {
     await render(
       <ShowRowServiceLine logos={[]} text="On Netflix" testID="service" />,
     );
     const text = StyleSheet.flatten(screen.getByText("On Netflix").props.style);
-    expect(text.fontSize).toBe(type.label.fontSize);
-    expect(text.fontWeight).toBe(type.meta.fontWeight);
+    expect(text.fontSize).toBe(type.meta.fontSize);
+    expect(text.color).toBe(t.ink);
   });
 
   it("CRI-115: shows the text alone without logos, and keeps the line's height", async () => {
@@ -153,22 +153,52 @@ describe("ShowRow", () => {
     ).toBe(type.meta.lineHeight);
   });
 
-  // Owner, CRI-115: the title a touch smaller than headline, and some room
-  // above the service line, setting it apart from the lines above.
-  it("sets the title a touch smaller than headline, and room above the service line", async () => {
+  // Owner, CRI-115: the title smaller than headline; the service line
+  // right under it, before the summary.
+  it("sets the title smaller than headline, with the service line right under it", async () => {
     await render(
-      <ShowRow title="Slow Horses" accessibilityLabel="x">
-        <ShowRowServiceLine logos={[]} text="On Apple TV" testID="service" />
-      </ShowRow>,
+      <ShowRow
+        title="Slow Horses"
+        subtitle={
+          <ShowRowServiceLine logos={[]} text="On Apple TV" testID="service" />
+        }
+        summary="A team of British intelligence agents."
+        accessibilityLabel="x"
+        testID="row"
+      />,
     );
     const title = StyleSheet.flatten(
       screen.getByText("Slow Horses").props.style,
     );
     expect(title.fontSize).toBe(ROW_TITLE_SIZE);
     expect(ROW_TITLE_SIZE).toBeLessThan(type.headline.fontSize);
-    expect(
-      StyleSheet.flatten(screen.getByTestId("service").props.style).marginTop,
-    ).toBeGreaterThan(0);
+    const order = screen
+      .getByTestId("row-details")
+      .children.map((child) =>
+        typeof child === "string" ? child : child.props.testID,
+      );
+    expect(order).toEqual(["row-title-row", "service", "show-row-summary"]);
+  });
+
+  // Owner, 2026-10-22: a Search row's follow circle on its poster, as on
+  // the poster cards.
+  it("draws a poster accessory over the poster's top right", async () => {
+    await render(
+      <ShowRow
+        title="Slow Horses"
+        posterUri="https://static.tvmaze.com/p.jpg"
+        posterAccessory={<Text>circle</Text>}
+        accessibilityLabel="x"
+        testID="row"
+      />,
+    );
+    const accessory = screen.getByTestId("row-poster-accessory");
+    expect(accessory).toHaveTextContent("circle");
+    expect(StyleSheet.flatten(accessory.props.style)).toMatchObject({
+      position: "absolute",
+      top: t.space2,
+      right: t.space2,
+    });
   });
 
   // Owner, 2026-10-22: the show first, so two lines about it right under
