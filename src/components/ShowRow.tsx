@@ -185,7 +185,7 @@ const POSTER_HEIGHT = 90;
 // row (summary, year and genres, status, services); a little narrower than
 // 2:3, giving the text room. Drawn "cover", so only a thin strip at each
 // side is cropped.
-export const LARGE_POSTER = { width: 80, height: 135 };
+export const LARGE_POSTER = { width: 80, height: 124 };
 
 const styles = StyleSheet.create({
   row: {
