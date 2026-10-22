@@ -169,8 +169,9 @@ function ShowDetailContent({
       `${IMAGE_BASE}/${LARGE_BACKDROP_FALLBACK_SIZE}${backdropPath}`,
   );
   const noImage = shown?.kind === "none";
-  // The square, plus the status bar and the header's bar above it: the
-  // backdrop runs up under the floating header (CRI-129).
+  // The square, plus the status bar and the header's bar above it, the
+  // backdrop running up under the floating header (CRI-129); a fifth lower
+  // (owner, 2026-10-22), showing more of a landscape backdrop's width.
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const headerHeight = insets.top + HEADER_BAR_HEIGHT;
@@ -198,7 +199,10 @@ function ShowDetailContent({
           <Image
             source={backdrop.uri}
             onError={backdrop.onError}
-            style={[styles.heroImage, { height: width + headerHeight }]}
+            style={[
+              styles.heroImage,
+              { height: (width + headerHeight) * BACKDROP_HEIGHT_SHARE },
+            ]}
             testID="show-detail-backdrop"
             contentFit="cover"
             // A poster from the top, where its title usually is not.
@@ -566,6 +570,9 @@ function EpisodeList({
 }
 
 const STILL_ASPECT_RATIO = 16 / 9;
+
+// The backdrop's height, as a share of the square plus the header.
+export const BACKDROP_HEIGHT_SHARE = 0.8;
 
 // The space above a section, and above the title when there is no image
 // (CRI-100).

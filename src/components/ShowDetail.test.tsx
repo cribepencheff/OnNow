@@ -11,7 +11,7 @@ import { t } from "@/theme/tokens";
 import { releaseNavigation } from "@/hooks/navigation-lock";
 import * as Linking from "expo-linking";
 
-import { ShowDetail } from "./ShowDetail";
+import { BACKDROP_HEIGHT_SHARE, ShowDetail } from "./ShowDetail";
 import { useShow } from "@/hooks/useShow";
 import { useFollowList } from "@/hooks/useFollowList";
 import { useStreamingService } from "@/hooks/useStreamingService";
@@ -733,9 +733,11 @@ describe("ShowDetail", () => {
         screen.getByTestId("show-detail-backdrop").props.style,
       );
       // The square, plus the status bar and the header's bar above it
-      // (Jest's top inset is 0).
+      // (Jest's top inset is 0), a fifth lower (owner).
+      expect(BACKDROP_HEIGHT_SHARE).toBe(0.8);
       expect(image.height).toBe(
-        Dimensions.get("window").width + HEADER_BAR_HEIGHT,
+        (Dimensions.get("window").width + HEADER_BAR_HEIGHT) *
+          BACKDROP_HEIGHT_SHARE,
       );
     });
 
