@@ -181,11 +181,9 @@ const ROW_TITLE_LINE_HEIGHT = 22;
 
 const POSTER_WIDTH = 60;
 const POSTER_HEIGHT = 90;
-// A Search row's poster (owner, 2026-10-22): taller, balancing its taller
-// row (summary, year and genres, status, services); a little narrower than
-// 2:3, giving the text room. Drawn "cover", so only a thin strip at each
-// side is cropped.
-export const LARGE_POSTER = { width: 80, height: 124 };
+// A Search row's poster (owner, 2026-10-22): bigger, balancing its taller
+// row (summary, year and genres, status, services); 2:3, as posters are.
+export const LARGE_POSTER = { width: 80, height: 120 };
 
 const styles = StyleSheet.create({
   row: {
