@@ -741,6 +741,17 @@ describe("ShowDetail", () => {
       );
     });
 
+    // Owner, 2026-10-22: no scroll indicator, as on Home (and Apple TV's
+    // show page): an image page read as a whole.
+    it("shows no scroll indicator", async () => {
+      mockShow(showSlowHorsesFixture);
+      await render(<ShowDetail showId={45039} />);
+      expect(
+        screen.getByTestId("show-detail-scroll").props
+          .showsVerticalScrollIndicator,
+      ).toBe(false);
+    });
+
     it("floats a round back button that goes back", async () => {
       mockShow(showSlowHorsesFixture);
       await render(<ShowDetail showId={45039} />);
