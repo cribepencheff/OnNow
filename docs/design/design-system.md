@@ -49,7 +49,7 @@ On Now is a stripped, cinematic iOS app that answers one question in two seconds
 ## Iconography
 
 - Use SF Symbols, as iOS does. The one exception is the tab bar's four icons, drawn for the app so they share one stroke and can fill when active (see Tab bar below). The My shows icon holds the follow controls' own SF Symbol check.
-- Services appear as TMDB's provider icons, clipped to a squircle with a thin dark ring (CRI-132, CRI-115): in the hero's "Open in" button; and in Shows and Search rows, before the service text, one per service in the text's order, up to four, 16 wide, 4 apart and 6 before the text, so a service the user has is seen at a glance. The text keeps the names, and is what screen readers read.
+- Services appear as TMDB's provider icons, clipped to a squircle with a thin dark ring (CRI-132, CRI-115): in the hero's "Open in" button; and in Shows and Search rows, before the service text, one per service in the text's order, up to four, 16 wide, 4 apart and 6 before the text, with the Premiere/Finale chip's light hairline (`episode-mark-edge`) instead of the dark ring, so a service the user has is seen at a glance. The text keeps the names, at `label`'s size (12) in a regular weight, `ink-muted`, and is what screen readers read.
 
 ## Home, direction B (chosen over A, the portrait poster)
 

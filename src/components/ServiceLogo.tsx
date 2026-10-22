@@ -10,9 +10,11 @@
 // grid: a fractional size once rounded the mask and the image to slightly
 // different grids on device, clipping an edge.
 //
-// A thin dark ring sits on every icon, regardless of its own colour: against
-// the always-light "Open in" pill, a dark ring gives a white icon (Prime
-// Video) a visible edge, and reads as a quiet outline on a dark icon too.
+// A thin dark ring sits on every icon by default, regardless of its own
+// colour: against the always-light "Open in" pill, a dark ring gives a
+// white icon (Prime Video) a visible edge, and reads as a quiet outline on
+// a dark icon too. On the dark page (Shows and Search rows, CRI-115), the
+// ring is the Premiere/Finale chip's light hairline instead.
 
 import { useId, useMemo } from "react";
 import Svg, { ClipPath, Defs, Image as SvgImage, Path } from "react-native-svg";
@@ -31,8 +33,8 @@ const ICON_INSET = 1.5;
 // Inset by half the ring's stroke: the squircle's cardinal points sit at
 // the exact radius, so a centred stroke drawn at the full radius overflows
 // the Svg canvas by half its width there and gets clipped by it.
-function squirclePath(size: number): string {
-  const r = size / 2 - RING_WIDTH / 2;
+function squirclePath(size: number, ringWidth: number): string {
+  const r = size / 2 - ringWidth / 2;
   const cx = size / 2;
   const cy = size / 2;
   const points: string[] = [];
@@ -52,11 +54,16 @@ function squirclePath(size: number): string {
 export function ServiceLogo({
   logoPath,
   size,
+  ring = { color: RING_COLOR, width: RING_WIDTH },
 }: {
   logoPath: string;
   size: number;
+  ring?: { color: string; width: number };
 }) {
-  const path = useMemo(() => squirclePath(size), [size]);
+  const path = useMemo(
+    () => squirclePath(size, ring.width),
+    [size, ring.width],
+  );
   // Unique per instance: several logos can be on screen at once (dev
   // images screen), and an id is shared across every Svg on the page.
   const clipId = `service-logo-squircle-${useId().replace(/:/g, "")}`;
@@ -90,7 +97,13 @@ export function ServiceLogo({
         preserveAspectRatio="xMidYMid slice"
         clipPath={`url(#${clipId})`}
       />
-      <Path d={path} fill="none" stroke={RING_COLOR} strokeWidth={RING_WIDTH} />
+      <Path
+        d={path}
+        fill="none"
+        stroke={ring.color}
+        strokeWidth={ring.width}
+        testID="service-logo-ring"
+      />
     </Svg>
   );
 }

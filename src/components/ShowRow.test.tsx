@@ -124,6 +124,17 @@ describe("ShowRow", () => {
     expect(screen.queryAllByTestId("service-logo")).toHaveLength(0);
   });
 
+  // Owner: the text beside the logos at the app's smallest size, in the
+  // line's regular weight.
+  it("CRI-115: sets the service text at the smallest size, regular weight", async () => {
+    await render(
+      <ShowRowServiceLine logos={[]} text="On Netflix" testID="service" />,
+    );
+    const text = StyleSheet.flatten(screen.getByText("On Netflix").props.style);
+    expect(text.fontSize).toBe(type.label.fontSize);
+    expect(text.fontWeight).toBe(type.meta.fontWeight);
+  });
+
   it("CRI-115: shows the text alone without logos, and keeps the line's height", async () => {
     await render(
       <ShowRowServiceLine logos={[]} text="Unavailable" testID="service" />,

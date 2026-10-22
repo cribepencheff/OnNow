@@ -108,6 +108,11 @@ export function ShowRowLine({
 // ("Unavailable", or before TMDB answers), the text alone. The line keeps
 // its height either way.
 const SERVICE_LOGO_SIZE = 16;
+// The Premiere/Finale chip's light hairline (owner), on the dark page.
+const SERVICE_LOGO_RING = {
+  color: t.episodeMarkEdge,
+  width: StyleSheet.hairlineWidth,
+};
 
 export function ShowRowServiceLine({
   logos,
@@ -128,12 +133,16 @@ export function ShowRowServiceLine({
         >
           {logos.map(({ name, logoPath }) => (
             <View key={name} testID="service-logo">
-              <ServiceLogo logoPath={logoPath} size={SERVICE_LOGO_SIZE} />
+              <ServiceLogo
+                logoPath={logoPath}
+                size={SERVICE_LOGO_SIZE}
+                ring={SERVICE_LOGO_RING}
+              />
             </View>
           ))}
         </View>
       )}
-      <Text style={[styles.line, styles.serviceText]} numberOfLines={1}>
+      <Text style={styles.serviceText} numberOfLines={1}>
         {text}
       </Text>
     </View>
@@ -180,7 +189,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 4,
   },
+  // The app's smallest size (label's), in the line's regular weight
+  // (owner): the logos carry the glance, the text the detail.
   serviceText: {
+    fontSize: type.label.fontSize,
+    lineHeight: type.label.lineHeight,
+    fontWeight: type.meta.fontWeight,
+    color: t.inkMuted,
     flexShrink: 1,
   },
 });
