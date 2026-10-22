@@ -17,11 +17,15 @@ const mockedImages = useShowImages as jest.Mock;
 const show = { id: 92764, name: "JAŸ-Z IN 8" } as TvMazeShow;
 const episode = { season: 1, number: 1 } as TvMazeEpisode;
 
-async function renderPage(onBackdropLoad: jest.Mock, nearby = true) {
+async function renderPage(
+  onBackdropLoad: jest.Mock,
+  nearby = true,
+  pageShow: TvMazeShow = show,
+) {
   await render(
     <HeroPage
       item={{
-        show,
+        show: pageShow,
         episodes: [episode],
         localDate: "2026-10-04",
         endDate: "2026-10-04",
@@ -186,5 +190,59 @@ describe("HeroPage w1920 with an original fallback (CRI-140)", () => {
 
     await fireEvent(sharp(), "error", { nativeEvent: { error: "404" } });
     expect(onBackdropLoad).toHaveBeenCalledWith(3);
+  });
+});
+
+// CRI-100: without a TMDB backdrop, TVmaze's poster, cropped from the top;
+// without any image, "No image".
+describe("HeroPage image fallback (CRI-100)", () => {
+  beforeEach(() => {
+    mockedImages.mockReturnValue({
+      data: { highestRatedBackdrop: null },
+      isLoading: false,
+    });
+  });
+
+  const newlyweds = {
+    id: 91789,
+    name: "Newlyweds",
+    image: {
+      medium: "https://static.tvmaze.com/m.jpg",
+      original: "https://static.tvmaze.com/o.jpg",
+    },
+  } as TvMazeShow;
+
+  it("draws TVmaze's poster, from the top, when TMDB has no backdrop (Newlyweds)", async () => {
+    await renderPage(jest.fn(), true, newlyweds);
+    const image = screen.getByTestId("hero-backdrop-image");
+    expect(JSON.stringify(image.props.source)).toContain(
+      "static.tvmaze.com/o.jpg",
+    );
+    expect(JSON.stringify(image.props.placeholder)).toContain(
+      "static.tvmaze.com/m.jpg",
+    );
+    expect(image.props.contentPosition).not.toEqual({
+      top: "50%",
+      left: "50%",
+    });
+    expect(screen.queryByText("No image")).toBeNull();
+  });
+
+  it('says "No image" without any image, and is ready at once (The Girl with the Dragon Tattoo)', async () => {
+    const onBackdropLoad = jest.fn();
+    await renderPage(onBackdropLoad, true, {
+      ...show,
+      image: null,
+    } as TvMazeShow);
+    expect(screen.getByText("No image")).toBeTruthy();
+    expect(screen.queryByTestId("hero-backdrop-image")).toBeNull();
+    expect(onBackdropLoad).toHaveBeenCalledWith(3);
+  });
+
+  it("chooses nothing while TMDB's answer is on its way, so no poster flashes in", async () => {
+    mockedImages.mockReturnValue({ data: undefined, isLoading: true });
+    await renderPage(jest.fn(), true, newlyweds);
+    expect(screen.queryByTestId("hero-backdrop-image")).toBeNull();
+    expect(screen.queryByText("No image")).toBeNull();
   });
 });

@@ -71,4 +71,28 @@ describe("ShowRow", () => {
       minHeight: type.meta.lineHeight,
     });
   });
+
+  // CRI-100: a show with no image gets the still "No image" surface, too
+  // small for the words; the title beside it names the show.
+  it("CRI-100: shows the no-image surface, without words, for a show with no poster", async () => {
+    await render(
+      <ShowRow
+        title="The Girl with the Dragon Tattoo"
+        accessibilityLabel="x"
+      />,
+    );
+    expect(screen.getByTestId("no-image")).toBeTruthy();
+    expect(screen.queryByText("No image")).toBeNull();
+  });
+
+  it("CRI-100: shows the poster, not the surface, when there is one", async () => {
+    await render(
+      <ShowRow
+        title="Slow Horses"
+        posterUri="https://static.tvmaze.com/poster.jpg"
+        accessibilityLabel="x"
+      />,
+    );
+    expect(screen.queryByTestId("no-image")).toBeNull();
+  });
 });

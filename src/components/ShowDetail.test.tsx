@@ -506,6 +506,32 @@ describe("ShowDetail", () => {
 
   // CRI-140: w1920 is not a documented TMDB size; if it fails, the same
   // image at "original".
+  // CRI-100: without a TMDB backdrop, TVmaze's poster; without any image,
+  // "No image".
+  it("CRI-100: shows TVmaze's poster when TMDB has no backdrop", async () => {
+    mockShow(showSlowHorsesFixture);
+    mockShowImages.mockReturnValue({
+      data: { highestRatedBackdrop: null, logo: null },
+    });
+    await render(<ShowDetail showId={45039} />);
+
+    expect(
+      JSON.stringify(screen.getByTestId("show-detail-backdrop").props.source),
+    ).toContain(showSlowHorsesFixture.image!.original as string);
+    expect(screen.queryByText("No image")).toBeNull();
+  });
+
+  it('CRI-100: says "No image" when there is no image anywhere', async () => {
+    mockShow({ ...showSlowHorsesFixture, image: null });
+    mockShowImages.mockReturnValue({
+      data: { highestRatedBackdrop: null, logo: null },
+    });
+    await render(<ShowDetail showId={45039} />);
+
+    expect(screen.getByText("No image")).toBeTruthy();
+    expect(screen.queryByTestId("show-detail-backdrop")).toBeNull();
+  });
+
   it("CRI-140: falls back to the original backdrop if w1920 fails", async () => {
     mockShow(showSlowHorsesFixture);
     await render(<ShowDetail showId={45039} />);

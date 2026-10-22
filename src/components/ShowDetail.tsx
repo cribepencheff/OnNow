@@ -8,7 +8,14 @@
 import { Image } from "expo-image";
 import { SymbolView } from "expo-symbols";
 import { useRef, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+} from "react-native";
 
 import {
   IMAGE_BASE,
@@ -31,6 +38,7 @@ import { useStreamingService } from "@/hooks/useStreamingService";
 import { useToday } from "@/hooks/useToday";
 import type { LocalDate } from "@/logic/local-date";
 import { plainTextSummary } from "@/logic/search-results";
+import { chooseShowImage } from "@/logic/show-image";
 import {
   allEpisodesAvailable,
   currentSeasonNumber,
@@ -56,6 +64,7 @@ import {
 import { followHaptic } from "./followHaptic";
 import { followSymbol } from "./followSymbols";
 import { ImdbRating } from "./ImdbRating";
+import { NoImage } from "./NoImage";
 import { OmdbCredit } from "./OmdbCredit";
 import { PaidSubscriptionMarker } from "./PaidSubscriptionMarker";
 import { t, type } from "@/theme/tokens";
@@ -106,16 +115,25 @@ function ShowDetailContent({
   const next = nextCard(show, episodes, seasons, timeZone, todayDate);
   const tabs = seasonTabs(seasons, episodes, todayDate);
   const state = showState(show, episodes, seasons, timeZone, todayDate);
-  // A TMDB backdrop, textless first (ADR 0012): no title text in the image.
-  const { data: images } = useShowImages(show);
-  const backdropPath = images?.highestRatedBackdrop?.file_path;
+  // A TMDB backdrop, textless first (ADR 0012): no title text in the
+  // image. Without one, TVmaze's poster, cropped from the top; without any
+  // image, "No image" (chooseShowImage, CRI-100). Nothing is chosen while
+  // TMDB's answer is on its way, so a poster never flashes in first.
+  const { data: images, isLoading: imagesLoading } = useShowImages(show);
+  const shown = imagesLoading
+    ? null
+    : chooseShowImage(images?.highestRatedBackdrop, show.image);
+  const backdropPath = shown?.kind === "tmdb" ? shown.path : undefined;
   // Drawn square, about 1,180 px tall on a 3x phone: w1920 (1080 px tall),
   // with "original" if that undocumented size fails (CRI-140).
   const backdrop = useFallbackUri(
-    backdropPath && `${IMAGE_BASE}/${LARGE_BACKDROP_SIZE}${backdropPath}`,
+    shown?.kind === "tvmaze"
+      ? shown.sharp
+      : backdropPath && `${IMAGE_BASE}/${LARGE_BACKDROP_SIZE}${backdropPath}`,
     backdropPath &&
       `${IMAGE_BASE}/${LARGE_BACKDROP_FALLBACK_SIZE}${backdropPath}`,
   );
+  const { width } = useWindowDimensions();
   const logo = images?.logo;
   const { link, availability } = useOpenIn(show);
   const { data: originCountries } = useOriginCountries(show);
@@ -134,14 +152,21 @@ function ShowDetailContent({
       ]}
     >
       <View style={styles.hero} testID="show-detail-hero">
-        <Image
-          source={backdrop.uri}
-          onError={backdrop.onError}
-          style={styles.heroImage}
-          testID="show-detail-backdrop"
-          contentFit="cover"
-          accessibilityIgnoresInvertColors
-        />
+        {shown?.kind === "none" ? (
+          // Its words between the header and the logo or title.
+          <NoImage style={styles.heroImage} labelTop={width * 0.35} />
+        ) : (
+          <Image
+            source={backdrop.uri}
+            onError={backdrop.onError}
+            style={styles.heroImage}
+            testID="show-detail-backdrop"
+            contentFit="cover"
+            // A poster from the top, where its title usually is not.
+            contentPosition={shown?.kind === "tvmaze" ? "top" : "center"}
+            accessibilityIgnoresInvertColors
+          />
+        )}
         {/* The Home hero's scrim, logo or title, and "Open in" on the
             backdrop, in every state (CRI-86). */}
         <View pointerEvents="none" style={styles.heroScrim} />
