@@ -5,6 +5,7 @@ import {
   streamingOnLabel,
   openInLink,
   regionProviders,
+  rowIsUnavailable,
   rowServiceLogos,
   rowServiceText,
   tmdbOriginCountries,
@@ -269,6 +270,24 @@ describe("rowServiceLogos (CRI-115)", () => {
     expect(rowServiceLogos([])).toEqual([]);
     expect(rowServiceLogos(NOT_ON_TMDB)).toEqual([]);
     expect(rowServiceLogos(undefined)).toEqual([]);
+  });
+});
+
+// Owner, 2026-10-22: "Unavailable" is a status, so a Search row says it
+// with the status line, under the title.
+describe("rowIsUnavailable", () => {
+  it("is true only when TMDB answered with no service", () => {
+    expect(rowIsUnavailable([])).toBe(true);
+    expect(
+      rowIsUnavailable(regionProviders(providersSpecialForces, "SE")),
+    ).toBe(true);
+    expect(
+      rowIsUnavailable([
+        { providerId: 8, providerName: "Netflix", logoPath: null },
+      ]),
+    ).toBe(false);
+    expect(rowIsUnavailable(NOT_ON_TMDB)).toBe(false);
+    expect(rowIsUnavailable(undefined)).toBe(false);
   });
 });
 

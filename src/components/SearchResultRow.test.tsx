@@ -106,19 +106,45 @@ describe("SearchResultRow", () => {
 
     await render(<SearchResultRow show={show} />);
 
-    expect(screen.getByTestId("search-result-status").props.children).toBe("");
+    expect(screen.getByTestId("search-result-status")).toHaveTextContent(/^$/);
   });
 
-  it('shows the service, or plain "Unavailable" without the region (FR-027, CRI-97)', async () => {
+  // Owner, 2026-10-22: every status under the title, "Unavailable" with
+  // the show's own; the services at the bottom.
+  it('shows the service at the bottom, or plain "Unavailable" with the status under the title (FR-027, CRI-97)', async () => {
     const show = showSlowHorsesFixture as unknown as TvMazeShow;
     mockProviders([{ providerId: 350, providerName: "Apple TV" }]);
 
     const { rerender } = await render(<SearchResultRow show={show} />);
-    expect(screen.getByText("On Apple TV")).toBeTruthy();
+    expect(screen.getByTestId("search-result-service")).toHaveTextContent(
+      "On Apple TV",
+    );
+    expect(screen.getByTestId("search-result-status")).toHaveTextContent(/^$/);
 
     mockProviders([]);
     await rerender(<SearchResultRow show={show} />);
-    expect(screen.getByText("Unavailable")).toBeTruthy();
+    expect(screen.getByTestId("search-result-status")).toHaveTextContent(
+      "Unavailable",
+    );
+    expect(screen.getByTestId("search-result-service")).toHaveTextContent(/^$/);
+  });
+
+  it('joins the show\'s status and "Unavailable" under the title', async () => {
+    mockedUseShow.mockReturnValue({ data: showSlowHorsesFixture } as never);
+    mockProviders([]);
+    await render(
+      <SearchResultRow show={showSlowHorsesFixture as unknown as TvMazeShow} />,
+    );
+    expect(screen.getByTestId("search-result-status")).toHaveTextContent(
+      "Season 6 · Wed 16 Sep · Unavailable",
+    );
+    const order = screen
+      .getByTestId("search-result-row-details")
+      .children.map((child) =>
+        typeof child === "string" ? child : child.props.testID,
+      );
+    expect(order[1]).toBe("search-result-status");
+    expect(order[order.length - 1]).toBe("search-result-service");
   });
 
   it("shows no service when TMDB does not know the show (CRI-102)", async () => {

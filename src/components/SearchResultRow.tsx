@@ -18,7 +18,11 @@ import { useListPoster } from "@/hooks/useListPoster";
 import { useToday } from "@/hooks/useToday";
 import { plainTextSummary, searchResultMetaLine } from "@/logic/search-results";
 import { showState, showStateLabel } from "@/logic/show-state";
-import { rowServiceLogos, rowServiceText } from "@/logic/streaming-service";
+import {
+  rowIsUnavailable,
+  rowServiceLogos,
+  rowServiceText,
+} from "@/logic/streaming-service";
 import type { TvMazeShow } from "@/api/tvmaze-types";
 import { t, type } from "@/theme/tokens";
 
@@ -45,12 +49,11 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
       posterUri={poster.uri}
       posterPending={poster.pending}
       summary={plainTextSummary(show.summary)}
-      // Its line is kept while TMDB answers, so the row does not grow.
+      // Every status right under the title (owner, 2026-10-22).
       subtitle={
-        <ShowRowServiceLine
-          logos={rowServiceLogos(providers)}
-          text={service ?? ""}
-          testID="search-result-service"
+        <StatusLine
+          showId={show.id}
+          unavailable={rowIsUnavailable(providers)}
         />
       }
       largePoster
@@ -78,15 +81,29 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
       }
     >
       {metaLine !== "" && <ShowRowLine>{metaLine}</ShowRowLine>}
-      <StatusLine showId={show.id} />
+      {/* At the bottom; its line is kept while TMDB answers, so the row
+          does not grow. "Unavailable" is with the status instead. */}
+      <ShowRowServiceLine
+        logos={rowServiceLogos(providers)}
+        text={rowIsUnavailable(providers) ? "" : (service ?? "")}
+        testID="search-result-service"
+      />
     </ShowRow>
   );
 }
 
-// FR-025: Show detail's status line ("Next ep Fri 9 Oct"), from
-// the same cached show lookup as Show detail. Its line is kept while the
-// lookup answers, so the row does not grow.
-function StatusLine({ showId }: { showId: number }) {
+// FR-025: Show detail's status line ("Next ep Fri 9 Oct"), from the same
+// cached show lookup as Show detail, with "Unavailable" when the show has
+// no service (owner, 2026-10-22: every status together, under the title,
+// in ink). Its line is kept while the lookup answers, so the row does not
+// grow.
+function StatusLine({
+  showId,
+  unavailable,
+}: {
+  showId: number;
+  unavailable: boolean;
+}) {
   const { data } = useShow(showId);
   const todayDate = useToday();
 
@@ -102,7 +119,11 @@ function StatusLine({ showId }: { showId: number }) {
         todayDate,
       )
     : "";
-  return <ShowRowLine testID="search-result-status">{label}</ShowRowLine>;
+  return (
+    <ShowRowLine testID="search-result-status" style={styles.status}>
+      {[label, unavailable ? "Unavailable" : ""].filter(Boolean).join(" · ")}
+    </ShowRowLine>
+  );
 }
 
 // The poster cards' follow circle, a little smaller on the row's poster
@@ -111,6 +132,9 @@ const SEARCH_FOLLOW_CIRCLE_SIZE = 28;
 
 const styles = StyleSheet.create({
   // The rating at the row's small size, muted beside the title.
+  status: {
+    color: t.ink,
+  },
   rating: {
     ...type.meta,
     color: t.inkMuted,

@@ -14,6 +14,7 @@ import {
   type AccessibilityActionEvent,
   type AccessibilityActionInfo,
   type StyleProp,
+  type TextStyle,
   type ViewStyle,
 } from "react-native";
 
@@ -32,8 +33,8 @@ interface ShowRowProps {
   summary?: string | null;
   // After the title, on its line (a Search row's IMDb rating).
   titleAccessory?: ReactNode;
-  // Right under the title, before the summary: where to watch
-  // (ShowRowServiceLine; owner, 2026-10-22).
+  // Right under the title, before the summary (a Search row's status
+  // line; owner, 2026-10-22).
   subtitle?: ReactNode;
   // Over the poster's top left (a Search row's follow circle; owner,
   // 2026-10-22).
@@ -136,12 +137,15 @@ export function ShowRow({
 export function ShowRowLine({
   children,
   testID,
+  style,
 }: {
   children: ReactNode;
   testID?: string;
+  // For example a Search row's status line, in ink.
+  style?: StyleProp<TextStyle>;
 }) {
   return (
-    <Text style={styles.line} numberOfLines={1} testID={testID}>
+    <Text style={[styles.line, style]} numberOfLines={1} testID={testID}>
       {children}
     </Text>
   );
@@ -149,10 +153,10 @@ export function ShowRowLine({
 
 // The service line (Shows, Search; CRI-115): each service's logo, small,
 // before the service text, so a service you have is seen at a glance; the
-// text gives the detail and is what screen readers read. Right under the
-// title (ShowRow's subtitle), in ink, at the summary's size (owner,
-// 2026-10-22). Without logos ("Unavailable", or before TMDB answers), the
-// text alone. The line keeps its height either way.
+// text gives the detail and is what screen readers read. At the bottom of
+// the row (owner, 2026-10-22). Without logos ("Unavailable" in Shows, or
+// before TMDB answers), the text alone. The line keeps its height either
+// way.
 const SERVICE_LOGO_SIZE = 16;
 // The Premiere/Finale chip's light hairline (owner), on the dark page.
 const SERVICE_LOGO_RING = {
@@ -247,10 +251,13 @@ const styles = StyleSheet.create({
     minHeight: type.meta.lineHeight,
     color: t.inkMuted,
   },
+  // At the bottom, with some room above it (owner): where to watch, apart
+  // from the lines about the show.
   serviceLine: {
     flexDirection: "row",
     alignItems: "center",
     minHeight: type.meta.lineHeight,
+    marginTop: 8,
     gap: 6,
   },
   // At the poster's top left (owner, 2026-10-22), a little closer to the
@@ -264,10 +271,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 4,
   },
-  // The summary's size, in ink (owner): right under the title, where to
-  // watch reads first.
+  // The app's smallest size (label's), in the line's regular weight, in
+  // ink (owner): the logos carry the glance, the text the detail.
   serviceText: {
-    ...type.meta,
+    fontSize: type.label.fontSize,
+    lineHeight: type.label.lineHeight,
+    fontWeight: type.meta.fontWeight,
     color: t.ink,
     flexShrink: 1,
   },

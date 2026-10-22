@@ -130,15 +130,18 @@ describe("ShowRow", () => {
     expect(screen.queryAllByTestId("service-logo")).toHaveLength(0);
   });
 
-  // Owner, 2026-10-22: the service line right under the title, in ink,
-  // at the summary's size.
-  it("CRI-115: sets the service text at the summary's size, in ink", async () => {
+  // Owner, 2026-10-22: the service line at the bottom, its text at the
+  // app's smallest size, in ink, with some room above it.
+  it("CRI-115: sets the service text at the smallest size, in ink, with room above", async () => {
     await render(
       <ShowRowServiceLine logos={[]} text="On Netflix" testID="service" />,
     );
     const text = StyleSheet.flatten(screen.getByText("On Netflix").props.style);
-    expect(text.fontSize).toBe(type.meta.fontSize);
+    expect(text.fontSize).toBe(type.label.fontSize);
     expect(text.color).toBe(t.ink);
+    expect(
+      StyleSheet.flatten(screen.getByTestId("service").props.style).marginTop,
+    ).toBeGreaterThan(0);
   });
 
   it("CRI-115: shows the text alone without logos, and keeps the line's height", async () => {
@@ -154,9 +157,9 @@ describe("ShowRow", () => {
     ).toBe(type.meta.lineHeight);
   });
 
-  // Owner, CRI-115: the title smaller than headline; the service line
-  // right under it, before the summary.
-  it("sets the title smaller than headline, with the service line right under it", async () => {
+  // Owner, CRI-115: the title smaller than headline; a subtitle right under
+  // it, before the summary (a Search row's status line).
+  it("sets the title smaller than headline, with a subtitle right under it", async () => {
     await render(
       <ShowRow
         title="Slow Horses"

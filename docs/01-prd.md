@@ -169,9 +169,9 @@ first user is the author, who currently uses Next Episode.
     listed without an airstamp yet), a dated next season, or a new season
     listed without a date (TBA).
   - **Inactive:** between seasons, future uncertain, ended.
-- **Row (FR-010, FR-035):** poster, title, the service slot right under
-  it in `ink` (owner, 2026-10-22), then two lines about the show
-  (TVmaze's summary, muted; nothing without one). No
+- **Row (FR-010, FR-035):** poster, title, two lines about the show
+  (TVmaze's summary, muted; nothing without one), and the service slot as
+  the row's last line. No
   status line (owner, 2026-10-22): Shows is for managing the follow list,
   and when a show is on is the hero's and the Calendar's job; screen
   readers still hear Show detail's status line ("Next ep Fri 9 Oct",
@@ -215,8 +215,9 @@ first user is the author, who currently uses Next Episode.
 - **Result row (references: PlayPilot, Spotify "Add to playlist"):** large
   portrait poster on the left. Next to it: title in bold, a meta line with
   year and genres ("2026 · Drama, Thriller"), the status line (below), and
-  the service slot right under the title, in `ink`, by the same rules as
-  the Shows row: "On [service]", or plain
+  the service slot as the row's last line, by the same rules as the Shows
+  row (every status, including "Unavailable", right under the title in
+  `ink`, joined with " · ": owner, 2026-10-22): "On [service]", or plain
   "Unavailable" when there is none (Show detail and the Home hero name the
   region, rows do not), and nothing when TMDB does not know the show
   (FR-027, CRI-97, CRI-102). Two lines about the show under the title,
