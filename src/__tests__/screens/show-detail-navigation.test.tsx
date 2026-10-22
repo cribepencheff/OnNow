@@ -50,7 +50,6 @@ beforeEach(() => {
     isLoading: false,
     isRefetching: false,
     isError: false,
-    dataUpdatedAt: null,
     followedShows: [
       { show: slowHorses, episodes: slowHorses._embedded.episodes },
     ],

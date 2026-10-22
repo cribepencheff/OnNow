@@ -190,7 +190,6 @@ function mockFollowedEpisodes(
     isLoading: false,
     isRefetching: false,
     isError: false,
-    dataUpdatedAt: null,
     followedShows: [],
     showsWithEpisodeToday: [],
     nextDayEpisodes: null,
@@ -910,7 +909,6 @@ describe("HomeScreen", () => {
     // only confused; the spinner says the app is updating.
     it("shows no last-updated line under the pull spinner", async () => {
       mockFollowedEpisodes({
-        dataUpdatedAt: Date.now() - 5 * 60 * 1000,
         followedShows: [{ show, episodes: [makeEpisode()] }],
       });
       await render(<HomeScreen />);
