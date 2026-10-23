@@ -42,7 +42,7 @@ Limits that apply to any choice:
 | TMDB match (`/find`) | the start of every TMDB lookup | almost never | 30 days; a miss 1 day (CRI-107) | 1 day, saved |
 | Hero images (backdrop, logo) | the hero | rarely | every day (the key has the date); see the amendment: weekly | 1 day, saved |
 | Streaming services | "Open in" | now and then | 30 days in plain storage; a miss 1 day | plain storage, 30 days |
-| IMDb rating | Show detail, Search rows | rarely; the OMDb quota matters | 30 days in plain storage (ADR 0013 amendment); none yet 1 day | plain storage, 30 days |
+| Show rating | Show detail, Search rows | with the show | part of the show's own TVmaze data (ADR 0018, replacing the IMDb rating from OMDb) | as the show |
 | Discovery rows (Top picks, Airing this week) | Home and Search rows | by the day | by the day (the keys have the date) | 1 day, saved (see the amendment: the pages are not) |
 | Passing (search results; a show only looked at in Show detail; its origin countries and IDs) | the moment | does not matter | 1 h | 1 day, saved |
 | Follow list, region | everything | only by the user | never fetched (local) | plain storage, always |

@@ -1,14 +1,14 @@
-// The show's IMDb rating on its poster (owner, 2026-10-22): the number
-// alone, no "IMDb" and no star, on a darker fill than the follow circle's
-// with its light hairline edge, so it reads as the show's and pairs with
-// the circle. Nothing without a rating. Search rows only: in Shows, every
-// followed show would ask OMDb, whose free key is shared by every user
-// (CRI-116). Screen readers hear "IMDb rating 8.2".
+// The show's rating on its poster (owner, 2026-10-22): TVmaze's (ADR 0018),
+// in the search result already, so it costs no request; the same number as
+// Show detail's. The number alone, on a darker fill than the follow
+// circle's with its light hairline edge, so it reads as the show's and
+// pairs with the circle. Nothing without a rating. Screen readers hear
+// "TVmaze rating 8.0".
 
 import { StyleSheet, Text, View } from "react-native";
 
 import type { TvMazeShow } from "@/api/tvmaze-types";
-import { useImdbRating } from "@/hooks/useImdbRating";
+import { tvmazeRating } from "@/logic/show-rating";
 import { t } from "@/theme/tokens";
 
 const HEIGHT = 20;
@@ -16,7 +16,7 @@ const HEIGHT = 20;
 export const POSTER_RATING_FILL = "rgba(11, 12, 15, 0.8)";
 
 export function PosterRating({ show }: { show: TvMazeShow }) {
-  const { data: rating } = useImdbRating(show);
+  const rating = tvmazeRating(show);
   if (!rating) {
     return null;
   }
@@ -24,7 +24,7 @@ export function PosterRating({ show }: { show: TvMazeShow }) {
     <View
       style={styles.pill}
       accessible
-      accessibilityLabel={`IMDb rating ${rating}`}
+      accessibilityLabel={`TVmaze rating ${rating}`}
       testID="poster-rating"
     >
       <Text style={styles.rating}>{rating}</Text>

@@ -15,7 +15,6 @@ import { BACKDROP_HEIGHT_SHARE, ShowDetail } from "./ShowDetail";
 import { useShow } from "@/hooks/useShow";
 import { useFollowList } from "@/hooks/useFollowList";
 import { useStreamingService } from "@/hooks/useStreamingService";
-import { useImdbRating } from "@/hooks/useImdbRating";
 import { NOT_ON_TMDB, type ProviderAnswer } from "@/logic/streaming-service";
 import showMobLandFixture from "@/api/fixtures/show-mobland.json";
 import showSlowHorsesFixture from "@/api/fixtures/show-slow-horses.json";
@@ -37,9 +36,6 @@ jest.mock("@/hooks/useShow", () => ({
 }));
 jest.mock("@/hooks/useStreamingService", () => ({
   useStreamingService: jest.fn(),
-}));
-jest.mock("@/hooks/useImdbRating", () => ({
-  useImdbRating: jest.fn(),
 }));
 const mockOriginCountries = jest.fn(() => ({ data: ["GB"] }));
 jest.mock("@/hooks/useOriginCountries", () => ({
@@ -78,17 +74,6 @@ function mockStreamingServices(
     isLoading,
     region: "SE",
   } as never);
-}
-
-const mockedUseImdbRating = useImdbRating as jest.MockedFunction<
-  typeof useImdbRating
->;
-
-function mockImdbRating(rating: string | null | undefined) {
-  // The IMDb ID is the show's own here (TVmaze has it).
-  mockedUseImdbRating.mockImplementation(
-    (show) => ({ data: rating, imdbId: show.externals?.imdb ?? null }) as never,
-  );
 }
 
 const APPLE_TV = { providerId: 350, providerName: "Apple TV", logoPath: null };
@@ -136,7 +121,6 @@ describe("ShowDetail", () => {
     unfollow.mockReset();
     mockFollowed(false);
     mockStreamingServices(undefined);
-    mockImdbRating(undefined);
     mockShowImages.mockReturnValue({
       data: {
         highestRatedBackdrop: { file_path: "/textless.jpg" },
@@ -291,25 +275,25 @@ describe("ShowDetail", () => {
     ).toBeTruthy();
   });
 
-  it("CRI-87: shows the IMDb rating, linking to the show on IMDb", async () => {
+  // ADR 0018 (owner, 2026-10-22): TVmaze's rating, the same as a Search
+  // row's, from the show's own data, linking to the show on TVmaze.
+  it("shows TVmaze's rating, linking to the show on TVmaze", async () => {
     mockShow(showMobLandFixture);
-    mockImdbRating("8.3");
     await render(<ShowDetail showId={75026} />);
 
-    const rating = screen.getByTestId("imdb-rating");
-    expect(rating).toHaveTextContent("IMDb8.3");
+    const rating = screen.getByTestId("show-rating");
+    expect(rating).toHaveTextContent("TVmaze8.1");
+    expect(screen.queryByText("IMDb")).toBeNull();
     await fireEvent.press(rating);
     expect(Linking.openURL).toHaveBeenCalledWith(
-      "https://www.imdb.com/title/tt31510819/",
+      "https://www.tvmaze.com/shows/75026/mobland",
     );
   });
 
-  it("CRI-87: shows nothing without a rating, while loading or without a key", async () => {
-    mockShow(showMobLandFixture);
-    mockImdbRating(null);
+  it("shows no rating when TVmaze has none", async () => {
+    mockShow({ ...showMobLandFixture, rating: { average: null } });
     await render(<ShowDetail showId={75026} />);
-    expect(screen.queryByTestId("imdb-rating")).toBeNull();
-    expect(screen.queryByText("IMDb")).toBeNull();
+    expect(screen.queryByTestId("show-rating")).toBeNull();
   });
 
   it("FR-029: follows the show from Follow", async () => {

@@ -2,8 +2,6 @@
 
 import { homeIsReady } from "./launch";
 
-const MIN = 60 * 1000;
-
 describe("homeIsReady (CRI-95, NFR-001)", () => {
   it("is ready at once with cached shows, even while they refresh", () => {
     expect(
