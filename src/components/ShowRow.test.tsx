@@ -2,10 +2,12 @@ import { StyleSheet, Text } from "react-native";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
 import {
+  LARGE_POSTER,
   POSTER_ACCESSORY_INSET,
   ROW_TITLE_SIZE,
   ShowRow,
   ShowRowLine,
+  ShowRowSeparator,
   ShowRowServiceLine,
 } from "./ShowRow";
 import { t, type } from "@/theme/tokens";
@@ -269,4 +271,24 @@ describe("ShowRow", () => {
       }),
     ).toBeNull();
   });
+
+  // Owner, 2026-10-23: Shows' hairline between rows, in Search too; inset
+  // to the text column, as on iOS lists.
+  it.each([
+    [false, 60],
+    [true, LARGE_POSTER.width],
+  ])(
+    "draws a hairline inset to the text column (large poster: %s)",
+    async (largePoster, posterWidth) => {
+      await render(<ShowRowSeparator largePoster={largePoster} />);
+      const line = StyleSheet.flatten(
+        screen.getByTestId("show-row-separator").props.style,
+      );
+      expect(line).toMatchObject({
+        height: StyleSheet.hairlineWidth,
+        marginLeft: t.contentInset + posterWidth + t.space2 + 4,
+        backgroundColor: t.hairline,
+      });
+    },
+  );
 });

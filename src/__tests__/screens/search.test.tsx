@@ -268,6 +268,27 @@ describe("SearchScreen", () => {
     client.unmount();
   });
 
+  // Owner, 2026-10-23: a hairline between results, as in Shows.
+  it("draws a hairline between results, as Shows does", async () => {
+    mockedSearchShows.mockResolvedValue(searchSlowHorsesFixture as never);
+    const client = createTestQueryClient();
+    const { unmount } = await render(<SearchScreen />, {
+      wrapper: wrapperWithQueryClient(client),
+    });
+
+    fireEvent.changeText(screen.getByLabelText("Search shows"), "Slow Horses");
+
+    await waitFor(() => expect(screen.getByText("Slow Horses")).toBeTruthy());
+    const rows = screen.getAllByTestId("search-result-row");
+    expect(rows.length).toBeGreaterThan(1);
+    expect(screen.getAllByTestId("show-row-separator")).toHaveLength(
+      rows.length - 1,
+    );
+
+    await unmount();
+    client.unmount();
+  });
+
   it("shows a hint to try the original title when there are no results", async () => {
     mockedSearchShows.mockResolvedValue([]);
     const client = createTestQueryClient();

@@ -234,6 +234,23 @@ const POSTER_HEIGHT = 90;
 // row (summary, year and genres, status, services); 2:3, as posters are.
 export const LARGE_POSTER = { width: 78, height: 120 };
 export const POSTER_ACCESSORY_INSET = 6;
+// The gap between the poster and the text column.
+const ROW_GAP = t.space2 + 4;
+
+// The hairline between rows, inset to the text column as on iOS lists:
+// Shows' rows, and Search's with their bigger poster (owner, 2026-10-23).
+export function ShowRowSeparator({ largePoster }: { largePoster?: boolean }) {
+  const posterWidth = largePoster ? LARGE_POSTER.width : POSTER_WIDTH;
+  return (
+    <View
+      testID="show-row-separator"
+      style={[
+        styles.separator,
+        { marginLeft: t.contentInset + posterWidth + ROW_GAP },
+      ]}
+    />
+  );
+}
 
 const styles = StyleSheet.create({
   row: {
@@ -241,7 +258,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: t.space2 + 4,
     paddingHorizontal: t.contentInset,
-    gap: t.space2 + 4,
+    gap: ROW_GAP,
+  },
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: t.hairline,
   },
   poster: {
     width: POSTER_WIDTH,

@@ -20,6 +20,7 @@ import { useFocusEffect, useNavigation } from "expo-router";
 
 import { AiringThisWeekRow } from "@/components/AiringThisWeekRow";
 import { SearchResultRow } from "@/components/SearchResultRow";
+import { ShowRowSeparator } from "@/components/ShowRow";
 import { TopPicksRow } from "@/components/TopPicksRow";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
@@ -162,6 +163,8 @@ export default function SearchScreen() {
               }
             />
           )}
+          // A hairline between results, as in Shows (owner, 2026-10-23).
+          ItemSeparatorComponent={SearchResultSeparator}
           ListEmptyComponent={
             answered ? (
               <Text style={styles.noResults}>
@@ -178,6 +181,10 @@ export default function SearchScreen() {
       )}
     </View>
   );
+}
+
+function SearchResultSeparator() {
+  return <ShowRowSeparator largePoster />;
 }
 
 // Before typing (PRD 5.4, FR-026): Home's two poster rows as they are, the
