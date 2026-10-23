@@ -39,6 +39,10 @@ describe("SearchFieldFrame", () => {
     for (const style of [searchFieldText.input, searchFieldText.placeholder]) {
       expect(style.fontSize).toBe(SEARCH_FIELD_TEXT_SIZE);
       expect(style.paddingVertical).toBe(0);
+      // No line height: on iOS a one-line TextInput sets its text lower
+      // with one than a Text does, so Search's input and Shows' placeholder
+      // sat apart (owner, 2026-10-23).
+      expect(style).not.toHaveProperty("lineHeight");
     }
     expect(SEARCH_FIELD_TEXT_SIZE).toBeLessThan(type.headline.fontSize);
     expect(searchFieldText.placeholder.color).toBe(t.inkMuted);

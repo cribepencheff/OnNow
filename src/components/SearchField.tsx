@@ -34,12 +34,13 @@ export function SearchFieldFrame({
   );
 }
 
-// The field's text: Search's input, or the placeholder in Shows.
+// The field's text: Search's input, or the placeholder in Shows. No line
+// height: a one-line TextInput on iOS sets its text lower with one than a
+// Text does, so the two would sit apart; both centre on the font's own.
 export const searchFieldText = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: SEARCH_FIELD_TEXT_SIZE,
-    lineHeight: 22,
     fontWeight: "400",
     paddingVertical: 0,
     color: t.ink,
@@ -47,7 +48,6 @@ export const searchFieldText = StyleSheet.create({
   placeholder: {
     flex: 1,
     fontSize: SEARCH_FIELD_TEXT_SIZE,
-    lineHeight: 22,
     fontWeight: "400",
     paddingVertical: 0,
     color: t.inkMuted,
