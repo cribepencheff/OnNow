@@ -28,7 +28,10 @@ import { queryClient } from "@/hooks/query-client";
 import { createTmdbFindCache } from "@/hooks/tmdb-find-cache";
 import type { TmdbImages } from "./tmdb-types";
 import type { TvMazeExternals, TvMazeShow } from "./tvmaze-types";
-import type { SuggestedTitle } from "@/logic/search-completion";
+import type {
+  SuggestedTitle,
+  TmdbTranslation,
+} from "@/logic/search-completion";
 
 // What identifies a TVmaze show on TMDB: its external IDs, and its name and
 // premiere for a search when it has neither ID (CRI-99).
@@ -113,6 +116,9 @@ export interface TmdbClient {
   // complete the query's last word before searching TVmaze (CRI-142);
   // null without a key.
   suggestTitles: (query: string) => Promise<SuggestedTitle[] | null>;
+  // A show's translated titles with their languages, by its TMDB id
+  // (owner, 2026-10-23: "Maffiablod in Swedish"); null without a key.
+  findTranslations: (tmdbId: number) => Promise<TmdbTranslation[] | null>;
   // Shows on a streaming service in the region with an episode on a day
   // (TMDB discover), soaps excluded, the 20 most popular (FR-039); null
   // without a key. The row asks one day at a time, as it needs it.
@@ -318,11 +324,27 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
       return null;
     }
     const answer = await requestJson<{
-      results?: { name: string; original_name?: string | null }[];
+      results?: { id: number; name: string; original_name?: string | null }[];
     }>(`/search/tv?query=${encodeURIComponent(query)}`, apiKey);
     return (answer.results ?? []).map((result) => ({
+      id: result.id,
       name: result.name,
       original_name: result.original_name ?? null,
+    }));
+  }
+
+  async function findTranslations(
+    tmdbId: number,
+  ): Promise<TmdbTranslation[] | null> {
+    if (!apiKey) {
+      return null;
+    }
+    const answer = await requestJson<{
+      translations?: { english_name: string; data?: { name?: string } }[];
+    }>(`/tv/${tmdbId}/translations`, apiKey);
+    return (answer.translations ?? []).map((translation) => ({
+      english_name: translation.english_name,
+      name: translation.data?.name ?? "",
     }));
   }
 
@@ -369,6 +391,7 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
   return {
     findAiringOn,
     suggestTitles,
+    findTranslations,
     providersById,
     findStreamingProviders,
     findOriginCountries,

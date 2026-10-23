@@ -466,7 +466,7 @@ describe("TmdbClient.suggestTitles", () => {
     );
     const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
     await expect(client.suggestTitles("cecilias un")).resolves.toEqual([
-      { name: "Cecilias boy", original_name: "Cecilias unge" },
+      { id: 1, name: "Cecilias boy", original_name: "Cecilias unge" },
     ]);
     expect(fetchFn.mock.calls[0][0]).toContain(
       "/3/search/tv?query=cecilias%20un",
@@ -482,5 +482,31 @@ describe("TmdbClient.suggestTitles", () => {
     });
     await expect(client.suggestTitles("slow h")).resolves.toBeNull();
     expect(fetchFn).not.toHaveBeenCalled();
+  });
+});
+
+// Owner, 2026-10-23: a show's translated titles, for the row's "Maffiablod
+// in Swedish".
+describe("TmdbClient.findTranslations", () => {
+  it("gives each translation's title and its language's English name", async () => {
+    const fetchFn = jest.fn().mockResolvedValue(
+      jsonResponse({
+        translations: [
+          {
+            iso_639_1: "sv",
+            iso_3166_1: "SE",
+            english_name: "Swedish",
+            data: { name: "Maffiablod" },
+          },
+          { iso_639_1: "de", english_name: "German", data: {} },
+        ],
+      }),
+    );
+    const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
+    await expect(client.findTranslations(255570)).resolves.toEqual([
+      { english_name: "Swedish", name: "Maffiablod" },
+      { english_name: "German", name: "" },
+    ]);
+    expect(fetchFn.mock.calls[0][0]).toContain("/3/tv/255570/translations");
   });
 });

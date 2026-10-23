@@ -151,6 +151,7 @@ export default function SearchScreen() {
           renderItem={({ item }) => (
             <SearchResultRow
               show={item.show}
+              knownAs={item.knownAs}
               // Show detail opens inside Search, with a back arrow to these
               // results (PRD 5.6, CRI-79).
               onPress={() =>

@@ -1,5 +1,12 @@
 import suggestions from "@/api/fixtures/tmdb-search-suggest.json";
-import { completeLastWord, needsCompletion } from "./search-completion";
+import maffiablod from "@/api/fixtures/tmdb-search-maffiablod.json";
+import {
+  completeLastWord,
+  knownAsLine,
+  matchingTranslation,
+  needsCompletion,
+  translatedCandidate,
+} from "./search-completion";
 
 // Real TMDB search answers for half-typed queries (2026-10-23).
 const titles = (query: keyof typeof suggestions) => suggestions[query];
@@ -65,5 +72,58 @@ describe("needsCompletion (CRI-142)", () => {
     expect(needsCompletion("slow ")).toBe(false);
     expect(needsCompletion("")).toBe(false);
     expect(needsCompletion("   ")).toBe(false);
+  });
+});
+
+// Owner, 2026-10-23: "Maffiablod" is This City Is Ours' Swedish title.
+// TVmaze knows only the original; TMDB finds it by its translations.
+describe("translatedCandidate", () => {
+  it("is TMDB's top show when none of its titles has the query's words", () => {
+    expect(translatedCandidate("maffiablod", maffiablod.search)).toEqual({
+      id: 255570,
+      originalName: "This City Is Ours",
+    });
+  });
+
+  it("is none when the top show's own title has them", () => {
+    expect(
+      translatedCandidate("slow h", [
+        { id: 1, name: "Slow Horses", original_name: "Slow Horses" },
+      ]),
+    ).toBeNull();
+    expect(
+      translatedCandidate("cecilias unge", [
+        { id: 2, name: "Cecilias boy", original_name: "Cecilias unge" },
+      ]),
+    ).toBeNull();
+  });
+
+  it("is none without an answer", () => {
+    expect(translatedCandidate("maffiablod", [])).toBeNull();
+  });
+});
+
+describe("matchingTranslation", () => {
+  it("finds the translation the query matches, with its language", () => {
+    expect(matchingTranslation("maffiablod", maffiablod.translations)).toEqual({
+      name: "Maffiablod",
+      language: "Swedish",
+    });
+    expect(matchingTranslation("maffiabl", maffiablod.translations)).toEqual({
+      name: "Maffiablod",
+      language: "Swedish",
+    });
+  });
+
+  it("is none when no translation matches", () => {
+    expect(matchingTranslation("the bear", maffiablod.translations)).toBeNull();
+  });
+});
+
+describe("knownAsLine", () => {
+  it('says the title and its language ("Maffiablod in Swedish")', () => {
+    expect(knownAsLine({ name: "Maffiablod", language: "Swedish" })).toBe(
+      "Maffiablod in Swedish",
+    );
   });
 });

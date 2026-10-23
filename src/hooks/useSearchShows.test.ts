@@ -3,6 +3,7 @@ import { renderHook, waitFor } from "@testing-library/react-native";
 import { tvMazeClient } from "@/api/tvmaze-client";
 import searchTheBearFixture from "@/api/fixtures/search-the-bear.json";
 import { tmdbClient } from "@/api/tmdb-client";
+import maffiablod from "@/api/fixtures/tmdb-search-maffiablod.json";
 import { useSearchShows } from "./useSearchShows";
 import { createTestQueryClient, wrapperWithQueryClient } from "./test-utils";
 
@@ -12,19 +13,21 @@ jest.mock("@/api/tvmaze-client", () => ({
   },
 }));
 jest.mock("@/api/tmdb-client", () => ({
-  tmdbClient: { suggestTitles: jest.fn() },
+  tmdbClient: { suggestTitles: jest.fn(), findTranslations: jest.fn() },
 }));
 
 const mockedSearchShows = tvMazeClient.searchShows as jest.MockedFunction<
   typeof tvMazeClient.searchShows
 >;
 const suggestTitles = tmdbClient.suggestTitles as jest.Mock;
+const findTranslations = tmdbClient.findTranslations as jest.Mock;
 
 // FR-001, FR-024: search results while typing, running shows ranked first.
 describe("useSearchShows", () => {
   beforeEach(() => {
     mockedSearchShows.mockReset().mockResolvedValue([]);
     suggestTitles.mockReset().mockResolvedValue([]);
+    findTranslations.mockReset().mockResolvedValue([]);
   });
 
   it("does not search for an empty query", async () => {
@@ -80,7 +83,10 @@ describe("useSearchShows", () => {
     expect(mockedSearchShows).toHaveBeenCalledWith("slow Horses");
   });
 
+  // Once TVmaze finds something; with nothing found, TMDB is asked for a
+  // translated title (below).
   it("asks TMDB nothing once the last word is followed by a space", async () => {
+    mockedSearchShows.mockResolvedValue(searchTheBearFixture as never);
     await searchFor("slow horses ");
     expect(suggestTitles).not.toHaveBeenCalled();
     expect(mockedSearchShows).toHaveBeenCalledWith("slow horses");
@@ -96,5 +102,42 @@ describe("useSearchShows", () => {
     suggestTitles.mockRejectedValue(new Error("TMDB 500"));
     await searchFor("slow h");
     expect(mockedSearchShows).toHaveBeenCalledWith("slow h");
+  });
+
+  // Owner, 2026-10-23: a show found by a translated title. TVmaze knows only
+  // the original, so Search also looks that up, and says why it is there.
+  describe("by a translated title (Maffiablod)", () => {
+    const thisCityIsOurs = {
+      score: 1,
+      show: { id: 74826, name: "This City Is Ours", status: "Running" },
+    };
+
+    beforeEach(() => {
+      suggestTitles.mockResolvedValue(maffiablod.search);
+      findTranslations.mockResolvedValue(maffiablod.translations);
+      mockedSearchShows.mockImplementation(async (query: string) =>
+        query === "This City Is Ours" ? [thisCityIsOurs as never] : [],
+      );
+    });
+
+    it.each(["maffiablod", "maffiablod "])(
+      "finds This City Is Ours for %p, as Maffiablod in Swedish",
+      async (query) => {
+        const client = createTestQueryClient();
+        const { result, unmount } = await renderHook(
+          () => useSearchShows(query),
+          { wrapper: wrapperWithQueryClient(client) },
+        );
+        await waitFor(() =>
+          expect(result.current.data?.[0]).toMatchObject({
+            show: { id: 74826 },
+            knownAs: "Maffiablod in Swedish",
+          }),
+        );
+        expect(findTranslations).toHaveBeenCalledWith(255570);
+        await unmount();
+        client.unmount();
+      },
+    );
   });
 });

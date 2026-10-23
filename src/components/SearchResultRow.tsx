@@ -27,10 +27,17 @@ import { t } from "@/theme/tokens";
 
 interface SearchResultRowProps {
   show: TvMazeShow;
+  // Why a show with another title is here: the translated title the query
+  // found it by ("Maffiablod in Swedish"; owner, 2026-10-23).
+  knownAs?: string;
   onPress?: () => void;
 }
 
-export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
+export function SearchResultRow({
+  show,
+  knownAs,
+  onPress,
+}: SearchResultRowProps) {
   // Only this show's follow state: a follow redraws this row, not the list.
   const { followed, toggle } = useFollowToggle(show.id);
   const { data: providers } = useStreamingService(show, true);
@@ -46,7 +53,14 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
       summaryLines={3}
       // The show's status right under the title, in ink (owner,
       // 2026-10-22).
-      subtitle={<StatusLine show={show} />}
+      subtitle={
+        <>
+          {knownAs ? (
+            <ShowRowLine testID="search-result-known-as">{knownAs}</ShowRowLine>
+          ) : null}
+          <StatusLine show={show} />
+        </>
+      }
       largePoster
       testID="search-result-row"
       onPress={onPress}

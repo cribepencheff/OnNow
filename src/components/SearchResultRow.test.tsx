@@ -303,4 +303,35 @@ describe("SearchResultRow", () => {
     expect(poster.height).toBe(LARGE_POSTER.height);
     expect(LARGE_POSTER.height).toBeGreaterThan(90);
   });
+
+  // Owner, 2026-10-23: a show found by its translated title says so, right
+  // under the title, so it does not look like a wrong hit.
+  it("says which translated title found it, right under the title", async () => {
+    await render(
+      <SearchResultRow
+        show={showSlowHorsesFixture as unknown as TvMazeShow}
+        knownAs="Maffiablod in Swedish"
+      />,
+    );
+    expect(screen.getByTestId("search-result-known-as")).toHaveTextContent(
+      "Maffiablod in Swedish",
+    );
+    const order = screen
+      .getByTestId("search-result-row-details")
+      .children.map((child) =>
+        typeof child === "string" ? child : child.props.testID,
+      );
+    expect(order.slice(0, 3)).toEqual([
+      "search-result-row-title-row",
+      "search-result-known-as",
+      "search-result-status",
+    ]);
+  });
+
+  it("has no such line otherwise", async () => {
+    await render(
+      <SearchResultRow show={showSlowHorsesFixture as unknown as TvMazeShow} />,
+    );
+    expect(screen.queryByTestId("search-result-known-as")).toBeNull();
+  });
 });
