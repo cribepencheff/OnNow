@@ -303,4 +303,30 @@ describe("SearchResultRow", () => {
     expect(poster.height).toBe(LARGE_POSTER.height);
     expect(LARGE_POSTER.height).toBeGreaterThan(90);
   });
+
+  // Owner, 2026-10-23: a show found by its translated title says so after
+  // its status, as the same line, so it does not look like a wrong hit.
+  it("says which translated title found it, after the status", async () => {
+    await render(
+      <SearchResultRow
+        show={showSlowHorsesFixture as unknown as TvMazeShow}
+        knownAs="Maffiablod in Swedish"
+      />,
+    );
+    expect(screen.getByTestId("search-result-status")).toHaveTextContent(
+      "Airing · Maffiablod in Swedish",
+    );
+  });
+
+  it("says only the translated title when there is no status", async () => {
+    await render(
+      <SearchResultRow
+        show={{ ...showSlowHorsesFixture, status: "" } as unknown as TvMazeShow}
+        knownAs="Maffiablod in Swedish"
+      />,
+    );
+    expect(screen.getByTestId("search-result-status")).toHaveTextContent(
+      /^Maffiablod in Swedish$/,
+    );
+  });
 });
