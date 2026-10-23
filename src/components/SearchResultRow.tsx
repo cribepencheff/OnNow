@@ -53,14 +53,7 @@ export function SearchResultRow({
       summaryLines={3}
       // The show's status right under the title, in ink (owner,
       // 2026-10-22).
-      subtitle={
-        <>
-          {knownAs ? (
-            <ShowRowLine testID="search-result-known-as">{knownAs}</ShowRowLine>
-          ) : null}
-          <StatusLine show={show} />
-        </>
-      }
+      subtitle={<StatusLine show={show} knownAs={knownAs} />}
       largePoster
       testID="search-result-row"
       onPress={onPress}
@@ -98,10 +91,12 @@ export function SearchResultRow({
 // The show's status from the search result alone, right under the title
 // in ink (owner, 2026-10-22): "Airing", "Ended · 2017"; no request of its
 // own, so when a running show's next episode airs is left to Show detail.
-function StatusLine({ show }: { show: TvMazeShow }) {
+// A translated title the show was found by follows it on the same line,
+// "Airing · Maffiablod in Swedish" (owner, 2026-10-23).
+function StatusLine({ show, knownAs }: { show: TvMazeShow; knownAs?: string }) {
   return (
     <ShowRowLine testID="search-result-status" style={styles.ink}>
-      {searchStatusLabel(show)}
+      {[searchStatusLabel(show), knownAs].filter(Boolean).join(" · ")}
     </ShowRowLine>
   );
 }
