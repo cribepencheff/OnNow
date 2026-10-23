@@ -1,10 +1,13 @@
 // Search (PRD 5.4, FR-001, FR-007, FR-026): a tab of its own (CRI-133),
-// with the keyboard open on entry (search-focus.ts) and results while
-// typing. Following is saved immediately; there is no "Cancel". A search
-// waits for a short pause in typing, and a clear button (X) inside the
-// field empties it, the same on iOS and Android (PRD 5.4).
+// with results while typing. Its tab opens it at rest, its title over the
+// field and the keyboard down; a tap in the field, or an entry that asks
+// for it (search-focus.ts), starts typing, and a close button ends it
+// (SearchHeader; owner, 2026-10-23, Apple TV as the reference). Following
+// is saved immediately. A search waits for a short pause in typing, and a
+// clear button (X) inside the field empties it, the same on iOS and
+// Android (PRD 5.4).
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   FlatList,
   Pressable,
@@ -19,6 +22,7 @@ import { SymbolView } from "expo-symbols";
 import { useFocusEffect, useNavigation } from "expo-router";
 
 import { AiringThisWeekRow } from "@/components/AiringThisWeekRow";
+import { SearchHeader } from "@/components/SearchHeader";
 import { SearchResultRow } from "@/components/SearchResultRow";
 import { ShowRowSeparator } from "@/components/ShowRow";
 import { TopPicksRow } from "@/components/TopPicksRow";
@@ -37,7 +41,7 @@ import {
 } from "@/hooks/useSettledFollowed";
 import { TAB_BAR_HEIGHT } from "@/logic/tab-bar";
 import { t, type } from "@/theme/tokens";
-import { SearchFieldFrame, searchFieldText } from "@/components/SearchField";
+import { searchFieldText } from "@/components/SearchField";
 
 // The pause in typing before a search is sent (PRD 5.4).
 const SEARCH_DELAY_MS = 250;
@@ -57,29 +61,52 @@ export default function SearchScreen() {
   const { day: settledDay, settle: settleDay } = useSettledDay();
   useFocusEffect(settleDay);
   const [query, setQuery] = useState("");
-
-  // Typing mode on entry (CRI-133): a request taken as Search gains focus
-  // opens it, and one made while Search is already on screen (a tap on its
-  // tab) focuses the field at once. Leaving Search closes the keyboard.
+  // Typing mode: from a tap in the field (or an entry asking for it) until
+  // the close button. Anything typed keeps it.
+  const [engaged, setEngaged] = useState(false);
+  const typing = engaged || query.length > 0;
+  // Read by the blur listener below, which is set up once.
+  const queryRef = useRef(query);
   useEffect(() => {
-    const focusField = () => inputRef.current?.focus();
+    queryRef.current = query;
+  }, [query]);
+
+  const closeSearch = useCallback(() => {
+    setQuery("");
+    setEngaged(false);
+    inputRef.current?.blur();
+  }, []);
+
+  // Typing mode on request (CRI-133): a request taken as Search gains
+  // focus, or on its first visit, opens it, and one made while Search is
+  // already on screen (a second tap on its tab) focuses the field at once.
+  // Leaving Search closes the keyboard, and with nothing typed it comes
+  // back at rest.
+  useEffect(() => {
+    const focusField = () => {
+      setEngaged(true);
+      inputRef.current?.focus();
+    };
     const offFocus = navigation.addListener("focus", () => {
       if (takeSearchFocusRequest()) {
         settleFollowed();
         focusField();
       }
     });
-    const offBlur = navigation.addListener("blur", () =>
-      inputRef.current?.blur(),
-    );
+    const offBlur = navigation.addListener("blur", () => {
+      inputRef.current?.blur();
+      if (queryRef.current.length === 0) {
+        setEngaged(false);
+      }
+    });
     const unsubscribe = subscribeSearchFocus(() => {
       if (navigation.isFocused() && takeSearchFocusRequest()) {
         focusField();
       }
     });
-    // The first visit opens with the field focused (autoFocus below), so a
-    // request made on the way here is used up.
-    takeSearchFocusRequest();
+    if (takeSearchFocusRequest()) {
+      focusField();
+    }
     return () => {
       offFocus();
       offBlur();
@@ -93,50 +120,48 @@ export default function SearchScreen() {
   const answered = !isFetching && searchedQuery.trim() === query.trim();
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + t.space4 }]}>
-      <View style={styles.header} testID="search-header">
-        <SearchFieldFrame style={styles.searchField}>
-          <TextInput
-            ref={inputRef}
-            autoFocus
-            value={query}
-            onChangeText={setQuery}
-            placeholder="Search shows"
-            placeholderTextColor={t.inkMuted}
-            selectionColor={t.accent}
-            style={searchFieldText.input}
-            returnKeyType="search"
-            // The return key ("Search") closes the keyboard; results already
-            // appear while typing.
-            submitBehavior="blurAndSubmit"
-            // Show titles are names, not dictionary words: autocorrect would
-            // rewrite them.
-            autoCorrect={false}
-            spellCheck={false}
-            accessibilityLabel="Search shows"
-            testID="search-input"
-          />
-          {query.length > 0 && (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Clear search"
-              onPress={() => setQuery("")}
-              hitSlop={8}
-              testID="search-clear"
-            >
-              <SymbolView
-                name={{
-                  ios: "xmark.circle.fill",
-                  android: "cancel",
-                  web: "cancel",
-                }}
-                tintColor={t.inkSubtle}
-                size={18}
-              />
-            </Pressable>
-          )}
-        </SearchFieldFrame>
-      </View>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      <SearchHeader typing={typing} onClose={closeSearch}>
+        <TextInput
+          ref={inputRef}
+          value={query}
+          onChangeText={setQuery}
+          onFocus={() => setEngaged(true)}
+          placeholder="Search shows"
+          placeholderTextColor={t.inkMuted}
+          selectionColor={t.accent}
+          style={searchFieldText.input}
+          returnKeyType="search"
+          // The return key ("Search") closes the keyboard; results already
+          // appear while typing.
+          submitBehavior="blurAndSubmit"
+          // Show titles are names, not dictionary words: autocorrect would
+          // rewrite them.
+          autoCorrect={false}
+          spellCheck={false}
+          accessibilityLabel="Search shows"
+          testID="search-input"
+        />
+        {query.length > 0 && (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Clear search"
+            onPress={() => setQuery("")}
+            hitSlop={8}
+            testID="search-clear"
+          >
+            <SymbolView
+              name={{
+                ios: "xmark.circle.fill",
+                android: "cancel",
+                web: "cancel",
+              }}
+              tintColor={t.inkSubtle}
+              size={18}
+            />
+          </Pressable>
+        )}
+      </SearchHeader>
 
       {query.trim().length === 0 ? (
         <SettledDayContext.Provider value={settledDay}>
@@ -224,15 +249,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: t.bg,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginHorizontal: t.contentInset,
-    marginBottom: t.space2 + 4,
-  },
-  searchField: {
-    flex: 1,
   },
   // The lists end above the tab bar.
   resultsContent: {

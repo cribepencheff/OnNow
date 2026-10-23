@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, TextInput } from "react-native";
 import {
   fireEvent,
   renderRouter,
@@ -80,7 +80,10 @@ describe("Floating tab bar (real navigation)", () => {
     expect(rendered.getPathname()).toBe("/shows");
   });
 
-  it("opens the Search screen directly from its tab, in typing mode", async () => {
+  // Owner, 2026-10-23, Apple TV as the reference: at rest, the keyboard
+  // down. A second tap, on Search, starts typing (search-focus.test.ts).
+  it("opens the Search screen directly from its tab, at rest", async () => {
+    const focusSpy = jest.spyOn(TextInput.prototype, "focus");
     const rendered = renderRouter("src/app", { initialUrl: "/calendar" });
     await rendered;
 
@@ -88,8 +91,10 @@ describe("Floating tab bar (real navigation)", () => {
 
     expect(rendered.getPathname()).toBe("/search");
     await waitFor(() =>
-      expect(screen.getByTestId("search-input")).toBeTruthy(),
+      expect(screen.getByTestId("search-title")).toBeTruthy(),
     );
+    expect(focusSpy).not.toHaveBeenCalled();
+    focusSpy.mockRestore();
     expect(screen.getByTestId("tab-search").props.accessibilityState).toEqual(
       expect.objectContaining({ selected: true }),
     );

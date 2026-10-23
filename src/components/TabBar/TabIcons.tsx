@@ -137,13 +137,34 @@ export function MyShowsIcon({ active }: TabIconProps) {
 // outline: active, only the pill behind it marks it (the one exception to
 // "active is filled").
 export function SearchIcon(_props: TabIconProps) {
+  return <MagnifierIcon size={t.tabBarIconSize} color={t.ink} />;
+}
+
+// Search's magnifier, also the search field's (owner, 2026-10-23), at any
+// size and colour; the stroke scales with it.
+export function MagnifierIcon({
+  size,
+  color,
+  testID,
+}: {
+  size: number;
+  color: string;
+  testID?: string;
+}) {
   return (
-    <TabSvg>
+    <Svg width={size} height={size} viewBox="0 0 24 24" testID={testID}>
       <G translate="1.25, 1.25">
-        <Circle cx="10" cy="10" r="7.5" fill="none" {...stroke} />
-        <Line x1="15.3" y1="15.3" x2="19" y2="19" {...stroke} />
+        <Circle
+          cx="10"
+          cy="10"
+          r="7.5"
+          fill="none"
+          {...stroke}
+          stroke={color}
+        />
+        <Line x1="15.3" y1="15.3" x2="19" y2="19" {...stroke} stroke={color} />
       </G>
-    </TabSvg>
+    </Svg>
   );
 }
 

@@ -1,8 +1,8 @@
 import { StyleSheet } from "react-native";
-import { type } from "@/theme/tokens";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
 import ShowsScreen from "@/app/(tabs)/shows";
+import { SEARCH_FIELD_TEXT_SIZE } from "@/components/SearchField";
 import { TVMAZE_CREDIT } from "@/api/tvmaze-credit";
 import { useFollowList } from "@/hooks/useFollowList";
 import { useFollowedEpisodes } from "@/hooks/useFollowedEpisodes";
@@ -370,7 +370,7 @@ describe("ShowsScreen", () => {
     const placeholder = StyleSheet.flatten(
       screen.getByText("Search shows").props.style,
     );
-    expect(placeholder.fontSize).toBe(type.headline.fontSize);
+    expect(placeholder.fontSize).toBe(SEARCH_FIELD_TEXT_SIZE);
     expect(placeholder.fontWeight).toBe("400");
   });
 
