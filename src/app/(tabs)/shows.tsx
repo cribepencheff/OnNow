@@ -15,6 +15,7 @@ import {
 
 import { AddFirstShow } from "@/components/AddFirstShow";
 import { RegionLink } from "@/components/RegionLink";
+import { ShowRowSeparator } from "@/components/ShowRow";
 import { ShowsRow } from "@/components/ShowsRow";
 import { TvMazeCredit } from "@/components/TvMazeCredit";
 import { afterThisFrame, useFollowActions } from "@/hooks/useFollowList";
@@ -151,7 +152,7 @@ export default function ShowsScreen() {
               }
             />
           )}
-          ItemSeparatorComponent={RowSeparator}
+          ItemSeparatorComponent={ShowRowSeparator}
           ListFooterComponent={ShowsFooter}
           contentContainerStyle={styles.listContent}
           refreshControl={
@@ -193,10 +194,6 @@ function SegmentHeader({
   );
 }
 
-function RowSeparator() {
-  return <View style={styles.separator} />;
-}
-
 // The region sits here until there is a settings view (CRI-88).
 function ShowsFooter() {
   return (
@@ -235,12 +232,6 @@ const styles = StyleSheet.create({
   },
   segmentCount: {
     color: t.inkMuted,
-  },
-  // Inset to the text column, as on iOS lists.
-  separator: {
-    height: StyleSheet.hairlineWidth,
-    marginLeft: t.contentInset + 60 + t.space2 + 4,
-    backgroundColor: t.hairline,
   },
   quietLine: {
     ...type.body,
