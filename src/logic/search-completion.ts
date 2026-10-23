@@ -18,10 +18,7 @@ export function needsCompletion(query: string): boolean {
 
 // Case and accents aside: "Pokémon" matches "pokemon".
 function fold(word: string): string {
-  return word
-    .normalize("NFKD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase();
+  return word.normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase();
 }
 
 function wordsOf(title: string): string[] {
