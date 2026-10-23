@@ -1,5 +1,6 @@
 import {
   requestSearchFocus,
+  searchTabPressed,
   subscribeSearchFocus,
   takeSearchFocusRequest,
 } from "./search-focus";
@@ -29,5 +30,23 @@ describe("Search focus requests (CRI-133)", () => {
     unsubscribe();
     requestSearchFocus();
     expect(listener).toHaveBeenCalledTimes(1);
+  });
+});
+
+// Owner, 2026-10-23, Apple TV as the reference: Search's tab opens it at
+// rest; a second tap, on Search, starts typing.
+describe("searchTabPressed", () => {
+  beforeEach(() => {
+    takeSearchFocusRequest();
+  });
+
+  it("asks for nothing when Search is not on screen", () => {
+    searchTabPressed(false);
+    expect(takeSearchFocusRequest()).toBe(false);
+  });
+
+  it("asks for typing on a second tap, on Search", () => {
+    searchTabPressed(true);
+    expect(takeSearchFocusRequest()).toBe(true);
   });
 });

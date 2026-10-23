@@ -1,6 +1,8 @@
-// Search opens in typing mode (CRI-133): a tap on the Search tab, Shows'
-// search field, "Search more" or "Add your first show" focuses Search's
-// field and raises the keyboard. Going back to Search from a Show detail
+// Search opens in typing mode (CRI-133) from Shows' search field, "Search
+// more" or "Add your first show": Search's field is focused and the
+// keyboard raised. Search's own tab opens it at rest, and a second tap on
+// the tab, on Search, starts typing (owner, 2026-10-23, Apple TV as the
+// reference: searchTabPressed). Going back to Search from a Show detail
 // opened there does not. Search is a tab that stays mounted, so autoFocus
 // only covers its first visit: each of these asks here instead, and Search
 // takes the request when it gains focus, or at once if it is already on
@@ -28,4 +30,11 @@ export function subscribeSearchFocus(listener: () => void): () => void {
   return () => {
     listeners.delete(listener);
   };
+}
+
+// A tap on Search's tab: typing only when Search is already on screen.
+export function searchTabPressed(searchOnScreen: boolean): void {
+  if (searchOnScreen) {
+    requestSearchFocus();
+  }
 }

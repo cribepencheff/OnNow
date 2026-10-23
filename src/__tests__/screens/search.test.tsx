@@ -477,7 +477,7 @@ describe("SearchScreen", () => {
     client.unmount();
   });
 
-  describe("typing mode on entry (CRI-133)", () => {
+  describe("at rest and typing mode (CRI-133; owner, 2026-10-23)", () => {
     let focusSpy: jest.SpyInstance;
     let blurSpy: jest.SpyInstance;
     beforeEach(() => {
@@ -489,13 +489,93 @@ describe("SearchScreen", () => {
       blurSpy.mockRestore();
     });
 
-    it("FR-001: opens with the field focused on the first visit", async () => {
+    // Owner, 2026-10-23, Apple TV as the reference: Search's tab opens it
+    // at rest, its title over the field and the keyboard down.
+    it("opens at rest from its tab: the title over the field, the keyboard down", async () => {
       const client = createTestQueryClient();
       const { unmount } = await render(<SearchScreen />, {
         wrapper: wrapperWithQueryClient(client),
       });
 
-      expect(screen.getByTestId("search-input").props.autoFocus).toBe(true);
+      expect(screen.getByTestId("search-title")).toHaveTextContent("Search");
+      expect(screen.getByTestId("search-input").props.autoFocus).toBeFalsy();
+      expect(focusSpy).not.toHaveBeenCalled();
+      expect(screen.queryByRole("button", { name: "Close search" })).toBeNull();
+
+      await unmount();
+      client.unmount();
+    });
+
+    it("opens in typing mode on the first visit when an entry asks for it (Shows' field, Search more)", async () => {
+      requestSearchFocus();
+      const client = createTestQueryClient();
+      const { unmount } = await render(<SearchScreen />, {
+        wrapper: wrapperWithQueryClient(client),
+      });
+
+      expect(focusSpy).toHaveBeenCalledTimes(1);
+      expect(screen.queryByTestId("search-title")).toBeNull();
+      expect(screen.getByRole("button", { name: "Close search" })).toBeTruthy();
+
+      await unmount();
+      client.unmount();
+    });
+
+    it("hides the title and shows a close button on a tap in the field", async () => {
+      const client = createTestQueryClient();
+      const { unmount } = await render(<SearchScreen />, {
+        wrapper: wrapperWithQueryClient(client),
+      });
+
+      await fireEvent(screen.getByTestId("search-input"), "focus");
+
+      expect(screen.queryByTestId("search-title")).toBeNull();
+      expect(screen.getByRole("button", { name: "Close search" })).toBeTruthy();
+
+      await unmount();
+      client.unmount();
+    });
+
+    it("the close button empties the field, closes the keyboard and brings the title back", async () => {
+      const client = createTestQueryClient();
+      const { unmount } = await render(<SearchScreen />, {
+        wrapper: wrapperWithQueryClient(client),
+      });
+      const input = screen.getByTestId("search-input");
+      await fireEvent(input, "focus");
+      await fireEvent.changeText(input, "Slow");
+      blurSpy.mockClear();
+
+      await fireEvent.press(
+        screen.getByRole("button", { name: "Close search" }),
+      );
+
+      expect(screen.getByTestId("search-input").props.value).toBe("");
+      expect(blurSpy).toHaveBeenCalled();
+      expect(screen.getByTestId("search-title")).toBeTruthy();
+      expect(screen.queryByRole("button", { name: "Close search" })).toBeNull();
+
+      await unmount();
+      client.unmount();
+    });
+
+    it("comes back at rest after leaving with nothing typed, and stays in typing mode with text", async () => {
+      const client = createTestQueryClient();
+      const { unmount } = await render(<SearchScreen />, {
+        wrapper: wrapperWithQueryClient(client),
+      });
+      const input = screen.getByTestId("search-input");
+
+      await fireEvent(input, "focus");
+      await act(() => mockNavigation.emit("blur"));
+      await act(() => mockNavigation.emit("focus"));
+      expect(screen.getByTestId("search-title")).toBeTruthy();
+
+      await fireEvent(input, "focus");
+      await fireEvent.changeText(input, "Slow");
+      await act(() => mockNavigation.emit("blur"));
+      await act(() => mockNavigation.emit("focus"));
+      expect(screen.queryByTestId("search-title")).toBeNull();
 
       await unmount();
       client.unmount();

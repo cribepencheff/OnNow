@@ -12,16 +12,19 @@ export const SCREEN_TITLE_SIZE = 26;
 // sits level with Home's logo (owner, 2026-10-23).
 export const SCREEN_TITLE_BAR_HEIGHT = HEADER_BAR_HEIGHT;
 
+// The title's text, also Search's own title (SearchHeader).
+export const SCREEN_TITLE_TEXT = {
+  fontSize: SCREEN_TITLE_SIZE,
+  fontWeight: type.display.fontWeight,
+  letterSpacing: type.display.letterSpacing,
+  color: t.ink,
+};
+
 export function screenTitleHeader(topInset: number) {
   return {
     headerTitleAlign: "left" as const,
     headerTitleContainerStyle: { marginHorizontal: t.headerInset },
-    headerTitleStyle: {
-      fontSize: SCREEN_TITLE_SIZE,
-      fontWeight: type.display.fontWeight,
-      letterSpacing: type.display.letterSpacing,
-      color: t.ink,
-    },
+    headerTitleStyle: SCREEN_TITLE_TEXT,
     headerStyle: {
       backgroundColor: t.bg,
       height: topInset + SCREEN_TITLE_BAR_HEIGHT,

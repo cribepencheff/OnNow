@@ -10,7 +10,7 @@ import {
 } from "@/components/TabBar/TabIcons";
 import { FloatingTabBar } from "@/components/TabBar/FloatingTabBar";
 import { screenTitleHeader } from "@/components/screenTitleHeader";
-import { requestSearchFocus } from "@/hooks/search-focus";
+import { searchTabPressed } from "@/hooks/search-focus";
 import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 
 // The floating tab bar (CRI-133): four icon-only tabs, Home, Calendar, My
@@ -73,8 +73,12 @@ export default function TabLayout() {
           // Search's own stack draws its screens (search/_layout.tsx).
           headerShown: false,
         }}
-        // A tap on the tab opens Search in typing mode (search-focus.ts).
-        listeners={{ tabPress: requestSearchFocus }}
+        // The tab opens Search at rest; a second tap, on Search, starts
+        // typing (search-focus.ts; owner, 2026-10-23, Apple TV as the
+        // reference).
+        listeners={({ navigation }) => ({
+          tabPress: () => searchTabPressed(navigation.isFocused()),
+        })}
       />
     </Tabs>
   );

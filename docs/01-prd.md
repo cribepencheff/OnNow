@@ -199,19 +199,26 @@ first user is the author, who currently uses Next Episode.
   on an empty Shows list, "Add your first show" on an empty Home, and
   "Search more" on "Top picks for you". All go to the same Search tab
   (FR-007).
-- **Presentation:** a tab of its own, the last in the tab bar. Large search
-  field on top with the keyboard already open. Results appear while typing, after a
+- **Presentation:** a tab of its own, the last in the tab bar (reference:
+  Apple TV's Search, owner 2026-10-23). At rest: the title "Search", as My
+  shows' and Calendar's, over a large search field, and the keyboard down.
+  Typing: the title folds away, the field rises into its place, and a round
+  close button slides in beside it. Results appear while typing, after a
   short pause (about 250 ms) so each keystroke is not a request. A clear
   button (X) inside the field empties it, the same on iOS and Android.
 - **Scope:** Search finds every show in TVmaze. It is not filtered by
   region or by show type: talk shows, reality and shows unavailable in the
   user's region are all found. Each show appears once.
-- **Leaving:** another tab, as anywhere else (references: Instagram's
-  search tab). There is no close button and no "Cancel": following is saved
-  immediately. What was typed stays until the field is cleared.
-- **Keyboard:** open on entry, from every entry point, also when Search's
-  tab is tapped while Search is open. Coming back from a Show detail opened
-  in Search does not open it. Leaving Search closes it. Following a show keeps it open, so several
+- **Leaving:** another tab, as anywhere else. The close button ends typing:
+  it empties the field, closes the keyboard and brings the title back. It
+  does not undo anything: following is saved immediately. What was typed
+  stays until the field is cleared or closed.
+- **Keyboard:** down when Search's tab opens it; a tap in the field, or a
+  second tap on the tab while Search is open, starts typing. Every other
+  entry point (Shows' field, the empty Shows button, "Add your first show",
+  "Search more") opens Search typing, the keyboard up. Coming back from a
+  Show detail opened in Search does not open it. Leaving Search closes it,
+  and with nothing typed Search is back at rest next time. Following a show keeps it open, so several
   shows can be followed in a row. Dragging the results or pressing the
   return key ("Search") closes it. Autocorrect and spell check are off, so
   original titles are not rewritten.
@@ -396,7 +403,7 @@ Reached from an icon. Territory and notifications.
 | FR-004 | Home shows followed series with an episode released today | PoC |
 | FR-005 | Home shows the slide count in the page dots, and each slide's day in a date pill ("Today · Fri 9 Oct", "Tomorrow · Sat 10 Oct", "Mon 12 Oct", "Today–Thu · 9–15 Oct"); the PoC used a label ("TODAY · 1/3") (CRI-124) | PoC, MVP |
 | FR-006 | When nothing airs within the hero's 7 days, Home shows the episodes of the next day with episodes | PoC, MVP |
-| FR-007 | Search is a tab of its own, the last in the tab bar (CRI-133). The search field in Shows, the button on an empty Shows list, "Add your first show" on an empty Home (FR-013) and "Search more" go to it, and every entry opens it with the keyboard up. With shows followed, Home has no search entry of its own | PoC, MVP |
+| FR-007 | Search is a tab of its own, the last in the tab bar (CRI-133). The search field in Shows, the button on an empty Shows list, "Add your first show" on an empty Home (FR-013) and "Search more" go to it, and every entry but its own tab opens it with the keyboard up; the tab opens it at rest (owner, 2026-10-23). With shows followed, Home has no search entry of its own | PoC, MVP |
 | FR-008 | Calendar shows a month grid with days that have episodes marked, today preselected | PoC |
 | FR-009 | Selecting a day in Calendar lists that day's episodes | PoC |
 | FR-036 | Calendar swipes between months and shows a "Today" button when away from today | PoC |
