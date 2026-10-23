@@ -3,13 +3,14 @@
 // at Home's logo's side inset, `header-inset`, rather than the content's
 // (owner, 2026-10-23), on bg like the screen under it.
 
+import { HEADER_BAR_HEIGHT } from "@/logic/header";
 import { t, type } from "@/theme/tokens";
 
 export const SCREEN_TITLE_SIZE = 26;
 
-// The bar's height under the status bar: the title's line with room
-// around it.
-export const SCREEN_TITLE_BAR_HEIGHT = 48;
+// The bar's height under the status bar: Home's, so the title's middle
+// sits level with Home's logo (owner, 2026-10-23).
+export const SCREEN_TITLE_BAR_HEIGHT = HEADER_BAR_HEIGHT;
 
 export function screenTitleHeader(topInset: number) {
   return {

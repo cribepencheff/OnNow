@@ -3,6 +3,7 @@ import {
   SCREEN_TITLE_BAR_HEIGHT,
   SCREEN_TITLE_SIZE,
 } from "./screenTitleHeader";
+import { HEADER_BAR_HEIGHT } from "@/logic/header";
 import { t, type } from "@/theme/tokens";
 
 // Owner, 2026-10-23: My shows' and Calendar's titles as Apple TV's: iOS's
@@ -30,7 +31,8 @@ describe("screenTitleHeader", () => {
       height: 47 + SCREEN_TITLE_BAR_HEIGHT,
     });
     expect(SCREEN_TITLE_SIZE).toBe(Math.round(type.display.fontSize * 0.75));
-    expect(SCREEN_TITLE_BAR_HEIGHT).toBeGreaterThan(SCREEN_TITLE_SIZE + 16);
+    // Home's bar's height, so the title sits level with Home's logo.
+    expect(SCREEN_TITLE_BAR_HEIGHT).toBe(HEADER_BAR_HEIGHT);
     expect(options.headerShadowVisible).toBe(false);
   });
 });
