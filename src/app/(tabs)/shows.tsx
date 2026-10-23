@@ -100,7 +100,7 @@ export default function ShowsScreen() {
   const openSearch = useOpenSearch();
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID="shows-screen">
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="Search shows"
@@ -205,9 +205,11 @@ function ShowsFooter() {
 }
 
 const styles = StyleSheet.create({
+  // 16 under the title, and the segment headers 24 under the field: the
+  // title, the field and the segments balanced (owner, 2026-10-23).
   container: {
     flex: 1,
-    paddingTop: t.space2,
+    paddingTop: t.space4,
     backgroundColor: t.bg,
   },
   searchField: {
@@ -223,7 +225,7 @@ const styles = StyleSheet.create({
   segmentHeader: {
     backgroundColor: t.bg,
     paddingHorizontal: t.contentInset,
-    paddingTop: t.space6,
+    paddingTop: t.space4,
     paddingBottom: t.space2,
   },
   segmentTitle: {

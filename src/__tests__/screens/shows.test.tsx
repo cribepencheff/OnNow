@@ -373,4 +373,23 @@ describe("ShowsScreen", () => {
     expect(placeholder.fontSize).toBe(type.headline.fontSize);
     expect(placeholder.fontWeight).toBe("400");
   });
+
+  // Owner, 2026-10-23: more room between the title and the search field,
+  // and the segment headers tighter under it, so the three balance.
+  it("spaces the search field from the title, and the segment headers closer under it", async () => {
+    mockShows([airingShow(1, "Silo")]);
+    await render(<ShowsScreen />);
+    expect(
+      StyleSheet.flatten(screen.getByTestId("shows-screen").props.style)
+        .paddingTop,
+    ).toBe(16);
+    const field = StyleSheet.flatten(
+      screen.getByLabelText("Search shows").props.style,
+    );
+    const header = StyleSheet.flatten(
+      screen.getByTestId("shows-segment-active").props.style,
+    );
+    // From the field to the segment's title: 24, the title to the field 16.
+    expect(field.marginBottom + header.paddingTop).toBe(24);
+  });
 });
