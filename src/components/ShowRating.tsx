@@ -1,7 +1,7 @@
-// CRI-87, ADR 0013: the IMDb rating from OMDb, linking to the title on
-// IMDb. Nothing at all without a rating. Show detail only (the Home hero
-// dropped its own chip: too easy to read as the episode's rating, not the
-// show's).
+// Show detail's rating (ADR 0018): TVmaze's users' average, already in the
+// show's data, so it costs no request; the same number as on a Search
+// row's poster, so the two never disagree. The "TVmaze" mark says whose it
+// is, and it links to the show on TVmaze. Nothing without a rating.
 
 import {
   Pressable,
@@ -13,35 +13,34 @@ import {
 
 import type { TvMazeShow } from "@/api/tvmaze-types";
 import { openExternalUrl } from "@/hooks/useGuardedRouter";
-import { useImdbRating } from "@/hooks/useImdbRating";
-import { imdbTitleUrl } from "@/logic/imdb-rating";
+import { tvmazeRating } from "@/logic/show-rating";
 import { t } from "@/theme/tokens";
 
-// The IMDb mark's line height.
+// The mark's line height.
 const MARK_LINE_HEIGHT = 14;
 
-export function ImdbRating({
+export function ShowRating({
   show,
   textStyle,
 }: {
   show: TvMazeShow;
   textStyle?: StyleProp<TextStyle>;
 }) {
-  const { data: rating, imdbId } = useImdbRating(show);
-  if (!rating || !imdbId) {
+  const rating = tvmazeRating(show);
+  if (!rating) {
     return null;
   }
   return (
     <Pressable
       accessibilityRole="link"
-      accessibilityLabel={`IMDb rating ${rating}`}
-      accessibilityHint="Opens the show on IMDb"
-      onPress={() => openExternalUrl(imdbTitleUrl(imdbId))}
+      accessibilityLabel={`TVmaze rating ${rating}`}
+      accessibilityHint="Opens the show on TVmaze"
+      onPress={() => openExternalUrl(show.url)}
       hitSlop={8}
       style={styles.row}
-      testID="imdb-rating"
+      testID="show-rating"
     >
-      <Text style={styles.mark}>IMDb</Text>
+      <Text style={styles.mark}>TVmaze</Text>
       <Text style={textStyle}>{rating}</Text>
     </Pressable>
   );
@@ -54,7 +53,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     gap: 6,
   },
-  // The mark is text, not IMDb's logo, in the badge style.
+  // The mark is text, in the badge style.
   mark: {
     fontSize: 11,
     lineHeight: MARK_LINE_HEIGHT,

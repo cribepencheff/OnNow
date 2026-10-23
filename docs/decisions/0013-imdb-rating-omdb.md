@@ -1,6 +1,6 @@
 # 0013. IMDb rating via OMDb
 
-Status: Accepted (CRI-87)
+Status: Superseded by ADR 0018 (2026-10-22). Accepted (CRI-87).
 
 ## Context
 The owner wants the IMDb rating in the Show detail hero, linked to the

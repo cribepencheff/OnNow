@@ -67,8 +67,7 @@ import {
 import { FloatingBackButton } from "./FloatingBackButton";
 import { followHaptic } from "./followHaptic";
 import { followSymbol } from "./followSymbols";
-import { ImdbRating } from "./ImdbRating";
-import { OmdbCredit } from "./OmdbCredit";
+import { ShowRating } from "./ShowRating";
 import { PaidSubscriptionMarker } from "./PaidSubscriptionMarker";
 import { t, type } from "@/theme/tokens";
 import { TmdbCredit } from "./TmdbCredit";
@@ -270,7 +269,7 @@ function ShowDetailContent({
       </View>
 
       <View style={styles.section} testID="show-detail-section">
-        <ImdbRating show={show} textStyle={styles.meta} />
+        <ShowRating show={show} textStyle={styles.meta} />
         {metaLine !== "" && <Text style={styles.meta}>{metaLine}</Text>}
         <Text style={styles.meta} testID="show-detail-status">
           {showStateLabel(state, todayDate)}
@@ -339,7 +338,6 @@ function ShowDetailContent({
 
       <TvMazeCredit />
       <TmdbCredit />
-      <OmdbCredit />
     </ScrollView>
   );
 }

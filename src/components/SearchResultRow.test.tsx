@@ -24,11 +24,6 @@ jest.mock("@/hooks/useListPoster", () => ({
     pending: false,
   }),
 }));
-// The show's IMDb rating on the poster (owner, 2026-10-22).
-const mockImdbRating = jest.fn(() => ({ data: null, imdbId: null }));
-jest.mock("@/hooks/useImdbRating", () => ({
-  useImdbRating: () => mockImdbRating(),
-}));
 jest.mock("@/hooks/useShow", () => ({
   useShow: jest.fn(),
 }));
@@ -106,16 +101,18 @@ describe("SearchResultRow", () => {
     expect(screen.queryByText("Apple TV")).toBeNull();
   });
 
-  it("keeps the status line's space while the show lookup answers", async () => {
-    const show = showSlowHorsesFixture as unknown as TvMazeShow;
-
-    await render(<SearchResultRow show={show} />);
-
-    expect(screen.getByTestId("search-result-status")).toHaveTextContent(/^$/);
+  // Owner, 2026-10-22: the status from the search result alone, no
+  // request of its own.
+  it("says the status from the search result, with no show lookup", async () => {
+    await render(
+      <SearchResultRow show={showSlowHorsesFixture as unknown as TvMazeShow} />,
+    );
+    expect(screen.getByTestId("search-result-status")).toHaveTextContent(
+      "Airing",
+    );
+    expect(mockedUseShow).not.toHaveBeenCalled();
   });
 
-  // Owner, 2026-10-22: the show's status under the title; "Unavailable"
-  // belongs with the services, at the bottom.
   it('shows the service, or plain "Unavailable", at the bottom (FR-027, CRI-97)', async () => {
     const show = showSlowHorsesFixture as unknown as TvMazeShow;
     mockProviders([{ providerId: 350, providerName: "Apple TV" }]);
@@ -135,7 +132,9 @@ describe("SearchResultRow", () => {
         includeHiddenElements: true,
       }),
     ).toBeTruthy();
-    expect(screen.getByTestId("search-result-status")).toHaveTextContent(/^$/);
+    expect(screen.getByTestId("search-result-status")).toHaveTextContent(
+      "Airing",
+    );
   });
 
   it("puts the status right under the title, and the services last", async () => {
@@ -170,20 +169,21 @@ describe("SearchResultRow", () => {
   });
 
   it.each([false, true])(
-    "shows Show detail's status line whether followed or not (followed: %s, FR-025)",
+    "shows the same status whether followed or not (followed: %s, FR-025)",
     async (followed) => {
       mockFollowed = followed;
-      mockedUseShow.mockReturnValue({
-        data: showSlowHorsesFixture,
-      } as never);
-      const show = showSlowHorsesFixture as unknown as TvMazeShow;
-
-      await render(<SearchResultRow show={show} />);
-
-      // Season 6 episode 1 airs 2026-09-16, after season 5: a dated next
-      // season as of the fixed 2026-09-01 clock above (PRD 5.5).
-      expect(screen.getByText("Season 6 · Wed 16 Sep")).toBeTruthy();
-      expect(mockedUseShow).toHaveBeenCalledWith(show.id);
+      await render(
+        <SearchResultRow
+          show={
+            {
+              ...showSlowHorsesFixture,
+              status: "Ended",
+              ended: "2017-05-14",
+            } as unknown as TvMazeShow
+          }
+        />,
+      );
+      expect(screen.getByText("Ended · 2017")).toBeTruthy();
     },
   );
 
@@ -223,18 +223,15 @@ describe("SearchResultRow", () => {
     expect(mockToggle).toHaveBeenCalledTimes(1);
   });
 
-  // Owner, 2026-10-22: the show's IMDb rating on its poster, bottom right:
-  // the number alone, on a darker fill than the follow circle's.
+  // Owner, 2026-10-22: the show's rating on its poster, bottom right:
+  // TVmaze's, from the search result (ADR 0018), the number alone, on a
+  // darker fill than the follow circle's.
   it("shows the rating on the poster's bottom right, the number alone, on a darker fill", async () => {
-    mockImdbRating.mockReturnValue({
-      data: "8.2",
-      imdbId: "tt5875444",
-    } as never);
     await render(
       <SearchResultRow show={showSlowHorsesFixture as unknown as TvMazeShow} />,
     );
     const badge = screen.getByTestId("search-result-row-poster-badge");
-    expect(badge).toHaveTextContent("8.2");
+    expect(badge).toHaveTextContent("8.1");
     expect(screen.queryByText("IMDb")).toBeNull();
     expect(StyleSheet.flatten(badge.props.style)).toMatchObject({
       position: "absolute",
@@ -252,18 +249,23 @@ describe("SearchResultRow", () => {
         .children.map((child) =>
           typeof child === "string" ? child : child.props.children,
         ),
-    ).toEqual(["8.2"]);
+    ).toEqual(["8.1"]);
     expect(pill.borderColor).toBe(t.imageControlEdge);
     expect(screen.getByTestId("poster-rating").props.accessibilityLabel).toBe(
-      "IMDb rating 8.2",
+      "TVmaze rating 8.1",
     );
-    mockImdbRating.mockReturnValue({ data: null, imdbId: null });
   });
 
   it("shows no rating badge without a rating", async () => {
-    mockImdbRating.mockReturnValue({ data: null, imdbId: null });
     await render(
-      <SearchResultRow show={showSlowHorsesFixture as unknown as TvMazeShow} />,
+      <SearchResultRow
+        show={
+          {
+            ...showSlowHorsesFixture,
+            rating: { average: null },
+          } as unknown as TvMazeShow
+        }
+      />,
     );
     expect(screen.queryByTestId("poster-rating")).toBeNull();
   });

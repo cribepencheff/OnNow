@@ -13,12 +13,10 @@ import { PosterFollowCircle } from "./PosterFollowCircle";
 import { PosterRating } from "./PosterRating";
 import { ShowRow, ShowRowLine, ShowRowServiceLine } from "./ShowRow";
 import { useFollowToggle } from "@/hooks/useFollowList";
-import { useShow } from "@/hooks/useShow";
 import { useStreamingService } from "@/hooks/useStreamingService";
 import { useListPoster } from "@/hooks/useListPoster";
-import { useToday } from "@/hooks/useToday";
 import { plainTextSummary } from "@/logic/search-results";
-import { showState, showStateLabel } from "@/logic/show-state";
+import { searchStatusLabel } from "@/logic/show-rating";
 import {
   rowIsUnavailable,
   rowServiceLogos,
@@ -30,10 +28,6 @@ import { t } from "@/theme/tokens";
 interface SearchResultRowProps {
   show: TvMazeShow;
   onPress?: () => void;
-}
-
-function deviceTimeZone(): string {
-  return Intl.DateTimeFormat().resolvedOptions().timeZone;
 }
 
 export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
@@ -52,7 +46,7 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
       summaryLines={3}
       // The show's status right under the title, in ink (owner,
       // 2026-10-22).
-      subtitle={<StatusLine showId={show.id} />}
+      subtitle={<StatusLine show={show} />}
       largePoster
       testID="search-result-row"
       onPress={onPress}
@@ -87,29 +81,13 @@ export function SearchResultRow({ show, onPress }: SearchResultRowProps) {
   );
 }
 
-// FR-025: Show detail's status line ("Next ep Fri 9 Oct"), from the same
-// cached show lookup as Show detail, right under the title in ink (owner,
-// 2026-10-22). Its line is kept while the lookup answers, so the row does
-// not grow.
-function StatusLine({ showId }: { showId: number }) {
-  const { data } = useShow(showId);
-  const todayDate = useToday();
-
-  const label = data
-    ? showStateLabel(
-        showState(
-          data,
-          data._embedded.episodes,
-          data._embedded.seasons,
-          deviceTimeZone(),
-          todayDate,
-        ),
-        todayDate,
-      )
-    : "";
+// The show's status from the search result alone, right under the title
+// in ink (owner, 2026-10-22): "Airing", "Ended · 2017"; no request of its
+// own, so when a running show's next episode airs is left to Show detail.
+function StatusLine({ show }: { show: TvMazeShow }) {
   return (
     <ShowRowLine testID="search-result-status" style={styles.ink}>
-      {label}
+      {searchStatusLabel(show)}
     </ShowRowLine>
   );
 }
