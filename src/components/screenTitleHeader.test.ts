@@ -9,7 +9,8 @@ import { t, type } from "@/theme/tokens";
 // large title, left aligned with the content.
 describe("screenTitleHeader", () => {
   // Owner, 2026-10-23: a quarter smaller than display (34) read better.
-  it("sets the title a quarter smaller than display, bold, ink, left aligned with the content", () => {
+  // Owner, 2026-10-23: at the side inset of Home's logo, not the content's.
+  it("sets the title a quarter smaller than display, bold, ink, at the header inset", () => {
     const options = screenTitleHeader(47);
     expect(options.headerTitleStyle).toMatchObject({
       fontSize: SCREEN_TITLE_SIZE,
@@ -18,7 +19,7 @@ describe("screenTitleHeader", () => {
     });
     expect(options.headerTitleAlign).toBe("left");
     expect(options.headerTitleContainerStyle).toEqual({
-      marginHorizontal: t.contentInset,
+      marginHorizontal: t.headerInset,
     });
   });
 
