@@ -453,3 +453,34 @@ describe("TmdbClient.findImages", () => {
     await expect(noKey.findImages(NEAGLEY_EXTERNALS)).resolves.toBeNull();
   });
 });
+
+// CRI-142: TMDB's titles for a half-typed query, to complete its last word.
+describe("TmdbClient.suggestTitles", () => {
+  it("asks TMDB's search and gives each title and original title", async () => {
+    const fetchFn = jest.fn().mockResolvedValue(
+      jsonResponse({
+        results: [
+          { name: "Cecilias boy", original_name: "Cecilias unge", id: 1 },
+        ],
+      }),
+    );
+    const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
+    await expect(client.suggestTitles("cecilias un")).resolves.toEqual([
+      { name: "Cecilias boy", original_name: "Cecilias unge" },
+    ]);
+    expect(fetchFn.mock.calls[0][0]).toContain(
+      "/3/search/tv?query=cecilias%20un",
+    );
+  });
+
+  it("is null without a key", async () => {
+    const fetchFn = jest.fn();
+    const client = createTmdbClient({
+      apiKey: undefined,
+      fetchFn,
+      wait: noWait,
+    });
+    await expect(client.suggestTitles("slow h")).resolves.toBeNull();
+    expect(fetchFn).not.toHaveBeenCalled();
+  });
+});
