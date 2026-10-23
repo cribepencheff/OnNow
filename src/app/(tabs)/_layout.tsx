@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { Tabs } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {
   CalendarIcon,
@@ -8,9 +9,9 @@ import {
   SearchIcon,
 } from "@/components/TabBar/TabIcons";
 import { FloatingTabBar } from "@/components/TabBar/FloatingTabBar";
+import { screenTitleHeader } from "@/components/screenTitleHeader";
 import { requestSearchFocus } from "@/hooks/search-focus";
 import { useGuardedRouter } from "@/hooks/useGuardedRouter";
-import { t } from "@/theme/tokens";
 
 // The floating tab bar (CRI-133): four icon-only tabs, Home, Calendar, My
 // shows and Search. Each title is the tab's accessibility label.
@@ -20,6 +21,8 @@ const DOUBLE_TAP_MS = 300;
 export default function TabLayout() {
   const router = useGuardedRouter();
   const lastShowsPress = useRef(0);
+  // My shows' and Calendar's large titles (owner, 2026-10-23).
+  const titleHeader = screenTitleHeader(useSafeAreaInsets().top);
   return (
     <Tabs tabBar={(props) => <FloatingTabBar {...props} />}>
       <Tabs.Screen
@@ -36,30 +39,18 @@ export default function TabLayout() {
         name="calendar"
         options={{
           title: "Calendar",
-          // Left aligned with the content, as My shows (owner, 2026-10-22).
-          headerTitleAlign: "left",
-          headerTitleContainerStyle: { marginHorizontal: t.contentInset },
+          ...titleHeader,
           tabBarButtonTestID: "tab-calendar",
           tabBarIcon: ({ focused }) => <CalendarIcon active={focused} />,
-          // The header on bg, like the screen under it (as in Shows).
-          headerStyle: { backgroundColor: t.bg },
-          headerTitleStyle: { color: t.ink },
-          headerShadowVisible: false,
         }}
       />
       <Tabs.Screen
         name="shows"
         options={{
           title: "My shows",
-          // Left aligned with the content (owner, 2026-10-22).
-          headerTitleAlign: "left",
-          headerTitleContainerStyle: { marginHorizontal: t.contentInset },
+          ...titleHeader,
           tabBarButtonTestID: "tab-shows",
           tabBarIcon: ({ focused }) => <MyShowsIcon active={focused} />,
-          // The header on bg, like the screen under it.
-          headerStyle: { backgroundColor: t.bg },
-          headerTitleStyle: { color: t.ink },
-          headerShadowVisible: false,
         }}
         // The hidden image review screen is reached by a double tap on
         // this tab, development builds only.
