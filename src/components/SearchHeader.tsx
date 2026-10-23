@@ -1,7 +1,7 @@
 // Search's top (owner, 2026-10-23, Apple TV as the reference). At rest:
 // the screen's title, as My shows' and Calendar's, over the search field.
 // Typing: the title folds away and the field rises into its place, while
-// a round close button slides in beside the field, which narrows for it;
+// a round close button, on the field's fill, slides in beside the field, which narrows for it;
 // closing plays it back. The move is one value from 0 (at rest) to 1
 // (typing), eased over about the keyboard's own time, so field, title and
 // button move together with the keyboard. With Reduce Motion it jumps.
@@ -19,15 +19,15 @@ import Reanimated, {
 
 import { HEADER_BAR_HEIGHT } from "@/logic/header";
 import { t } from "@/theme/tokens";
-import { ImageControlMaterial } from "./ImageControlMaterial";
-import { SearchFieldFrame } from "./SearchField";
+import { SEARCH_FIELD_HEIGHT, SearchFieldFrame } from "./SearchField";
 import { SCREEN_TITLE_TEXT } from "./screenTitleHeader";
 
 // At rest: the title's bar, as My shows' header, then 16 to the field, as
 // in My shows. Typing: the field 8 under the status bar.
 export const SEARCH_TITLE_SPACE = HEADER_BAR_HEIGHT + 16;
 export const SEARCH_TYPING_SPACE = 8;
-export const SEARCH_CLOSE_SIZE = 44;
+// As tall as the field (owner, 2026-10-23).
+export const SEARCH_CLOSE_SIZE = SEARCH_FIELD_HEIGHT;
 const CLOSE_GAP = 8;
 // About the iOS keyboard's own rise.
 const MOVE_MS = 300;
@@ -99,8 +99,7 @@ export function SearchHeader({
             hitSlop={4}
             testID="search-close"
           >
-            <View style={styles.close}>
-              <ImageControlMaterial />
+            <View style={styles.close} testID="search-close-circle">
               <SymbolView
                 name={{ ios: "xmark", android: "close", web: "close" }}
                 tintColor={t.ink}
@@ -144,9 +143,8 @@ const styles = StyleSheet.create({
     width: SEARCH_CLOSE_SIZE,
     height: SEARCH_CLOSE_SIZE,
     borderRadius: SEARCH_CLOSE_SIZE / 2,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: t.imageControlEdge,
-    overflow: "hidden",
+    // The field's own fill (owner, 2026-10-23).
+    backgroundColor: t.surfaceRaised,
     alignItems: "center",
     justifyContent: "center",
   },

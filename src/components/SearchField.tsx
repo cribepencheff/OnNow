@@ -1,13 +1,19 @@
 // The search field's look (owner, 2026-10-22): one frame for Search's own
 // field and for Shows' entry to it, so the two read as the same control.
-// A pill on surface-raised, the magnifying glass, then the field's
-// content: Search's text input, or Shows' placeholder, which opens Search.
+// A pill on surface-raised, 44 high (Search's close button's size), the
+// tab bar's magnifier, then the field's content: Search's text input, or
+// Shows' placeholder, which opens Search (owner, 2026-10-23).
 
 import type { ReactNode } from "react";
 import { StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
-import { SymbolView } from "expo-symbols";
 
-import { t, type } from "@/theme/tokens";
+import { t } from "@/theme/tokens";
+import { MagnifierIcon } from "./TabBar/TabIcons";
+
+export const SEARCH_FIELD_HEIGHT = 44;
+// Smaller than headline, as iOS's own search field (owner, 2026-10-23).
+export const SEARCH_FIELD_TEXT_SIZE = 17;
+const ICON_SIZE = 18;
 
 export function SearchFieldFrame({
   children,
@@ -17,11 +23,11 @@ export function SearchFieldFrame({
   style?: StyleProp<ViewStyle>;
 }) {
   return (
-    <View style={[styles.frame, style]}>
-      <SymbolView
-        name={{ ios: "magnifyingglass", android: "search", web: "search" }}
-        tintColor={t.inkMuted}
-        size={16}
+    <View style={[styles.frame, style]} testID="search-field">
+      <MagnifierIcon
+        size={ICON_SIZE}
+        color={t.inkMuted}
+        testID="search-field-icon"
       />
       {children}
     </View>
@@ -32,22 +38,25 @@ export function SearchFieldFrame({
 export const searchFieldText = StyleSheet.create({
   input: {
     flex: 1,
-    ...type.headline,
+    fontSize: SEARCH_FIELD_TEXT_SIZE,
+    lineHeight: 22,
     fontWeight: "400",
-    paddingVertical: 12,
+    paddingVertical: 0,
     color: t.ink,
   },
   placeholder: {
     flex: 1,
-    ...type.headline,
+    fontSize: SEARCH_FIELD_TEXT_SIZE,
+    lineHeight: 22,
     fontWeight: "400",
-    paddingVertical: 12,
+    paddingVertical: 0,
     color: t.inkMuted,
   },
 });
 
 const styles = StyleSheet.create({
   frame: {
+    height: SEARCH_FIELD_HEIGHT,
     flexDirection: "row",
     alignItems: "center",
     gap: t.space2,

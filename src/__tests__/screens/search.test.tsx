@@ -1,4 +1,4 @@
-import { Keyboard, TextInput } from "react-native";
+import { Keyboard, StyleSheet, TextInput } from "react-native";
 import {
   act,
   fireEvent,
@@ -9,6 +9,7 @@ import {
 } from "@testing-library/react-native";
 
 import SearchScreen from "@/app/(tabs)/search";
+import { t } from "@/theme/tokens";
 import { tvMazeClient } from "@/api/tvmaze-client";
 import { follow, getFollowedIds, unfollow } from "@/storage/follow-list";
 import searchSlowHorsesFixture from "@/api/fixtures/search-slow-horses.json";
@@ -516,6 +517,24 @@ describe("SearchScreen", () => {
       expect(focusSpy).toHaveBeenCalledTimes(1);
       expect(screen.queryByTestId("search-title")).toBeNull();
       expect(screen.getByRole("button", { name: "Close search" })).toBeTruthy();
+
+      await unmount();
+      client.unmount();
+    });
+
+    // Owner, 2026-10-23: the close button on the field's own fill.
+    it("draws the close button on the search field's fill, no glass", async () => {
+      const client = createTestQueryClient();
+      const { unmount } = await render(<SearchScreen />, {
+        wrapper: wrapperWithQueryClient(client),
+      });
+      await fireEvent(screen.getByTestId("search-input"), "focus");
+
+      const close = StyleSheet.flatten(
+        screen.getByTestId("search-close-circle").props.style,
+      );
+      expect(close.backgroundColor).toBe(t.surfaceRaised);
+      expect(close.borderWidth).toBeUndefined();
 
       await unmount();
       client.unmount();
