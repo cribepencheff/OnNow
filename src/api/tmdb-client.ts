@@ -28,6 +28,7 @@ import { queryClient } from "@/hooks/query-client";
 import { createTmdbFindCache } from "@/hooks/tmdb-find-cache";
 import type { TmdbImages } from "./tmdb-types";
 import type { TvMazeExternals, TvMazeShow } from "./tvmaze-types";
+import type { SuggestedTitle } from "@/logic/search-completion";
 
 // What identifies a TVmaze show on TMDB: its external IDs, and its name and
 // premiere for a search when it has neither ID (CRI-99).
@@ -108,6 +109,10 @@ export interface TmdbClient {
     | typeof NOT_ON_TMDB
     | null
   >;
+  // TMDB's titles for a half-typed query, its name and original name, to
+  // complete the query's last word before searching TVmaze (CRI-142);
+  // null without a key.
+  suggestTitles: (query: string) => Promise<SuggestedTitle[] | null>;
   // Shows on a streaming service in the region with an episode on a day
   // (TMDB discover), soaps excluded, the 20 most popular (FR-039); null
   // without a key. The row asks one day at a time, as it needs it.
@@ -306,6 +311,21 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     );
   }
 
+  async function suggestTitles(
+    query: string,
+  ): Promise<SuggestedTitle[] | null> {
+    if (!apiKey) {
+      return null;
+    }
+    const answer = await requestJson<{
+      results?: { name: string; original_name?: string | null }[];
+    }>(`/search/tv?query=${encodeURIComponent(query)}`, apiKey);
+    return (answer.results ?? []).map((result) => ({
+      name: result.name,
+      original_name: result.original_name ?? null,
+    }));
+  }
+
   async function findAiringOn(request: {
     region: string;
     timeZone: string;
@@ -348,6 +368,7 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
 
   return {
     findAiringOn,
+    suggestTitles,
     providersById,
     findStreamingProviders,
     findOriginCountries,
