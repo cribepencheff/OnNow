@@ -6,7 +6,6 @@
 // so styling here stays minimal and functional.
 
 import { Image } from "expo-image";
-import { SymbolView } from "expo-symbols";
 import { useRef, useState } from "react";
 import {
   Pressable,
@@ -18,28 +17,16 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import {
-  IMAGE_BASE,
-  LARGE_BACKDROP_FALLBACK_SIZE,
-  LARGE_BACKDROP_SIZE,
-} from "@/api/tmdb-types";
 import type {
   TvMazeEpisode,
   TvMazeSeason,
-  TvMazeShow,
   TvMazeShowWithEmbeds,
 } from "@/api/tvmaze-types";
-import { useFollowToggle } from "@/hooks/useFollowList";
-import { useFallbackUri } from "@/hooks/useFallbackUri";
-import { openExternalUrl } from "@/hooks/useGuardedRouter";
 import { useOriginCountries } from "@/hooks/useOriginCountries";
 import { useShow } from "@/hooks/useShow";
-import { useShowImages } from "@/hooks/useShowImages";
-import { useStreamingService } from "@/hooks/useStreamingService";
 import { useToday } from "@/hooks/useToday";
 import type { LocalDate } from "@/logic/local-date";
 import { plainTextSummary } from "@/logic/search-results";
-import { chooseShowImage } from "@/logic/show-image";
 import {
   allEpisodesAvailable,
   currentSeasonNumber,
@@ -52,23 +39,15 @@ import {
   regularEpisodes,
   seasonTabs,
   showDetailMetaLine,
+  showDetailPill,
   type NextCard,
   type SeasonTab,
 } from "@/logic/show-detail";
 import { showState, showStateLabel } from "@/logic/show-state";
 import { TAB_BAR_HEIGHT } from "@/logic/tab-bar";
-import { HEADER_BAR_HEIGHT } from "@/logic/header";
 import { heroLayout, topScrimGradient } from "@/logic/hero-layout";
-import {
-  availabilityText,
-  openInAccessibilityLabel,
-  openInLink,
-} from "@/logic/streaming-service";
 import { FloatingBackButton } from "./FloatingBackButton";
-import { followHaptic } from "./followHaptic";
-import { followSymbol } from "./followSymbols";
-import { ShowRating } from "./ShowRating";
-import { PaidSubscriptionMarker } from "./PaidSubscriptionMarker";
+import { ShowDetailHero } from "./ShowDetailHero";
 import { t, type } from "@/theme/tokens";
 import { TmdbCredit } from "./TmdbCredit";
 import { TvMazeCredit } from "./TvMazeCredit";
@@ -145,37 +124,7 @@ function ShowDetailContent({
   const next = nextCard(show, episodes, seasons, timeZone, todayDate);
   const tabs = seasonTabs(seasons, episodes, todayDate);
   const state = showState(show, episodes, seasons, timeZone, todayDate);
-  // A TMDB backdrop, textless first (ADR 0012): no title text in the
-  // image. Without one, TVmaze's poster, cropped from the top; without any
-  // image, "No image" (chooseShowImage, CRI-100). Nothing is chosen while
-  // TMDB's answer is on its way, so a poster never flashes in first.
-  const { data: images, isLoading: imagesLoading } = useShowImages(show);
-  const shown = imagesLoading
-    ? null
-    : chooseShowImage(
-        images?.highestRatedBackdrop,
-        show.image,
-        images?.posterPath,
-      );
-  const backdropPath = shown?.kind === "tmdb" ? shown.path : undefined;
-  // Drawn square, about 1,180 px tall on a 3x phone: w1920 (1080 px tall),
-  // with "original" if that undocumented size fails (CRI-140).
-  const backdrop = useFallbackUri(
-    shown?.kind === "poster"
-      ? shown.sharp
-      : backdropPath && `${IMAGE_BASE}/${LARGE_BACKDROP_SIZE}${backdropPath}`,
-    backdropPath &&
-      `${IMAGE_BASE}/${LARGE_BACKDROP_FALLBACK_SIZE}${backdropPath}`,
-  );
-  const noImage = shown?.kind === "none";
-  // The square, plus the status bar and the header's bar above it, the
-  // backdrop running up under the floating header (CRI-129); a fifth lower
-  // (owner, 2026-10-22), showing more of a landscape backdrop's width.
-  const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
-  const headerHeight = insets.top + HEADER_BAR_HEIGHT;
-  const logo = images?.logo;
-  const { link, availability } = useOpenIn(show);
   const { data: originCountries } = useOriginCountries(show);
   const metaLine = showDetailMetaLine(show, originCountries ?? []);
 
@@ -194,96 +143,20 @@ function ShowDetailContent({
         overTabBar && styles.scrollContentOverTabBar,
       ]}
     >
-      <View style={styles.hero} testID="show-detail-hero">
-        {/* No image anywhere: no square at all; the title opens the page
-            (CRI-100). */}
-        {!noImage && (
-          <Image
-            source={backdrop.uri}
-            onError={backdrop.onError}
-            style={[
-              styles.heroImage,
-              { height: (width + headerHeight) * BACKDROP_HEIGHT_SHARE },
-            ]}
-            testID="show-detail-backdrop"
-            contentFit="cover"
-            // A poster from the top, where its title usually is not.
-            contentPosition={shown?.kind === "poster" ? "top" : "center"}
-            accessibilityIgnoresInvertColors
-          />
-        )}
-        {/* The Home hero's scrim, logo or title, and "Open in" on the
-            backdrop, in every state (CRI-86). */}
-        {!noImage && <View pointerEvents="none" style={styles.heroScrim} />}
-        <View
-          style={
-            noImage
-              ? [
-                  styles.heroContentPlain,
-                  // Clear of the floating header.
-                  { paddingTop: headerHeight + SECTION_TOP },
-                ]
-              : styles.heroContent
-          }
-          testID="show-detail-hero-content"
-        >
-          {logo ? (
-            <Image
-              source={`${IMAGE_BASE}/w500${logo.file_path}`}
-              style={styles.heroLogo}
-              contentFit="contain"
-              contentPosition="left"
-              accessibilityLabel={show.name}
-              testID="show-detail-logo"
-            />
-          ) : (
-            <View style={styles.heroTitleBand}>
-              <Text style={styles.heroTitle} numberOfLines={2}>
-                {show.name}
-              </Text>
-            </View>
-          )}
-          {link && (
-            <View style={styles.heroAction}>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={openInAccessibilityLabel(link)}
-                // An https link: iOS opens the service's app at the show when
-                // it is installed, and the website otherwise.
-                onPress={() => openExternalUrl(link.url)}
-                style={[styles.button, styles.buttonOnImage, styles.heroButton]}
-                testID="show-detail-open-in"
-              >
-                <Text style={styles.onImageLabel}>Open in {link.service}</Text>
-              </Pressable>
-              {link.requires && (
-                <PaidSubscriptionMarker
-                  channel={link.requires}
-                  color={t.inkMuted}
-                  textStyle={styles.heroRequires}
-                />
-              )}
-            </View>
-          )}
-        </View>
-      </View>
+      <ShowDetailHero
+        show={show}
+        width={width}
+        pill={showDetailPill(episodes, seasons, timeZone, todayDate)}
+        metaLine={metaLine}
+      />
 
       <View style={styles.section} testID="show-detail-section">
-        <ShowRating show={show} textStyle={styles.meta} />
-        {metaLine !== "" && <Text style={styles.meta}>{metaLine}</Text>}
         <Text style={styles.meta} testID="show-detail-status">
           {showStateLabel(state, todayDate)}
         </Text>
-        {/* No button that opens the service: say where it streams (CRI-90). */}
-        {availability && (
-          <Text style={styles.meta} testID="show-detail-availability">
-            {availability}
-          </Text>
-        )}
         {allEpisodesAvailable(episodes, seasons, timeZone, todayDate) && (
           <Text style={styles.meta}>All episodes available</Text>
         )}
-        <FollowToggle showId={show.id} />
         {summary && <Text style={styles.summary}>{summary}</Text>}
       </View>
 
@@ -339,56 +212,6 @@ function ShowDetailContent({
       <TvMazeCredit />
       <TmdbCredit />
     </ScrollView>
-  );
-}
-
-// "Open in [service]" for the show's service in the user's region (FR-014,
-// ADR 0014),
-// followed or not (FR-029, CRI-86). Without an answer from TMDB, nothing
-// (CRI-106). Without a link, a quiet text says what TMDB's data shows,
-// once it has answered (CRI-84).
-function useOpenIn(show: TvMazeShow) {
-  const { data: providers, region } = useStreamingService(show, true);
-  const link = Array.isArray(providers)
-    ? openInLink(providers, show.officialSite)
-    : null;
-  const availability =
-    Array.isArray(providers) && region && !link
-      ? availabilityText(providers, region)
-      : null;
-  return { link, availability };
-}
-
-// FR-029: "Follow" / "Following" is one toggle button that stays in place,
-// so an unfollow is undone by tapping again; it updates at once (CRI-86).
-function FollowToggle({ showId }: { showId: number }) {
-  const { followed, toggle } = useFollowToggle(showId);
-
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={followed ? "Following" : "Follow"}
-      accessibilityHint={followed ? "Unfollows the show" : undefined}
-      accessibilityState={{ selected: followed }}
-      onPress={() => {
-        followHaptic(!followed);
-        toggle();
-      }}
-      style={[
-        styles.button,
-        followed ? styles.buttonQuiet : styles.buttonAccent,
-      ]}
-    >
-      {/* The same symbols as the follow circle in Search. */}
-      <SymbolView
-        name={followSymbol(followed)}
-        tintColor={followed ? t.ink : t.onAccent}
-        size={16}
-      />
-      <Text style={followed ? styles.buttonQuietLabel : styles.followLabel}>
-        {followed ? "Following" : "Follow"}
-      </Text>
-    </Pressable>
   );
 }
 
@@ -572,11 +395,7 @@ function EpisodeList({
 
 const STILL_ASPECT_RATIO = 16 / 9;
 
-// The backdrop's height, as a share of the square plus the header.
-export const BACKDROP_HEIGHT_SHARE = 0.8;
-
-// The space above a section, and above the title when there is no image
-// (CRI-100).
+// The space above a section.
 const SECTION_TOP = 20;
 
 const styles = StyleSheet.create({
@@ -592,73 +411,6 @@ const styles = StyleSheet.create({
   },
   scrollContentOverTabBar: {
     paddingBottom: TAB_BAR_HEIGHT + 32,
-  },
-  hero: {
-    position: "relative",
-  },
-  // Scrim, logo, title and text colours as in the Home hero (HeroPage,
-  // HeroPager), so the logo and title on the backdrop stay readable.
-  heroScrim: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: "55%",
-    experimental_backgroundImage:
-      "linear-gradient(to bottom, rgba(11,12,15,0) 0%, rgba(11,12,15,0.75) 50%, rgba(11,12,15,1) 100%)",
-  },
-  heroContent: {
-    position: "absolute",
-    left: t.contentInset,
-    right: t.contentInset,
-    bottom: 16,
-    gap: 8,
-  },
-  heroLogo: {
-    width: 240,
-    height: 88,
-  },
-  // No image (CRI-100): the title in the page's flow, as much space above
-  // it as below it (the section's top), balanced under the header.
-  heroContentPlain: {
-    paddingHorizontal: t.contentInset,
-    paddingTop: SECTION_TOP,
-    gap: 8,
-  },
-  heroTitleBand: {
-    height: 88,
-    justifyContent: "center",
-  },
-  heroTitle: {
-    ...type.display,
-    fontSize: 40,
-    lineHeight: 44,
-    color: t.ink,
-  },
-  // Over the show image: a white pill with bg text, as on the Home hero
-  // (design system).
-  buttonOnImage: {
-    backgroundColor: t.ink,
-  },
-  onImageLabel: {
-    ...type.body,
-    fontWeight: "700",
-    color: t.bg,
-  },
-  heroButton: {
-    marginVertical: 0,
-  },
-  // An add-on's extra subscription, directly below the button (CRI-90).
-  heroAction: {
-    alignSelf: "flex-start",
-    gap: 4,
-  },
-  heroRequires: {
-    ...type.meta,
-    color: t.inkMuted,
-  },
-  heroImage: {
-    width: "100%",
   },
   topScrim: {
     position: "absolute",
@@ -678,33 +430,6 @@ const styles = StyleSheet.create({
   summary: {
     ...type.body,
     color: t.ink,
-  },
-  // One shape for every action button; accent or quiet fill.
-  button: {
-    flexDirection: "row",
-    alignItems: "center",
-    alignSelf: "flex-start",
-    gap: 6,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: t.radiusPill,
-    marginVertical: 8,
-  },
-  buttonAccent: {
-    backgroundColor: t.accent,
-  },
-  buttonQuiet: {
-    backgroundColor: t.surfaceRaised,
-  },
-  buttonQuietLabel: {
-    ...type.body,
-    fontWeight: "700",
-    color: t.ink,
-  },
-  followLabel: {
-    ...type.body,
-    fontWeight: "700",
-    color: t.onAccent,
   },
   sectionLabel: {
     ...type.label,

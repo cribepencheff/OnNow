@@ -358,3 +358,91 @@ export function allEpisodesAvailable(
     )
   );
 }
+
+// How long "New season" and "All episodes now available" stay in the hero's
+// pill after the episode that earned them (owner, CRI-143).
+const NEW_SEASON_DAYS = 7;
+const ALL_EPISODES_DAYS = 30;
+const WEEKDAY_NAMES = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+
+// The pill above Show detail's title (CRI-143), Apple TV style: why the
+// show is current, never a date. The first that holds wins:
+// - "New season": a later season's first episode came out within 7 days.
+// - "All episodes now available": the latest season is complete
+//   (allEpisodesAvailable) and its last episode came out within 30 days.
+// - "New episode": an episode came out today or yesterday.
+// - "New episodes every Wednesday": the last two episodes out and the next
+//   one are a week apart each, on the next one's local weekday. From the
+//   episodes' own local days (ADR 0006), not TVmaze's schedule days, which
+//   are the network's and can fall a day off here.
+// Otherwise null: no pill.
+export function showDetailPill(
+  episodes: TvMazeEpisode[],
+  seasons: TvMazeSeason[],
+  timeZone: string,
+  todayDate: LocalDate,
+): string | null {
+  const dated = regularEpisodes(episodes)
+    .map((episode) => ({ episode, date: episodeLocalDate(episode, timeZone) }))
+    .filter(
+      (entry): entry is { episode: TvMazeEpisode; date: LocalDate } =>
+        entry.date !== null,
+    );
+  const out = dated.filter((entry) => entry.date <= todayDate);
+  const daysAgo = (date: LocalDate) => daysBetween(date, todayDate);
+
+  const premiere = out.find(
+    (entry) =>
+      entry.episode.season > 1 &&
+      entry.episode.number === 1 &&
+      daysAgo(entry.date) <= NEW_SEASON_DAYS,
+  );
+  if (premiere) {
+    return "New season";
+  }
+
+  if (allEpisodesAvailable(episodes, seasons, timeZone, todayDate)) {
+    const latestSeason = Math.max(...seasons.map((season) => season.number));
+    const lastOut = out
+      .filter((entry) => entry.episode.season === latestSeason)
+      .reduce<LocalDate | null>(
+        (latest, entry) =>
+          !latest || entry.date > latest ? entry.date : latest,
+        null,
+      );
+    if (lastOut && daysAgo(lastOut) <= ALL_EPISODES_DAYS) {
+      return "All episodes now available";
+    }
+  }
+
+  const outDates = [...new Set(out.map((entry) => entry.date))].sort();
+  const lastOutDate = outDates[outDates.length - 1];
+  if (lastOutDate && daysAgo(lastOutDate) <= 1) {
+    return "New episode";
+  }
+
+  const nextDate = dated
+    .map((entry) => entry.date)
+    .filter((date) => date > todayDate)
+    .sort()[0];
+  const before = outDates[outDates.length - 2];
+  if (
+    nextDate &&
+    before &&
+    daysBetween(before, lastOutDate) === 7 &&
+    daysBetween(lastOutDate, nextDate) === 7
+  ) {
+    const weekday = new Date(`${nextDate}T00:00:00Z`).getUTCDay();
+    return `New episodes every ${WEEKDAY_NAMES[weekday]}`;
+  }
+
+  return null;
+}

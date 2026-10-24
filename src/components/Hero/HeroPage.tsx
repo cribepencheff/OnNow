@@ -568,7 +568,7 @@ export const HeroPage = memo(function HeroPage({
 // image's top edge) and flipped below it (its top edge continues the
 // image's bottom edge). Positioned from the column's own top. Drawn once
 // sharp, and on Android once more, blurred, for the masked blur.
-function ImageColumn({
+export function ImageColumn({
   uri,
   placeholder,
   contentPosition = "center",
