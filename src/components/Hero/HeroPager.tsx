@@ -50,11 +50,11 @@ const AUTO_ADVANCE_MS = 6000;
 // light down to the seam (about halfway), so the soft image keeps its own
 // tone around the title, then into solid bg towards the dots. Eased, so it
 // has no visible edge.
-const FADE_GRADIENT =
+export const FADE_GRADIENT =
   "linear-gradient(to bottom, rgba(11,12,15,0) 0%, rgba(11,12,15,0.1) 25%, rgba(11,12,15,0.22) 47%, rgba(11,12,15,0.48) 65%, rgba(11,12,15,0.8) 82%, rgba(11,12,15,1) 95%)";
 // How strong the blur over the mirror zone gets: the image reads as
 // almost one colour there.
-const MIRROR_BLUR_INTENSITY = 80;
+export const MIRROR_BLUR_INTENSITY = 80;
 
 // Whether the app is in the foreground. Auto-advance pauses in the
 // background (CRI-124).

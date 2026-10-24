@@ -111,10 +111,12 @@ appId: host.exp.Exponent
 - tapOn:
     id: "shows-row"
     text: "${output.show.name}.*"
-# The title and the quiet "Following" status (the show is followed) are
-# at the top, under the show's image.
+# The hero's follow button shows the show as followed (CRI-143), with the
+# title over the show's image.
 - extendedWaitUntil:
-    visible: "Following"
+    visible:
+      id: "show-detail-follow"
+      text: "Following"
     timeout: 20000
 - assertVisible: "${output.show.name}"
 - tapOn:
