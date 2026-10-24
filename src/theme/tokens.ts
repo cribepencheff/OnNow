@@ -12,6 +12,10 @@ export const t = {
   // The hairline light border of the date pill, the Home follow circle and
   // the poster cards (Apple TV style), drawn StyleSheet.hairlineWidth wide.
   imageControlEdge: "rgba(255, 255, 255, 0.16)",
+  // Show detail's follow button beside "Open in" (CRI-143), over a
+  // background blur: light, as Apple TV's secondary button, so it reads on
+  // the hero's dark fade, where image-control-backdrop is lost.
+  heroSecondaryAction: "rgba(255, 255, 255, 0.18)",
   ink: "#f4f4f6",
   inkMuted: "#a3a6ae",
   inkSubtle: "#8b8e97",

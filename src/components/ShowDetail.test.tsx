@@ -314,13 +314,13 @@ describe("ShowDetail", () => {
     expect(follow).toHaveBeenCalledWith(45039);
   });
 
-  it("FR-029: shows Followed on the follow circle when followed, which unfollows when pressed", async () => {
+  it("FR-029: shows Following on the follow button when followed, which unfollows when pressed", async () => {
     mockShow(showSlowHorsesFixture);
     mockFollowed(true);
     await render(<ShowDetail showId={45039} />);
 
     expect(screen.queryByRole("button", { name: "Follow" })).toBeNull();
-    await fireEvent.press(screen.getByRole("button", { name: "Followed" }));
+    await fireEvent.press(screen.getByRole("button", { name: "Following" }));
 
     expect(unfollow).toHaveBeenCalledWith(45039);
   });
@@ -384,7 +384,7 @@ describe("ShowDetail", () => {
     mockStreamingServices([APPLE_TV]);
     await render(<ShowDetail showId={45039} />);
 
-    expect(screen.getByRole("button", { name: "Followed" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Following" })).toBeTruthy();
     await fireEvent.press(
       screen.getByRole("button", { name: "Open in Apple TV" }),
     );
@@ -568,7 +568,7 @@ describe("ShowDetail", () => {
     mockStreamingServices([]);
     await render(<ShowDetail showId={45039} />);
 
-    expect(screen.getByRole("button", { name: "Followed" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Following" })).toBeTruthy();
     expect(screen.queryByRole("button", { name: /^Open in/ })).toBeNull();
   });
 
@@ -798,7 +798,7 @@ describe("ShowDetail", () => {
       mockStreamingServices([APPLE_TV]);
       await render(<ShowDetail showId={45039} />);
       const circle = StyleSheet.flatten(
-        screen.getByTestId("show-detail-follow-circle").props.style,
+        screen.getByTestId("show-detail-follow").props.style,
       );
       const button = StyleSheet.flatten(
         screen.getByTestId("show-detail-open-in").props.style,
@@ -810,12 +810,30 @@ describe("ShowDetail", () => {
       expect(follow).toHaveBeenCalledWith(45039);
     });
 
-    it("keeps the follow circle without a service", async () => {
+    it("keeps the circle to its symbol beside Open in", async () => {
       mockShow(showSlowHorsesFixture);
-      mockStreamingServices([]);
+      mockStreamingServices([APPLE_TV]);
       await render(<ShowDetail showId={45039} />);
+      expect(
+        within(screen.getByTestId("show-detail-follow")).queryByText("Follow"),
+      ).toBeNull();
+    });
+
+    it("says Follow, or Following, when it stands alone without a service", async () => {
+      mockShow(showSlowHorsesFixture);
+      mockFollowed(false);
+      mockStreamingServices([]);
+      const { unmount } = await render(<ShowDetail showId={45039} />);
       expect(screen.queryByRole("button", { name: /^Open in/ })).toBeNull();
-      expect(screen.getByTestId("show-detail-follow")).toBeTruthy();
+      const follow = within(screen.getByTestId("show-detail-follow"));
+      expect(follow.getByText("Follow")).toBeTruthy();
+      await unmount();
+
+      mockFollowed(true);
+      await render(<ShowDetail showId={45039} />);
+      expect(
+        within(screen.getByTestId("show-detail-follow")).getByText("Following"),
+      ).toBeTruthy();
     });
   });
 });

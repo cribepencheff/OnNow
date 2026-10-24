@@ -3,12 +3,14 @@
 // show and without the pager. The backdrop is mirrored above and below and
 // blurred into the page as on Home (ImageColumn, ProgressiveBlur); over it,
 // centred, the status pill (showDetailPill), the logo or title, the rating
-// with the meta line, and "Open in" with the follow circle beside it. The
+// with the meta line, and "Open in" with the follow button beside it. The
 // Home hero itself is left as it is: this reuses its pieces, never changes
 // them.
 
 import MaskedView from "@react-native-masked-view/masked-view";
+import { BlurView } from "expo-blur";
 import { Image } from "expo-image";
+import { SymbolView } from "expo-symbols";
 import { useCallback } from "react";
 import {
   PixelRatio,
@@ -46,12 +48,13 @@ import {
   streamingOnLabel,
 } from "@/logic/streaming-service";
 import { t, type } from "@/theme/tokens";
+import { followHaptic } from "./followHaptic";
+import { followSymbol } from "./followSymbols";
 import { DatePill } from "./Hero/DatePill";
 import { ImageColumn, useHeroLayout } from "./Hero/HeroPage";
 import { FADE_GRADIENT, MIRROR_BLUR_INTENSITY } from "./Hero/HeroPager";
 import { NoImage } from "./NoImage";
 import { PaidSubscriptionMarker } from "./PaidSubscriptionMarker";
-import { PosterFollowCircle } from "./PosterFollowCircle";
 import { ProgressiveBlur, ProgressiveMask } from "./ProgressiveBlur";
 import { ServiceLogo } from "./ServiceLogo";
 import { ShowRating } from "./ShowRating";
@@ -297,9 +300,10 @@ export function ShowDetailHero({
   );
 }
 
-// Home's "Open in" slot (OpenInSlot) with the follow circle beside the
-// button, as tall as it (owner, CRI-143). Without a button the circle
-// stands alone, centred, and the note says where the show streams.
+// Home's "Open in" slot (OpenInSlot) with the follow button beside it, a
+// circle as tall as the button (owner, CRI-143). Without a button the
+// follow button takes its place, with its words, and the note says where
+// the show streams.
 function ActionSlot({
   availability,
   showId,
@@ -308,8 +312,10 @@ function ActionSlot({
   showId: number;
 }) {
   const { buttonHeight, openInMargin } = useHeroLayout();
-  const { followed, toggle } = useFollowToggle(showId);
   const capsule = { height: buttonHeight, borderRadius: buttonHeight / 2 };
+  // The circle sits beside a button or its placeholder; otherwise the
+  // follow button stands alone and says what it does.
+  const alone = availability.kind === "none" || availability.kind === "text";
 
   const note =
     availability.kind === "button" ? (
@@ -363,17 +369,61 @@ function ActionSlot({
             )}
           </Pressable>
         )}
-        <PosterFollowCircle
-          followed={followed}
-          onPress={toggle}
-          size={buttonHeight}
-          testID="show-detail-follow"
-        />
+        <FollowButton showId={showId} height={buttonHeight} alone={alone} />
       </View>
       {note && <View style={styles.note}>{note}</View>}
     </View>
   );
 }
+
+// FR-029: one toggle that stays in place, so an unfollow is undone by
+// tapping again. Beside "Open in" a circle with a plus, or a check once
+// followed, the same symbols as the poster cards' circle; alone, a capsule
+// with the words as well. Light over a blur (heroSecondaryAction), followed
+// or not.
+function FollowButton({
+  showId,
+  height,
+  alone,
+}: {
+  showId: number;
+  height: number;
+  alone: boolean;
+}) {
+  const { followed, toggle } = useFollowToggle(showId);
+  const label = followed ? "Following" : "Follow";
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityHint={followed ? "Unfollows the show" : undefined}
+      accessibilityState={{ selected: followed }}
+      onPress={() => {
+        followHaptic(!followed);
+        toggle();
+      }}
+      style={[
+        styles.followButton,
+        { height, borderRadius: height / 2 },
+        alone ? styles.grow : { width: height },
+      ]}
+      testID="show-detail-follow"
+    >
+      <BlurView intensity={30} tint="dark" style={StyleSheet.absoluteFill} />
+      <View style={[StyleSheet.absoluteFill, styles.followFill]} />
+      <SymbolView
+        name={followSymbol(followed)}
+        tintColor={t.ink}
+        size={Math.round(height * FOLLOW_ICON_SHARE)}
+      />
+      {alone && <Text style={styles.followLabel}>{label}</Text>}
+    </Pressable>
+  );
+}
+
+// The follow symbol's share of the button's height, as on the poster
+// cards' circle (15 in 32).
+const FOLLOW_ICON_SHARE = 15 / 32;
 
 const styles = StyleSheet.create({
   // Clips the column, which can be wider than the screen.
@@ -439,6 +489,24 @@ const styles = StyleSheet.create({
   },
   grow: {
     flex: 1,
+  },
+  followButton: {
+    flexDirection: "row",
+    gap: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    borderCurve: "continuous",
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: t.imageControlEdge,
+    // Clips the blur to the button's shape.
+    overflow: "hidden",
+  },
+  followFill: {
+    backgroundColor: t.heroSecondaryAction,
+  },
+  followLabel: {
+    ...type.button,
+    color: t.ink,
   },
   note: {
     marginTop: 8,
