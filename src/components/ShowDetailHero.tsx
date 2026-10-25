@@ -67,10 +67,14 @@ const BLURRED_COPY_SIZE = "w300";
 const ANDROID_MIRROR_BLUR_RADIUS = 12;
 const TOP_MIRROR_BLUR_RADIUS = 12;
 const SERVICE_LOGO_SIZE = 28;
-// "Open in", or the follow button alone, as wide as the logo's box above
-// (owner, CRI-143), not the hero's width: its content is short. Narrower
-// when the screen leaves less room beside the circle.
-const MAIN_ACTION_WIDTH = 240;
+// "Open in" and the follow circle together are as wide as the logo's box
+// above (owner, CRI-143; Apple TV's are 238), so the hero reads as one
+// narrow column. "Open in" takes what the circle and the gap leave (176
+// with the 52 circle), and keeps that width when the follow button stands
+// alone. Narrower when the screen leaves less room.
+const ACTION_GROUP_WIDTH = 240;
+// Between "Open in" and the circle, as in Apple TV.
+const ACTION_GAP = 12;
 
 export function ShowDetailHero({
   show,
@@ -356,7 +360,13 @@ function ActionSlot({
       {/* The main button and the note under it, centred on the button
           (owner, CRI-143); the circle beside them, the two centred
           together. */}
-      <View style={styles.mainAction} testID="show-detail-main-action">
+      <View
+        style={[
+          styles.mainAction,
+          { width: ACTION_GROUP_WIDTH - ACTION_GAP - buttonHeight },
+        ]}
+        testID="show-detail-main-action"
+      >
         {availability.kind === "loading" && (
           <View style={[styles.buttonPlaceholder, capsule]} />
         )}
@@ -555,10 +565,9 @@ const styles = StyleSheet.create({
   actionRow: {
     flexDirection: "row",
     justifyContent: "center",
-    gap: t.space2,
+    gap: ACTION_GAP,
   },
   mainAction: {
-    width: MAIN_ACTION_WIDTH,
     flexShrink: 1,
   },
   followButton: {
