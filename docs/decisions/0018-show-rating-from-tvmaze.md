@@ -1,6 +1,6 @@
 # 0018. The show's rating from TVmaze
 
-Status: Accepted (approved with #118, 2026-10-23). Supersedes ADR 0013.
+Status: Superseded by ADR 0019 (CRI-143). Accepted (approved with #118, 2026-10-23). Supersedes ADR 0013.
 
 ## Context
 ADR 0013 showed the IMDb rating, looked up per show through OMDb with one

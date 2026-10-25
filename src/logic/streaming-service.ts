@@ -26,6 +26,9 @@ export interface TmdbFindResponse {
     origin_country?: string[];
     // TMDB's main poster, in any language (CRI-100).
     poster_path?: string | null;
+    // TMDB's users' average rating and how many voted (ADR 0019).
+    vote_average?: number;
+    vote_count?: number;
   }[];
 }
 

@@ -24,6 +24,7 @@ import {
 import type { TmdbOnTheAir } from "@/logic/airing-this-week";
 import type { TmdbRecommendation } from "@/logic/recommendations";
 import { matchTmdbSearch, type TmdbSearchResult } from "@/logic/tmdb-match";
+import { tmdbRating, type TmdbRating } from "@/logic/show-rating";
 import { queryClient } from "@/hooks/query-client";
 import { createTmdbFindCache } from "@/hooks/tmdb-find-cache";
 import type { TmdbImages } from "./tmdb-types";
@@ -90,6 +91,9 @@ export interface TmdbClient {
   ) => Promise<ProviderAnswer | null>;
   // ISO codes, [] when TMDB does not know the show, null without a key.
   findOriginCountries: (show: TmdbShowRef) => Promise<string[] | null>;
+  // TMDB's rating ("8.4", ADR 0019) and the show's TMDB page, from the
+  // find answer; null without a key, a match or enough votes.
+  findRating: (show: TmdbShowRef) => Promise<TmdbRating | null>;
   // TMDB's IMDb and TheTVDB IDs for the show (CRI-103); NOT_ON_TMDB when
   // TMDB does not know it, null without a key.
   findExternalIds: (
@@ -245,6 +249,13 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     return tmdbOriginCountries(await lookUp(show, apiKey));
   }
 
+  async function findRating(show: TmdbShowRef): Promise<TmdbRating | null> {
+    if (!apiKey) {
+      return null;
+    }
+    return tmdbRating(await lookUp(show, apiKey));
+  }
+
   async function findExternalIds(
     show: TmdbShowRef,
   ): Promise<ExternalIds | typeof NOT_ON_TMDB | null> {
@@ -395,6 +406,7 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     providersById,
     findStreamingProviders,
     findOriginCountries,
+    findRating,
     findExternalIds,
     findRecommendations,
     findImages,

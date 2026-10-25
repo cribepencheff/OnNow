@@ -7,11 +7,12 @@ import {
 
 import { Dimensions, StyleSheet } from "react-native";
 import { HEADER_BAR_HEIGHT } from "@/logic/header";
+import { BUTTON_HEIGHT, heroLayout } from "@/logic/hero-layout";
 import { t } from "@/theme/tokens";
 import { releaseNavigation } from "@/hooks/navigation-lock";
 import * as Linking from "expo-linking";
 
-import { BACKDROP_HEIGHT_SHARE, ShowDetail } from "./ShowDetail";
+import { ShowDetail } from "./ShowDetail";
 import { useShow } from "@/hooks/useShow";
 import { useFollowList } from "@/hooks/useFollowList";
 import { useStreamingService } from "@/hooks/useStreamingService";
@@ -30,6 +31,12 @@ jest.mock("expo-router", () => ({
 }));
 jest.mock("expo-linking", () => ({
   openURL: jest.fn(),
+}));
+// TMDB's rating (ADR 0019), from the find answer; its logic is tested in
+// show-rating.test.ts.
+const mockTmdbRating = jest.fn();
+jest.mock("@/hooks/useTmdbRating", () => ({
+  useTmdbRating: () => ({ data: mockTmdbRating() }),
 }));
 jest.mock("@/hooks/useShow", () => ({
   useShow: jest.fn(),
@@ -93,6 +100,13 @@ const PLUTO_TV = { providerId: 300, providerName: "Pluto TV", logoPath: null };
 const follow = jest.fn();
 const unfollow = jest.fn();
 
+// The hero's sharp image (ImageColumn), inside the backdrop's column.
+function backdropImage() {
+  return within(screen.getByTestId("show-detail-backdrop")).getByTestId(
+    "hero-backdrop-image",
+  );
+}
+
 function mockShow(fixture: unknown) {
   mockedUseShow.mockReturnValue({
     data: fixture,
@@ -116,6 +130,10 @@ describe("ShowDetail", () => {
   let resolvedOptionsSpy: jest.SpyInstance;
 
   beforeEach(() => {
+    mockTmdbRating.mockReturnValue({
+      value: "8.6",
+      url: "https://www.themoviedb.org/tv/247718",
+    });
     mockOriginCountries.mockReturnValue({ data: ["GB"] });
     follow.mockReset();
     unfollow.mockReset();
@@ -275,23 +293,24 @@ describe("ShowDetail", () => {
     ).toBeTruthy();
   });
 
-  // ADR 0018 (owner, 2026-10-22): TVmaze's rating, the same as a Search
-  // row's, from the show's own data, linking to the show on TVmaze.
-  it("shows TVmaze's rating, linking to the show on TVmaze", async () => {
+  // ADR 0019: TMDB's rating, the same as a Search row's, from the find
+  // answer, linking to the show on TMDB.
+  it("shows TMDB's rating, linking to the show on TMDB", async () => {
     mockShow(showMobLandFixture);
     await render(<ShowDetail showId={75026} />);
 
     const rating = screen.getByTestId("show-rating");
-    expect(rating).toHaveTextContent("TVmaze8.1");
-    expect(screen.queryByText("IMDb")).toBeNull();
+    expect(rating).toHaveTextContent("TMDB8.6");
+    expect(rating.props.accessibilityLabel).toBe("TMDB rating 8.6");
     await fireEvent.press(rating);
     expect(Linking.openURL).toHaveBeenCalledWith(
-      "https://www.tvmaze.com/shows/75026/mobland",
+      "https://www.themoviedb.org/tv/247718",
     );
   });
 
-  it("shows no rating when TVmaze has none", async () => {
-    mockShow({ ...showMobLandFixture, rating: { average: null } });
+  it("shows no rating when TMDB has none", async () => {
+    mockShow(showMobLandFixture);
+    mockTmdbRating.mockReturnValue(null);
     await render(<ShowDetail showId={75026} />);
     expect(screen.queryByTestId("show-rating")).toBeNull();
   });
@@ -306,7 +325,7 @@ describe("ShowDetail", () => {
     expect(follow).toHaveBeenCalledWith(45039);
   });
 
-  it("FR-029: shows Following as a toggle when followed, which unfollows when pressed", async () => {
+  it("FR-029: shows Following on the follow button when followed, which unfollows when pressed", async () => {
     mockShow(showSlowHorsesFixture);
     mockFollowed(true);
     await render(<ShowDetail showId={45039} />);
@@ -369,7 +388,7 @@ describe("ShowDetail", () => {
 
   // CRI-80, CRI-82, FR-014, PRD 5.5: when followed, "Open in [service]" is
   // the primary action for the show's Swedish service (TMDB), with
-  // "Following" as the quiet status next to it.
+  // the follow circle next to it (CRI-143).
   it("FR-014: opens the show directly when its Swedish service has a direct link (Slow Horses, Apple TV)", async () => {
     mockShow(showSlowHorsesFixture);
     mockFollowed(true);
@@ -428,7 +447,7 @@ describe("ShowDetail", () => {
     expect(hero.getByRole("button", { name: "Open in Apple TV" })).toBeTruthy();
   });
 
-  it("CRI-90: names services without a start page below the hero, with no button", async () => {
+  it("CRI-90: names services without a start page under the follow circle, with no button, as on Home", async () => {
     mockShow(showSlowHorsesFixture);
     mockStreamingServices([
       { providerId: 464, providerName: "Kocowa", logoPath: null },
@@ -438,11 +457,10 @@ describe("ShowDetail", () => {
 
     expect(screen.queryByRole("button", { name: /^Open in/ })).toBeNull();
     expect(
-      within(screen.getByTestId("show-detail-hero")).queryByText(/^On /),
-    ).toBeNull();
-    expect(screen.getByTestId("show-detail-availability")).toHaveTextContent(
-      "On Kocowa, HiDive",
-    );
+      within(screen.getByTestId("show-detail-hero")).getByTestId(
+        "show-detail-availability",
+      ),
+    ).toHaveTextContent("On Kocowa, HiDive");
   });
 
   it("CRI-90: an add-on opens its host, with the extra subscription below the button", async () => {
@@ -491,9 +509,9 @@ describe("ShowDetail", () => {
     mockShow(showSlowHorsesFixture);
     await render(<ShowDetail showId={45039} />);
 
-    expect(
-      JSON.stringify(screen.getByTestId("show-detail-backdrop").props.source),
-    ).toContain("/w1920/textless.jpg");
+    expect(JSON.stringify(backdropImage().props.source)).toContain(
+      "/w1920/textless.jpg",
+    );
   });
 
   // CRI-140: w1920 is not a documented TMDB size; if it fails, the same
@@ -507,13 +525,13 @@ describe("ShowDetail", () => {
     });
     await render(<ShowDetail showId={45039} />);
 
-    expect(
-      JSON.stringify(screen.getByTestId("show-detail-backdrop").props.source),
-    ).toContain(showSlowHorsesFixture.image!.original as string);
+    expect(JSON.stringify(backdropImage().props.source)).toContain(
+      showSlowHorsesFixture.image!.original as string,
+    );
     expect(screen.queryByText("No image")).toBeNull();
   });
 
-  it("CRI-100: without any image, no square: the title opens the page, as much space above it as below", async () => {
+  it("CRI-100: without any image, the Home hero's No image placeholder, with the title over it", async () => {
     mockShow({ ...showSlowHorsesFixture, image: null });
     mockShowImages.mockReturnValue({
       data: { highestRatedBackdrop: null, logo: null },
@@ -521,30 +539,20 @@ describe("ShowDetail", () => {
     await render(<ShowDetail showId={45039} />);
 
     expect(screen.queryByTestId("show-detail-backdrop")).toBeNull();
-    expect(screen.queryByTestId("no-image")).toBeNull();
+    expect(screen.getByTestId("no-image")).toBeTruthy();
     expect(screen.getByText("Slow Horses")).toBeTruthy();
-    const content = StyleSheet.flatten(
-      screen.getByTestId("show-detail-hero-content").props.style,
-    );
-    expect(content.position).toBeUndefined();
-    const section = StyleSheet.flatten(
-      screen.getByTestId("show-detail-section").props.style,
-    );
-    // Measured from the floating header's bottom (CRI-129); Jest's top
-    // inset is 0.
-    expect(content.paddingTop).toBe(HEADER_BAR_HEIGHT + section.paddingTop);
   });
 
   it("CRI-140: falls back to the original backdrop if w1920 fails", async () => {
     mockShow(showSlowHorsesFixture);
     await render(<ShowDetail showId={45039} />);
 
-    await fireEvent(screen.getByTestId("show-detail-backdrop"), "error", {
+    await fireEvent(backdropImage(), "error", {
       nativeEvent: { error: "404" },
     });
-    expect(
-      JSON.stringify(screen.getByTestId("show-detail-backdrop").props.source),
-    ).toContain("/original/textless.jpg");
+    expect(JSON.stringify(backdropImage().props.source)).toContain(
+      "/original/textless.jpg",
+    );
   });
 
   it("FR-014: uses the Swedish service, not the US network (MobLand: SkyShowtime; Killing Eve: Netflix)", async () => {
@@ -710,19 +718,19 @@ describe("ShowDetail", () => {
   // backdrop runs up under the status bar, and a round back button floats
   // over it, staying put while the page scrolls.
   describe("floating header (CRI-129)", () => {
-    it("runs the backdrop up under the status bar", async () => {
+    it("runs the backdrop up under the status bar, as tall as the Home hero's (CRI-143)", async () => {
       mockShow(showSlowHorsesFixture);
       await render(<ShowDetail showId={45039} />);
-      const image = StyleSheet.flatten(
+      const layout = heroLayout(Dimensions.get("window").height, 0);
+      const hero = StyleSheet.flatten(
+        screen.getByTestId("show-detail-hero").props.style,
+      );
+      const column = StyleSheet.flatten(
         screen.getByTestId("show-detail-backdrop").props.style,
       );
-      // The square, plus the status bar and the header's bar above it
-      // (Jest's top inset is 0), a fifth lower (owner).
-      expect(BACKDROP_HEIGHT_SHARE).toBe(0.8);
-      expect(image.height).toBe(
-        (Dimensions.get("window").width + HEADER_BAR_HEIGHT) *
-          BACKDROP_HEIGHT_SHARE,
-      );
+      expect(hero.height).toBe(layout.heroHeight);
+      expect(column.top).toBe(0);
+      expect(column.height).toBe(layout.imageHeight);
     });
 
     // Owner, 2026-10-22: no scroll indicator, as on Home (and Apple TV's
@@ -758,7 +766,101 @@ describe("ShowDetail", () => {
       const content = StyleSheet.flatten(
         screen.getByTestId("show-detail-hero-content").props.style,
       );
-      expect(content.paddingTop).toBeGreaterThanOrEqual(HEADER_BAR_HEIGHT);
+      expect(content.top).toBeGreaterThanOrEqual(HEADER_BAR_HEIGHT);
+    });
+  });
+
+  // CRI-143: the Home hero slide as the reference.
+  describe("hero (CRI-143)", () => {
+    it("shows the status pill over the title (Slow Horses, a week into season 6)", async () => {
+      mockShow(showSlowHorsesFixture);
+      await render(<ShowDetail showId={45039} />);
+      expect(
+        within(screen.getByTestId("show-detail-pill-row")).getByText(
+          "New season",
+        ),
+      ).toBeTruthy();
+    });
+
+    it("shows no pill when there is nothing to say, keeping its room", async () => {
+      mockShow(showNeagleyFixture);
+      await render(<ShowDetail showId={82707} />);
+      // Neagley's drop on 16 Sep is within 30 days: the pill says so.
+      expect(screen.getByText("All episodes now available")).toBeTruthy();
+      await screen.unmount();
+
+      mockShow(showSiloFixture);
+      await render(<ShowDetail showId={44778} />);
+      expect(screen.queryByTestId("hero-date-pill")).toBeNull();
+      expect(screen.getByTestId("show-detail-pill-row")).toBeTruthy();
+    });
+
+    it("shows the rating and the meta line under the title", async () => {
+      mockShow(showSlowHorsesFixture);
+      await render(<ShowDetail showId={45039} />);
+      const meta = within(screen.getByTestId("show-detail-meta-row"));
+      expect(meta.getByTestId("show-rating")).toBeTruthy();
+      // The rating's chip comes last, as Home's Premiere chip.
+      const row = screen.getByTestId("show-detail-meta-row");
+      const children = row.children as { props: { testID?: string } }[];
+      expect(children[children.length - 1].props.testID).toBe("show-rating");
+      expect(meta.getByText(/^2022 · United Kingdom/)).toBeTruthy();
+    });
+
+    it("puts the follow circle beside Open in, as tall as the button", async () => {
+      mockShow(showSlowHorsesFixture);
+      mockFollowed(false);
+      mockStreamingServices([APPLE_TV]);
+      await render(<ShowDetail showId={45039} />);
+      const circle = StyleSheet.flatten(
+        screen.getByTestId("show-detail-follow").props.style,
+      );
+      const button = StyleSheet.flatten(
+        screen.getByTestId("show-detail-open-in").props.style,
+      );
+      expect(button.height).toBe(BUTTON_HEIGHT);
+      // As wide as on Home, less the circle and the gap (owner).
+      expect(
+        StyleSheet.flatten(
+          screen.getByTestId("show-detail-main-action").props.style,
+        ).flex,
+      ).toBe(1);
+      expect(circle.width).toBe(BUTTON_HEIGHT);
+      expect(circle.height).toBe(BUTTON_HEIGHT);
+      await fireEvent.press(screen.getByRole("button", { name: "Follow" }));
+      expect(follow).toHaveBeenCalledWith(45039);
+    });
+
+    it("keeps the circle to its symbol beside Open in", async () => {
+      mockShow(showSlowHorsesFixture);
+      mockStreamingServices([APPLE_TV]);
+      await render(<ShowDetail showId={45039} />);
+      expect(
+        within(screen.getByTestId("show-detail-follow")).queryByText("Follow"),
+      ).toBeNull();
+    });
+
+    it("says Follow, or Following, when it stands alone without a service", async () => {
+      mockShow(showSlowHorsesFixture);
+      mockFollowed(false);
+      mockStreamingServices([]);
+      const { unmount } = await render(<ShowDetail showId={45039} />);
+      expect(screen.queryByRole("button", { name: /^Open in/ })).toBeNull();
+      const follow = within(screen.getByTestId("show-detail-follow"));
+      expect(follow.getByText("Follow")).toBeTruthy();
+      // Compact, as a secondary action: 176 beside where the circle would be.
+      expect(
+        StyleSheet.flatten(
+          screen.getByTestId("show-detail-main-action").props.style,
+        ).width,
+      ).toBe(240 - 12 - BUTTON_HEIGHT);
+      await unmount();
+
+      mockFollowed(true);
+      await render(<ShowDetail showId={45039} />);
+      expect(
+        within(screen.getByTestId("show-detail-follow")).getByText("Following"),
+      ).toBeTruthy();
     });
   });
 });
