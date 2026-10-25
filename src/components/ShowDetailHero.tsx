@@ -443,11 +443,7 @@ function FollowButton({
       <View style={[StyleSheet.absoluteFill, styles.followFill]} />
       <FollowMorph
         followed={followed}
-        size={
-          alone
-            ? FOLLOW_LABEL_ICON_SIZE
-            : Math.round(height * FOLLOW_ICON_SHARE)
-        }
+        size={Math.round(height * FOLLOW_ICON_SHARE)}
         style={alone ? styles.followLabelIcon : undefined}
       />
       {alone && <Text style={styles.followLabel}>{label}</Text>}
@@ -456,10 +452,8 @@ function FollowButton({
 }
 
 // The follow symbol's share of the button's height, as on the poster
-// cards' circle (15 in 32).
+// cards' circle (15 in 32), with or without the words (owner).
 const FOLLOW_ICON_SHARE = 15 / 32;
-// Beside the words, the symbol about as tall as them (type.button, 18).
-const FOLLOW_LABEL_ICON_SIZE = 17;
 // The ExtraBold words outweigh the thin symbol, so the centred pair reads
 // right of centre: the symbol's negative margin moves the pair 2 left
 // (half of it), followed or not (owner, CRI-143).
