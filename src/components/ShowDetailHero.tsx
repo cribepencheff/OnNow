@@ -457,7 +457,7 @@ const FOLLOW_ICON_SHARE = 15 / 32;
 // The ExtraBold words outweigh the thin symbol, so the centred pair reads
 // right of centre: the symbol's negative margin moves the pair 2 left
 // (half of it), followed or not (owner, CRI-143).
-const FOLLOW_LABEL_ICON_NUDGE = -4;
+const FOLLOW_LABEL_ICON_NUDGE = -8;
 
 // The poster cards' morph (PosterFollowCircle): the plus and the check
 // overlaid, crossfading and scaling on the same spring, so the two never
