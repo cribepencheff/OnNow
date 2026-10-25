@@ -27,7 +27,7 @@ export function ShowRating({ show }: { show: TvMazeShow }) {
       testID="show-rating"
     >
       <Text style={styles.label}>TMDB</Text>
-      <Text style={[styles.label, styles.value]}>{rating.value}</Text>
+      <Text style={styles.label}>{rating.value}</Text>
     </Pressable>
   );
 }
@@ -45,15 +45,17 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: t.episodeMarkEdge,
     borderRadius: 8,
+    // Never cut: the meta line before it gives way instead.
+    flexShrink: 0,
   },
+  // Tighter than the system font's own spacing at 12, which reads loose in
+  // a chip (owner).
   label: {
     ...type.meta,
     fontSize: 12,
     lineHeight: 14,
     fontWeight: "500",
+    letterSpacing: -0.2,
     color: t.inkMuted,
-  },
-  value: {
-    fontVariant: ["tabular-nums"],
   },
 });

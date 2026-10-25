@@ -296,15 +296,16 @@ export function ShowDetailHero({
             )}
           </View>
         </View>
-        {/* Where Home has the episode line: the rating and the meta line
-            (FR-028, ADR 0018). */}
+        {/* Where Home has the episode line: the meta line, then the
+            rating's chip, as Home's Premiere chip follows its line
+            (FR-028, ADR 0019). */}
         <View style={styles.metaRow} testID="show-detail-meta-row">
-          <ShowRating show={show} />
           {metaLine !== "" && (
             <Text style={[styles.metaText, styles.metaLine]} numberOfLines={1}>
               {metaLine}
             </Text>
           )}
+          <ShowRating show={show} />
         </View>
         <ActionSlot availability={availability} showId={show.id} />
       </View>
@@ -562,8 +563,8 @@ const styles = StyleSheet.create({
     color: t.ink,
     textAlign: "center",
   },
-  // One line, centred, as Home's episode line: the rating first, then the
-  // meta line, which gives way with an ellipsis.
+  // One line, centred, as Home's episode line: the meta line, which gives
+  // way with an ellipsis, then the rating's chip, which never does.
   metaRow: {
     height: EPISODE_LINE_HEIGHT,
     flexDirection: "row",

@@ -800,6 +800,10 @@ describe("ShowDetail", () => {
       await render(<ShowDetail showId={45039} />);
       const meta = within(screen.getByTestId("show-detail-meta-row"));
       expect(meta.getByTestId("show-rating")).toBeTruthy();
+      // The rating's chip comes last, as Home's Premiere chip.
+      const row = screen.getByTestId("show-detail-meta-row");
+      const children = row.children as { props: { testID?: string } }[];
+      expect(children[children.length - 1].props.testID).toBe("show-rating");
       expect(meta.getByText(/^2022 · United Kingdom/)).toBeTruthy();
     });
 
