@@ -49,12 +49,12 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   // Tighter than the system font's own spacing at 12, which reads loose in
-  // a chip (owner).
+  // a chip, and regular, as "Streaming on" under the button (owner).
   label: {
     ...type.meta,
     fontSize: 12,
     lineHeight: 14,
-    fontWeight: "500",
+    fontWeight: "400",
     letterSpacing: -0.2,
     color: t.inkMuted,
   },
