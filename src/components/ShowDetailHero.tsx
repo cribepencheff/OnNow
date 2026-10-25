@@ -67,12 +67,12 @@ const BLURRED_COPY_SIZE = "w300";
 const ANDROID_MIRROR_BLUR_RADIUS = 12;
 const TOP_MIRROR_BLUR_RADIUS = 12;
 const SERVICE_LOGO_SIZE = 28;
-// "Open in" and the follow circle together are as wide as the logo's box
-// above (owner, CRI-143; Apple TV's are 238), so the hero reads as one
-// narrow column. "Open in" takes what the circle and the gap leave (176
-// with the 52 circle), and keeps that width when the follow button stands
-// alone. Narrower when the screen leaves less room.
-const ACTION_GROUP_WIDTH = 240;
+// "Open in", the primary action, as wide as on Home, less the follow
+// circle and the gap, so the two views read as one (owner, CRI-143). The
+// follow button, secondary, stays compact even alone: as wide as "Open in"
+// would be in a group as wide as the logo's box (176 with the 52 circle;
+// Apple TV's button is 178).
+const COMPACT_GROUP_WIDTH = 240;
 // Between "Open in" and the circle, as in Apple TV.
 const ACTION_GAP = 12;
 
@@ -361,10 +361,11 @@ function ActionSlot({
           (owner, CRI-143); the circle beside them, the two centred
           together. */}
       <View
-        style={[
-          styles.mainAction,
-          { width: ACTION_GROUP_WIDTH - ACTION_GAP - buttonHeight },
-        ]}
+        style={
+          alone
+            ? { width: COMPACT_GROUP_WIDTH - ACTION_GAP - buttonHeight }
+            : styles.mainAction
+        }
         testID="show-detail-main-action"
       >
         {availability.kind === "loading" && (
@@ -568,7 +569,7 @@ const styles = StyleSheet.create({
     gap: ACTION_GAP,
   },
   mainAction: {
-    flexShrink: 1,
+    flex: 1,
   },
   followButton: {
     flexDirection: "row",

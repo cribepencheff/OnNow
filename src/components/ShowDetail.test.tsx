@@ -804,13 +804,12 @@ describe("ShowDetail", () => {
         screen.getByTestId("show-detail-open-in").props.style,
       );
       expect(button.height).toBe(BUTTON_HEIGHT);
-      // The button, the 12 gap and the circle as wide as the logo's box
-      // (owner, Apple TV).
+      // As wide as on Home, less the circle and the gap (owner).
       expect(
         StyleSheet.flatten(
           screen.getByTestId("show-detail-main-action").props.style,
-        ).width,
-      ).toBe(240 - 12 - BUTTON_HEIGHT);
+        ).flex,
+      ).toBe(1);
       expect(circle.width).toBe(BUTTON_HEIGHT);
       expect(circle.height).toBe(BUTTON_HEIGHT);
       await fireEvent.press(screen.getByRole("button", { name: "Follow" }));
@@ -834,6 +833,12 @@ describe("ShowDetail", () => {
       expect(screen.queryByRole("button", { name: /^Open in/ })).toBeNull();
       const follow = within(screen.getByTestId("show-detail-follow"));
       expect(follow.getByText("Follow")).toBeTruthy();
+      // Compact, as a secondary action: 176 beside where the circle would be.
+      expect(
+        StyleSheet.flatten(
+          screen.getByTestId("show-detail-main-action").props.style,
+        ).width,
+      ).toBe(240 - 12 - BUTTON_HEIGHT);
       await unmount();
 
       mockFollowed(true);
