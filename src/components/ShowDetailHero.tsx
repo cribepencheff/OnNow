@@ -11,8 +11,9 @@ import MaskedView from "@react-native-masked-view/masked-view";
 import { BlurView } from "expo-blur";
 import { Image } from "expo-image";
 import { SymbolView } from "expo-symbols";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
+  Animated,
   PixelRatio,
   Platform,
   Pressable,
@@ -27,6 +28,7 @@ import {
   LARGE_BACKDROP_SIZE,
 } from "@/api/tmdb-types";
 import type { TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
+import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
 import { useFallbackUri } from "@/hooks/useFallbackUri";
 import { useFollowToggle } from "@/hooks/useFollowList";
 import { openExternalUrl } from "@/hooks/useGuardedRouter";
@@ -49,7 +51,7 @@ import {
 } from "@/logic/streaming-service";
 import { t, type } from "@/theme/tokens";
 import { followHaptic } from "./followHaptic";
-import { followSymbol } from "./followSymbols";
+import { FOLLOW_CHECK_SYMBOL, FOLLOW_PLUS_SYMBOL } from "./followSymbols";
 import { DatePill } from "./Hero/DatePill";
 import { ImageColumn, useHeroLayout } from "./Hero/HeroPage";
 import { FADE_GRADIENT, MIRROR_BLUR_INTENSITY } from "./Hero/HeroPager";
@@ -341,17 +343,24 @@ function ActionSlot({
     ) : null;
 
   return (
-    <View style={{ marginTop: openInMargin, height: buttonHeight + NOTE_LINE }}>
-      <View style={styles.actionRow}>
+    <View
+      style={[
+        styles.actionRow,
+        { marginTop: openInMargin, height: buttonHeight + NOTE_LINE },
+      ]}
+    >
+      {/* The main button and the note under it, centred on the button
+          (owner, CRI-143); the circle beside them. */}
+      <View style={styles.grow}>
         {availability.kind === "loading" && (
-          <View style={[styles.buttonPlaceholder, styles.grow, capsule]} />
+          <View style={[styles.buttonPlaceholder, capsule]} />
         )}
         {availability.kind === "button" && (
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={openInAccessibilityLabel(availability.link)}
             onPress={() => openExternalUrl(availability.link.url)}
-            style={[styles.button, styles.grow, capsule]}
+            style={[styles.button, capsule]}
             testID="show-detail-open-in"
           >
             {availability.link.logoPath ? (
@@ -369,9 +378,12 @@ function ActionSlot({
             )}
           </Pressable>
         )}
-        <FollowButton showId={showId} height={buttonHeight} alone={alone} />
+        {alone && <FollowButton showId={showId} height={buttonHeight} alone />}
+        {note && <View style={styles.note}>{note}</View>}
       </View>
-      {note && <View style={styles.note}>{note}</View>}
+      {!alone && (
+        <FollowButton showId={showId} height={buttonHeight} alone={false} />
+      )}
     </View>
   );
 }
@@ -405,15 +417,14 @@ function FollowButton({
       style={[
         styles.followButton,
         { height, borderRadius: height / 2 },
-        alone ? styles.grow : { width: height },
+        alone ? null : { width: height },
       ]}
       testID="show-detail-follow"
     >
       <BlurView intensity={30} tint="dark" style={StyleSheet.absoluteFill} />
       <View style={[StyleSheet.absoluteFill, styles.followFill]} />
-      <SymbolView
-        name={followSymbol(followed)}
-        tintColor={t.ink}
+      <FollowMorph
+        followed={followed}
         size={Math.round(height * FOLLOW_ICON_SHARE)}
       />
       {alone && <Text style={styles.followLabel}>{label}</Text>}
@@ -424,6 +435,60 @@ function FollowButton({
 // The follow symbol's share of the button's height, as on the poster
 // cards' circle (15 in 32).
 const FOLLOW_ICON_SHARE = 15 / 32;
+
+// The poster cards' morph (PosterFollowCircle): the plus and the check
+// overlaid, crossfading and scaling on the same spring, so the two never
+// fall out of step. At once under Reduce Motion.
+function FollowMorph({ followed, size }: { followed: boolean; size: number }) {
+  const { reduceMotionEnabled } = useAccessibilityFlags();
+  const [progress] = useState(() => new Animated.Value(followed ? 1 : 0));
+  useEffect(() => {
+    if (reduceMotionEnabled) {
+      progress.setValue(followed ? 1 : 0);
+      return;
+    }
+    Animated.spring(progress, {
+      toValue: followed ? 1 : 0,
+      useNativeDriver: true,
+      damping: 14,
+      stiffness: 260,
+      mass: 0.6,
+    }).start();
+  }, [followed, reduceMotionEnabled, progress]);
+  const icon = (
+    symbol: typeof FOLLOW_PLUS_SYMBOL | typeof FOLLOW_CHECK_SYMBOL,
+    shownAt: 0 | 1,
+  ) => (
+    <Animated.View
+      style={[
+        StyleSheet.absoluteFill,
+        styles.morphIcon,
+        {
+          opacity: progress.interpolate({
+            inputRange: [0, 1],
+            outputRange: shownAt === 1 ? [0, 1] : [1, 0],
+          }),
+          transform: [
+            {
+              scale: progress.interpolate({
+                inputRange: [0, 1],
+                outputRange: shownAt === 1 ? [0.5, 1] : [1, 0.5],
+              }),
+            },
+          ],
+        },
+      ]}
+    >
+      <SymbolView name={symbol} tintColor={t.ink} size={size} />
+    </Animated.View>
+  );
+  return (
+    <View style={{ width: size, height: size }}>
+      {icon(FOLLOW_PLUS_SYMBOL, 0)}
+      {icon(FOLLOW_CHECK_SYMBOL, 1)}
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   // Clips the column, which can be wider than the screen.
@@ -500,6 +565,10 @@ const styles = StyleSheet.create({
     borderColor: t.imageControlEdge,
     // Clips the blur to the button's shape.
     overflow: "hidden",
+  },
+  morphIcon: {
+    alignItems: "center",
+    justifyContent: "center",
   },
   followFill: {
     backgroundColor: t.heroSecondaryAction,
