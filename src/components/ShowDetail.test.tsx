@@ -32,6 +32,12 @@ jest.mock("expo-router", () => ({
 jest.mock("expo-linking", () => ({
   openURL: jest.fn(),
 }));
+// TMDB's rating (ADR 0019), from the find answer; its logic is tested in
+// show-rating.test.ts.
+const mockTmdbRating = jest.fn();
+jest.mock("@/hooks/useTmdbRating", () => ({
+  useTmdbRating: () => ({ data: mockTmdbRating() }),
+}));
 jest.mock("@/hooks/useShow", () => ({
   useShow: jest.fn(),
 }));
@@ -124,6 +130,10 @@ describe("ShowDetail", () => {
   let resolvedOptionsSpy: jest.SpyInstance;
 
   beforeEach(() => {
+    mockTmdbRating.mockReturnValue({
+      value: "8.6",
+      url: "https://www.themoviedb.org/tv/247718",
+    });
     mockOriginCountries.mockReturnValue({ data: ["GB"] });
     follow.mockReset();
     unfollow.mockReset();
@@ -283,23 +293,24 @@ describe("ShowDetail", () => {
     ).toBeTruthy();
   });
 
-  // ADR 0018 (owner, 2026-10-22): TVmaze's rating, the same as a Search
-  // row's, from the show's own data, linking to the show on TVmaze.
-  it("shows TVmaze's rating, linking to the show on TVmaze", async () => {
+  // ADR 0019: TMDB's rating, the same as a Search row's, from the find
+  // answer, linking to the show on TMDB.
+  it("shows TMDB's rating, linking to the show on TMDB", async () => {
     mockShow(showMobLandFixture);
     await render(<ShowDetail showId={75026} />);
 
     const rating = screen.getByTestId("show-rating");
-    expect(rating).toHaveTextContent("TVmaze8.1");
-    expect(screen.queryByText("IMDb")).toBeNull();
+    expect(rating).toHaveTextContent("TMDB8.6");
+    expect(rating.props.accessibilityLabel).toBe("TMDB rating 8.6");
     await fireEvent.press(rating);
     expect(Linking.openURL).toHaveBeenCalledWith(
-      "https://www.tvmaze.com/shows/75026/mobland",
+      "https://www.themoviedb.org/tv/247718",
     );
   });
 
-  it("shows no rating when TVmaze has none", async () => {
-    mockShow({ ...showMobLandFixture, rating: { average: null } });
+  it("shows no rating when TMDB has none", async () => {
+    mockShow(showMobLandFixture);
+    mockTmdbRating.mockReturnValue(null);
     await render(<ShowDetail showId={75026} />);
     expect(screen.queryByTestId("show-rating")).toBeNull();
   });

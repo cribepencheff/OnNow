@@ -1,6 +1,6 @@
 // One TMDB /find per show, in the query cache (CRI-107). Every TMDB lookup
-// for a followed show (its services, origin countries, external IDs,
-// recommendations and images) starts from this same find step, and each
+// for a followed show (its services, origin countries, rating, external
+// IDs, recommendations and images) starts from this same find step, and each
 // used to make its own request on every fetch: the hero's images daily,
 // the "Open in" services hourly. The answer, which TMDB show this is, hardly
 // changes, so a hit is kept for 30 days; a miss ("not on TMDB") only for a

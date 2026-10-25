@@ -1,19 +1,34 @@
 import type { TvMazeShow } from "@/api/tvmaze-types";
-import { searchStatusLabel, tvmazeRating } from "./show-rating";
+import { searchStatusLabel, tmdbRating } from "./show-rating";
 
 const show = (fields: Partial<TvMazeShow>) => fields as TvMazeShow;
 
-// ADR 0018 (owner, 2026-10-22): the show's rating is TVmaze's, already in
-// every show TVmaze returns, so it costs no request.
-describe("tvmazeRating", () => {
-  it("gives TVmaze's average with one decimal", () => {
-    expect(tvmazeRating(show({ rating: { average: 8 } }))).toBe("8.0");
-    expect(tvmazeRating(show({ rating: { average: 7.8 } }))).toBe("7.8");
+// ADR 0019: TMDB's users' average, from the find answer the app already
+// has, so it costs no request.
+describe("tmdbRating", () => {
+  const find = (vote_average?: number, vote_count?: number) => ({
+    tv_results: [{ id: 1, vote_average, vote_count }],
   });
 
-  it("is nothing without one", () => {
-    expect(tvmazeRating(show({ rating: { average: null } }))).toBeNull();
-    expect(tvmazeRating(show({}))).toBeNull();
+  it("gives TMDB's average with one decimal", () => {
+    expect(tmdbRating(find(8, 1249))).toEqual({
+      value: "8.0",
+      url: "https://www.themoviedb.org/tv/1",
+    });
+    expect(tmdbRating(find(8.36, 1249))?.value).toBe("8.4");
+  });
+
+  it("needs at least 50 votes", () => {
+    expect(tmdbRating(find(5.9, 17))).toBeNull();
+    expect(tmdbRating(find(7.6, 49))).toBeNull();
+    expect(tmdbRating(find(7.6, 50))?.value).toBe("7.6");
+  });
+
+  it("is nothing without a TMDB match or an average", () => {
+    expect(tmdbRating({})).toBeNull();
+    expect(tmdbRating({ tv_results: [] })).toBeNull();
+    expect(tmdbRating(find(undefined, 100))).toBeNull();
+    expect(tmdbRating(find(0, 100))).toBeNull();
   });
 });
 

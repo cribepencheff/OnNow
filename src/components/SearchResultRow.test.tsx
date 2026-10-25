@@ -24,6 +24,12 @@ jest.mock("@/hooks/useListPoster", () => ({
     pending: false,
   }),
 }));
+// TMDB's rating (ADR 0019), from the find answer; its logic is tested in
+// show-rating.test.ts.
+const mockTmdbRating = jest.fn();
+jest.mock("@/hooks/useTmdbRating", () => ({
+  useTmdbRating: () => ({ data: mockTmdbRating() }),
+}));
 jest.mock("@/hooks/useShow", () => ({
   useShow: jest.fn(),
 }));
@@ -53,6 +59,10 @@ describe("SearchResultRow", () => {
   const originalDateTimeFormat = Intl.DateTimeFormat;
 
   beforeEach(() => {
+    mockTmdbRating.mockReturnValue({
+      value: "8.1",
+      url: "https://www.themoviedb.org/tv/1",
+    });
     mockedUseShow.mockReturnValue({ data: undefined } as never);
     mockProviders(undefined);
     mockToggle.mockClear();
@@ -224,7 +234,7 @@ describe("SearchResultRow", () => {
   });
 
   // Owner, 2026-10-22: the show's rating on its poster, bottom right:
-  // TVmaze's, from the search result (ADR 0018), the number alone, on a
+  // TMDB's (ADR 0019), the number alone, on a
   // darker fill than the follow circle's.
   it("shows the rating on the poster's bottom right, the number alone, on a darker fill", async () => {
     await render(
@@ -252,20 +262,14 @@ describe("SearchResultRow", () => {
     ).toEqual(["8.1"]);
     expect(pill.borderColor).toBe(t.imageControlEdge);
     expect(screen.getByTestId("poster-rating").props.accessibilityLabel).toBe(
-      "TVmaze rating 8.1",
+      "TMDB rating 8.1",
     );
   });
 
   it("shows no rating badge without a rating", async () => {
+    mockTmdbRating.mockReturnValue(null);
     await render(
-      <SearchResultRow
-        show={
-          {
-            ...showSlowHorsesFixture,
-            rating: { average: null },
-          } as unknown as TvMazeShow
-        }
-      />,
+      <SearchResultRow show={showSlowHorsesFixture as unknown as TvMazeShow} />,
     );
     expect(screen.queryByTestId("poster-rating")).toBeNull();
   });

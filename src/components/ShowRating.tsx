@@ -1,40 +1,40 @@
-// Show detail's rating (ADR 0018): TVmaze's users' average, already in the
-// show's data, so it costs no request; the same number as on a Search
-// row's poster, so the two never disagree. The "TVmaze" in its chip says whose
-// it is, and it links to the show on TVmaze. Nothing without a rating.
+// Show detail's rating (ADR 0019): TMDB's users' average, from the find
+// answer the app already has; the same number as on a Search row's poster,
+// so the two never disagree. "TMDB" in its chip says whose it is, and it
+// links to the show on TMDB. Nothing without a rating.
 
 import { Pressable, StyleSheet, Text } from "react-native";
 
 import type { TvMazeShow } from "@/api/tvmaze-types";
 import { openExternalUrl } from "@/hooks/useGuardedRouter";
-import { tvmazeRating } from "@/logic/show-rating";
+import { useTmdbRating } from "@/hooks/useTmdbRating";
 import { EPISODE_LINE_HEIGHT } from "@/logic/hero-layout";
 import { t, type } from "@/theme/tokens";
 
 export function ShowRating({ show }: { show: TvMazeShow }) {
-  const rating = tvmazeRating(show);
+  const { data: rating } = useTmdbRating(show);
   if (!rating) {
     return null;
   }
   return (
     <Pressable
       accessibilityRole="link"
-      accessibilityLabel={`TVmaze rating ${rating}`}
-      accessibilityHint="Opens the show on TVmaze"
-      onPress={() => openExternalUrl(show.url)}
+      accessibilityLabel={`TMDB rating ${rating.value}`}
+      accessibilityHint="Opens the show on TMDB"
+      onPress={() => openExternalUrl(rating.url)}
       hitSlop={8}
       style={styles.chip}
       testID="show-rating"
     >
-      <Text style={[styles.label, styles.source]}>TVmaze</Text>
-      <Text style={[styles.label, styles.value]}>{rating}</Text>
+      <Text style={styles.label}>TMDB</Text>
+      <Text style={[styles.label, styles.value]}>{rating.value}</Text>
     </Pressable>
   );
 }
 
 // The hero's Premiere / Finale chip (EpisodeMarkChip), in the meta line
 // (owner, CRI-143): a hairline outline, no fill, the line's height. The
-// source muted, the number in white.
+// source and the number alike, muted (owner).
 const styles = StyleSheet.create({
   chip: {
     flexDirection: "row",
@@ -50,13 +50,10 @@ const styles = StyleSheet.create({
     ...type.meta,
     fontSize: 12,
     lineHeight: 14,
-  },
-  source: {
     fontWeight: "500",
     color: t.inkMuted,
   },
   value: {
-    fontWeight: "600",
-    color: t.ink,
+    fontVariant: ["tabular-nums"],
   },
 });
