@@ -20,6 +20,8 @@ import {
   StyleSheet,
   Text,
   View,
+  type StyleProp,
+  type ViewStyle,
 } from "react-native";
 
 import {
@@ -441,7 +443,12 @@ function FollowButton({
       <View style={[StyleSheet.absoluteFill, styles.followFill]} />
       <FollowMorph
         followed={followed}
-        size={Math.round(height * FOLLOW_ICON_SHARE)}
+        size={
+          alone
+            ? FOLLOW_LABEL_ICON_SIZE
+            : Math.round(height * FOLLOW_ICON_SHARE)
+        }
+        style={alone ? styles.followLabelIcon : undefined}
       />
       {alone && <Text style={styles.followLabel}>{label}</Text>}
     </Pressable>
@@ -451,11 +458,25 @@ function FollowButton({
 // The follow symbol's share of the button's height, as on the poster
 // cards' circle (15 in 32).
 const FOLLOW_ICON_SHARE = 15 / 32;
+// Beside the words, the symbol about as tall as them (type.button, 18).
+const FOLLOW_LABEL_ICON_SIZE = 17;
+// The ExtraBold words outweigh the thin symbol, so the centred pair reads
+// right of centre: the symbol's negative margin moves the pair 2 left
+// (half of it), followed or not (owner, CRI-143).
+const FOLLOW_LABEL_ICON_NUDGE = -4;
 
 // The poster cards' morph (PosterFollowCircle): the plus and the check
 // overlaid, crossfading and scaling on the same spring, so the two never
 // fall out of step. At once under Reduce Motion.
-function FollowMorph({ followed, size }: { followed: boolean; size: number }) {
+function FollowMorph({
+  followed,
+  size,
+  style,
+}: {
+  followed: boolean;
+  size: number;
+  style?: StyleProp<ViewStyle>;
+}) {
   const { reduceMotionEnabled } = useAccessibilityFlags();
   const [progress] = useState(() => new Animated.Value(followed ? 1 : 0));
   useEffect(() => {
@@ -499,7 +520,7 @@ function FollowMorph({ followed, size }: { followed: boolean; size: number }) {
     </Animated.View>
   );
   return (
-    <View style={{ width: size, height: size }}>
+    <View style={[{ width: size, height: size }, style]}>
       {icon(FOLLOW_PLUS_SYMBOL, 0)}
       {icon(FOLLOW_CHECK_SYMBOL, 1)}
     </View>
@@ -588,6 +609,9 @@ const styles = StyleSheet.create({
   },
   followFill: {
     backgroundColor: t.heroSecondaryAction,
+  },
+  followLabelIcon: {
+    marginLeft: FOLLOW_LABEL_ICON_NUDGE,
   },
   followLabel: {
     ...type.button,
