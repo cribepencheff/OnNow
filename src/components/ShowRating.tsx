@@ -1,31 +1,17 @@
 // Show detail's rating (ADR 0018): TVmaze's users' average, already in the
 // show's data, so it costs no request; the same number as on a Search
-// row's poster, so the two never disagree. The "TVmaze" mark says whose it
-// is, and it links to the show on TVmaze. Nothing without a rating.
+// row's poster, so the two never disagree. The "TVmaze" in its chip says whose
+// it is, and it links to the show on TVmaze. Nothing without a rating.
 
-import {
-  Pressable,
-  StyleSheet,
-  Text,
-  type StyleProp,
-  type TextStyle,
-} from "react-native";
+import { Pressable, StyleSheet, Text } from "react-native";
 
 import type { TvMazeShow } from "@/api/tvmaze-types";
 import { openExternalUrl } from "@/hooks/useGuardedRouter";
 import { tvmazeRating } from "@/logic/show-rating";
-import { t } from "@/theme/tokens";
+import { EPISODE_LINE_HEIGHT } from "@/logic/hero-layout";
+import { t, type } from "@/theme/tokens";
 
-// The mark's line height.
-const MARK_LINE_HEIGHT = 14;
-
-export function ShowRating({
-  show,
-  textStyle,
-}: {
-  show: TvMazeShow;
-  textStyle?: StyleProp<TextStyle>;
-}) {
+export function ShowRating({ show }: { show: TvMazeShow }) {
   const rating = tvmazeRating(show);
   if (!rating) {
     return null;
@@ -37,33 +23,40 @@ export function ShowRating({
       accessibilityHint="Opens the show on TVmaze"
       onPress={() => openExternalUrl(show.url)}
       hitSlop={8}
-      style={styles.row}
+      style={styles.chip}
       testID="show-rating"
     >
-      <Text style={styles.mark}>TVmaze</Text>
-      <Text style={textStyle}>{rating}</Text>
+      <Text style={[styles.label, styles.source]}>TVmaze</Text>
+      <Text style={[styles.label, styles.value]}>{rating}</Text>
     </Pressable>
   );
 }
 
+// The hero's Premiere / Finale chip (EpisodeMarkChip), in the meta line
+// (owner, CRI-143): a hairline outline, no fill, the line's height. The
+// source muted, the number in white.
 const styles = StyleSheet.create({
-  row: {
+  chip: {
     flexDirection: "row",
     alignItems: "center",
-    alignSelf: "flex-start",
-    gap: 6,
-  },
-  // The mark is text, in the badge style.
-  mark: {
-    fontSize: 11,
-    lineHeight: MARK_LINE_HEIGHT,
-    fontWeight: "700",
-    color: t.inkMuted,
-    borderWidth: 1,
-    borderColor: t.inkSubtle,
+    gap: 5,
+    height: EPISODE_LINE_HEIGHT,
+    paddingHorizontal: 7,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: t.episodeMarkEdge,
     borderRadius: 8,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    overflow: "hidden",
+  },
+  label: {
+    ...type.meta,
+    fontSize: 12,
+    lineHeight: 14,
+  },
+  source: {
+    fontWeight: "500",
+    color: t.inkMuted,
+  },
+  value: {
+    fontWeight: "600",
+    color: t.ink,
   },
 });

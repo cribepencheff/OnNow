@@ -299,7 +299,7 @@ export function ShowDetailHero({
         {/* Where Home has the episode line: the rating and the meta line
             (FR-028, ADR 0018). */}
         <View style={styles.metaRow} testID="show-detail-meta-row">
-          <ShowRating show={show} textStyle={styles.metaText} />
+          <ShowRating show={show} />
           {metaLine !== "" && (
             <Text style={[styles.metaText, styles.metaLine]} numberOfLines={1}>
               {metaLine}
@@ -455,7 +455,7 @@ function FollowButton({
 // cards' circle (15 in 32), with or without the words (owner).
 const FOLLOW_ICON_SHARE = 15 / 32;
 // The ExtraBold words outweigh the thin symbol, so the centred pair reads
-// right of centre: the symbol's negative margin moves the pair 2 left
+// right of centre: the symbol's negative margin moves the pair 4 left
 // (half of it), followed or not (owner, CRI-143).
 const FOLLOW_LABEL_ICON_NUDGE = -8;
 
