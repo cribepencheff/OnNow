@@ -804,6 +804,12 @@ describe("ShowDetail", () => {
         screen.getByTestId("show-detail-open-in").props.style,
       );
       expect(button.height).toBe(BUTTON_HEIGHT);
+      // As wide as the logo's box, not the hero (owner).
+      expect(
+        StyleSheet.flatten(
+          screen.getByTestId("show-detail-main-action").props.style,
+        ).width,
+      ).toBe(240);
       expect(circle.width).toBe(BUTTON_HEIGHT);
       expect(circle.height).toBe(BUTTON_HEIGHT);
       await fireEvent.press(screen.getByRole("button", { name: "Follow" }));

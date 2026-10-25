@@ -67,6 +67,10 @@ const BLURRED_COPY_SIZE = "w300";
 const ANDROID_MIRROR_BLUR_RADIUS = 12;
 const TOP_MIRROR_BLUR_RADIUS = 12;
 const SERVICE_LOGO_SIZE = 28;
+// "Open in", or the follow button alone, as wide as the logo's box above
+// (owner, CRI-143), not the hero's width: its content is short. Narrower
+// when the screen leaves less room beside the circle.
+const MAIN_ACTION_WIDTH = 240;
 
 export function ShowDetailHero({
   show,
@@ -350,8 +354,9 @@ function ActionSlot({
       ]}
     >
       {/* The main button and the note under it, centred on the button
-          (owner, CRI-143); the circle beside them. */}
-      <View style={styles.grow}>
+          (owner, CRI-143); the circle beside them, the two centred
+          together. */}
+      <View style={styles.mainAction} testID="show-detail-main-action">
         {availability.kind === "loading" && (
           <View style={[styles.buttonPlaceholder, capsule]} />
         )}
@@ -552,8 +557,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: t.space2,
   },
-  grow: {
-    flex: 1,
+  mainAction: {
+    width: MAIN_ACTION_WIDTH,
+    flexShrink: 1,
   },
   followButton: {
     flexDirection: "row",
