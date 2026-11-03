@@ -1,6 +1,8 @@
 # 0006. Local release date from `airstamp`
 
 Status: Accepted
+Amended by ADR 0020: Disney+ episodes without an airtime are released at
+6 p.m. Pacific, an exception to "no rules of our own per service".
 Refines: 0001 (definition of "today"), 0005 (data sources)
 
 ## Context
