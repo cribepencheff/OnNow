@@ -55,7 +55,7 @@ describe("shouldSaveQuery", () => {
       ["searchShows", "slow"],
       ["externalIds", "v1", 1],
       ["originCountries", "v2", 1],
-      ["streamingService", "v3", "SE", 1],
+      ["streamingService", "v4", "SE", 1],
       ["imdbRating", 1],
     ]) {
       expect(shouldSaveQuery(key, followed)).toBe(false);
