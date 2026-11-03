@@ -18,7 +18,7 @@ import {
 } from "react-native";
 import { Image } from "expo-image";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import MaskedView from "@react-native-masked-view/masked-view";
+import { MaskedView } from "@/components/MaskedView";
 
 import {
   IMAGE_BASE,

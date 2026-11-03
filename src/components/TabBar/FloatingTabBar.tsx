@@ -55,7 +55,8 @@ const TAP_MAX_DURATION = 60_000;
 export function FloatingTabBar({
   state,
   descriptors,
-  navigation,
+  emitter,
+  navigateToTab,
 }: TabBarProps) {
   // The gap between tabs: wide enough that the whole bar spans the same
   // width as Home's content margins, matching the hero's "Open in" button
@@ -98,14 +99,14 @@ export function FloatingTabBar({
 
   function commitSelection(index: number) {
     const route = state.routes[index];
-    const event = navigation.emit({
+    const event = emitter.emit({
       type: "tabPress",
       target: route.key,
       canPreventDefault: true,
     });
     if (index !== state.index && !event.defaultPrevented) {
       void Haptics.selectionAsync();
-      navigation.navigate(route.name, route.params);
+      navigateToTab(route.key);
     }
   }
 

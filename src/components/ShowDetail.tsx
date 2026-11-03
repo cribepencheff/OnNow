@@ -14,6 +14,7 @@ import {
   Text,
   View,
   useWindowDimensions,
+  type ScrollViewInstance,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -287,7 +288,7 @@ function SeasonTabs({
 }) {
   // The preselected season can be far to the right (season 6 of 8), so the
   // strip scrolls to it once, when it is first laid out.
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollViewInstance>(null);
   const scrolledToSelected = useRef(false);
 
   return (

@@ -2,14 +2,14 @@
 // on the shared ShowRow, like Search's result row: poster, title,
 // Show detail's status line, and the service slot (FR-027). Tapping the row
 // opens Show detail (FR-030, CRI-79). Swipe left reveals
-// "Unfollow" (react-native-gesture-handler's Swipeable, Expo Go
+// "Unfollow" (react-native-gesture-handler's ReanimatedSwipeable, Expo Go
 // compatible, no dev build needed); a full swipe alone does not unfollow,
 // only pressing the revealed button does. Screen reader users cannot
 // swipe, so the row also exposes an "Unfollow" accessibility action
 // (NFR-008).
 
 import { Pressable, StyleSheet, Text } from "react-native";
-import { Swipeable } from "react-native-gesture-handler";
+import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 
 import { ShowRow, ShowRowServiceLine } from "./ShowRow";
 import { useStreamingService } from "@/hooks/useStreamingService";

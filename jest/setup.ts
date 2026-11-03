@@ -12,12 +12,11 @@ jest.mock(
 );
 
 // Reanimated (Home's poster dimming, CRI-124) runs worklets on the UI
-// thread, which tests do not have; both libraries ship their own mocks.
+// thread, which tests do not have, so worklets is mocked. Reanimated itself
+// runs in its JavaScript mode: its Jest resolver (package.json) picks that
+// mode's files, as its own mock no longer works with gesture-handler 3.
 jest.mock("react-native-worklets", () =>
   require("react-native-worklets/lib/module/mock"),
-);
-jest.mock("react-native-reanimated", () =>
-  require("react-native-reanimated/mock"),
 );
 
 // The saved query cache's SQLite key-value store (CRI-139) is native;
