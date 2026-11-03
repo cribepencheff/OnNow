@@ -3,6 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NOT_ON_TMDB } from "@/logic/streaming-service";
 import {
   getCachedProviders,
+  NO_SERVICE_MAX_AGE_MS,
   NOT_ON_TMDB_MAX_AGE_MS,
   saveProviders,
   SERVICE_CACHE_MAX_AGE_MS,
@@ -67,10 +68,31 @@ describe("streaming service cache (CRI-82, NFR-005)", () => {
     ).toBeNull();
   });
 
-  it("CRI-102: keeps a found answer, even an empty one, for 30 days", async () => {
-    await saveProviders(1, "SE", [], 0);
+  it("keeps a found service for 30 days", async () => {
+    await saveProviders(NEAGLEY, "SE", PRIME, 0);
     expect(
-      await getCachedProviders(1, "SE", NOT_ON_TMDB_MAX_AGE_MS + 1),
-    ).toEqual([]);
+      await getCachedProviders(NEAGLEY, "SE", SERVICE_CACHE_MAX_AGE_MS),
+    ).toEqual(PRIME);
+  });
+
+  // VisionQuest premiered without its Swedish Disney+ in JustWatch's data,
+  // which came back days later (ADR 0005): "no service" is asked again
+  // after a day, so it does not outlive the fix for 30 days.
+  it("keeps an answer without a streaming service for a day, then asks again", async () => {
+    await saveProviders(1, "SE", [], 0);
+    expect(await getCachedProviders(1, "SE", NO_SERVICE_MAX_AGE_MS)).toEqual(
+      [],
+    );
+    expect(
+      await getCachedProviders(1, "SE", NO_SERVICE_MAX_AGE_MS + 1),
+    ).toBeNull();
+  });
+
+  it("ignores entries saved under the v3 key, when no service was kept 30 days", async () => {
+    await AsyncStorage.setItem(
+      "onnow.streamingService.v3.SE.64950",
+      JSON.stringify({ checkedAt: 0, providers: [] }),
+    );
+    expect(await getCachedProviders(64950, "SE", 1)).toBeNull();
   });
 });
