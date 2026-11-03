@@ -99,4 +99,26 @@ describe("TvMazeClient.getWeekInfo (FR-039, CRI-110)", () => {
       episodes: [],
     });
   });
+
+  it("gives a Disney+ episode without airtime its 6 p.m. Pacific release (ADR 0020)", async () => {
+    const fetchFn = jest.fn().mockResolvedValue(
+      jsonResponse({
+        id: 64950,
+        type: "Scripted",
+        webChannel: { id: 287, name: "Disney+" },
+        _embedded: {
+          nextepisode: {
+            airdate: "2026-11-03",
+            airtime: "",
+            airstamp: "2026-11-03T12:00:00+00:00",
+            number: 7,
+          },
+        },
+      }),
+    );
+    await expect(client(fetchFn).getWeekInfo(64950)).resolves.toEqual({
+      type: "Scripted",
+      episodes: [{ airstamp: "2026-11-04T02:00:00.000Z", number: 7 }],
+    });
+  });
 });

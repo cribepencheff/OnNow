@@ -19,6 +19,7 @@ import {
 import { findNextDayWithEpisodes, type NextDayEpisodes } from "@/logic/home";
 import { homeIsReady } from "@/logic/launch";
 import { nextForShow, type NextForShow } from "@/logic/next-episode";
+import { withReleaseTimes } from "@/logic/release-time";
 import type { TvMazeEpisode, TvMazeShowWithEmbeds } from "@/api/tvmaze-types";
 import {
   isInHeroWeek,
@@ -96,6 +97,7 @@ export function useFollowedEpisodes(): FollowedEpisodesResult {
         showStaleTime(query.state.data),
       // Kept, and saved, 21 days (ADR 0017).
       gcTime: KEEP_MS,
+      select: withReleaseTimes,
     })),
     combine: combineShowQueries,
   });
