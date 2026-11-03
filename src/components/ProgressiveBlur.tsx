@@ -12,7 +12,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
-import MaskedView from "@react-native-masked-view/masked-view";
+import { MaskedView } from "@/components/MaskedView";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 

@@ -42,6 +42,7 @@ import {
   useWindowDimensions,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
+  type ScrollViewInstance,
 } from "react-native";
 
 import { useAccessibilityFlags } from "@/hooks/useAccessibilityFlags";
@@ -318,7 +319,7 @@ export function PosterRow({
 
   // Cards taken out (followed shows): keep the first visible card first,
   // or the next one that stayed (CRI-131).
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollViewInstance>(null);
   const offsetX = useRef(0);
   const previousKeys = useRef(keys);
   useLayoutEffect(() => {

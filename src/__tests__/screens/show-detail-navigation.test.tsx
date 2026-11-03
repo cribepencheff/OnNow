@@ -80,8 +80,7 @@ beforeEach(() => {
 // Search, through the real navigation tree.
 describe("Show detail (real navigation)", () => {
   it("FR-030: opens from the Home card", async () => {
-    const rendered = renderRouter("src/app", { initialUrl: "/" });
-    await rendered;
+    const rendered = await renderRouter("src/app", { initialUrl: "/" });
 
     await fireEvent.press(screen.getByTestId("home-card"));
 
@@ -90,8 +89,7 @@ describe("Show detail (real navigation)", () => {
   });
 
   it("FR-030: opens from a Calendar row", async () => {
-    const rendered = renderRouter("src/app", { initialUrl: "/calendar" });
-    await rendered;
+    const rendered = await renderRouter("src/app", { initialUrl: "/calendar" });
 
     await waitFor(() =>
       expect(screen.getByTestId("calendar-row")).toBeTruthy(),
@@ -103,8 +101,7 @@ describe("Show detail (real navigation)", () => {
   });
 
   it("FR-030: opens from a Shows row, and back returns to Shows", async () => {
-    const rendered = renderRouter("src/app", { initialUrl: "/shows" });
-    await rendered;
+    const rendered = await renderRouter("src/app", { initialUrl: "/shows" });
 
     await fireEvent.press(screen.getByTestId("shows-row"));
     expect(rendered.getPathname()).toBe("/show/45039");
@@ -117,8 +114,7 @@ describe("Show detail (real navigation)", () => {
   });
 
   it("CRI-117: a double tap on a Shows row opens Show detail once, so one back returns to Shows", async () => {
-    const rendered = renderRouter("src/app", { initialUrl: "/shows" });
-    await rendered;
+    const rendered = await renderRouter("src/app", { initialUrl: "/shows" });
 
     const row = screen.getByTestId("shows-row");
     await fireEvent.press(row);
@@ -132,8 +128,7 @@ describe("Show detail (real navigation)", () => {
   // Entry point: Shows' search field. With shows followed, Home has no
   // Search entry by design (FR-007).
   it("FR-030, PRD 5.6: opens inside the Search tab with a back arrow to the results and no close button", async () => {
-    const rendered = renderRouter("src/app", { initialUrl: "/shows" });
-    await rendered;
+    const rendered = await renderRouter("src/app", { initialUrl: "/shows" });
 
     await fireEvent.press(screen.getByRole("button", { name: "Search shows" }));
     // The test renderer has no screen transitions, so end each one here,
@@ -159,8 +154,7 @@ describe("Show detail (real navigation)", () => {
 
   // Same entry point as above (FR-007).
   it("PRD 5.4: the follow circle on a Search row follows without opening Show detail", async () => {
-    const rendered = renderRouter("src/app", { initialUrl: "/shows" });
-    await rendered;
+    const rendered = await renderRouter("src/app", { initialUrl: "/shows" });
 
     await fireEvent.press(screen.getByRole("button", { name: "Search shows" }));
     await fireEvent.changeText(

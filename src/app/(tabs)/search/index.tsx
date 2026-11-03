@@ -16,6 +16,7 @@ import {
   Text,
   TextInput,
   View,
+  type TextInputInstance,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { SymbolView } from "expo-symbols";
@@ -50,7 +51,7 @@ export default function SearchScreen() {
   const router = useGuardedRouter();
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<TextInputInstance>(null);
   // Shows followed before Search opened are left out of its rows; one
   // followed here stays, marked, while Search is open (CRI-131). Search
   // stays mounted as a tab, so it settles them again each time it opens.
@@ -195,7 +196,7 @@ export default function SearchScreen() {
               <Text style={styles.noResults}>
                 No results. Try the original title.
               </Text>
-            ) : null
+            ) : undefined
           }
           contentContainerStyle={styles.resultsContent}
           // A tap on a follow circle is handled without closing the

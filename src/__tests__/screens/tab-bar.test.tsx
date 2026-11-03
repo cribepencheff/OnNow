@@ -29,8 +29,7 @@ describe("Floating tab bar (real navigation)", () => {
   });
 
   it("has four icon-only tabs, Home, Calendar, My shows and Search, in that order", async () => {
-    const rendered = renderRouter("src/app", { initialUrl: "/calendar" });
-    await rendered;
+    await renderRouter("src/app", { initialUrl: "/calendar" });
 
     const tabs = screen.getAllByRole("tab");
     expect(tabs.map((tab) => tab.props.accessibilityLabel)).toEqual([
@@ -44,8 +43,7 @@ describe("Floating tab bar (real navigation)", () => {
   });
 
   it("marks the active tab with the sliding light-grey pill, no accent, all tabs the same size", async () => {
-    const rendered = renderRouter("src/app", { initialUrl: "/calendar" });
-    await rendered;
+    await renderRouter("src/app", { initialUrl: "/calendar" });
 
     const active = screen.getByTestId("tab-calendar");
     const inactive = screen.getByTestId("tab-home");
@@ -70,8 +68,7 @@ describe("Floating tab bar (real navigation)", () => {
   });
 
   it("stays put when the already active tab is activated again, switches otherwise", async () => {
-    const rendered = renderRouter("src/app", { initialUrl: "/calendar" });
-    await rendered;
+    const rendered = await renderRouter("src/app", { initialUrl: "/calendar" });
 
     await activate("tab-calendar");
     expect(rendered.getPathname()).toBe("/calendar");
@@ -84,8 +81,7 @@ describe("Floating tab bar (real navigation)", () => {
   // down. A second tap, on Search, starts typing (search-focus.test.ts).
   it("opens the Search screen directly from its tab, at rest", async () => {
     const focusSpy = jest.spyOn(TextInput.prototype, "focus");
-    const rendered = renderRouter("src/app", { initialUrl: "/calendar" });
-    await rendered;
+    const rendered = await renderRouter("src/app", { initialUrl: "/calendar" });
 
     await activate("tab-search");
 
@@ -101,8 +97,7 @@ describe("Floating tab bar (real navigation)", () => {
   });
 
   it("opens the hidden image review on a double tap on My shows, not a single one", async () => {
-    const rendered = renderRouter("src/app", { initialUrl: "/calendar" });
-    await rendered;
+    const rendered = await renderRouter("src/app", { initialUrl: "/calendar" });
 
     await activate("tab-shows");
     expect(rendered.getPathname()).toBe("/shows");
@@ -112,8 +107,7 @@ describe("Floating tab bar (real navigation)", () => {
   });
 
   it("goes to the Search tab from Shows' search field, keeping the tab bar", async () => {
-    const rendered = renderRouter("src/app", { initialUrl: "/shows" });
-    await rendered;
+    const rendered = await renderRouter("src/app", { initialUrl: "/shows" });
 
     await fireEvent.press(screen.getByLabelText("Search shows"));
 

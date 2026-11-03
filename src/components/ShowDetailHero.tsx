@@ -7,7 +7,7 @@
 // Home hero itself is left as it is: this reuses its pieces, never changes
 // them.
 
-import MaskedView from "@react-native-masked-view/masked-view";
+import { MaskedView } from "@/components/MaskedView";
 import { BlurView } from "expo-blur";
 import { Image } from "expo-image";
 import { SymbolView } from "expo-symbols";

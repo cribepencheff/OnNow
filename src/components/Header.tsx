@@ -30,7 +30,7 @@ export function Header({
   right?: ReactNode;
   // How far the screen is scrolled from its resting top, negative during
   // a pull. Without it the header stays put.
-  scrollOffset?: Animated.Value | Animated.AnimatedInterpolation<number>;
+  scrollOffset?: Animated.AnimatedInterpolation<number>;
 }) {
   const insets = useSafeAreaInsets();
   const height = insets.top + HEADER_BAR_HEIGHT;

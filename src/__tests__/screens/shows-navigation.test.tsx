@@ -13,15 +13,13 @@ describe("Shows tab (real navigation)", () => {
   // Owner, 2026-10-22: the header reads "My shows", as the tab does, left
   // aligned with the content.
   it('titles the screen "My shows", left aligned', async () => {
-    const rendered = renderRouter("src/app", { initialUrl: "/shows" });
-    await rendered;
+    await renderRouter("src/app", { initialUrl: "/shows" });
     expect(await screen.findByText("My shows")).toBeTruthy();
     expect(screen.queryByText("Shows")).toBeNull();
   });
 
   it("shows the empty follow list and opens Search from the search field", async () => {
-    const rendered = renderRouter("src/app", { initialUrl: "/shows" });
-    await rendered;
+    const rendered = await renderRouter("src/app", { initialUrl: "/shows" });
 
     await waitFor(() =>
       expect(screen.getByTestId("shows-empty-state")).toBeTruthy(),

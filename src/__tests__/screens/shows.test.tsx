@@ -26,6 +26,29 @@ jest.mock("@/hooks/useListPoster", () => ({
 jest.mock("expo-router", () => ({
   useRouter: () => ({ push: mockPush }),
 }));
+// Tests cannot swipe: gesture-handler 3 offers no way to drive
+// ReanimatedSwipeable's own pan gesture, and it keeps the revealed action
+// untouchable until a real swipe opens the row. So the row renders its
+// action already revealed, as the earlier Swipeable did in tests; what is
+// tested is that the revealed button unfollows. The swipe itself is
+// gesture-handler's, checked on the device.
+jest.mock("react-native-gesture-handler/ReanimatedSwipeable", () => {
+  const { View } = jest.requireActual("react-native");
+  return function RevealedSwipeable({
+    children,
+    renderRightActions,
+  }: {
+    children: React.ReactNode;
+    renderRightActions?: () => React.ReactNode;
+  }) {
+    return (
+      <View>
+        {children}
+        {renderRightActions?.()}
+      </View>
+    );
+  };
+});
 
 jest.mock("@/hooks/useFollowedEpisodes", () => ({
   useFollowedEpisodes: jest.fn(),
