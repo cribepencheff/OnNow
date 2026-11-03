@@ -1,3 +1,4 @@
+import { releaseAirstamp } from "@/logic/release-time";
 import { TVMAZE_CREDIT } from "./tvmaze-credit";
 import { TvMazeNetworkError, TvMazeResponseError } from "./tvmaze-errors";
 import type { TvMazeSearchResult, TvMazeShowWithEmbeds } from "./tvmaze-types";
@@ -151,20 +152,38 @@ export function createTvMazeClient(
   }
 
   // The show's type and its previous and next episodes, in one request:
-  // enough to tell whether it airs this week (FR-039, CRI-110).
+  // enough to tell whether it airs this week (FR-039, CRI-110). Episodes
+  // carry their release time where the service's is known (ADR 0020).
   async function getWeekInfo(id: number): Promise<TvMazeWeekInfo> {
-    type Episode = { airstamp?: string | null; number?: number | null };
+    type Episode = {
+      airdate?: string;
+      airtime?: string;
+      airstamp?: string | null;
+      number?: number | null;
+    };
     const show = await requestJson<{
       type?: string | null;
+      webChannel?: { id: number } | null;
       _embedded?: { previousepisode?: Episode; nextepisode?: Episode };
     }>(`/shows/${id}?embed[]=previousepisode&embed[]=nextepisode`);
+    const webChannelId = show.webChannel?.id ?? null;
     const episodes = [
       show._embedded?.previousepisode,
       show._embedded?.nextepisode,
     ]
       .filter((episode): episode is Episode => Boolean(episode))
       .map((episode) => ({
-        airstamp: episode.airstamp ?? null,
+        airstamp:
+          episode.airstamp == null
+            ? null
+            : releaseAirstamp(
+                {
+                  airdate: episode.airdate ?? "",
+                  airtime: episode.airtime ?? "",
+                  airstamp: episode.airstamp,
+                },
+                webChannelId,
+              ),
         number: episode.number ?? null,
       }));
     return { type: show.type ?? null, episodes };

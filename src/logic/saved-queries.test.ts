@@ -15,7 +15,7 @@ describe("shouldSaveQuery", () => {
       ["tmdbFind", "v1", "tt1", null],
       ["hero-images-v6", 1],
       ["airingThisWeek", "v1", "SE", "2026-10-22", "UTC"],
-      ["tvmazeWeekInfo", "v1", 5],
+      ["tvmazeWeekInfo", "v2", 5],
     ]) {
       expect(shouldSaveQuery(key, followed)).toBe(true);
     }
@@ -55,7 +55,7 @@ describe("shouldSaveQuery", () => {
       ["searchShows", "slow"],
       ["externalIds", "v1", 1],
       ["originCountries", "v2", 1],
-      ["streamingService", "v3", "SE", 1],
+      ["streamingService", "v4", "SE", 1],
       ["imdbRating", 1],
     ]) {
       expect(shouldSaveQuery(key, followed)).toBe(false);

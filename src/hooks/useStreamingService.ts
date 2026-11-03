@@ -1,8 +1,9 @@
 // A show's streaming services in the user's region (FR-014, FR-017,
 // ADR 0014), looked up once through TMDB and kept per show and region in
-// plain storage for 30 days (NFR-005). Show detail looks them up for any
-// show, followed or not. NOT_ON_TMDB when TMDB does not know the show
-// (kept a day, CRI-102); null without a TMDB key, not cached.
+// plain storage for 30 days, a day when there is none (NFR-005). Show
+// detail looks them up for any show, followed or not. NOT_ON_TMDB when
+// TMDB does not know the show (kept a day, CRI-102); null without a TMDB
+// key, not cached.
 
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 
@@ -18,9 +19,9 @@ export function useStreamingService(
 ): UseQueryResult<ProviderAnswer | null> & { region: string | undefined } {
   const { region } = useRegion();
   const query = useQuery({
-    // v3: drops answers persisted before CRI-132, which lacked each
-    // provider's logo_path.
-    queryKey: ["streamingService", "v3", region, show.id],
+    // v4: drops "no service" answers persisted for 30 days, before they
+    // were kept a day.
+    queryKey: ["streamingService", "v4", region, show.id],
     enabled: enabled && region !== undefined,
     // Freshness is decided by the storage (30 days, a day for "not on
     // TMDB"); an hour re-reads it, so its expiry applies in a running app.

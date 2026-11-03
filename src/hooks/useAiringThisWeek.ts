@@ -151,7 +151,8 @@ export function useAiringThisWeek(): PosterBatches<AiringExtra> {
     }
     const info = await queryClient
       .fetchQuery({
-        queryKey: ["tvmazeWeekInfo", "v1", tvmazeId],
+        // v2: Disney+ episodes have their release time (ADR 0020).
+        queryKey: ["tvmazeWeekInfo", "v2", tvmazeId],
         staleTime: WEEK_INFO_STALE_MS,
         queryFn: () => tvMazeClient.getWeekInfo(tvmazeId),
       })
