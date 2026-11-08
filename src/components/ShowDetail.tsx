@@ -236,6 +236,7 @@ function ShowDetailContent({
         showId={show.id}
         tmdbCast={showImagesSettled ? (showImages?.cast ?? []) : undefined}
         creators={showImages?.createdBy ?? []}
+        crew={showImages?.crew ?? []}
       />
 
       <TvMazeCredit />

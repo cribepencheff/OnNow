@@ -50,6 +50,14 @@ export interface TmdbCastMember {
   profilePath: string | null;
 }
 
+// A crew member in TMDB's credits for a show (CRI-143), kept only for the
+// jobs Show detail's Cast & Crew row shows (KEY_CREW_JOBS).
+export interface TmdbCrewMember {
+  name: string;
+  job: string;
+  profilePath: string | null;
+}
+
 export const IMAGE_BASE = "https://image.tmdb.org/t/p";
 
 // The largest backdrop size fetched (CRI-140, ADR 0012): w1920, which

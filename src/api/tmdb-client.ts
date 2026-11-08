@@ -7,6 +7,7 @@
 // committed (ADR 0002). Without a key, lookups return null and the app
 // falls back to what TVmaze alone gives.
 
+import { KEY_CREW_JOBS } from "@/logic/cast-row";
 import {
   NOT_ON_TMDB,
   regionProviders,
@@ -31,6 +32,7 @@ import type {
   TmdbSeasonEpisode,
   TmdbCastMember,
   TmdbCreator,
+  TmdbCrewMember,
   TmdbImages,
   TmdbSeasonResponse,
 } from "./tmdb-types";
@@ -98,6 +100,8 @@ export interface TmdbShowImagesAnswer {
   createdBy: TmdbCreator[];
   // TMDB's main cast, in its order; [] when it has none.
   cast: TmdbCastMember[];
+  // TMDB's crew in the jobs the Cast & Crew row shows, in its order.
+  crew: TmdbCrewMember[];
 }
 
 export interface TmdbClient {
@@ -336,6 +340,11 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
           character?: string | null;
           profile_path?: string | null;
         }[];
+        crew?: {
+          name?: string | null;
+          job?: string | null;
+          profile_path?: string | null;
+        }[];
       };
     }>(
       `/tv/${tvId}?append_to_response=images,credits&include_image_language=en,null,xx`,
@@ -361,6 +370,17 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
           profilePath: member.profile_path || null,
         }))
         .filter((member) => member.name !== ""),
+      // Only the jobs shown, so a long show's hundred crew members are not
+      // kept on the phone.
+      crew: (details.credits?.crew ?? [])
+        .map((member) => ({
+          name: member.name?.trim() ?? "",
+          job: member.job?.trim() ?? "",
+          profilePath: member.profile_path || null,
+        }))
+        .filter(
+          (member) => member.name !== "" && KEY_CREW_JOBS.includes(member.job),
+        ),
     };
   }
 

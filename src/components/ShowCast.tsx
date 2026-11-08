@@ -2,10 +2,9 @@
 // Cast & Crew as the reference): who is in it is decided in
 // logic/cast-row.ts (TMDB's cast, else TVmaze's, then TMDB's creators).
 // Each person is a round portrait with the name and, muted, the character
-// or "Creator". Nothing to tap. Without a portrait, a plain circle with a
-// person symbol. No row at all when there is no one.
+// or the jobs. Nothing to tap. Without a portrait, the person's initials
+// in the circle. No row at all when there is no one.
 
-import { SymbolView } from "expo-symbols";
 import { Image } from "expo-image";
 import {
   ScrollView,
@@ -15,9 +14,17 @@ import {
   useWindowDimensions,
 } from "react-native";
 
-import type { TmdbCastMember, TmdbCreator } from "@/api/tmdb-types";
+import type {
+  TmdbCastMember,
+  TmdbCreator,
+  TmdbCrewMember,
+} from "@/api/tmdb-types";
 import { useShowCast } from "@/hooks/useShowCast";
-import { castRowPeople, type CastRowPerson } from "@/logic/cast-row";
+import {
+  castRowPeople,
+  personInitials,
+  type CastRowPerson,
+} from "@/logic/cast-row";
 import { t, type } from "@/theme/tokens";
 
 // How many people show across the screen: three, and the fourth at the
@@ -29,12 +36,14 @@ export function ShowCast({
   showId,
   tmdbCast,
   creators,
+  crew,
 }: {
   showId: number;
   // TMDB's cast once its answer is in ([] when it has none, or failed);
   // undefined while it loads, so TVmaze is not asked too early.
   tmdbCast: TmdbCastMember[] | undefined;
   creators: TmdbCreator[];
+  crew: TmdbCrewMember[];
 }) {
   const { data: tvmazeCast } = useShowCast(
     showId,
@@ -42,7 +51,12 @@ export function ShowCast({
   );
   const { width } = useWindowDimensions();
 
-  const people = castRowPeople(tmdbCast ?? [], tvmazeCast ?? [], creators);
+  const people = castRowPeople(
+    tmdbCast ?? [],
+    tvmazeCast ?? [],
+    creators,
+    crew,
+  );
   if (people.length === 0) {
     return null;
   }
@@ -91,13 +105,15 @@ function PersonItem({ person, size }: { person: CastRowPerson; size: number }) {
             testID="cast-portrait"
           />
         ) : (
-          <SymbolView
-            name="person.fill"
-            tintColor={t.inkSubtle}
-            size={Math.round(size * 0.4)}
+          // Initials without a portrait, as Apple TV (owner, 2026-11-08).
+          <Text
+            style={[styles.initials, { fontSize: Math.round(size * 0.32) }]}
             accessibilityElementsHidden
             importantForAccessibility="no"
-          />
+            testID="cast-initials"
+          >
+            {personInitials(person.name)}
+          </Text>
         )}
       </View>
       <Text style={styles.name} numberOfLines={2}>
@@ -137,6 +153,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 8,
+  },
+  initials: {
+    fontWeight: "600",
+    color: t.inkMuted,
   },
   name: {
     ...type.meta,

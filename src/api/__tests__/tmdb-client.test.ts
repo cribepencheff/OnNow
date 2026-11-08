@@ -443,6 +443,14 @@ describe("TmdbClient.findImages", () => {
               },
               { name: "Jinyoung", character: "", profile_path: null },
             ],
+            crew: [
+              { name: "Mick Herron", job: "Book", profile_path: "/mh.jpg" },
+              {
+                name: "Cam Operator",
+                job: "Camera Operator",
+                profile_path: null,
+              },
+            ],
           },
         }),
       );
@@ -466,6 +474,8 @@ describe("TmdbClient.findImages", () => {
         },
         { name: "Jinyoung", character: null, profilePath: null },
       ],
+      // Only the crew in the jobs the row shows.
+      crew: [{ name: "Mick Herron", job: "Book", profilePath: "/mh.jpg" }],
     });
     // One request for both, as the images alone were.
     expect(fetchFn).toHaveBeenCalledTimes(2);
@@ -482,7 +492,7 @@ describe("TmdbClient.findImages", () => {
     const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
     const answer = await client.findImages(NEAGLEY_EXTERNALS);
     expect(answer).toEqual(
-      expect.objectContaining({ createdBy: [], cast: [] }),
+      expect.objectContaining({ createdBy: [], cast: [], crew: [] }),
     );
   });
 
