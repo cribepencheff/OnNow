@@ -71,8 +71,13 @@ show.
   SVT Play, TV4 Play), as https links so iOS opens the app when installed
   and the website otherwise. A service not in the table gives no button.
 - **Several services:** one is picked: a service with a direct show link
-  first, otherwise the first in TMDB's order (subscription before free
-  and free with ads). The menu (FR-015) stays MVP.
+  first, otherwise a service that is free in itself (public service or
+  with ads: SVT Play, BBC iPlayer, ITVX, Channel 4, 5, Pluto TV, The Roku
+  Channel, Tubi), otherwise the first in TMDB's order. Anyone can open a
+  free service; a subscription one only works for those who pay for it.
+  The list is ours, not TMDB's "free", which also holds subscription
+  services such as Prime Video (owner, 2026-11-08, CRI-150). The menu
+  (FR-015) stays MVP.
 - **No Swedish service:** no button (data first), even when TVmaze has an
   official site.
 - **Without an answer from TMDB** (no key, a failed lookup, or a show TMDB
