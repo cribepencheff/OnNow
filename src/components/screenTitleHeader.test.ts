@@ -11,11 +11,12 @@ import { t, type } from "@/theme/tokens";
 describe("screenTitleHeader", () => {
   // Owner, 2026-10-23: a quarter smaller than display (34) read better.
   // Owner, 2026-10-23: at the side inset of Home's logo, not the content's.
-  it("sets the title a quarter smaller than display, bold, ink, at the header inset", () => {
+  // CRI-151: in the headings' typeface, Manrope Bold.
+  it("sets the title a quarter smaller than display, in Manrope Bold, ink, at the header inset", () => {
     const options = screenTitleHeader(47);
     expect(options.headerTitleStyle).toMatchObject({
       fontSize: SCREEN_TITLE_SIZE,
-      fontWeight: type.display.fontWeight,
+      fontFamily: "Manrope_700Bold",
       color: t.ink,
     });
     expect(options.headerTitleAlign).toBe("left");
