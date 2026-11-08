@@ -15,7 +15,7 @@ export const SCREEN_TITLE_BAR_HEIGHT = HEADER_BAR_HEIGHT;
 // The title's text, also Search's own title (SearchHeader).
 export const SCREEN_TITLE_TEXT = {
   fontSize: SCREEN_TITLE_SIZE,
-  fontWeight: type.display.fontWeight,
+  fontFamily: type.display.fontFamily,
   letterSpacing: type.display.letterSpacing,
   color: t.ink,
 };

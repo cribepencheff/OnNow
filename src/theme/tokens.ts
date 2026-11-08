@@ -87,15 +87,24 @@ export const t = {
 // { fontWeight: "600" } and the buttons are back on the system font.
 const buttonFont = { fontFamily: "Manrope_800ExtraBold" } as const;
 
+// Headings in Manrope Bold (owner, 2026-11-08, CRI-151): screen titles,
+// section headings and show titles, so the app's typeface is not only on
+// its buttons. Bold rather than the buttons' ExtraBold, which reads heavy
+// at heading sizes. A font file holds its own weight, so no fontWeight is
+// set with it: iOS would look for another face of the family. The one
+// place to roll it back: { fontWeight: "700" } here, and "600" on
+// headline.
+const headingFont = { fontFamily: "Manrope_700Bold" } as const;
+
 export const type = {
   display: {
+    ...headingFont,
     fontSize: 34,
     lineHeight: 38,
-    fontWeight: "700",
     letterSpacing: -0.4,
   },
-  title: { fontSize: 28, lineHeight: 32, fontWeight: "700" },
-  headline: { fontSize: 20, lineHeight: 25, fontWeight: "600" },
+  title: { ...headingFont, fontSize: 28, lineHeight: 32 },
+  headline: { ...headingFont, fontSize: 20, lineHeight: 25 },
   body: { fontSize: 16, lineHeight: 22, fontWeight: "400" },
   meta: { fontSize: 14, lineHeight: 19, fontWeight: "400" },
   label: {
