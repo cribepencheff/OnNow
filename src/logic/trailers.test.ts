@@ -131,6 +131,8 @@ describe("trailerPlayerHtml", () => {
     expect(html).toContain("cc_load_policy: 0");
     expect(html).toContain('hl: "en"');
     expect(html).toContain('unloadModule("captions")');
+    expect(html).toContain('player.setOption("captions", "track", {})');
+    expect(html).toContain("turnCaptionsOff(event.target)");
     expect(html).toContain("if (captionsOff) { return; }");
   });
 

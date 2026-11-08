@@ -84,9 +84,10 @@ export function youtubeThumbnailUrl(key: string): string {
 // removed, or the page's origin not accepted, codes 2, 5, 100, 101, 150,
 // 153), so the app can offer the video on YouTube instead. The page is
 // loaded with PLAYER_ORIGIN as its base, so YouTube gets an origin.
-// Captions start off (cc_load_policy: 0, and the captions module unloaded
-// the first time it loads), as they came on by themselves, over burned-in
-// subtitles; the CC button turns them on. The player's language is English
+// Captions start off (cc_load_policy: 0, then no caption track and the
+// captions module unloaded the first time the video plays), as YouTube
+// turned its automatic captions on by itself, over burned-in subtitles;
+// once only, so the CC button turns them on. The player's language is English
 // (hl: "en", ADR 0003): signed out, YouTube goes by the phone's language,
 // and turned captions on for an English trailer on a Swedish phone.
 // YouTube's own full-screen button is hidden (fs: 0, one of its player
@@ -118,6 +119,13 @@ function post(message) {
 // burned-in subtitles). Once only, so the player's CC button still turns
 // them on.
 var captionsOff = false;
+function turnCaptionsOff(player) {
+  if (captionsOff) { return; }
+  captionsOff = true;
+  try { player.setOption("captions", "track", {}); } catch (error) {}
+  try { player.unloadModule("captions"); } catch (error) {}
+  try { player.unloadModule("cc"); } catch (error) {}
+}
 function onYouTubeIframeAPIReady() {
   new YT.Player("player", {
     host: "https://www.youtube-nocookie.com",
@@ -125,17 +133,11 @@ function onYouTubeIframeAPIReady() {
     playerVars: { autoplay: 1, playsinline: 1, fs: 0, rel: 0, cc_load_policy: 0, hl: "en", origin: ${origin} },
     events: {
       onReady: function (event) { event.target.playVideo(); },
-      onApiChange: function (event) {
-        if (captionsOff) { return; }
-        var modules = event.target.getOptions ? event.target.getOptions() : [];
-        if (modules.indexOf("captions") >= 0 || modules.indexOf("cc") >= 0) {
-          captionsOff = true;
-          event.target.unloadModule("captions");
-          event.target.unloadModule("cc");
-        }
-      },
       onStateChange: function (event) {
-        if (event.data === YT.PlayerState.PLAYING) { post({ type: "playing" }); }
+        if (event.data === YT.PlayerState.PLAYING) {
+          turnCaptionsOff(event.target);
+          post({ type: "playing" });
+        }
       },
       onError: function (event) { post({ type: "error", code: event.data }); }
     }

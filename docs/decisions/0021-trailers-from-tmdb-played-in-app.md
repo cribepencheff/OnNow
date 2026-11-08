@@ -57,9 +57,10 @@ fallback.**
   play button, the video's name and its day.
 - **The player:** a full-screen black layer with YouTube's IFrame player,
   unchanged, from `youtube-nocookie.com`, starting at once, and a close
-  button. Captions start off (`cc_load_policy: 0`, and the captions
-  module unloaded the first time it loads): YouTube turned them on by
-  itself, machine translated, over a trailer's burned-in subtitles; the CC
+  button. Captions start off (`cc_load_policy: 0`, then no caption track
+  and the captions module unloaded the first time the video plays):
+  YouTube turned its automatic captions on by itself, over a trailer's
+  burned-in subtitles; the CC
   button still turns them on (owner, 2026-11-08). The player's language
   is English (`hl: "en"`, ADR 0003): signed out, YouTube goes by the
   phone's language, which is likely why captions came on in the app and
