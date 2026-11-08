@@ -5,9 +5,9 @@ import {
   episodeOfLabel,
   episodeState,
   isFinale,
-  latestCard,
+  initialEpisodeIndex,
+  initialSeasonNumber,
   latestEpisode,
-  nextCard,
   regularEpisodes,
   relativeDayLabel,
   seasonTabs,
@@ -47,16 +47,6 @@ function find(
     throw new Error(`Fixture episode S${season}E${number} not found`);
   }
   return found;
-}
-
-function nextCardFor(show: TvMazeShowWithEmbeds, todayDate = TODAY) {
-  return nextCard(
-    show,
-    show._embedded.episodes,
-    show._embedded.seasons,
-    TZ,
-    todayDate,
-  );
 }
 
 describe("relativeDayLabel (PRD 5.5, ADR 0001)", () => {
@@ -143,49 +133,6 @@ describe("latestEpisode (FR-028)", () => {
 
   it("is null before a show's first episode", () => {
     expect(latestEpisode(silo._embedded.episodes, TZ, "2020-01-01")).toBeNull();
-  });
-});
-
-describe("nextCard (FR-028, FR-034)", () => {
-  it("is the next regular episode after today for a running show", () => {
-    expect(nextCardFor(slowHorses)).toEqual({
-      kind: "episode",
-      episode: find(slowHorses, 6, 3),
-    });
-  });
-
-  it("is a season premiere card with the date between seasons, using the CRI-78 label", () => {
-    expect(nextCardFor(silo)).toEqual({
-      kind: "season-premiere",
-      label: "Season 4 premiere · Fri 9 Jul 2027",
-    });
-  });
-
-  it("is a season premiere card for an announced season with a date and no episodes", () => {
-    const seasons: TvMazeSeason[] = [
-      ...foundation._embedded.seasons.slice(0, 3),
-      { ...foundation._embedded.seasons[3], premiereDate: "2026-11-20" },
-    ];
-    expect(
-      nextCard(foundation, foundation._embedded.episodes, seasons, TZ, TODAY),
-    ).toEqual({
-      kind: "season-premiere",
-      label: "Season 4 premiere · Fri 20 Nov",
-    });
-  });
-
-  it("is the status from TVmaze between seasons without a date (data first)", () => {
-    expect(nextCardFor(foundation)).toEqual({
-      kind: "status",
-      status: "Running",
-    });
-  });
-
-  it("is the status from TVmaze for an ended show", () => {
-    expect(nextCardFor(killingEve)).toEqual({
-      kind: "status",
-      status: "Ended",
-    });
   });
 });
 
@@ -300,77 +247,6 @@ describe("currentSeasonNumber (FR-032: current season, not season 1)", () => {
     );
   });
 });
-
-// CRI-81: whole-season releases ("drops") and plain status wording.
-describe("season drops (FR-012, FR-028, FR-034, CRI-81)", () => {
-  const neagley = showNeagleyFixture as unknown as TvMazeShowWithEmbeds;
-  const diplomat = showTheDiplomatFixture as unknown as TvMazeShowWithEmbeds;
-
-  function latestCardFor(show: TvMazeShowWithEmbeds, todayDate = TODAY) {
-    return latestCard(
-      show._embedded.episodes,
-      show._embedded.seasons,
-      TZ,
-      todayDate,
-    );
-  }
-
-  it("shows Neagley's 8 same-day episodes as one latest item, with all when the count matches the episode order", () => {
-    expect(latestCardFor(neagley)).toEqual({
-      kind: "drop",
-      label: "Season 1 · all 8 episodes · 7 days ago",
-    });
-    expect(latestCardFor(neagley, "2026-09-16")).toEqual({
-      kind: "drop",
-      label: "Season 1 · all 8 episodes · Today",
-    });
-  });
-
-  it('says "N episodes" without "all" when the count does not match the episode order', () => {
-    const firstThree = neagley._embedded.episodes.filter(
-      (episode) => (episode.number ?? 0) <= 3,
-    );
-    expect(
-      latestCard(firstThree, neagley._embedded.seasons, TZ, TODAY),
-    ).toEqual({ kind: "drop", label: "Season 1 · 3 episodes · 7 days ago" });
-  });
-
-  it("shows The Diplomat's season 3 drop as the latest item, with the year", () => {
-    expect(latestCardFor(diplomat)).toEqual({
-      kind: "drop",
-      label: "Season 3 · all 8 episodes · Thu 16 Oct 2025",
-    });
-  });
-
-  it("keeps a weekly show's latest episode as an episode card", () => {
-    expect(latestCardFor(slowHorses)).toEqual({
-      kind: "episode",
-      episode: find(slowHorses, 6, 2),
-    });
-  });
-
-  it("shows The Diplomat's next season premiere, a single listed episode, as before", () => {
-    expect(nextCardFor(diplomat)).toEqual({
-      kind: "season-premiere",
-      label: "Season 4 premiere · Thu 15 Oct",
-    });
-  });
-
-  it("shows an upcoming drop as one next item, as a premiere when it starts the season", () => {
-    expect(nextCardFor(diplomat, "2025-10-10")).toEqual({
-      kind: "drop",
-      label: "Season 3 premiere · all 8 episodes · In 6 days",
-    });
-  });
-
-  it("shows the status in plain words on the next card (TVmaze: To Be Determined)", () => {
-    expect(nextCardFor(neagley)).toEqual({
-      kind: "status",
-      status: "Renewal not announced",
-    });
-  });
-});
-
 describe("allEpisodesAvailable (CRI-81)", () => {
   const neagley = showNeagleyFixture as unknown as TvMazeShowWithEmbeds;
   const diplomat = showTheDiplomatFixture as unknown as TvMazeShowWithEmbeds;
@@ -413,9 +289,12 @@ describe("allEpisodesAvailable (CRI-81)", () => {
   });
 });
 
+// Owner, 2026-11-08: the news first, then the status line the pill now
+// carries in place of a line of its own.
 describe("showDetailPill (CRI-143)", () => {
   const neagley = showNeagleyFixture as unknown as TvMazeShowWithEmbeds;
   const diplomat = showTheDiplomatFixture as unknown as TvMazeShowWithEmbeds;
+  const STATUS = "Next ep Wed 30 Sep";
 
   function pill(show: TvMazeShowWithEmbeds, todayDate: string, timeZone = TZ) {
     return showDetailPill(
@@ -423,6 +302,7 @@ describe("showDetailPill (CRI-143)", () => {
       show._embedded.seasons,
       timeZone,
       todayDate,
+      STATUS,
     );
   }
 
@@ -439,50 +319,35 @@ describe("showDetailPill (CRI-143)", () => {
     // Neagley season 1 (no "New season" for a first season) drops on 16 Sep.
     expect(pill(neagley, "2026-09-16")).toBe("All episodes now available");
     expect(pill(neagley, "2026-10-16")).toBe("All episodes now available");
-    expect(pill(neagley, "2026-10-17")).toBeNull();
+    expect(pill(neagley, "2026-10-17")).toBe(STATUS);
     // After the drop's "New season" week: season 4 is listed, so the show
     // is not complete.
-    expect(pill(diplomat, "2025-10-24")).toBeNull();
+    expect(pill(diplomat, "2025-10-24")).toBe(STATUS);
   });
 
-  it('says "New episode" today and the day after', () => {
+  it('says "New episode" today and the day after, over the status', () => {
     expect(pill(slowHorses, "2026-09-30")).toBe("New episode");
     expect(pill(slowHorses, "2026-10-01")).toBe("New episode");
     // The finale: seasons 7 and 8 are listed, so the show is not complete.
     expect(pill(slowHorses, "2026-10-21")).toBe("New episode");
   });
 
-  it('says "New episodes every Wednesday" between a weekly show\'s episodes', () => {
-    expect(pill(slowHorses, "2026-09-25")).toBe("New episodes every Wednesday");
-    expect(pill(slowHorses, "2026-10-02")).toBe("New episodes every Wednesday");
+  it("says the status between a weekly show's episodes, not a weekday it works out", () => {
+    expect(pill(slowHorses, "2026-09-25")).toBe(STATUS);
+    expect(pill(slowHorses, "2026-10-02")).toBe(STATUS);
+    expect(pill(silo, "2026-07-21")).toBe(STATUS);
   });
 
-  it("names the weekday of the user's local day (ADR 0006)", () => {
-    // Out at 12:00 UTC on Wednesdays: still Wednesday in Los Angeles,
-    // Thursday in Auckland.
-    expect(pill(slowHorses, "2026-09-26", "America/Los_Angeles")).toBe(
-      "New episodes every Wednesday",
-    );
-    expect(pill(slowHorses, "2026-09-26", "Pacific/Auckland")).toBe(
-      "New episodes every Thursday",
-    );
-  });
-
-  it("names the episodes' own weekday, not TVmaze's schedule day", () => {
-    // TVmaze lists Silo on Thursday; its episodes are out on Fridays here.
-    expect(pill(silo, "2026-07-21")).toBe("New episodes every Friday");
-  });
-
-  it("shows no pill for a show between seasons, ended, or announced", () => {
+  it("says the status for a show between seasons, ended, or announced", () => {
     // Slow Horses after its season 6 finale, with no next episode dated.
-    expect(pill(slowHorses, "2026-10-24")).toBeNull();
+    expect(pill(slowHorses, "2026-10-24")).toBe(STATUS);
     // Silo's season 4 premiere is a year away.
-    expect(pill(silo, "2026-10-24")).toBeNull();
+    expect(pill(silo, "2026-10-24")).toBe(STATUS);
     // The Diplomat's season 4 premiere is dated, the season 3 drop long out.
-    expect(pill(diplomat, TODAY)).toBeNull();
+    expect(pill(diplomat, TODAY)).toBe(STATUS);
   });
 
-  it("shows no weekly pill with a single episode out, and no new season pill for season 1", () => {
+  it("gives no new season pill for season 1", () => {
     // Slow Horses' season 6, as if it were a new show's first season.
     const firstSeason = slowHorses._embedded.episodes
       .filter((episode) => episode.season === 6)
@@ -493,7 +358,58 @@ describe("showDetailPill (CRI-143)", () => {
         slowHorses._embedded.seasons,
         TZ,
         "2026-09-18",
+        STATUS,
       ),
-    ).toBeNull();
+    ).toBe(STATUS);
+  });
+});
+
+// FR-032, owner 2026-11-08: the episode row opens on the latest episode
+// out, with the next one beside it; an ended show on its first episode.
+describe("initialSeasonNumber and initialEpisodeIndex (FR-032)", () => {
+  function seasonEpisodes(show: TvMazeShowWithEmbeds, season: number) {
+    return regularEpisodes(show._embedded.episodes).filter(
+      (episode) => episode.season === season,
+    );
+  }
+
+  it("opens a running show on the latest episode out, today's included", () => {
+    expect(
+      initialSeasonNumber(slowHorses._embedded.episodes, false, TZ, TODAY),
+    ).toBe(6);
+    // S6E2 is out today: index 1.
+    expect(
+      initialEpisodeIndex(seasonEpisodes(slowHorses, 6), false, TZ, TODAY),
+    ).toBe(1);
+  });
+
+  it("opens a show between seasons on its last aired season's last episode", () => {
+    expect(initialSeasonNumber(silo._embedded.episodes, false, TZ, TODAY)).toBe(
+      3,
+    );
+    const season = seasonEpisodes(silo, 3);
+    expect(initialEpisodeIndex(season, false, TZ, TODAY)).toBe(
+      season.length - 1,
+    );
+  });
+
+  it("opens an ended show on season 1, episode 1", () => {
+    expect(
+      initialSeasonNumber(killingEve._embedded.episodes, true, TZ, TODAY),
+    ).toBe(1);
+    expect(
+      initialEpisodeIndex(seasonEpisodes(killingEve, 1), true, TZ, TODAY),
+    ).toBe(0);
+  });
+
+  it("opens a season with nothing out yet on its first episode", () => {
+    expect(
+      initialEpisodeIndex(
+        seasonEpisodes(slowHorses, 6),
+        false,
+        TZ,
+        "2020-01-01",
+      ),
+    ).toBe(0);
   });
 });

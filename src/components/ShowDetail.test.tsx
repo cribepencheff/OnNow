@@ -5,7 +5,7 @@ import {
   within,
 } from "@testing-library/react-native";
 
-import { Dimensions, StyleSheet } from "react-native";
+import { ActionSheetIOS, Dimensions, StyleSheet } from "react-native";
 import { HEADER_BAR_HEIGHT } from "@/logic/header";
 import { BUTTON_HEIGHT, heroLayout } from "@/logic/hero-layout";
 import { t } from "@/theme/tokens";
@@ -159,7 +159,7 @@ describe("ShowDetail", () => {
     resolvedOptionsSpy.mockRestore();
   });
 
-  it("FR-028: shows title, year, origin country, genres, status line and summary, and no network", async () => {
+  it("FR-028: shows title, year, origin country, genres and summary, and no network", async () => {
     mockShow(showSlowHorsesFixture);
     await render(<ShowDetail showId={45039} />);
 
@@ -168,129 +168,249 @@ describe("ShowDetail", () => {
     expect(
       screen.getByText("2022 · United Kingdom · Drama, Thriller, Espionage"),
     ).toBeTruthy();
-    expect(screen.getByTestId("show-detail-status")).toHaveTextContent(
-      "Next ep Wed 30 Sep",
-    );
-    expect(screen.getByText(/Slow Horses follows the story/)).toBeTruthy();
-  });
-
-  it("FR-028: a running show has a latest and a next episode card", async () => {
-    mockShow(showSlowHorsesFixture);
-    await render(<ShowDetail showId={45039} />);
-
-    const latest = within(screen.getByTestId("show-detail-latest"));
-    expect(latest.getByText("Daddy Issues")).toBeTruthy();
-    expect(latest.getByText("Episode 2 of 6")).toBeTruthy();
-    expect(latest.getByText("Today")).toBeTruthy();
-
-    const next = within(screen.getByTestId("show-detail-next"));
-    expect(next.getByText("Resurrection")).toBeTruthy();
-    expect(next.getByText("Episode 3 of 6")).toBeTruthy();
-    expect(next.getByText("In 7 days")).toBeTruthy();
-  });
-
-  it("FR-034: between seasons with a date, the next card is the season premiere", async () => {
-    mockShow(showSiloFixture);
-    await render(<ShowDetail showId={38052} />);
-
-    const next = within(screen.getByTestId("show-detail-next"));
-    expect(next.getByText("Season 4 premiere · Fri 9 Jul 2027")).toBeTruthy();
-
-    const latest = within(screen.getByTestId("show-detail-latest"));
-    expect(latest.getByText("Troy")).toBeTruthy();
-    expect(latest.getByText("Fri 4 Sep")).toBeTruthy();
-  });
-
-  it("FR-034: between seasons with an undated new season, the status line says TBA and there is no next card", async () => {
-    mockShow(showFoundationFixture);
-    await render(<ShowDetail showId={35951} />);
-
-    expect(screen.getByTestId("show-detail-status")).toHaveTextContent(
-      "Season 4 · TBA",
-    );
-    expect(screen.queryByTestId("show-detail-next")).toBeNull();
-  });
-
-  it("FR-034: an ended show says Ended in the status line, and the latest card shows its last episode", async () => {
-    mockShow(showKillingEveFixture);
-    await render(<ShowDetail showId={22904} />);
-
-    expect(screen.getByTestId("show-detail-status")).toHaveTextContent("Ended");
-    expect(screen.queryByTestId("show-detail-next")).toBeNull();
-    const latest = within(screen.getByTestId("show-detail-latest"));
-    expect(latest.getByText("Hello, Losers")).toBeTruthy();
-    expect(latest.getByText("Sun 10 Apr 2022")).toBeTruthy();
-  });
-
-  it("FR-032: preselects the current season, not season 1", async () => {
-    mockShow(showSlowHorsesFixture);
-    await render(<ShowDetail showId={45039} />);
-
     expect(
-      screen.getByRole("tab", { name: "Season 6" }).props.accessibilityState,
-    ).toEqual(expect.objectContaining({ selected: true }));
-    expect(
-      screen.getByRole("tab", { name: "Season 1" }).props.accessibilityState,
-    ).toEqual(expect.objectContaining({ selected: false }));
-  });
-
-  it("FR-032: preselects the latest aired season between seasons", async () => {
-    mockShow(showSiloFixture);
-    await render(<ShowDetail showId={38052} />);
-
-    expect(
-      screen.getByRole("tab", { name: "Season 3" }).props.accessibilityState,
-    ).toEqual(expect.objectContaining({ selected: true }));
-  });
-
-  it("FR-032: switches the episode list when another season tab is pressed", async () => {
-    mockShow(showSlowHorsesFixture);
-    await render(<ShowDetail showId={45039} />);
-
-    const list = () => within(screen.getByTestId("show-detail-episodes"));
-    expect(list().getByText("Circle of Life")).toBeTruthy();
-
-    await fireEvent.press(screen.getByRole("tab", { name: "Season 5" }));
-
-    expect(list().getByText("Circus")).toBeTruthy();
-    expect(list().queryByText("Circle of Life")).toBeNull();
-  });
-
-  it("FR-032: marks aired, today and upcoming episodes, and the finale", async () => {
-    mockShow(showSlowHorsesFixture);
-    await render(<ShowDetail showId={45039} />);
-
-    const list = within(screen.getByTestId("show-detail-episodes"));
-    expect(
-      within(list.getByTestId("episode-aired")).getByText("Circle of Life"),
-    ).toBeTruthy();
-    expect(
-      within(list.getByTestId("episode-today")).getByText("Daddy Issues"),
-    ).toBeTruthy();
-
-    const upcoming = list.getAllByTestId("episode-upcoming");
-    expect(upcoming).toHaveLength(4);
-    expect(within(upcoming[0]).getByText("In 7 days")).toBeTruthy();
-
-    const finale = upcoming[3];
-    expect(within(finale).getByText("Judgment Day")).toBeTruthy();
-    expect(within(finale).getByText("Finale")).toBeTruthy();
-    expect(within(upcoming[0]).queryByText("Finale")).toBeNull();
-  });
-
-  it("FR-033: an announced season without episodes is a muted tab with its premiere date or Announced", async () => {
-    mockShow(showSlowHorsesFixture);
-    await render(<ShowDetail showId={45039} />);
-
-    const tab = screen.getByRole("tab", { name: "Season 7, Announced" });
-    expect(within(tab).getByText("Announced")).toBeTruthy();
-
-    await fireEvent.press(tab);
-    expect(
-      within(screen.getByTestId("show-detail-episodes")).getByText(
-        "No episodes yet.",
+      within(screen.getByTestId("show-detail-section")).getByText(
+        /Slow Horses follows the story/,
       ),
     ).toBeTruthy();
+  });
+
+  // Owner, 2026-11-08: the status rides in the hero's pill when there is
+  // no news, in place of a status line of its own.
+  describe("status in the pill (FR-034)", () => {
+    function pillText() {
+      return within(screen.getByTestId("show-detail-pill-row"));
+    }
+
+    it("has no status line below the hero", async () => {
+      mockShow(showSiloFixture);
+      await render(<ShowDetail showId={38052} />);
+      expect(screen.queryByTestId("show-detail-status")).toBeNull();
+    });
+
+    it("shows a dated next season between seasons", async () => {
+      mockShow(showSiloFixture);
+      await render(<ShowDetail showId={38052} />);
+      expect(pillText().getByText("Season 4 · Fri 9 Jul 2027")).toBeTruthy();
+    });
+
+    it("shows TBA for an undated new season", async () => {
+      mockShow(showFoundationFixture);
+      await render(<ShowDetail showId={35951} />);
+      expect(pillText().getByText("Season 4 · TBA")).toBeTruthy();
+    });
+
+    it("shows Ended for an ended show", async () => {
+      mockShow(showKillingEveFixture);
+      await render(<ShowDetail showId={22904} />);
+      expect(pillText().getByText("Ended")).toBeTruthy();
+    });
+
+    it("lets news win over the status (Slow Horses, a week into season 6)", async () => {
+      mockShow(showSlowHorsesFixture);
+      await render(<ShowDetail showId={45039} />);
+      expect(pillText().getByText("New season")).toBeTruthy();
+      expect(screen.queryByText("Next ep Wed 30 Sep")).toBeNull();
+    });
+
+    it("CRI-81: shows Neagley's drop in the pill, with no line of its own", async () => {
+      mockShow(showNeagleyFixture);
+      await render(<ShowDetail showId={82707} />);
+      expect(pillText().getByText("All episodes now available")).toBeTruthy();
+      expect(screen.queryByText("All episodes available")).toBeNull();
+    });
+
+    it("CRI-81: shows The Diplomat's dated season 4 after its season 3 drop", async () => {
+      mockShow(showTheDiplomatFixture);
+      await render(<ShowDetail showId={60213} />);
+      expect(pillText().getByText("Season 4 · Thu 15 Oct")).toBeTruthy();
+    });
+  });
+
+  // Owner, 2026-11-08: three lines, with More for the rest.
+  describe("summary", () => {
+    const LONG = Array.from({ length: 5 }, () => ({ text: "line" }));
+
+    it("shows More when the summary runs past three lines, and the whole text after it", async () => {
+      mockShow(showSlowHorsesFixture);
+      await render(<ShowDetail showId={45039} />);
+      const section = within(screen.getByTestId("show-detail-section"));
+      const shown = () =>
+        section
+          .getAllByText(/Slow Horses follows the story/)
+          .find((node) => node.props.testID !== "show-detail-summary-measure");
+
+      expect(section.queryByRole("button", { name: "More" })).toBeNull();
+      await fireEvent(
+        screen.getByTestId("show-detail-summary-measure", {
+          includeHiddenElements: true,
+        }),
+        "textLayout",
+        { nativeEvent: { lines: LONG } },
+      );
+      expect(shown()?.props.numberOfLines).toBe(3);
+
+      await fireEvent.press(section.getByRole("button", { name: "More" }));
+      expect(shown()?.props.numberOfLines).toBeUndefined();
+      expect(section.queryByRole("button", { name: "More" })).toBeNull();
+    });
+
+    it("shows no More when the summary fits in three lines", async () => {
+      mockShow(showSlowHorsesFixture);
+      await render(<ShowDetail showId={45039} />);
+      await fireEvent(
+        screen.getByTestId("show-detail-summary-measure", {
+          includeHiddenElements: true,
+        }),
+        "textLayout",
+        { nativeEvent: { lines: LONG.slice(0, 3) } },
+      );
+      expect(screen.queryByRole("button", { name: "More" })).toBeNull();
+    });
+  });
+
+  // FR-032, FR-033, owner 2026-11-08: a season heading with a menu, and
+  // the season's episodes as cards to swipe, in place of the latest and
+  // next cards.
+  describe("episodes (FR-032, FR-033)", () => {
+    let actionSheet: jest.SpyInstance;
+    // The option the user picks in the action sheet, by its label.
+    function pickSeason(label: string) {
+      actionSheet.mockImplementationOnce((options, callback) => {
+        callback(options.options.indexOf(label));
+      });
+      return fireEvent.press(screen.getByTestId("show-detail-season-picker"));
+    }
+    const row = () => within(screen.getByTestId("show-detail-episodes"));
+
+    beforeEach(() => {
+      actionSheet = jest
+        .spyOn(ActionSheetIOS, "showActionSheetWithOptions")
+        .mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      actionSheet.mockRestore();
+    });
+
+    it("has no latest and next cards", async () => {
+      mockShow(showSlowHorsesFixture);
+      await render(<ShowDetail showId={45039} />);
+      expect(screen.queryByTestId("show-detail-latest")).toBeNull();
+      expect(screen.queryByTestId("show-detail-next")).toBeNull();
+      expect(screen.queryByText("LATEST")).toBeNull();
+      expect(screen.queryByText("NEXT")).toBeNull();
+    });
+
+    it("opens a running show on its current season, at the latest episode out", async () => {
+      mockShow(showSlowHorsesFixture);
+      await render(<ShowDetail showId={45039} />);
+      expect(screen.getByTestId("show-detail-season-picker")).toHaveTextContent(
+        "Season 6",
+      );
+      // S6E2 is out today, the second card.
+      expect(
+        screen.getByTestId("show-detail-episodes").props.initialScrollIndex,
+      ).toBe(1);
+    });
+
+    it("opens the latest aired season between seasons", async () => {
+      mockShow(showSiloFixture);
+      await render(<ShowDetail showId={38052} />);
+      expect(screen.getByTestId("show-detail-season-picker")).toHaveTextContent(
+        "Season 3",
+      );
+    });
+
+    it("opens an ended show on season 1, episode 1", async () => {
+      mockShow(showKillingEveFixture);
+      await render(<ShowDetail showId={22904} />);
+      expect(screen.getByTestId("show-detail-season-picker")).toHaveTextContent(
+        "Season 1",
+      );
+      expect(
+        screen.getByTestId("show-detail-episodes").props.initialScrollIndex,
+      ).toBe(0);
+    });
+
+    it("lists every season in the menu, an announced one with its note", async () => {
+      mockShow(showSlowHorsesFixture);
+      await render(<ShowDetail showId={45039} />);
+      await fireEvent.press(screen.getByTestId("show-detail-season-picker"));
+      const options = actionSheet.mock.calls[0][0].options as string[];
+      expect(options).toEqual(
+        expect.arrayContaining([
+          "Season 1",
+          "Season 6",
+          "Season 7 · Announced",
+          "Cancel",
+        ]),
+      );
+    });
+
+    it("switches the episodes when another season is picked, opening at its first", async () => {
+      mockShow(showSlowHorsesFixture);
+      await render(<ShowDetail showId={45039} />);
+      expect(row().getByText("Daddy Issues")).toBeTruthy();
+
+      await pickSeason("Season 5");
+
+      expect(screen.getByTestId("show-detail-season-picker")).toHaveTextContent(
+        "Season 5",
+      );
+      expect(row().getByText("Circus")).toBeTruthy();
+      expect(row().queryByText("Daddy Issues")).toBeNull();
+      expect(
+        screen.getByTestId("show-detail-episodes").props.initialScrollIndex,
+      ).toBe(0);
+    });
+
+    it("FR-033: says No episodes yet for an announced season", async () => {
+      mockShow(showSlowHorsesFixture);
+      await render(<ShowDetail showId={45039} />);
+      await pickSeason("Season 7 · Announced");
+
+      expect(screen.getByText("No episodes yet.")).toBeTruthy();
+      expect(screen.getByTestId("show-detail-season-picker")).toHaveTextContent(
+        "Season 7Announced",
+      );
+    });
+
+    it("PRD 5.5: each card has Episode N of M, the title and its relative day", async () => {
+      mockShow(showSlowHorsesFixture);
+      await render(<ShowDetail showId={45039} />);
+
+      const today = within(row().getByTestId("episode-today"));
+      expect(today.getByText("Episode 2 of 6")).toBeTruthy();
+      expect(today.getByText("Daddy Issues")).toBeTruthy();
+      expect(today.getByText("Today")).toBeTruthy();
+
+      const next = within(row().getAllByTestId("episode-upcoming")[0]);
+      expect(next.getByText("Resurrection")).toBeTruthy();
+      expect(next.getByText("Episode 3 of 6")).toBeTruthy();
+      expect(next.getByText("In 7 days")).toBeTruthy();
+    });
+
+    it("marks aired, today and upcoming episodes, and the finale", async () => {
+      mockShow(showSlowHorsesFixture);
+      await render(<ShowDetail showId={45039} />);
+
+      const upcoming = row().getAllByTestId("episode-upcoming");
+      expect(upcoming).toHaveLength(4);
+      const finale = upcoming[3];
+      expect(within(finale).getByText("Judgment Day")).toBeTruthy();
+      expect(within(finale).getByText("Finale")).toBeTruthy();
+      expect(within(upcoming[0]).queryByText("Finale")).toBeNull();
+
+      // Season 5 is all out, and opens at its first episode.
+      await pickSeason("Season 5");
+      expect(
+        within(row().getAllByTestId("episode-aired")[0]).getByText(
+          "Episode 1 of 6",
+        ),
+      ).toBeTruthy();
+      expect(row().queryByTestId("episode-upcoming")).toBeNull();
+    });
   });
 
   // ADR 0019: TMDB's rating, the same as a Search row's, from the find
@@ -334,56 +454,6 @@ describe("ShowDetail", () => {
     await fireEvent.press(screen.getByRole("button", { name: "Following" }));
 
     expect(unfollow).toHaveBeenCalledWith(45039);
-  });
-
-  // CRI-81: whole-season releases and plain status wording.
-  it("CRI-81: shows Neagley's drop as one latest item, the status in plain words, and All episodes available", async () => {
-    mockShow(showNeagleyFixture);
-    mockOriginCountries.mockReturnValue({ data: ["US"] });
-    await render(<ShowDetail showId={82707} />);
-
-    expect(
-      screen.getByText("2026 · United States · Drama, Action, Thriller"),
-    ).toBeTruthy();
-    expect(screen.getByTestId("show-detail-status")).toHaveTextContent(
-      "Future uncertain",
-    );
-    expect(screen.getByText("All episodes available")).toBeTruthy();
-    expect(
-      within(screen.getByTestId("show-detail-latest")).getByText(
-        "Season 1 · all 8 episodes · 7 days ago",
-      ),
-    ).toBeTruthy();
-    expect(screen.queryByTestId("show-detail-next")).toBeNull();
-  });
-
-  it("CRI-81: shows The Diplomat's season 3 drop as the latest item and its season 4 premiere as next", async () => {
-    mockShow(showTheDiplomatFixture);
-    await render(<ShowDetail showId={60213} />);
-
-    expect(
-      within(screen.getByTestId("show-detail-latest")).getByText(
-        "Season 3 · all 8 episodes · Thu 16 Oct 2025",
-      ),
-    ).toBeTruthy();
-    expect(
-      within(screen.getByTestId("show-detail-next")).getByText(
-        "Season 4 premiere · Thu 15 Oct",
-      ),
-    ).toBeTruthy();
-    expect(screen.queryByText("All episodes available")).toBeNull();
-  });
-
-  it("CRI-81: keeps a weekly show's episode cards and no All episodes available", async () => {
-    mockShow(showSlowHorsesFixture);
-    await render(<ShowDetail showId={45039} />);
-
-    expect(
-      within(screen.getByTestId("show-detail-latest")).getByText(
-        "Daddy Issues",
-      ),
-    ).toBeTruthy();
-    expect(screen.queryByText("All episodes available")).toBeNull();
   });
 
   // CRI-80, CRI-82, FR-014, PRD 5.5: when followed, "Open in [service]" is
@@ -435,15 +505,13 @@ describe("ShowDetail", () => {
     expect(notAiring.props.style).toEqual(airing.props.style);
   });
 
-  it("CRI-86: puts the title and Open in on the backdrop, and the status line below it", async () => {
+  it("CRI-86: puts the title and Open in on the backdrop", async () => {
     mockShow(showSlowHorsesFixture);
     mockStreamingServices([APPLE_TV]);
     await render(<ShowDetail showId={45039} />);
 
     const hero = within(screen.getByTestId("show-detail-hero"));
     expect(hero.getByText("Slow Horses")).toBeTruthy();
-    expect(hero.queryByTestId("show-detail-status")).toBeNull();
-    expect(screen.getByTestId("show-detail-status")).toBeTruthy();
     expect(hero.getByRole("button", { name: "Open in Apple TV" })).toBeTruthy();
   });
 
@@ -780,19 +848,6 @@ describe("ShowDetail", () => {
           "New season",
         ),
       ).toBeTruthy();
-    });
-
-    it("shows no pill when there is nothing to say, keeping its room", async () => {
-      mockShow(showNeagleyFixture);
-      await render(<ShowDetail showId={82707} />);
-      // Neagley's drop on 16 Sep is within 30 days: the pill says so.
-      expect(screen.getByText("All episodes now available")).toBeTruthy();
-      await screen.unmount();
-
-      mockShow(showSiloFixture);
-      await render(<ShowDetail showId={44778} />);
-      expect(screen.queryByTestId("hero-date-pill")).toBeNull();
-      expect(screen.getByTestId("show-detail-pill-row")).toBeTruthy();
     });
 
     it("shows the rating and the meta line under the title", async () => {

@@ -4,14 +4,11 @@
 
 import { countryName } from "./regions";
 import {
-  addDays,
   daysBetween,
   localDateFromAirstamp,
   type LocalDate,
 } from "./local-date";
-import { nextForShow } from "./next-episode";
-import { formatLabelDate, nextDateLabel } from "./next-episode-label";
-import { statusLabel } from "./show-status";
+import { formatLabelDate } from "./next-episode-label";
 import type {
   TvMazeEpisode,
   TvMazeSeason,
@@ -89,131 +86,6 @@ export function latestEpisode(
     }
   }
   return latest?.episode ?? null;
-}
-
-// The episodes of `episode`'s season released on the same local day,
-// ordered by number: a season drop when there is more than one (FR-012).
-function sameDayEpisodes(
-  episode: TvMazeEpisode,
-  episodes: TvMazeEpisode[],
-  timeZone: string,
-): TvMazeEpisode[] {
-  const localDate = episodeLocalDate(episode, timeZone);
-  return regularEpisodes(episodes)
-    .filter(
-      (candidate) =>
-        candidate.season === episode.season &&
-        episodeLocalDate(candidate, timeZone) === localDate,
-    )
-    .sort((a, b) => (a.number ?? 0) - (b.number ?? 0));
-}
-
-// "Season 1 · all 8 episodes · 7 days ago", or, for an upcoming drop that
-// starts the season, "Season 3 premiere · all 8 episodes · In 6 days"
-// ("premiere" announces what is coming, so the latest card leaves it out;
-// CRI-81). "all" only when TVmaze's episode order for the season equals
-// the number released that day; otherwise "3 episodes".
-function seasonDropLabel(
-  drop: TvMazeEpisode[],
-  seasons: TvMazeSeason[],
-  timeZone: string,
-  todayDate: LocalDate,
-  upcoming: boolean,
-): string {
-  const first = drop[0];
-  const order = seasonOf(first, seasons)?.episodeOrder ?? null;
-  const count = order === drop.length ? `all ${drop.length}` : drop.length;
-  const season =
-    upcoming && first.number === 1
-      ? `Season ${first.season} premiere`
-      : `Season ${first.season}`;
-  return `${season} · ${count} episodes · ${episodeDateLabel(first, timeZone, todayDate)}`;
-}
-
-export type LatestCard =
-  { kind: "episode"; episode: TvMazeEpisode } | { kind: "drop"; label: string };
-
-// FR-028: the latest episode out by today, or its season drop as one item
-// when several episodes of the season came out that day (CRI-81).
-export function latestCard(
-  episodes: TvMazeEpisode[],
-  seasons: TvMazeSeason[],
-  timeZone: string,
-  todayDate: LocalDate,
-): LatestCard | null {
-  const latest = latestEpisode(episodes, timeZone, todayDate);
-  if (!latest) {
-    return null;
-  }
-  const drop = sameDayEpisodes(latest, episodes, timeZone);
-  return drop.length > 1
-    ? {
-        kind: "drop",
-        label: seasonDropLabel(drop, seasons, timeZone, todayDate, false),
-      }
-    : { kind: "episode", episode: latest };
-}
-
-export type NextCard =
-  | { kind: "episode"; episode: TvMazeEpisode }
-  | { kind: "season-premiere"; label: string }
-  | { kind: "drop"; label: string }
-  | { kind: "status"; status: string };
-
-// FR-034: what comes after today. A regular episode gets an episode card,
-// and several episodes of a season on one day are one drop item (CRI-81).
-// Between seasons it is a season card: episode 1 of a season, or an
-// announced season's premiere date, labelled as a premiere (CRI-78);
-// otherwise the show's status as TVmaze states it. Today's episode is the
-// latest card, not the next one.
-export function nextCard(
-  show: TvMazeShow,
-  episodes: TvMazeEpisode[],
-  seasons: TvMazeSeason[],
-  timeZone: string,
-  todayDate: LocalDate,
-): NextCard {
-  const next = nextForShow(
-    show,
-    regularEpisodes(episodes),
-    seasons,
-    timeZone,
-    addDays(todayDate, 1),
-  );
-
-  if (next.kind === "episode") {
-    const drop = sameDayEpisodes(next.episode, episodes, timeZone);
-    if (drop.length > 1) {
-      return {
-        kind: "drop",
-        label: seasonDropLabel(drop, seasons, timeZone, todayDate, true),
-      };
-    }
-    if (next.episode.number === 1) {
-      return {
-        kind: "season-premiere",
-        label: nextDateLabel(
-          localDateFromAirstamp(next.episode.airstamp, timeZone),
-          todayDate,
-          next.episode.season,
-        ),
-      };
-    }
-    return { kind: "episode", episode: next.episode };
-  }
-
-  if (next.kind === "announced-season" && next.season.premiereDate) {
-    return {
-      kind: "season-premiere",
-      label: nextDateLabel(
-        next.season.premiereDate,
-        todayDate,
-        next.season.number,
-      ),
-    };
-  }
-
-  return { kind: "status", status: statusLabel(show.status) };
 }
 
 function seasonOf(
@@ -363,40 +235,30 @@ export function allEpisodesAvailable(
 // pill after the episode that earned them (owner, CRI-143).
 const NEW_SEASON_DAYS = 7;
 const ALL_EPISODES_DAYS = 30;
-const WEEKDAY_NAMES = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
 
-// The pill above Show detail's title (CRI-143), Apple TV style: why the
-// show is current, never a date. The first that holds wins:
+// The pill above Show detail's title (CRI-143), Apple TV style. The news
+// comes first; the first that holds wins:
 // - "New season": a later season's first episode came out within 7 days.
 // - "All episodes now available": the latest season is complete
 //   (allEpisodesAvailable) and its last episode came out within 30 days.
 // - "New episode": an episode came out today or yesterday.
-// - "New episodes every Wednesday": the last two episodes out and the next
-//   one are a week apart each, on the next one's local weekday. From the
-//   episodes' own local days (ADR 0006), not TVmaze's schedule days, which
-//   are the network's and can fall a day off here.
-// Otherwise null: no pill.
+// Otherwise the show's status (showStateLabel: "Next ep Fri 13 Nov",
+// "Season 3 · TBA", "Ended"), which the pill now carries in place of a
+// line of its own (owner, 2026-11-08). A next episode's date that a news
+// pill hides is still on its card in the episode row.
 export function showDetailPill(
   episodes: TvMazeEpisode[],
   seasons: TvMazeSeason[],
   timeZone: string,
   todayDate: LocalDate,
-): string | null {
-  const dated = regularEpisodes(episodes)
+  status: string,
+): string {
+  const out = regularEpisodes(episodes)
     .map((episode) => ({ episode, date: episodeLocalDate(episode, timeZone) }))
     .filter(
       (entry): entry is { episode: TvMazeEpisode; date: LocalDate } =>
-        entry.date !== null,
+        entry.date !== null && entry.date <= todayDate,
     );
-  const out = dated.filter((entry) => entry.date <= todayDate);
   const daysAgo = (date: LocalDate) => daysBetween(date, todayDate);
 
   const premiere = out.find(
@@ -423,26 +285,51 @@ export function showDetailPill(
     }
   }
 
-  const outDates = [...new Set(out.map((entry) => entry.date))].sort();
-  const lastOutDate = outDates[outDates.length - 1];
-  if (lastOutDate && daysAgo(lastOutDate) <= 1) {
+  if (out.some((entry) => daysAgo(entry.date) <= 1)) {
     return "New episode";
   }
 
-  const nextDate = dated
-    .map((entry) => entry.date)
-    .filter((date) => date > todayDate)
-    .sort()[0];
-  const before = outDates[outDates.length - 2];
-  if (
-    nextDate &&
-    before &&
-    daysBetween(before, lastOutDate) === 7 &&
-    daysBetween(lastOutDate, nextDate) === 7
-  ) {
-    const weekday = new Date(`${nextDate}T00:00:00Z`).getUTCDay();
-    return `New episodes every ${WEEKDAY_NAMES[weekday]}`;
-  }
+  return status;
+}
 
-  return null;
+// FR-032: the season the episode row opens on. An ended show opens on its
+// first season, to start from the beginning (owner, 2026-11-08); any other
+// on the current season.
+export function initialSeasonNumber(
+  episodes: TvMazeEpisode[],
+  ended: boolean,
+  timeZone: string,
+  todayDate: LocalDate,
+): number | null {
+  if (ended) {
+    const seasonsWithEpisodes = regularEpisodes(episodes).map(
+      (episode) => episode.season,
+    );
+    return seasonsWithEpisodes.length > 0
+      ? Math.min(...seasonsWithEpisodes)
+      : null;
+  }
+  return currentSeasonNumber(episodes, timeZone, todayDate);
+}
+
+// The card the episode row opens on, as an index into the season's
+// episodes: the latest one out by today, so the next one shows beside it
+// (in place of the latest and next cards, owner, 2026-11-08). An ended
+// show, and a season with nothing out yet, open on its first episode.
+export function initialEpisodeIndex(
+  seasonEpisodes: TvMazeEpisode[],
+  ended: boolean,
+  timeZone: string,
+  todayDate: LocalDate,
+): number {
+  if (ended) {
+    return 0;
+  }
+  let index = 0;
+  seasonEpisodes.forEach((episode, i) => {
+    if (episodeState(episode, timeZone, todayDate) !== "upcoming") {
+      index = i;
+    }
+  });
+  return index;
 }
