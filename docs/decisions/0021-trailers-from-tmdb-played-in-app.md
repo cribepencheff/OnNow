@@ -70,9 +70,9 @@ fallback.**
   YouTube. Both close the player; Open in YouTube opens the video's page,
   in the YouTube app when it is installed.
 - **Nothing downloaded or saved, and nothing over YouTube's player.** The
-  player gets a 16:9 box of its own, and the close button sits in the
-  black outside it: above the video upright, in a column beside it turned
-  (`trailerPlayerLayout`). A player filling the screen had YouTube lay its
+  close button sits outside the player (`trailerPlayerLayout`): upright,
+  under the status bar, with the player filling the screen below it;
+  turned, in a column beside a 16:9 video. A player filling the screen had YouTube lay its
   title and controls out to the edges, under the button (owner,
   2026-11-08).
 

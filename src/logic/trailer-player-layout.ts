@@ -2,13 +2,17 @@
 // 2026-11-08). YouTube's player gets a 16:9 box of its own, and the close
 // button sits in the black outside it, never over YouTube's player, its
 // title or its controls (YouTube's terms: nothing over the player).
-// Upright: the video as wide as the safe area, centred, the button above
-// it. Turned: a column each side of the video, inside the safe area, the
-// button at the top of the right one; the video as large as that leaves.
+// Upright: the button under the status bar, and the player filling the
+// screen below it to the safe area's foot, so YouTube's title starts under
+// the button and its controls sit above the home indicator (owner,
+// 2026-11-08). Turned: a column each side of the video, inside the safe
+// area, the button at the top of the right one; the video as large as
+// that leaves.
 
 export const CLOSE_SIZE = 36;
 const MARGIN = 16;
 const BELOW_STATUS_BAR = 8;
+const BELOW_BUTTON = 8;
 const VIDEO_RATIO = 16 / 9;
 
 export interface Insets {
@@ -43,15 +47,14 @@ export function trailerPlayerLayout(
 
   if (screen.width < screen.height) {
     const closeTop = insets.top + BELOW_STATUS_BAR;
-    const width = safeWidth;
-    const height = width / VIDEO_RATIO;
-    // Centred on the screen, but never up under the button.
-    const top = Math.max(
-      (screen.height - height) / 2,
-      closeTop + CLOSE_SIZE + MARGIN,
-    );
+    const top = closeTop + CLOSE_SIZE + BELOW_BUTTON;
     return {
-      video: { left: safeLeft, top, width, height },
+      video: {
+        left: safeLeft,
+        top,
+        width: safeWidth,
+        height: safeBottom - top,
+      },
       close: { left: safeRight - MARGIN - CLOSE_SIZE, top: closeTop },
     };
   }

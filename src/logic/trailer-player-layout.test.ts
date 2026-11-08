@@ -23,12 +23,16 @@ function overlaps(layout: PlayerLayout): boolean {
 
 // ADR 0021, owner 2026-11-08: the close button never over YouTube's player.
 describe("trailerPlayerLayout (ADR 0021)", () => {
-  it("upright: a 16:9 video as wide as the screen, centred, the button above it", () => {
+  it("upright: the button under the status bar, the player filling the screen below it to the safe area's foot", () => {
     const layout = trailerPlayerLayout(UPRIGHT, UPRIGHT_INSETS);
-    expect(layout.video.width).toBe(393);
-    expect(layout.video.height).toBeCloseTo(393 / (16 / 9));
-    expect(layout.video.top).toBeCloseTo((852 - 393 / (16 / 9)) / 2);
     expect(layout.close).toEqual({ left: 393 - 16 - CLOSE_SIZE, top: 67 });
+    // Starts under the button, so YouTube's title is not under it.
+    expect(layout.video).toEqual({
+      left: 0,
+      top: 67 + CLOSE_SIZE + 8,
+      width: 393,
+      height: 852 - 34 - (67 + CLOSE_SIZE + 8),
+    });
     expect(overlaps(layout)).toBe(false);
   });
 
