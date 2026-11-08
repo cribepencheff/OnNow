@@ -317,7 +317,11 @@ per season come in the MVP.
   The show's rating, TMDB's, sits first on the hero's meta line, marked
   "TMDB" and linked to the show on TMDB, and is left out when there is
   none or it has fewer than 50 votes (ADR 0019).
-  Not included: cast, other ratings, reviews, trailers, similar shows, FAQ,
+  After the episodes, a "Cast" row from TVmaze (owner, 2026-11-08; Apple
+  TV's Cast & Crew as the reference): each cast member in TVmaze's order,
+  a round portrait, the name and, muted, the character; nothing to tap,
+  and no row when TVmaze lists no cast.
+  Not included: crew, other ratings, reviews, trailers, similar shows, FAQ,
   lists.
 - **Between seasons:** when the current season has ended, the "next"
   episode card becomes a next season card, so it is clear when new episodes

@@ -59,6 +59,7 @@ import { TAB_BAR_HEIGHT } from "@/logic/tab-bar";
 import { heroLayout, topScrimGradient } from "@/logic/hero-layout";
 import { FloatingBackButton } from "./FloatingBackButton";
 import { PillButton } from "./PillButton";
+import { ShowCast } from "./ShowCast";
 import { EPISODE_MARK_LABELS, EpisodeMarkDot } from "./Hero/EpisodeMarkChip";
 import { ShowDetailHero } from "./ShowDetailHero";
 import { ShowRating } from "./ShowRating";
@@ -219,6 +220,9 @@ function ShowDetailContent({
           />
         </View>
       )}
+
+      {/* After the episodes (owner, 2026-11-08), as in Apple TV. */}
+      <ShowCast showId={show.id} />
 
       <TvMazeCredit />
       <TmdbCredit />

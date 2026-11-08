@@ -94,3 +94,23 @@ export interface TvMazeShowWithEmbeds extends TvMazeShow {
     seasons: TvMazeSeason[];
   };
 }
+
+// A show's cast member from /shows/{id}/cast, trimmed to what Show
+// detail's Cast row uses (CRI-143).
+export interface TvMazeCastMember {
+  personId: number;
+  name: string;
+  // The person's portrait, or null.
+  imageUrl: string | null;
+  // The character as TVmaze names it, or null.
+  character: string | null;
+}
+
+export interface TvMazeCastResponseItem {
+  person: {
+    id: number;
+    name: string;
+    image: TvMazeImage | null;
+  };
+  character: { id: number; name: string } | null;
+}

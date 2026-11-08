@@ -58,6 +58,10 @@ const mockTmdbSeason = jest.fn(() => ({ data: [] as unknown[] }));
 jest.mock("@/hooks/useTmdbSeason", () => ({
   useTmdbSeason: () => mockTmdbSeason(),
 }));
+// The Cast row is tested in ShowCast.test.tsx.
+jest.mock("@/hooks/useShowCast", () => ({
+  useShowCast: () => ({ data: undefined }),
+}));
 jest.mock("@/hooks/useFollowList", () =>
   jest.requireActual("@/hooks/test-follow-list-mock").followListMock(),
 );
