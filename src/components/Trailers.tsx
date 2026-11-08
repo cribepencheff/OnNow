@@ -248,16 +248,25 @@ function PlayerContent({
         accessibilityLabel="Close"
         onPress={onClose}
         hitSlop={8}
-        style={[styles.close, layout.close]}
+        style={[
+          styles.close,
+          layout.closeLabelled ? styles.closePill : styles.closeRound,
+          layout.close,
+        ]}
+        testID="trailer-close"
       >
         <SymbolView
           name="xmark"
           tintColor={t.ink}
-          size={15}
+          size={layout.closeLabelled ? 12 : 15}
           weight="bold"
           accessibilityElementsHidden
           importantForAccessibility="no"
         />
+        {/* Words upright, at the foot in reach of a thumb (owner,
+            2026-11-08); turned, the column beside the video is too
+            narrow. */}
+        {layout.closeLabelled && <Text style={styles.closeLabel}>Close</Text>}
       </Pressable>
     </View>
   );
@@ -326,7 +335,6 @@ const styles = StyleSheet.create({
   },
   close: {
     position: "absolute",
-    width: CLOSE_SIZE,
     height: CLOSE_SIZE,
     borderRadius: CLOSE_SIZE / 2,
     backgroundColor: t.imageControlBackdrop,
@@ -334,5 +342,18 @@ const styles = StyleSheet.create({
     borderColor: t.imageControlEdge,
     alignItems: "center",
     justifyContent: "center",
+  },
+  closeRound: {
+    width: CLOSE_SIZE,
+  },
+  closePill: {
+    flexDirection: "row",
+    gap: 6,
+    paddingHorizontal: 14,
+  },
+  closeLabel: {
+    ...type.meta,
+    fontWeight: "600",
+    color: t.ink,
   },
 });

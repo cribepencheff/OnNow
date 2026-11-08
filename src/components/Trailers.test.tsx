@@ -109,6 +109,15 @@ describe("TrailersRow (ADR 0021)", () => {
     expect(holdPortrait).toHaveBeenCalledTimes(1);
   });
 
+  it("says Close on the close button upright", async () => {
+    await renderRow();
+    await fireEvent.press(
+      screen.getByRole("button", { name: "Play Season 6 Official Trailer" }),
+    );
+    // Jest's window is upright (750 x 1334).
+    expect(screen.getByTestId("trailer-close")).toHaveTextContent("Close");
+  });
+
   it("offers YouTube when the video will not play here", async () => {
     const alert = jest.spyOn(Alert, "alert").mockImplementation(() => {});
     await renderRow();

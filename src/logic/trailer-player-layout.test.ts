@@ -10,12 +10,16 @@ const UPRIGHT = { width: 393, height: 852 };
 const UPRIGHT_INSETS = { top: 59, right: 0, bottom: 34, left: 0 };
 const TURNED = { width: 852, height: 393 };
 const TURNED_INSETS = { top: 0, right: 59, bottom: 21, left: 59 };
+// The "Close" pill is at most this wide.
+const PILL_MAX_WIDTH = 120;
 
-function overlaps(layout: PlayerLayout): boolean {
+function overlaps(layout: PlayerLayout, screenWidth: number): boolean {
   const { video, close } = layout;
+  const width = layout.closeLabelled ? PILL_MAX_WIDTH : CLOSE_SIZE;
+  const closeLeft = screenWidth - close.right - width;
   return (
-    close.left < video.left + video.width &&
-    close.left + CLOSE_SIZE > video.left &&
+    closeLeft < video.left + video.width &&
+    closeLeft + width > video.left &&
     close.top < video.top + video.height &&
     close.top + CLOSE_SIZE > video.top
   );
@@ -23,34 +27,32 @@ function overlaps(layout: PlayerLayout): boolean {
 
 // ADR 0021, owner 2026-11-08: the close button never over YouTube's player.
 describe("trailerPlayerLayout (ADR 0021)", () => {
-  it("upright: the button under the status bar, the player filling the screen below it to the safe area's foot", () => {
+  it("upright: the player from under the status bar, a Close pill at the foot on the right", () => {
     const layout = trailerPlayerLayout(UPRIGHT, UPRIGHT_INSETS);
-    expect(layout.close).toEqual({ left: 393 - 16 - CLOSE_SIZE, top: 67 });
-    // Starts under the button, so YouTube's title is not under it.
+    const closeTop = 852 - 34 - 8 - CLOSE_SIZE;
+    expect(layout.closeLabelled).toBe(true);
+    expect(layout.close).toEqual({ top: closeTop, right: 16 });
     expect(layout.video).toEqual({
       left: 0,
-      top: 67 + CLOSE_SIZE + 8,
+      top: 59,
       width: 393,
-      height: 852 - 34 - (67 + CLOSE_SIZE + 8),
+      height: closeTop - 8 - 59,
     });
-    expect(overlaps(layout)).toBe(false);
+    expect(overlaps(layout, 393)).toBe(false);
   });
 
-  it("turned: the video centred between two columns, the button at the top of the right one", () => {
+  it("turned: the video centred between two columns, a round button at the top of the right one", () => {
     const layout = trailerPlayerLayout(TURNED, TURNED_INSETS);
     const safeWidth = 852 - 59 - 59;
     const column = CLOSE_SIZE + 32;
+    expect(layout.closeLabelled).toBe(false);
     expect(layout.video.width).toBeCloseTo(safeWidth - 2 * column);
     expect(layout.video.height).toBeCloseTo(layout.video.width / (16 / 9));
-    // Centred in the safe area.
     expect(layout.video.left).toBeCloseTo(59 + column);
     expect(layout.close.top).toBe(16);
-    // Centred in the right column, inside the safe area.
-    expect(layout.close.left).toBeCloseTo(
-      layout.video.left + layout.video.width + 16,
-    );
-    expect(layout.close.left + CLOSE_SIZE).toBeLessThanOrEqual(852 - 59);
-    expect(overlaps(layout)).toBe(false);
+    // Inside the safe area, centred in the right column.
+    expect(layout.close.right).toBeCloseTo(59 + 16);
+    expect(overlaps(layout, 852)).toBe(false);
   });
 
   it("turned on a screen with room to spare: no taller than the safe area", () => {
@@ -59,6 +61,6 @@ describe("trailerPlayerLayout (ADR 0021)", () => {
       { top: 0, right: 0, bottom: 0, left: 0 },
     );
     expect(layout.video.height).toBeCloseTo(400);
-    expect(overlaps(layout)).toBe(false);
+    expect(overlaps(layout, 1400)).toBe(false);
   });
 });

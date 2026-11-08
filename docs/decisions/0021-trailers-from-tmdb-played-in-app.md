@@ -71,8 +71,9 @@ fallback.**
   in the YouTube app when it is installed.
 - **Nothing downloaded or saved, and nothing over YouTube's player.** The
   close button sits outside the player (`trailerPlayerLayout`): upright,
-  under the status bar, with the player filling the screen below it;
-  turned, in a column beside a 16:9 video. A player filling the screen had YouTube lay its
+  a "Close" pill at the foot on the right, in reach of a thumb, with the
+  player from under the status bar down to it; turned, a round button in a
+  column beside a 16:9 video, too narrow for words. A player filling the screen had YouTube lay its
   title and controls out to the edges, under the button (owner,
   2026-11-08).
 

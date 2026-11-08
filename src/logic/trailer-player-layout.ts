@@ -1,18 +1,15 @@
 // Where the trailer player's video and close button go (ADR 0021, owner
-// 2026-11-08). YouTube's player gets a 16:9 box of its own, and the close
-// button sits in the black outside it, never over YouTube's player, its
+// 2026-11-08). The close button never sits over YouTube's player, its
 // title or its controls (YouTube's terms: nothing over the player).
-// Upright: the button under the status bar, and the player filling the
-// screen below it to the safe area's foot, so YouTube's title starts under
-// the button and its controls sit above the home indicator (owner,
-// 2026-11-08). Turned: a column each side of the video, inside the safe
-// area, the button at the top of the right one; the video as large as
-// that leaves.
+// Upright: the player from under the status bar down to a strip at the
+// foot, where a "Close" pill sits on the right, in reach of a thumb.
+// Turned: a column each side of a 16:9 video, inside the safe area, a
+// round close button at the top of the right one (too narrow for words);
+// the video as large as that leaves.
 
 export const CLOSE_SIZE = 36;
 const MARGIN = 16;
-const BELOW_STATUS_BAR = 8;
-const BELOW_BUTTON = 8;
+const GAP = 8;
 const VIDEO_RATIO = 16 / 9;
 
 export interface Insets {
@@ -31,7 +28,10 @@ export interface Rect {
 
 export interface PlayerLayout {
   video: Rect;
-  close: { left: number; top: number };
+  // From the screen's top and right edges; its width is its own.
+  close: { top: number; right: number };
+  // A pill with "Close" upright, a round button turned.
+  closeLabelled: boolean;
 }
 
 export function trailerPlayerLayout(
@@ -46,16 +46,16 @@ export function trailerPlayerLayout(
   const safeHeight = safeBottom - safeTop;
 
   if (screen.width < screen.height) {
-    const closeTop = insets.top + BELOW_STATUS_BAR;
-    const top = closeTop + CLOSE_SIZE + BELOW_BUTTON;
+    const closeTop = safeBottom - GAP - CLOSE_SIZE;
     return {
       video: {
         left: safeLeft,
-        top,
+        top: safeTop,
         width: safeWidth,
-        height: safeBottom - top,
+        height: closeTop - GAP - safeTop,
       },
-      close: { left: safeRight - MARGIN - CLOSE_SIZE, top: closeTop },
+      close: { top: closeTop, right: insets.right + MARGIN },
+      closeLabelled: true,
     };
   }
 
@@ -66,11 +66,14 @@ export function trailerPlayerLayout(
   const left = safeLeft + (safeWidth - width) / 2;
   const top = safeTop + (safeHeight - height) / 2;
   const rightColumnLeft = left + width;
+  const closeLeft =
+    rightColumnLeft + (safeRight - rightColumnLeft - CLOSE_SIZE) / 2;
   return {
     video: { left, top, width, height },
     close: {
-      left: rightColumnLeft + (safeRight - rightColumnLeft - CLOSE_SIZE) / 2,
       top: safeTop + MARGIN,
+      right: screen.width - closeLeft - CLOSE_SIZE,
     },
+    closeLabelled: false,
   };
 }
