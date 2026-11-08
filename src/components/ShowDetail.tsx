@@ -56,6 +56,7 @@ import { showState, showStateLabel } from "@/logic/show-state";
 import { TAB_BAR_HEIGHT } from "@/logic/tab-bar";
 import { heroLayout, topScrimGradient } from "@/logic/hero-layout";
 import { FloatingBackButton } from "./FloatingBackButton";
+import { PillButton } from "./PillButton";
 import { ShowDetailHero } from "./ShowDetailHero";
 import { ShowRating } from "./ShowRating";
 import { t, type } from "@/theme/tokens";
@@ -274,14 +275,10 @@ function About({
           </Text>
         </View>
         {truncated && (
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => setOpen(true)}
-            hitSlop={8}
-            style={styles.moreButton}
-          >
-            <Text style={styles.more}>More</Text>
-          </Pressable>
+          // The pill of Home's "Search more" (owner, 2026-11-08).
+          <View style={styles.moreSlot}>
+            <PillButton label="More" onPress={() => setOpen(true)} />
+          </View>
         )}
       </Pressable>
       <AboutSheet
@@ -642,9 +639,11 @@ const styles = StyleSheet.create({
     borderRadius: t.radiusSm,
     padding: t.space4,
   },
-  moreButton: {
-    alignSelf: "flex-start",
-    marginTop: 4,
+  // Under the text, at the panel's right edge, as "Search more" ends its
+  // row.
+  moreSlot: {
+    alignItems: "flex-end",
+    marginTop: 8,
   },
   sheet: {
     flex: 1,
@@ -705,11 +704,6 @@ const styles = StyleSheet.create({
   },
   factValue: {
     ...type.body,
-    color: t.ink,
-  },
-  more: {
-    ...type.meta,
-    fontWeight: "600",
     color: t.ink,
   },
   episodesSection: {
