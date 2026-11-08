@@ -430,9 +430,9 @@ describe("TmdbClient.findImages", () => {
         jsonResponse({
           images,
           created_by: [
-            { name: "Ryu Bo-ri" },
+            { name: "Ryu Bo-ri", profile_path: "/ryu.jpg" },
             { name: " " },
-            { name: "Yoo In-sik" },
+            { name: "Yoo In-sik", profile_path: null },
           ],
         }),
       );
@@ -443,7 +443,10 @@ describe("TmdbClient.findImages", () => {
       images,
       posterPath: "/tEPDFIa21VK0Q2YLuzhTt2xrw5W.jpg",
       // CRI-143: who created the show, from the same request.
-      createdBy: ["Ryu Bo-ri", "Yoo In-sik"],
+      createdBy: [
+        { name: "Ryu Bo-ri", profilePath: "/ryu.jpg" },
+        { name: "Yoo In-sik", profilePath: null },
+      ],
     });
     // One request for both, as the images alone were.
     expect(fetchFn).toHaveBeenCalledTimes(2);

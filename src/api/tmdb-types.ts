@@ -35,6 +35,13 @@ export interface TmdbSeasonResponse {
   }[];
 }
 
+// Someone TMDB lists as having created a show (CRI-143), with a portrait
+// path where it has one.
+export interface TmdbCreator {
+  name: string;
+  profilePath: string | null;
+}
+
 export const IMAGE_BASE = "https://image.tmdb.org/t/p";
 
 // The largest backdrop size fetched (CRI-140, ADR 0012): w1920, which

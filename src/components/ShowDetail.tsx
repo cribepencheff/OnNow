@@ -199,7 +199,7 @@ function ShowDetailContent({
           facts={aboutFacts(
             show,
             originCountries ?? [],
-            showImages?.createdBy ?? [],
+            (showImages?.createdBy ?? []).map((creator) => creator.name),
           )}
         />
       )}
@@ -228,7 +228,7 @@ function ShowDetailContent({
       )}
 
       {/* After the episodes (owner, 2026-11-08), as in Apple TV. */}
-      <ShowCast showId={show.id} />
+      <ShowCast showId={show.id} creators={showImages?.createdBy ?? []} />
 
       <TvMazeCredit />
       <TmdbCredit />

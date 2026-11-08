@@ -11,7 +11,7 @@
 // time), so a saved one is never read again (ADR 0017 amendment).
 const SAVED_KINDS = new Set([
   "tmdbFind",
-  "hero-images-v7",
+  "hero-images-v8",
   "airingThisWeek",
   "tvmazeWeekInfo",
   "followedIds",

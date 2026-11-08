@@ -29,6 +29,7 @@ import { queryClient } from "@/hooks/query-client";
 import { createTmdbFindCache } from "@/hooks/tmdb-find-cache";
 import type {
   TmdbSeasonEpisode,
+  TmdbCreator,
   TmdbImages,
   TmdbSeasonResponse,
 } from "./tmdb-types";
@@ -93,7 +94,7 @@ export interface TmdbShowImagesAnswer {
   images: TmdbImages;
   posterPath: string | null;
   // TMDB's "created by", in its order; [] when it has none.
-  createdBy: string[];
+  createdBy: TmdbCreator[];
 }
 
 export interface TmdbClient {
@@ -325,7 +326,7 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     // appended images.
     const details = await requestJson<{
       images?: TmdbImages;
-      created_by?: { name?: string | null }[];
+      created_by?: { name?: string | null; profile_path?: string | null }[];
     }>(
       `/tv/${tvId}?append_to_response=images&include_image_language=en,null,xx`,
       apiKey,
@@ -338,8 +339,11 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
       images: details.images ?? {},
       posterPath,
       createdBy: (details.created_by ?? [])
-        .map((creator) => creator.name?.trim() ?? "")
-        .filter((name) => name !== ""),
+        .map((creator) => ({
+          name: creator.name?.trim() ?? "",
+          profilePath: creator.profile_path || null,
+        }))
+        .filter((creator) => creator.name !== ""),
     };
   }
 
