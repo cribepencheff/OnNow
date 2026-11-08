@@ -97,6 +97,17 @@ describe("ShowCast (CRI-143)", () => {
     );
   });
 
+  it("snaps a person to the edge, one person and gap at a time", async () => {
+    await render(
+      <ShowCast showId={1} tmdbCast={TMDB_CAST} creators={[]} crew={[]} />,
+    );
+    const row = screen.getByTestId("show-detail-cast-row");
+    expect(row.props.snapToInterval).toBe(
+      Math.floor((750 - 24) / 3.4 - 12) + 12,
+    );
+    expect(row.props.decelerationRate).toBe("fast");
+  });
+
   it("draws initials where there is no portrait", async () => {
     await render(
       <ShowCast showId={1} tmdbCast={TMDB_CAST} creators={[]} crew={[]} />,

@@ -72,6 +72,11 @@ export function ShowCast({
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.row}
+        // A person to the content's left edge after a swipe, as the
+        // episode row's cards (owner, 2026-11-08).
+        snapToInterval={itemWidth + GAP}
+        decelerationRate="fast"
+        testID="show-detail-cast-row"
       >
         {people.map((person) => (
           <PersonItem key={person.key} person={person} size={itemWidth} />
