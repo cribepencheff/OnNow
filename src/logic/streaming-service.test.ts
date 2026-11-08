@@ -149,11 +149,33 @@ describe("openInLink (FR-014, ADR 0004, CRI-82)", () => {
     );
   });
 
-  it("opens the first known service in TMDB's order (Ludwig: BritBox)", () => {
-    expect(openInLink(regionProviders(providersLudwig, "SE"), null)).toEqual({
-      service: "BritBox",
-      url: "https://www.britbox.com",
-      logoPath: "/eZeWGG6DDIi4Kmu1z9RfTeZtqZX.png",
+  it("opens a service that is free in itself before a subscription one (Ludwig: SVT Play, FR-014, CRI-150)", () => {
+    expect(
+      openInLink(regionProviders(providersLudwig, "SE"), null),
+    ).toMatchObject({ service: "SVT Play", url: "https://www.svtplay.se" });
+  });
+
+  it("keeps TMDB's order when its free list holds a subscription service (Killing Eve US: Netflix, CRI-150)", () => {
+    expect(
+      openInLink(regionProviders(providersKillingEve, "US"), null),
+    ).toMatchObject({ service: "Netflix" });
+  });
+
+  it("opens the first known service in TMDB's order without a free one", () => {
+    const providers = [
+      { providerId: 151, providerName: "BritBox", logoPath: null },
+      { providerId: 1944, providerName: "TV4 Play", logoPath: null },
+    ];
+    expect(openInLink(providers, null)).toMatchObject({ service: "BritBox" });
+  });
+
+  it("still opens the show's own page first, before a free service (CRI-150)", () => {
+    const providers = [
+      { providerId: 493, providerName: "SVT", logoPath: null },
+      ...regionProviders(providersSlowHorses, "SE"),
+    ];
+    expect(openInLink(providers, showSlowHorses.officialSite)).toMatchObject({
+      service: "Apple TV",
     });
   });
 
@@ -334,7 +356,9 @@ describe("streaming services per region (FR-017, CRI-88)", () => {
     expect(regionProviders(providersMobLand, "AQ")).toEqual([]);
   });
 
-  it("opens the region's service (SE: SkyShowtime, US: Paramount+, GB: Prime Video)", () => {
+  // US: TMDB lists The Roku Channel under "ads", free in itself, so it
+  // comes before Paramount+ (CRI-150).
+  it("opens the region's service (SE: SkyShowtime, US: The Roku Channel, GB: Prime Video)", () => {
     const linkIn = (region: string) =>
       openInLink(
         regionProviders(providersMobLand, region),
@@ -342,9 +366,9 @@ describe("streaming services per region (FR-017, CRI-88)", () => {
       );
     expect(linkIn("SE")?.service).toBe("SkyShowtime");
     expect(linkIn("US")).toEqual({
-      service: "Paramount+",
-      url: "https://www.paramountplus.com",
-      logoPath: "/4N4BMd0Mm0kHAmF7RZgL5lW3cwc.png",
+      service: "The Roku Channel",
+      url: "https://therokuchannel.roku.com",
+      logoPath: "/b7uhrYJtAe7b1ieJGg705vTbwrX.png",
     });
     expect(linkIn("GB")).toEqual({
       service: "Prime Video",
