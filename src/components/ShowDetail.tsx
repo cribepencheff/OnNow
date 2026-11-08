@@ -32,6 +32,9 @@ import { useOriginCountries } from "@/hooks/useOriginCountries";
 import { useTmdbSeason } from "@/hooks/useTmdbSeason";
 import { useShow } from "@/hooks/useShow";
 import { useShowImages } from "@/hooks/useShowImages";
+import { useStreamingService } from "@/hooks/useStreamingService";
+import { countryName } from "@/logic/regions";
+import { streamingServices } from "@/logic/streaming-service";
 import { useToday } from "@/hooks/useToday";
 import type { TmdbSeasonEpisode } from "@/api/tmdb-types";
 import { episodeImage, showBackdropImage } from "@/logic/episode-image";
@@ -62,6 +65,7 @@ import { heroLayout, topScrimGradient } from "@/logic/hero-layout";
 import { FloatingBackButton } from "./FloatingBackButton";
 import { PillButton } from "./PillButton";
 import { RelatedRow } from "./RelatedRow";
+import { ServiceLogo } from "./ServiceLogo";
 import { ShowCast } from "./ShowCast";
 import { TrailersRow } from "./Trailers";
 import { EPISODE_MARK_LABELS, EpisodeMarkDot } from "./Hero/EpisodeMarkChip";
@@ -156,6 +160,9 @@ function ShowDetailContent({
   // and the show's backdrop
   // (the hero's, already fetched) for a card with no still anywhere.
   const { data: tmdbSeason } = useTmdbSeason(show, selectedSeason);
+  // The show's services in the region: the hero's "Open in" answer, shared
+  // (same query), listed in full in the About sheet.
+  const { data: streamingAnswer, region } = useStreamingService(show, true);
   const { data: showImages, isPending: showImagesPending } =
     useShowImages(show);
   // ADR 0021: the latest season's trailers and the show's own. The latest
@@ -209,19 +216,19 @@ function ShowDetailContent({
         metaLine={metaLine}
       />
 
-      {summary && (
-        <About
-          show={show}
-          text={summary}
-          fullText={plainTextParagraphs(show.summary) ?? summary}
-          genres={show.genres ?? []}
-          facts={aboutFacts(
-            show,
-            originCountries ?? [],
-            (showImages?.createdBy ?? []).map((creator) => creator.name),
-          )}
-        />
-      )}
+      <About
+        show={show}
+        text={summary}
+        fullText={plainTextParagraphs(show.summary) ?? summary}
+        services={streamingServices(streamingAnswer)}
+        region={region ? countryName(region) : null}
+        genres={show.genres ?? []}
+        facts={aboutFacts(
+          show,
+          originCountries ?? [],
+          (showImages?.createdBy ?? []).map((creator) => creator.name),
+        )}
+      />
 
       {/* After About: a trailer helps decide whether to follow, as the
           summary does (owner, 2026-11-08). */}
@@ -277,28 +284,33 @@ function ShowDetailContent({
 }
 
 const SUMMARY_LINES = 3;
+const SERVICE_LOGO_SIZE = 32;
 
 // "About": the summary in a dark grey panel, three lines, with "More"
-// opening the whole text in a sheet (owner, 2026-11-08; Apple TV as the
-// reference). The full text is laid out once, out of sight, to know
-// whether it runs longer; "More" shows only when it does.
+// opening a sheet (owner, 2026-11-08; Apple TV as the reference). "More"
+// is always there, as the sheet holds more than the text: every genre,
+// where to watch and the show's facts. Without a summary the panel says
+// so, and still opens the sheet.
 function About({
   show,
   text,
   fullText,
   genres,
   facts,
+  services,
+  region,
 }: {
   show: TvMazeShow;
-  text: string;
+  text: string | null;
   // The whole text with TVmaze's paragraphs kept, for the sheet.
-  fullText: string;
+  fullText: string | null;
   genres: string[];
   facts: AboutFact[];
+  services: { name: string; logoPath: string | null }[];
+  // The region's name, for "Where to watch in Sweden".
+  region: string | null;
 }) {
   const [open, setOpen] = useState(false);
-  const [lineCount, setLineCount] = useState(0);
-  const truncated = lineCount > SUMMARY_LINES;
 
   return (
     <View style={styles.section} testID="show-detail-section">
@@ -308,32 +320,19 @@ function About({
       <Pressable
         testID="show-detail-about"
         style={styles.aboutPanel}
-        disabled={!truncated}
         onPress={() => setOpen(true)}
-        accessibilityHint={truncated ? "Shows the whole summary" : undefined}
+        accessibilityHint="Shows more about the show"
       >
-        <View>
-          <Text
-            style={[styles.summary, styles.measure]}
-            testID="show-detail-summary-measure"
-            onTextLayout={(event) =>
-              setLineCount(event.nativeEvent.lines.length)
-            }
-            accessibilityElementsHidden
-            importantForAccessibility="no-hide-descendants"
-          >
-            {text}
-          </Text>
-          <Text style={styles.summary} numberOfLines={SUMMARY_LINES}>
-            {text}
-          </Text>
+        <Text
+          style={[styles.summary, !text && styles.summaryMissing]}
+          numberOfLines={SUMMARY_LINES}
+        >
+          {text ?? NO_OVERVIEW}
+        </Text>
+        {/* The pill of Home's "Search more" (owner, 2026-11-08). */}
+        <View style={styles.moreSlot}>
+          <PillButton label="More" onPress={() => setOpen(true)} />
         </View>
-        {truncated && (
-          // The pill of Home's "Search more" (owner, 2026-11-08).
-          <View style={styles.moreSlot}>
-            <PillButton label="More" onPress={() => setOpen(true)} />
-          </View>
-        )}
       </Pressable>
       <AboutSheet
         visible={open}
@@ -341,6 +340,8 @@ function About({
         text={fullText}
         genres={genres}
         facts={facts}
+        services={services}
+        region={region}
         onClose={() => setOpen(false)}
       />
     </View>
@@ -349,20 +350,25 @@ function About({
 
 // iOS's own page sheet, which can be swiped down, with a close button:
 // the title, every genre (the hero's meta line shows three), the whole
-// summary and the show's facts (aboutFacts), as in Apple TV.
+// summary, every service the show is on in the region, and the show's
+// facts (aboutFacts), as in Apple TV.
 function AboutSheet({
   visible,
   show,
   text,
   genres,
   facts,
+  services,
+  region,
   onClose,
 }: {
   visible: boolean;
   show: TvMazeShow;
-  text: string;
+  text: string | null;
   genres: string[];
   facts: AboutFact[];
+  services: { name: string; logoPath: string | null }[];
+  region: string | null;
   onClose: () => void;
 }) {
   return (
@@ -402,7 +408,36 @@ function AboutSheet({
               <Text style={styles.sheetGenres}>{genres.join(", ")}</Text>
             )}
           </View>
-          <Text style={styles.summary}>{text}</Text>
+          {text && <Text style={styles.summary}>{text}</Text>}
+          {/* Every service, as the rows name them (owner, 2026-11-08):
+              "Open in" offers one; here are the rest. */}
+          {services.length > 0 && (
+            <View style={styles.facts} testID="show-detail-about-services">
+              <Text style={styles.sectionHeading} accessibilityRole="header">
+                {region ? `Where to watch in ${region}` : "Where to watch"}
+              </Text>
+              {services.map((service) => (
+                <View
+                  key={service.name}
+                  style={styles.service}
+                  accessible
+                  accessibilityLabel={service.name}
+                >
+                  {service.logoPath && (
+                    <ServiceLogo
+                      logoPath={service.logoPath}
+                      size={SERVICE_LOGO_SIZE}
+                      ring={{
+                        color: t.episodeMarkEdge,
+                        width: StyleSheet.hairlineWidth,
+                      }}
+                    />
+                  )}
+                  <Text style={styles.factValue}>{service.name}</Text>
+                </View>
+              ))}
+            </View>
+          )}
           {facts.length > 0 && (
             <View style={styles.facts} testID="show-detail-about-facts">
               <Text style={styles.sectionHeading} accessibilityRole="header">
@@ -766,18 +801,22 @@ const styles = StyleSheet.create({
     ...type.body,
     color: t.ink,
   },
-  // The full summary, laid out out of sight to count its lines.
-  measure: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    opacity: 0,
-  },
   // The heading over a section, as the season's ("About", "Season 6").
   sectionHeading: {
     ...type.headline,
     color: t.ink,
     marginBottom: 12,
+  },
+  summaryMissing: {
+    color: t.inkMuted,
+  },
+  service: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    paddingVertical: 8,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: t.hairline,
   },
   aboutPanel: {
     backgroundColor: t.surface,

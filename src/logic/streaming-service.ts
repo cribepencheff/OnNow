@@ -340,6 +340,17 @@ function availableServices(
   return services;
 }
 
+// Every streaming service the show is on in the region, for Show detail's
+// About sheet (owner, 2026-11-08): the same services, names and order as
+// the rows' text (availableServices), each with its TMDB logo. [] while
+// loading, without a key, when TMDB does not know the show, or when it is
+// on no service.
+export function streamingServices(
+  answer: ProviderAnswer | null | undefined,
+): { name: string; logoPath: string | null }[] {
+  return Array.isArray(answer) ? availableServices(answer) : [];
+}
+
 export function availabilityText(
   providers: StreamingProvider[],
   region?: string,

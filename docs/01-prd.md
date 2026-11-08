@@ -293,9 +293,10 @@ per season come in the MVP.
 - **Content (stripped):** large image on top in the same cinematic feel as
   Home, title, a meta line ("2026 · Philippines · Drama, Thriller": year,
   first origin country, genres), status, service, and the summary under an
-  "About" heading, in a dark grey panel of three lines; "More" opens a
-  sheet with TMDB's rating followed by every genre, the whole text with TVmaze's paragraphs kept, and
-  an "Information" list of what the data gives: "Created by" (TMDB, from
+  "About" heading, in a dark grey panel of three lines; "More", always there, opens a
+  sheet with TMDB's rating followed by every genre, the whole text with TVmaze's paragraphs kept, every
+  service the show is on in the region ("Where to watch in Sweden", as
+  the rows name them, with their logos), and an "Information" list of what the data gives: "Created by" (TMDB, from
   the request that already gives the show's images), "Premiered 2026", or
   "Years 2018–2022" once there is an end date, seasons with episodes, regular episodes listed,
   runtime (TVmaze's average), every origin country and language
