@@ -196,7 +196,11 @@ function ShowDetailContent({
           text={summary}
           fullText={plainTextParagraphs(show.summary) ?? summary}
           genres={show.genres ?? []}
-          facts={aboutFacts(show, originCountries ?? [])}
+          facts={aboutFacts(
+            show,
+            originCountries ?? [],
+            showImages?.createdBy ?? [],
+          )}
         />
       )}
 

@@ -41,6 +41,9 @@ export interface ShowImages {
   // TMDB's main poster (CRI-100): a fallback where a show has no backdrop,
   // and for a list's poster where TVmaze has none.
   posterPath: string | null;
+  // Who created the show, for Show detail's About sheet (CRI-143); from
+  // the same request as the images.
+  createdBy: string[];
 }
 
 // How long an answer is fresh (ADR 0017, owner 2026-10-22): a week when
@@ -62,12 +65,12 @@ export function useShowImages(
     // kept and saved 21 days (ADR 0017): after time away the hero shows
     // the images it had at once, replaced if TMDB's now differ. Bump this
     // suffix whenever ShowImages' shape changes, since answers are kept.
-    // v6: posterPath added (CRI-100). v5: the key no longer carries the
+    // v7: createdBy added (CRI-143). v6: posterPath added (CRI-100). v5: the key no longer carries the
     // day (v4 did, which meant a new fetch, and no image meanwhile, on
     // every new day).
     // Earlier: v3 dropped the stored "official" backdrop pick, v4 the "no
     // TMDB match" answers from before the name match (CRI-99).
-    queryKey: ["hero-images-v6", show.id],
+    queryKey: ["hero-images-v7", show.id],
     staleTime: (query) => showImagesStaleTime(query.state.data),
     gcTime: KEEP_MS,
     // Without a key the lookup cannot work, so say so at once.
@@ -87,9 +90,10 @@ export function useShowImages(
           textlessCount: 0,
           logo: null,
           posterPath: null,
+          createdBy: [],
         };
       }
-      const { tvId, images, posterPath } = found;
+      const { tvId, images, posterPath, createdBy } = found;
       const textless = textlessBackdrops(images);
       return {
         tmdbId: tvId,
@@ -99,6 +103,7 @@ export function useShowImages(
         textlessCount: textless.length,
         logo: chooseLogo(images),
         posterPath,
+        createdBy,
       };
     },
   });

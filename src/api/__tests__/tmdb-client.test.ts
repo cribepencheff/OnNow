@@ -421,22 +421,45 @@ describe("TmdbClient find cache (CRI-107)", () => {
 // CRI-107: the hero's images come through the same client (and its find
 // step) instead of a helper of their own.
 describe("TmdbClient.findImages", () => {
-  it("finds the show, then its English and textless images, and its poster from the find", async () => {
+  it("finds the show, then its details with its English and textless images appended, and its poster from the find", async () => {
     const images = { backdrops: [], logos: [] };
     const fetchFn = jest
       .fn()
       .mockResolvedValueOnce(jsonResponse(findNeagley))
-      .mockResolvedValueOnce(jsonResponse(images));
+      .mockResolvedValueOnce(
+        jsonResponse({
+          images,
+          created_by: [
+            { name: "Ryu Bo-ri" },
+            { name: " " },
+            { name: "Yoo In-sik" },
+          ],
+        }),
+      );
     const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
 
     await expect(client.findImages(NEAGLEY_EXTERNALS)).resolves.toEqual({
       tvId: 273207,
       images,
       posterPath: "/tEPDFIa21VK0Q2YLuzhTt2xrw5W.jpg",
+      // CRI-143: who created the show, from the same request.
+      createdBy: ["Ryu Bo-ri", "Yoo In-sik"],
     });
+    // One request for both, as the images alone were.
+    expect(fetchFn).toHaveBeenCalledTimes(2);
     expect(fetchFn.mock.calls[1][0]).toContain(
-      "/3/tv/273207/images?include_image_language=en,null,xx",
+      "/3/tv/273207?append_to_response=images&include_image_language=en,null,xx",
     );
+  });
+
+  it("gives no creators when TMDB lists none", async () => {
+    const fetchFn = jest
+      .fn()
+      .mockResolvedValueOnce(jsonResponse(findNeagley))
+      .mockResolvedValueOnce(jsonResponse({ images: {} }));
+    const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
+    const answer = await client.findImages(NEAGLEY_EXTERNALS);
+    expect(answer).toEqual(expect.objectContaining({ createdBy: [] }));
   });
 
   it("is NOT_ON_TMDB for an unknown show, null without a key", async () => {

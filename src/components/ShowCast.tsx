@@ -13,8 +13,10 @@ import type { TvMazeCastMember } from "@/api/tvmaze-types";
 import { useShowCast } from "@/hooks/useShowCast";
 import { t, type } from "@/theme/tokens";
 
-const PORTRAIT_SIZE = 80;
-const ITEM_WIDTH = 96;
+// About three portraits across a phone, with the fourth at the edge, as
+// in Apple TV (owner, 2026-11-08).
+const PORTRAIT_SIZE = 112;
+const ITEM_WIDTH = 116;
 
 export function ShowCast({ showId }: { showId: number }) {
   const { data: cast } = useShowCast(showId);
@@ -66,7 +68,7 @@ function CastMember({ member }: { member: TvMazeCastMember }) {
           <SymbolView
             name="person.fill"
             tintColor={t.inkSubtle}
-            size={32}
+            size={44}
             accessibilityElementsHidden
             importantForAccessibility="no"
           />
@@ -97,7 +99,7 @@ const styles = StyleSheet.create({
   },
   row: {
     paddingHorizontal: t.contentInset,
-    gap: 12,
+    gap: 16,
   },
   item: {
     width: ITEM_WIDTH,
@@ -112,10 +114,10 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 6,
+    marginBottom: 8,
   },
   name: {
-    ...type.meta,
+    ...type.body,
     color: t.ink,
     textAlign: "center",
   },

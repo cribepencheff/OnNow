@@ -470,6 +470,19 @@ describe("aboutFacts (PRD 5.5)", () => {
     ).toBe("2022");
   });
 
+  it("names who created the show first, from TMDB, and leaves it out without", () => {
+    const facts = aboutFacts(slowHorses, ["GB"], ["Ryu Bo-ri", "Yoo In-sik"]);
+    expect(facts[0]).toEqual({
+      label: "Created by",
+      value: "Ryu Bo-ri, Yoo In-sik",
+    });
+    expect(
+      aboutFacts(slowHorses, ["GB"], []).some(
+        (fact) => fact.label === "Created by",
+      ),
+    ).toBe(false);
+  });
+
   it("names every origin country, not only the first", () => {
     expect(
       aboutFacts(slowHorses, ["GB", "US"]).find(

@@ -86,6 +86,16 @@ export interface TmdbClientOptions {
   cachedFind?: CachedFind;
 }
 
+// The show's images, its main poster, and who created it (CRI-143), from
+// one details request with the images appended.
+export interface TmdbShowImagesAnswer {
+  tvId: number;
+  images: TmdbImages;
+  posterPath: string | null;
+  // TMDB's "created by", in its order; [] when it has none.
+  createdBy: string[];
+}
+
 export interface TmdbClient {
   // A season's episodes, with stills and overviews (CRI-143): [] when TMDB has no such
   // season, NOT_ON_TMDB when TMDB does not know the show, null without a
@@ -122,11 +132,7 @@ export interface TmdbClient {
   // does not know it, null without a key.
   findImages: (
     show: TmdbShowRef,
-  ) => Promise<
-    | { tvId: number; images: TmdbImages; posterPath: string | null }
-    | typeof NOT_ON_TMDB
-    | null
-  >;
+  ) => Promise<TmdbShowImagesAnswer | typeof NOT_ON_TMDB | null>;
   // TMDB's titles for a half-typed query, its name and original name, to
   // complete the query's last word before searching TVmaze (CRI-142);
   // null without a key.
@@ -304,11 +310,7 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
 
   async function findImages(
     show: TmdbShowRef,
-  ): Promise<
-    | { tvId: number; images: TmdbImages; posterPath: string | null }
-    | typeof NOT_ON_TMDB
-    | null
-  > {
+  ): Promise<TmdbShowImagesAnswer | typeof NOT_ON_TMDB | null> {
     if (!apiKey) {
       return null;
     }
@@ -317,14 +319,28 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     if (tvId === null) {
       return NOT_ON_TMDB;
     }
-    const images = await requestJson<TmdbImages>(
-      `/tv/${tvId}/images?include_image_language=en,null,xx`,
+    // The show's details with its images appended: one request, as the
+    // images alone were, which also gives who created the show for the
+    // About sheet (CRI-143). include_image_language applies to the
+    // appended images.
+    const details = await requestJson<{
+      images?: TmdbImages;
+      created_by?: { name?: string | null }[];
+    }>(
+      `/tv/${tvId}?append_to_response=images&include_image_language=en,null,xx`,
       apiKey,
     );
     // The main poster from the find step already made: in any language,
-    // where /images above keeps only English and textless ones (CRI-100).
+    // where the images above keep only English and textless ones (CRI-100).
     const posterPath = found.tv_results?.[0]?.poster_path ?? null;
-    return { tvId, images, posterPath };
+    return {
+      tvId,
+      images: details.images ?? {},
+      posterPath,
+      createdBy: (details.created_by ?? [])
+        .map((creator) => creator.name?.trim() ?? "")
+        .filter((name) => name !== ""),
+    };
   }
 
   async function findSeasonEpisodes(

@@ -416,9 +416,15 @@ export function aboutFacts(
     _embedded: { episodes: TvMazeEpisode[]; seasons: TvMazeSeason[] };
   },
   originCountries: string[],
+  // TMDB's "created by" (CRI-143); [] when it has none.
+  createdBy: string[] = [],
 ): AboutFact[] {
   const facts: AboutFact[] = [];
   const episodes = regularEpisodes(show._embedded.episodes);
+
+  if (createdBy.length > 0) {
+    facts.push({ label: "Created by", value: createdBy.join(", ") });
+  }
 
   // "Years 2018–2022" once TVmaze gives an end date, otherwise "Premiered
   // 2026": nothing said about a future the data does not give (owner,
