@@ -20,7 +20,9 @@ import type { TvMazeShow } from "@/api/tvmaze-types";
 import { rankRecommendations } from "@/logic/recommendations";
 import { fillTopPicks, type PosterItem } from "@/logic/top-picks";
 
-export const RELATED_MAX = 10;
+// Six: the strongest of TMDB's ranked recommendations, about two screens
+// wide (owner, 2026-11-08).
+export const RELATED_MAX = 6;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 function isFound(data: unknown): data is TmdbRecommendations {
