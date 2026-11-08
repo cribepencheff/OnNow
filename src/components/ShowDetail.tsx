@@ -539,7 +539,7 @@ function EpisodeCard({
       {/* The episode's still, else the show's backdrop, dimmed as not the
           episode's own (episodeImage); with neither, an empty frame keeps
           the cards in line, with nothing made up in it (data first). */}
-      <View style={styles.still}>
+      <View style={[styles.still, image && styles.stillBehindImage]}>
         {image && (
           <Image
             source={image.uri}
@@ -744,8 +744,15 @@ const styles = StyleSheet.create({
     aspectRatio: STILL_ASPECT_RATIO,
     backgroundColor: t.surfaceRaised,
   },
+  // Behind an image, near black, so a dimmed image darkens rather than
+  // greys (owner, 2026-11-08).
+  stillBehindImage: {
+    backgroundColor: t.bg,
+  },
+  // An upcoming episode's image, and the show's backdrop standing in for a
+  // still: darker than the rest (owner, 2026-11-08).
   stillMuted: {
-    opacity: 0.5,
+    opacity: 0.35,
   },
   cardText: {
     flex: 1,

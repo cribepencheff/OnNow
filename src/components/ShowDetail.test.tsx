@@ -443,7 +443,7 @@ describe("ShowDetail", () => {
       expect(JSON.stringify(backdrop.props.source)).toContain(
         "/w780/textless.jpg",
       );
-      expect(StyleSheet.flatten(backdrop.props.style).opacity).toBe(0.5);
+      expect(StyleSheet.flatten(backdrop.props.style).opacity).toBe(0.35);
     });
 
     it("marks aired, today and upcoming episodes, and the finale", async () => {
