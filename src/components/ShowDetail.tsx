@@ -568,6 +568,8 @@ const STILL_ASPECT_RATIO = 16 / 9;
 // The space above a section.
 const SECTION_TOP = 20;
 
+const SHEET_CLOSE_SIZE = 30;
+
 const styles = StyleSheet.create({
   frame: {
     flex: 1,
@@ -622,9 +624,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: t.surface,
   },
+  // The close button stays in the top corner when a long title wraps
+  // (owner, 2026-11-08).
   sheetHeader: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
     gap: 12,
     paddingHorizontal: t.contentInset,
     paddingTop: t.space6,
@@ -634,11 +638,13 @@ const styles = StyleSheet.create({
     ...type.headline,
     color: t.ink,
     flex: 1,
+    // Centres the first line (25) on the 30 high button.
+    paddingTop: (SHEET_CLOSE_SIZE - type.headline.lineHeight) / 2,
   },
   sheetClose: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
+    width: SHEET_CLOSE_SIZE,
+    height: SHEET_CLOSE_SIZE,
+    borderRadius: SHEET_CLOSE_SIZE / 2,
     backgroundColor: t.surfaceRaised,
     alignItems: "center",
     justifyContent: "center",
