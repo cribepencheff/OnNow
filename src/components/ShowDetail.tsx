@@ -11,6 +11,7 @@ import { useState } from "react";
 import {
   ActionSheetIOS,
   FlatList,
+  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -170,11 +171,7 @@ function ShowDetailContent({
         metaLine={metaLine}
       />
 
-      {summary && (
-        <View style={styles.section} testID="show-detail-section">
-          <Summary text={summary} />
-        </View>
-      )}
+      {summary && <About title={show.name} text={summary} />}
 
       {tabs.length > 0 && (
         <View style={styles.episodesSection}>
@@ -204,43 +201,110 @@ function ShowDetailContent({
 
 const SUMMARY_LINES = 3;
 
-// Three lines, with "More" for the rest (owner, 2026-11-08; Apple TV as
-// the reference). The full text is laid out once, out of sight, to know
+// "About": the summary in a dark grey panel, three lines, with "More"
+// opening the whole text in a sheet (owner, 2026-11-08; Apple TV as the
+// reference). The full text is laid out once, out of sight, to know
 // whether it runs longer; "More" shows only when it does.
-function Summary({ text }: { text: string }) {
-  const [expanded, setExpanded] = useState(false);
+function About({ title, text }: { title: string; text: string }) {
+  const [open, setOpen] = useState(false);
   const [lineCount, setLineCount] = useState(0);
-  const truncated = !expanded && lineCount > SUMMARY_LINES;
+  const truncated = lineCount > SUMMARY_LINES;
 
   return (
-    <View>
-      <Text
-        style={[styles.summary, styles.measure]}
-        testID="show-detail-summary-measure"
-        onTextLayout={(event) => setLineCount(event.nativeEvent.lines.length)}
-        accessibilityElementsHidden
-        importantForAccessibility="no-hide-descendants"
-      >
-        {text}
+    <View style={styles.section} testID="show-detail-section">
+      <Text style={styles.sectionHeading} accessibilityRole="header">
+        About
       </Text>
-      <Text
-        style={styles.summary}
-        numberOfLines={expanded ? undefined : SUMMARY_LINES}
-        onPress={truncated ? () => setExpanded(true) : undefined}
+      <Pressable
+        testID="show-detail-about"
+        style={styles.aboutPanel}
+        disabled={!truncated}
+        onPress={() => setOpen(true)}
+        accessibilityHint={truncated ? "Shows the whole summary" : undefined}
       >
-        {text}
-      </Text>
-      {truncated && (
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => setExpanded(true)}
-          hitSlop={8}
-          style={styles.moreButton}
-        >
-          <Text style={styles.more}>More</Text>
-        </Pressable>
-      )}
+        <View>
+          <Text
+            style={[styles.summary, styles.measure]}
+            testID="show-detail-summary-measure"
+            onTextLayout={(event) =>
+              setLineCount(event.nativeEvent.lines.length)
+            }
+            accessibilityElementsHidden
+            importantForAccessibility="no-hide-descendants"
+          >
+            {text}
+          </Text>
+          <Text style={styles.summary} numberOfLines={SUMMARY_LINES}>
+            {text}
+          </Text>
+        </View>
+        {truncated && (
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => setOpen(true)}
+            hitSlop={8}
+            style={styles.moreButton}
+          >
+            <Text style={styles.more}>More</Text>
+          </Pressable>
+        )}
+      </Pressable>
+      <AboutSheet
+        visible={open}
+        title={title}
+        text={text}
+        onClose={() => setOpen(false)}
+      />
     </View>
+  );
+}
+
+// iOS's own page sheet, which can be swiped down, with a close button.
+function AboutSheet({
+  visible,
+  title,
+  text,
+  onClose,
+}: {
+  visible: boolean;
+  title: string;
+  text: string;
+  onClose: () => void;
+}) {
+  return (
+    <Modal
+      visible={visible}
+      animationType="slide"
+      presentationStyle="pageSheet"
+      onRequestClose={onClose}
+    >
+      <View style={styles.sheet} testID="show-detail-about-sheet">
+        <View style={styles.sheetHeader}>
+          <Text style={styles.sheetTitle} accessibilityRole="header">
+            {title}
+          </Text>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Close"
+            onPress={onClose}
+            hitSlop={8}
+            style={styles.sheetClose}
+          >
+            <SymbolView
+              name="xmark"
+              tintColor={t.ink}
+              size={14}
+              weight="bold"
+              accessibilityElementsHidden
+              importantForAccessibility="no"
+            />
+          </Pressable>
+        </View>
+        <ScrollView contentContainerStyle={styles.sheetContent}>
+          <Text style={styles.summary}>{text}</Text>
+        </ScrollView>
+      </View>
+    </Modal>
   );
 }
 
@@ -487,9 +551,49 @@ const styles = StyleSheet.create({
     right: 0,
     opacity: 0,
   },
+  // The heading over a section, as the season's ("About", "Season 6").
+  sectionHeading: {
+    ...type.headline,
+    color: t.ink,
+    marginBottom: 12,
+  },
+  aboutPanel: {
+    backgroundColor: t.surface,
+    borderRadius: t.radiusSm,
+    padding: t.space4,
+  },
   moreButton: {
     alignSelf: "flex-start",
     marginTop: 4,
+  },
+  sheet: {
+    flex: 1,
+    backgroundColor: t.surface,
+  },
+  sheetHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    paddingHorizontal: t.contentInset,
+    paddingTop: t.space6,
+    paddingBottom: 12,
+  },
+  sheetTitle: {
+    ...type.headline,
+    color: t.ink,
+    flex: 1,
+  },
+  sheetClose: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: t.surfaceRaised,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  sheetContent: {
+    paddingHorizontal: t.contentInset,
+    paddingBottom: t.space10,
   },
   more: {
     ...type.meta,

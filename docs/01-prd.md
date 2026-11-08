@@ -292,8 +292,9 @@ per season come in the MVP.
   Calendar, or a show in Shows. The same view everywhere.
 - **Content (stripped):** large image on top in the same cinematic feel as
   Home, title, a meta line ("2026 · Philippines · Drama, Thriller": year,
-  first origin country, genres), status, service, and the summary in three
-  lines with "More" for the rest. Then the episodes of one season as cards
+  first origin country, genres), status, service, and the summary under an
+  "About" heading, in a dark grey panel of three lines; "More" opens the
+  whole text in a sheet (owner, 2026-11-08). Then the episodes of one season as cards
   to swipe through, each with a landscape still, "Episode 2 of 10", episode
   title, a short summary and relative time ("In 3 days", "Tomorrow", "2 days
   ago", no time of day). There are no separate next and latest cards: each

@@ -227,44 +227,54 @@ describe("ShowDetail", () => {
     });
   });
 
-  // Owner, 2026-11-08: three lines, with More for the rest.
-  describe("summary", () => {
+  // Owner, 2026-11-08 (Apple TV): "About", the summary in a panel, three
+  // lines, with More opening the whole text in a sheet.
+  describe("About", () => {
     const LONG = Array.from({ length: 5 }, () => ({ text: "line" }));
 
-    it("shows More when the summary runs past three lines, and the whole text after it", async () => {
-      mockShow(showSlowHorsesFixture);
-      await render(<ShowDetail showId={45039} />);
-      const section = within(screen.getByTestId("show-detail-section"));
-      const shown = () =>
-        section
-          .getAllByText(/Slow Horses follows the story/)
-          .find((node) => node.props.testID !== "show-detail-summary-measure");
-
-      expect(section.queryByRole("button", { name: "More" })).toBeNull();
-      await fireEvent(
+    function layOut(lines: { text: string }[]) {
+      return fireEvent(
         screen.getByTestId("show-detail-summary-measure", {
           includeHiddenElements: true,
         }),
         "textLayout",
-        { nativeEvent: { lines: LONG } },
+        { nativeEvent: { lines } },
       );
-      expect(shown()?.props.numberOfLines).toBe(3);
+    }
 
-      await fireEvent.press(section.getByRole("button", { name: "More" }));
-      expect(shown()?.props.numberOfLines).toBeUndefined();
-      expect(section.queryByRole("button", { name: "More" })).toBeNull();
+    it("shows the summary in three lines under an About heading", async () => {
+      mockShow(showSlowHorsesFixture);
+      await render(<ShowDetail showId={45039} />);
+      const section = within(screen.getByTestId("show-detail-section"));
+      expect(section.getByRole("header", { name: "About" })).toBeTruthy();
+      expect(
+        within(screen.getByTestId("show-detail-about")).getByText(
+          /Slow Horses follows the story/,
+        ).props.numberOfLines,
+      ).toBe(3);
+    });
+
+    it("opens the whole summary in a sheet from More, and closes it", async () => {
+      mockShow(showSlowHorsesFixture);
+      await render(<ShowDetail showId={45039} />);
+      expect(screen.queryByRole("button", { name: "More" })).toBeNull();
+      await layOut(LONG);
+
+      await fireEvent.press(screen.getByRole("button", { name: "More" }));
+      const sheet = within(screen.getByTestId("show-detail-about-sheet"));
+      expect(sheet.getByRole("header", { name: "Slow Horses" })).toBeTruthy();
+      expect(
+        sheet.getByText(/Slow Horses follows the story/).props.numberOfLines,
+      ).toBeUndefined();
+
+      await fireEvent.press(sheet.getByRole("button", { name: "Close" }));
+      expect(screen.queryByTestId("show-detail-about-sheet")).toBeNull();
     });
 
     it("shows no More when the summary fits in three lines", async () => {
       mockShow(showSlowHorsesFixture);
       await render(<ShowDetail showId={45039} />);
-      await fireEvent(
-        screen.getByTestId("show-detail-summary-measure", {
-          includeHiddenElements: true,
-        }),
-        "textLayout",
-        { nativeEvent: { lines: LONG.slice(0, 3) } },
-      );
+      await layOut(LONG.slice(0, 3));
       expect(screen.queryByRole("button", { name: "More" })).toBeNull();
     });
   });
