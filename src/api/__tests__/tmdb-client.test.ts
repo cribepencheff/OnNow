@@ -421,21 +421,129 @@ describe("TmdbClient find cache (CRI-107)", () => {
 // CRI-107: the hero's images come through the same client (and its find
 // step) instead of a helper of their own.
 describe("TmdbClient.findImages", () => {
-  it("finds the show, then its English and textless images, and its poster from the find", async () => {
+  it("finds the show, then its details with its English and textless images appended, and its poster from the find", async () => {
     const images = { backdrops: [], logos: [] };
     const fetchFn = jest
       .fn()
       .mockResolvedValueOnce(jsonResponse(findNeagley))
-      .mockResolvedValueOnce(jsonResponse(images));
+      .mockResolvedValueOnce(
+        jsonResponse({
+          images,
+          created_by: [
+            { name: "Ryu Bo-ri", profile_path: "/ryu.jpg" },
+            { name: " " },
+            { name: "Yoo In-sik", profile_path: null },
+          ],
+          videos: {
+            results: [
+              {
+                key: "s1trailer",
+                name: "Official Trailer",
+                site: "YouTube",
+                type: "Trailer",
+                official: true,
+                iso_639_1: "en",
+                published_at: "2022-03-02T16:00:00.000Z",
+              },
+              {
+                key: "credits",
+                name: "Opening Credits",
+                site: "YouTube",
+                type: "Opening Credits",
+                official: false,
+                iso_639_1: "en",
+                published_at: "2022-04-01T16:00:00.000Z",
+              },
+            ],
+          },
+          aggregate_credits: {
+            cast: [
+              {
+                name: "Kim You-jung",
+                profile_path: "/kim.jpg",
+                total_episode_count: 16,
+                roles: [{ character: "Lee Ga-kyung", episode_count: 16 }],
+              },
+              {
+                name: "Jinyoung",
+                profile_path: null,
+                total_episode_count: 16,
+                roles: [{ character: "", episode_count: 16 }],
+              },
+            ],
+            crew: [
+              {
+                name: "Mick Herron",
+                profile_path: "/mh.jpg",
+                total_episode_count: 36,
+                jobs: [{ job: "Book", episode_count: 36 }],
+              },
+              {
+                name: "Cam Operator",
+                profile_path: null,
+                total_episode_count: 30,
+                jobs: [{ job: "Camera Operator", episode_count: 30 }],
+              },
+            ],
+          },
+        }),
+      );
     const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
 
     await expect(client.findImages(NEAGLEY_EXTERNALS)).resolves.toEqual({
       tvId: 273207,
       images,
       posterPath: "/tEPDFIa21VK0Q2YLuzhTt2xrw5W.jpg",
+      // CRI-143: who created the show, from the same request.
+      createdBy: [
+        { name: "Ryu Bo-ri", profilePath: "/ryu.jpg" },
+        { name: "Yoo In-sik", profilePath: null },
+      ],
+      // And its cast, from the same request.
+      cast: [
+        {
+          name: "Kim You-jung",
+          character: "Lee Ga-kyung",
+          profilePath: "/kim.jpg",
+        },
+        { name: "Jinyoung", character: null, profilePath: null },
+      ],
+      // Only the crew in the jobs the row shows.
+      crew: [{ name: "Mick Herron", job: "Book", profilePath: "/mh.jpg" }],
+      // ADR 0021: the show's trailers and teasers only.
+      videos: [
+        {
+          key: "s1trailer",
+          name: "Official Trailer",
+          site: "YouTube",
+          type: "Trailer",
+          official: true,
+          language: "en",
+          publishedAt: "2022-03-02T16:00:00.000Z",
+        },
+      ],
     });
+    // One request for both, as the images alone were.
+    expect(fetchFn).toHaveBeenCalledTimes(2);
     expect(fetchFn.mock.calls[1][0]).toContain(
-      "/3/tv/273207/images?include_image_language=en,null,xx",
+      "/3/tv/273207?append_to_response=images,aggregate_credits,videos&include_image_language=en,null,xx",
+    );
+  });
+
+  it("gives no creators or cast when TMDB lists none", async () => {
+    const fetchFn = jest
+      .fn()
+      .mockResolvedValueOnce(jsonResponse(findNeagley))
+      .mockResolvedValueOnce(jsonResponse({ images: {} }));
+    const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
+    const answer = await client.findImages(NEAGLEY_EXTERNALS);
+    expect(answer).toEqual(
+      expect.objectContaining({
+        createdBy: [],
+        cast: [],
+        crew: [],
+        videos: [],
+      }),
     );
   });
 
@@ -508,5 +616,108 @@ describe("TmdbClient.findTranslations", () => {
       { english_name: "German", name: "" },
     ]);
     expect(fetchFn.mock.calls[0][0]).toContain("/3/tv/255570/translations");
+  });
+});
+
+// CRI-143: episode stills come from TMDB first, a season at a time.
+describe("TmdbClient.findSeason (CRI-143)", () => {
+  const FIND = { tv_results: [{ id: 248890 }] };
+
+  it("reads a season's episodes, trimmed to number, date, still and overview, and its videos", async () => {
+    const fetchFn = jest
+      .fn()
+      .mockResolvedValueOnce(jsonResponse(FIND))
+      .mockResolvedValueOnce(
+        jsonResponse({
+          episodes: [
+            {
+              episode_number: 9,
+              air_date: "2026-11-07",
+              still_path: "/9.jpg",
+              overview: " A secret comes out. ",
+            },
+            {
+              episode_number: 11,
+              air_date: "2026-11-14",
+              still_path: null,
+              overview: "",
+            },
+          ],
+          videos: {
+            results: [
+              {
+                key: "s6trailer",
+                name: "Season 6 Official Trailer",
+                site: "YouTube",
+                type: "Trailer",
+                official: true,
+                iso_639_1: "en",
+                published_at: "2026-08-18T16:00:00.000Z",
+              },
+            ],
+          },
+        }),
+      );
+    const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
+
+    await expect(client.findSeason(NEAGLEY_EXTERNALS, 1)).resolves.toEqual({
+      episodes: [
+        {
+          episodeNumber: 9,
+          airDate: "2026-11-07",
+          stillPath: "/9.jpg",
+          overview: "A secret comes out.",
+        },
+        {
+          episodeNumber: 11,
+          airDate: "2026-11-14",
+          stillPath: null,
+          overview: null,
+        },
+      ],
+      // ADR 0021: the season's videos, from the same request.
+      videos: [
+        {
+          key: "s6trailer",
+          name: "Season 6 Official Trailer",
+          site: "YouTube",
+          type: "Trailer",
+          official: true,
+          language: "en",
+          publishedAt: "2026-08-18T16:00:00.000Z",
+        },
+      ],
+    });
+    expect(fetchFn.mock.calls[1][0]).toContain(
+      "/3/tv/248890/season/1?append_to_response=videos",
+    );
+  });
+
+  it("is empty for a season TMDB does not have", async () => {
+    const fetchFn = jest
+      .fn()
+      .mockResolvedValueOnce(jsonResponse(FIND))
+      .mockResolvedValueOnce(jsonResponse({}, 404));
+    const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
+    await expect(client.findSeason(NEAGLEY_EXTERNALS, 9)).resolves.toEqual({
+      episodes: [],
+      videos: [],
+    });
+  });
+
+  it("is NOT_ON_TMDB for an unknown show, null without a key", async () => {
+    const fetchFn = jest
+      .fn()
+      .mockResolvedValue(jsonResponse({ tv_results: [] }));
+    const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
+    await expect(client.findSeason(NEAGLEY_EXTERNALS, 1)).resolves.toBe(
+      NOT_ON_TMDB,
+    );
+    const noKey = createTmdbClient({
+      apiKey: undefined,
+      fetchFn,
+      wait: noWait,
+    });
+    await expect(noKey.findSeason(NEAGLEY_EXTERNALS, 1)).resolves.toBeNull();
   });
 });

@@ -23,6 +23,10 @@ export const t = {
   // duplicated as a second hardcoded hex.
   accent,
   onAccent: "#07130e",
+  // Behind an upcoming episode's dimmed image in Show detail's episode
+  // row: pure black, so the image darkens rather than taking on the card's
+  // grey (owner, 2026-11-08).
+  imageDimBackdrop: "#000000",
   // The hero's Finale chip's dot (EpisodeMarkChip); a Premiere's is
   // accent. Warm amber rather than red, which reads as an error or live.
   episodeFinale: "#ff9f0a",

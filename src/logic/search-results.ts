@@ -62,3 +62,23 @@ export function plainTextSummary(summary: string | null): string | null {
     .replace(/\s+/g, " ")
     .trim();
 }
+
+// TVmaze's summary as plain text with its paragraphs and line breaks kept,
+// for a Text, which shows "\n" as a break: a blank line between
+// paragraphs, a line break for <br>. For the About sheet's whole text
+// (owner, 2026-11-08); a short summary stays one run (plainTextSummary).
+export function plainTextParagraphs(summary: string | null): string | null {
+  if (!summary) {
+    return null;
+  }
+  const text = summary
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>/gi, "\n\n")
+    .replace(/<[^>]+>/g, "")
+    .split("\n")
+    .map((line) => line.replace(/\s+/g, " ").trim())
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+  return text || null;
+}

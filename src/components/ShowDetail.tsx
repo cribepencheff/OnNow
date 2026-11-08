@@ -6,49 +6,67 @@
 // so styling here stays minimal and functional.
 
 import { Image } from "expo-image";
-import { useRef, useState } from "react";
+import { SymbolView } from "expo-symbols";
+import { useState } from "react";
 import {
+  ActionSheetIOS,
+  FlatList,
+  Modal,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
   View,
   useWindowDimensions,
-  type ScrollViewInstance,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import type {
   TvMazeEpisode,
   TvMazeSeason,
+  TvMazeShow,
   TvMazeShowWithEmbeds,
 } from "@/api/tvmaze-types";
 import { useOriginCountries } from "@/hooks/useOriginCountries";
+import { useTmdbSeason } from "@/hooks/useTmdbSeason";
 import { useShow } from "@/hooks/useShow";
+import { useShowImages } from "@/hooks/useShowImages";
 import { useToday } from "@/hooks/useToday";
+import type { TmdbSeasonEpisode } from "@/api/tmdb-types";
+import { episodeImage, showBackdropImage } from "@/logic/episode-image";
+import { episodeSummary } from "@/logic/tmdb-episode";
+import { pickTrailers, trailerSeasonNumber } from "@/logic/trailers";
 import type { LocalDate } from "@/logic/local-date";
-import { plainTextSummary } from "@/logic/search-results";
+import { plainTextParagraphs, plainTextSummary } from "@/logic/search-results";
 import {
-  allEpisodesAvailable,
-  currentSeasonNumber,
+  aboutFacts,
+  announcedSeasonDateLabel,
+  episodeBadgeLabel,
   episodeDateLabel,
+  episodeMark,
   episodeOfLabel,
   episodeState,
-  isFinale,
-  latestCard,
-  nextCard,
+  initialEpisodeIndex,
+  initialSeasonNumber,
   regularEpisodes,
   seasonTabs,
   showDetailMetaLine,
   showDetailPill,
-  type NextCard,
+  type AboutFact,
   type SeasonTab,
 } from "@/logic/show-detail";
 import { showState, showStateLabel } from "@/logic/show-state";
 import { TAB_BAR_HEIGHT } from "@/logic/tab-bar";
 import { heroLayout, topScrimGradient } from "@/logic/hero-layout";
 import { FloatingBackButton } from "./FloatingBackButton";
+import { PillButton } from "./PillButton";
+import { RelatedRow } from "./RelatedRow";
+import { ShowCast } from "./ShowCast";
+import { TrailersRow } from "./Trailers";
+import { EPISODE_MARK_LABELS, EpisodeMarkDot } from "./Hero/EpisodeMarkChip";
 import { ShowDetailHero } from "./ShowDetailHero";
+import { ShowRating } from "./ShowRating";
 import { t, type } from "@/theme/tokens";
 import { TmdbCredit } from "./TmdbCredit";
 import { TvMazeCredit } from "./TvMazeCredit";
@@ -121,17 +139,49 @@ function ShowDetailContent({
   const seasons = show._embedded.seasons;
 
   const summary = plainTextSummary(show.summary);
-  const latest = latestCard(episodes, seasons, timeZone, todayDate);
-  const next = nextCard(show, episodes, seasons, timeZone, todayDate);
   const tabs = seasonTabs(seasons, episodes, todayDate);
   const state = showState(show, episodes, seasons, timeZone, todayDate);
+  const ended = state.kind === "ended";
   const { width } = useWindowDimensions();
   const { data: originCountries } = useOriginCountries(show);
   const metaLine = showDetailMetaLine(show, originCountries ?? []);
 
-  const [selectedSeason, setSelectedSeason] = useState(
-    () => currentSeasonNumber(episodes, timeZone, todayDate) ?? tabs[0]?.number,
+  const [initialSeason] = useState(
+    () =>
+      initialSeasonNumber(episodes, ended, timeZone, todayDate) ??
+      tabs[0]?.number,
   );
+  const [selectedSeason, setSelectedSeason] = useState(initialSeason);
+  // CRI-143: TMDB's episodes for the season shown (stills and overviews),
+  // and the show's backdrop
+  // (the hero's, already fetched) for a card with no still anywhere.
+  const { data: tmdbSeason } = useTmdbSeason(show, selectedSeason);
+  const { data: showImages, isPending: showImagesPending } =
+    useShowImages(show);
+  // ADR 0021: the latest season's trailers and the show's own. The latest
+  // season with episodes (trailerSeasonNumber): its TMDB answer is the
+  // episode row's when that shows it, as it usually does; otherwise one
+  // request more.
+  const { data: latestTmdbSeason } = useTmdbSeason(
+    show,
+    trailerSeasonNumber(episodes),
+  );
+  const trailers = pickTrailers(
+    latestTmdbSeason?.videos ?? [],
+    showImages?.videos ?? [],
+  );
+  // TMDB's answer is in, or failed (no key): the cast row may then ask
+  // TVmaze instead.
+  const showImagesSettled = !showImagesPending;
+  const seasonEpisodes = regularEpisodes(episodes).filter(
+    (episode) => episode.season === selectedSeason,
+  );
+  // The row opens on the latest episode out in the season it starts on;
+  // a season picked later opens on its first episode.
+  const startIndex =
+    selectedSeason === initialSeason
+      ? initialEpisodeIndex(seasonEpisodes, ended, timeZone, todayDate)
+      : 0;
 
   return (
     <ScrollView
@@ -147,68 +197,78 @@ function ShowDetailContent({
       <ShowDetailHero
         show={show}
         width={width}
-        pill={showDetailPill(episodes, seasons, timeZone, todayDate)}
+        // The status rides in the pill when there is no news (owner,
+        // 2026-11-08), so there is no status line below the hero.
+        pill={showDetailPill(
+          episodes,
+          seasons,
+          timeZone,
+          todayDate,
+          showStateLabel(state, todayDate),
+        )}
         metaLine={metaLine}
       />
 
-      <View style={styles.section} testID="show-detail-section">
-        <Text style={styles.meta} testID="show-detail-status">
-          {showStateLabel(state, todayDate)}
-        </Text>
-        {allEpisodesAvailable(episodes, seasons, timeZone, todayDate) && (
-          <Text style={styles.meta}>All episodes available</Text>
-        )}
-        {summary && <Text style={styles.summary}>{summary}</Text>}
-      </View>
+      {summary && (
+        <About
+          show={show}
+          text={summary}
+          fullText={plainTextParagraphs(show.summary) ?? summary}
+          genres={show.genres ?? []}
+          facts={aboutFacts(
+            show,
+            originCountries ?? [],
+            (showImages?.createdBy ?? []).map((creator) => creator.name),
+          )}
+        />
+      )}
 
-      {/* With nothing dated next, the status line already says it all. */}
-      {next.kind !== "status" && (
-        <View style={styles.section} testID="show-detail-next">
-          <Text style={styles.sectionLabel}>NEXT</Text>
-          <NextCardView
-            card={next}
+      {/* After About: a trailer helps decide whether to follow, as the
+          summary does (owner, 2026-11-08). */}
+      <TrailersRow
+        trailers={trailers}
+        width={width}
+        timeZone={timeZone}
+        todayDate={todayDate}
+      />
+
+      {tabs.length > 0 && (
+        <View style={styles.episodesSection}>
+          <SeasonPicker
+            tabs={tabs}
+            selected={selectedSeason}
+            onSelect={setSelectedSeason}
+          />
+          <EpisodeRow
+            // A new list per season, so it opens at its own start.
+            key={selectedSeason}
+            seasonNumber={selectedSeason}
+            episodes={seasonEpisodes}
+            startIndex={startIndex}
+            width={width}
             seasons={seasons}
             timeZone={timeZone}
             todayDate={todayDate}
+            tmdbEpisodes={tmdbSeason?.episodes ?? []}
+            backdropPath={showImages?.highestRatedBackdrop?.file_path ?? null}
           />
         </View>
       )}
 
-      {latest && (
-        <View style={styles.section} testID="show-detail-latest">
-          <Text style={styles.sectionLabel}>LATEST</Text>
-          {latest.kind === "episode" ? (
-            <EpisodeCard
-              episode={latest.episode}
-              seasons={seasons}
-              timeZone={timeZone}
-              todayDate={todayDate}
-            />
-          ) : (
-            // A season drop is one item (FR-012, CRI-81).
-            <Text style={styles.nextLine}>{latest.label}</Text>
-          )}
-        </View>
-      )}
+      {/* After the episodes (owner, 2026-11-08), as in Apple TV. */}
+      <ShowCast
+        showId={show.id}
+        tmdbCast={showImagesSettled ? (showImages?.cast ?? []) : undefined}
+        creators={showImages?.createdBy ?? []}
+        crew={showImages?.crew ?? []}
+      />
 
-      {tabs.length > 0 && (
-        <SeasonTabs
-          tabs={tabs}
-          selected={selectedSeason}
-          onSelect={setSelectedSeason}
-        />
-      )}
-
-      <View style={styles.episodeList} testID="show-detail-episodes">
-        <EpisodeList
-          episodes={regularEpisodes(episodes).filter(
-            (episode) => episode.season === selectedSeason,
-          )}
-          seasons={seasons}
-          timeZone={timeZone}
-          todayDate={todayDate}
-        />
-      </View>
+      {/* Last, before the credits: shows like this one (owner,
+          2026-11-08), opening in the same tab. */}
+      <RelatedRow
+        show={show}
+        detailPathname={overTabBar ? "/search/show/[id]" : "/show/[id]"}
+      />
 
       <TvMazeCredit />
       <TmdbCredit />
@@ -216,68 +276,168 @@ function ShowDetailContent({
   );
 }
 
-interface EpisodeContext {
-  seasons: TvMazeSeason[];
-  timeZone: string;
-  todayDate: LocalDate;
-}
+const SUMMARY_LINES = 3;
 
-function NextCardView({
-  card,
-  ...context
-}: { card: NextCard } & EpisodeContext) {
-  if (card.kind === "episode") {
-    return <EpisodeCard episode={card.episode} {...context} />;
-  }
-  return (
-    <Text style={styles.nextLine}>
-      {card.kind === "status" ? card.status : card.label}
-    </Text>
-  );
-}
-
-// PRD 5.5: landscape still, title, "Episode 2 of 10", relative day and a
-// short summary. Never a time of day (ADR 0001).
-function EpisodeCard({
-  episode,
-  seasons,
-  timeZone,
-  todayDate,
-}: { episode: TvMazeEpisode } & EpisodeContext) {
-  const summary = plainTextSummary(episode.summary);
+// "About": the summary in a dark grey panel, three lines, with "More"
+// opening the whole text in a sheet (owner, 2026-11-08; Apple TV as the
+// reference). The full text is laid out once, out of sight, to know
+// whether it runs longer; "More" shows only when it does.
+function About({
+  show,
+  text,
+  fullText,
+  genres,
+  facts,
+}: {
+  show: TvMazeShow;
+  text: string;
+  // The whole text with TVmaze's paragraphs kept, for the sheet.
+  fullText: string;
+  genres: string[];
+  facts: AboutFact[];
+}) {
+  const [open, setOpen] = useState(false);
+  const [lineCount, setLineCount] = useState(0);
+  const truncated = lineCount > SUMMARY_LINES;
 
   return (
-    <View style={styles.episodeCard}>
-      {/* Upcoming episodes usually have no still yet: show nothing
-          rather than an empty box (data first). */}
-      {episode.image?.medium && (
-        <Image
-          source={episode.image.medium}
-          style={styles.still}
-          contentFit="cover"
-          accessibilityIgnoresInvertColors
-        />
-      )}
-      <Text style={styles.episodeTitle}>{episode.name}</Text>
-      <View style={styles.episodeMetaRow}>
-        <Text style={styles.episodeMeta}>
-          {episodeOfLabel(episode, seasons)}
-        </Text>
-        <Text style={styles.episodeMeta}> · </Text>
-        <Text style={styles.episodeMeta}>
-          {episodeDateLabel(episode, timeZone, todayDate)}
-        </Text>
-      </View>
-      {summary && (
-        <Text style={styles.episodeSummary} numberOfLines={3}>
-          {summary}
-        </Text>
-      )}
+    <View style={styles.section} testID="show-detail-section">
+      <Text style={styles.sectionHeading} accessibilityRole="header">
+        About
+      </Text>
+      <Pressable
+        testID="show-detail-about"
+        style={styles.aboutPanel}
+        disabled={!truncated}
+        onPress={() => setOpen(true)}
+        accessibilityHint={truncated ? "Shows the whole summary" : undefined}
+      >
+        <View>
+          <Text
+            style={[styles.summary, styles.measure]}
+            testID="show-detail-summary-measure"
+            onTextLayout={(event) =>
+              setLineCount(event.nativeEvent.lines.length)
+            }
+            accessibilityElementsHidden
+            importantForAccessibility="no-hide-descendants"
+          >
+            {text}
+          </Text>
+          <Text style={styles.summary} numberOfLines={SUMMARY_LINES}>
+            {text}
+          </Text>
+        </View>
+        {truncated && (
+          // The pill of Home's "Search more" (owner, 2026-11-08).
+          <View style={styles.moreSlot}>
+            <PillButton label="More" onPress={() => setOpen(true)} />
+          </View>
+        )}
+      </Pressable>
+      <AboutSheet
+        visible={open}
+        show={show}
+        text={fullText}
+        genres={genres}
+        facts={facts}
+        onClose={() => setOpen(false)}
+      />
     </View>
   );
 }
 
-function SeasonTabs({
+// iOS's own page sheet, which can be swiped down, with a close button:
+// the title, every genre (the hero's meta line shows three), the whole
+// summary and the show's facts (aboutFacts), as in Apple TV.
+function AboutSheet({
+  visible,
+  show,
+  text,
+  genres,
+  facts,
+  onClose,
+}: {
+  visible: boolean;
+  show: TvMazeShow;
+  text: string;
+  genres: string[];
+  facts: AboutFact[];
+  onClose: () => void;
+}) {
+  return (
+    <Modal
+      visible={visible}
+      animationType="slide"
+      presentationStyle="pageSheet"
+      onRequestClose={onClose}
+    >
+      <View style={styles.sheet} testID="show-detail-about-sheet">
+        <View style={styles.sheetHeader}>
+          <Text style={styles.sheetTitle} accessibilityRole="header">
+            {show.name}
+          </Text>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Close"
+            onPress={onClose}
+            hitSlop={8}
+            style={styles.sheetClose}
+          >
+            <SymbolView
+              name="xmark"
+              tintColor={t.ink}
+              size={14}
+              weight="bold"
+              accessibilityElementsHidden
+              importantForAccessibility="no"
+            />
+          </Pressable>
+        </View>
+        <ScrollView contentContainerStyle={styles.sheetContent}>
+          {/* TMDB's rating first, then every genre (owner, 2026-11-08). */}
+          <View style={styles.sheetMetaRow} testID="show-detail-about-meta">
+            <ShowRating show={show} />
+            {genres.length > 0 && (
+              <Text style={styles.sheetGenres}>{genres.join(", ")}</Text>
+            )}
+          </View>
+          <Text style={styles.summary}>{text}</Text>
+          {facts.length > 0 && (
+            <View style={styles.facts} testID="show-detail-about-facts">
+              <Text style={styles.sectionHeading} accessibilityRole="header">
+                Information
+              </Text>
+              {facts.map((fact) => (
+                <View
+                  key={fact.label}
+                  style={styles.fact}
+                  accessible
+                  accessibilityLabel={`${fact.label}, ${fact.value}`}
+                >
+                  <Text style={styles.factLabel}>{fact.label}</Text>
+                  <Text style={styles.factValue}>{fact.value}</Text>
+                </View>
+              ))}
+            </View>
+          )}
+        </ScrollView>
+      </View>
+    </Modal>
+  );
+}
+
+function seasonName(tab: SeasonTab): string {
+  return tab.note
+    ? `Season ${tab.number} · ${tab.note}`
+    : `Season ${tab.number}`;
+}
+
+// FR-032, FR-033: the season as a heading with a menu of all seasons, as
+// in Apple TV (owner, 2026-11-08). An announced season without episodes is
+// listed with its premiere date or "Announced". iOS's own action sheet,
+// which runs in Expo Go; Android gets its own picker when it is built.
+function SeasonPicker({
   tabs,
   selected,
   onSelect,
@@ -286,118 +446,297 @@ function SeasonTabs({
   selected: number | undefined;
   onSelect: (season: number) => void;
 }) {
-  // The preselected season can be far to the right (season 6 of 8), so the
-  // strip scrolls to it once, when it is first laid out.
-  const scrollRef = useRef<ScrollViewInstance>(null);
-  const scrolledToSelected = useRef(false);
+  const current = tabs.find((tab) => tab.number === selected);
+  const canPick = tabs.length > 1 && Platform.OS === "ios";
+
+  function openPicker() {
+    const options = [...tabs.map(seasonName), "Cancel"];
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options,
+        cancelButtonIndex: options.length - 1,
+        userInterfaceStyle: "dark",
+      },
+      (index) => {
+        const tab = tabs[index];
+        if (tab) {
+          onSelect(tab.number);
+        }
+      },
+    );
+  }
 
   return (
-    <ScrollView
-      ref={scrollRef}
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.tabs}
-      accessibilityRole="tablist"
+    <Pressable
+      testID="show-detail-season-picker"
+      accessibilityRole={canPick ? "button" : "header"}
+      accessibilityLabel={current ? seasonName(current) : undefined}
+      accessibilityHint={canPick ? "Choose a season" : undefined}
+      disabled={!canPick}
+      onPress={openPicker}
+      style={styles.seasonPicker}
     >
-      {tabs.map((tab) => {
-        const isSelected = tab.number === selected;
-        const name = `Season ${tab.number}`;
-        return (
-          <Pressable
-            key={tab.number}
-            accessibilityRole="tab"
-            accessibilityLabel={tab.note ? `${name}, ${tab.note}` : name}
-            accessibilityState={{ selected: isSelected }}
-            onPress={() => onSelect(tab.number)}
-            onLayout={(event) => {
-              if (isSelected && !scrolledToSelected.current) {
-                scrolledToSelected.current = true;
-                scrollRef.current?.scrollTo({
-                  x: Math.max(0, event.nativeEvent.layout.x - 16),
-                  animated: false,
-                });
-              }
-            }}
-            style={[styles.tab, isSelected && styles.tabSelected]}
-          >
-            <Text
-              style={[
-                styles.tabLabel,
-                tab.announced && styles.muted,
-                isSelected && styles.tabLabelSelected,
-              ]}
-            >
-              {name}
-            </Text>
-            {tab.note && (
-              <Text style={[styles.tabNote, styles.muted]}>{tab.note}</Text>
-            )}
-          </Pressable>
-        );
-      })}
-    </ScrollView>
+      <Text style={styles.seasonName}>
+        {current ? `Season ${current.number}` : ""}
+      </Text>
+      {canPick && (
+        <SymbolView
+          name="chevron.up.chevron.down"
+          tintColor={t.inkMuted}
+          size={16}
+          weight="semibold"
+          accessibilityElementsHidden
+          importantForAccessibility="no"
+        />
+      )}
+    </Pressable>
   );
 }
 
-// FR-032: aired in the normal style, today with a quiet highlight (a
-// status, not an action), upcoming muted with its date or "TBA", and a
-// "Finale" badge on a season's last episode. Specials are never listed
-// (FR-037).
-function EpisodeList({
+const CARD_GAP = 12;
+// An episode card's line when neither TVmaze nor TMDB has a summary.
+export const NO_OVERVIEW = "No overview available.";
+// How much of the card's width the screen gives it: the next card shows at
+// the edge, to say the row scrolls (Apple TV).
+const CARD_WIDTH_SHARE = 0.78;
+
+// FR-032, PRD 5.5: the season's episodes as cards to swipe through, in
+// place of the latest and next cards (owner, 2026-11-08). Each card shows
+// its own relative day, so the latest one out and the next one need no
+// label of their own; upcoming episodes are muted. Never a time of day
+// (ADR 0001). Specials are never listed (FR-037).
+function EpisodeRow({
+  seasonNumber,
   episodes,
+  startIndex,
+  width,
+  ...context
+}: {
+  seasonNumber: number | undefined;
+  episodes: TvMazeEpisode[];
+  startIndex: number;
+  width: number;
+} & EpisodeContext) {
+  const cardWidth = Math.round(width * CARD_WIDTH_SHARE);
+  const interval = cardWidth + CARD_GAP;
+
+  if (episodes.length === 0) {
+    // An announced season TVmaze lists no episodes for (FR-033): one card
+    // in an episode card's shape, so it reads as a season coming, as a
+    // listed "TBA" episode does (owner, 2026-11-08).
+    return seasonNumber !== undefined ? (
+      <View style={styles.episodeRow}>
+        <AnnouncedSeasonCard
+          seasonNumber={seasonNumber}
+          width={cardWidth}
+          {...context}
+        />
+      </View>
+    ) : null;
+  }
+
+  return (
+    <FlatList
+      horizontal
+      testID="show-detail-episodes"
+      data={episodes}
+      keyExtractor={(episode) => String(episode.id)}
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.episodeRow}
+      snapToInterval={interval}
+      decelerationRate="fast"
+      initialScrollIndex={startIndex}
+      getItemLayout={(_, index) => ({
+        length: interval,
+        offset: interval * index,
+        index,
+      })}
+      renderItem={({ item, index }) => (
+        <EpisodeCard
+          episode={item}
+          width={cardWidth}
+          last={index === episodes.length - 1}
+          {...context}
+        />
+      )}
+    />
+  );
+}
+
+// The card for an announced season without episodes: the show's backdrop,
+// dimmed as everything upcoming is, an "Announced" badge, "Season 3", "No
+// episodes yet." and the premiere day or "TBA".
+function AnnouncedSeasonCard({
+  seasonNumber,
+  width,
+  seasons,
+  todayDate,
+  backdropPath,
+}: { seasonNumber: number; width: number } & EpisodeContext) {
+  const image = showBackdropImage(backdropPath);
+  const dateLabel = announcedSeasonDateLabel(
+    seasons.find((season) => season.number === seasonNumber),
+    todayDate,
+  );
+  const title = `Season ${seasonNumber}`;
+
+  return (
+    <View
+      testID="announced-season-card"
+      accessible
+      accessibilityLabel={`${title}, Announced, No episodes yet, ${dateLabel}`}
+      style={[styles.card, { width }]}
+    >
+      <View
+        style={[styles.still, image && styles.stillBehindImage]}
+        testID="episode-image-frame"
+      >
+        {image && (
+          <Image
+            source={image.uri}
+            style={[StyleSheet.absoluteFill, styles.stillMuted]}
+            contentFit="cover"
+            accessibilityIgnoresInvertColors
+            testID="episode-show-image"
+          />
+        )}
+        <View style={styles.badges}>
+          <View style={styles.badge}>
+            <Text style={styles.badgeLabel}>Announced</Text>
+          </View>
+        </View>
+      </View>
+      <View style={styles.cardText}>
+        <Text style={[styles.cardTitle, styles.muted]} numberOfLines={1}>
+          {title}
+        </Text>
+        <Text style={[styles.cardSummary, styles.muted]} numberOfLines={3}>
+          No episodes yet.
+        </Text>
+        <Text style={[styles.cardDate, styles.muted]}>{dateLabel}</Text>
+      </View>
+    </View>
+  );
+}
+
+interface EpisodeContext {
+  seasons: TvMazeSeason[];
+  timeZone: string;
+  todayDate: LocalDate;
+  tmdbEpisodes: TmdbSeasonEpisode[];
+  backdropPath: string | null;
+}
+
+// PRD 5.5: landscape still with the episode's number ("E3") in its
+// corner, and "Finale" on a season's last episode; then title, a short
+// summary and the relative day. "Episode 2 of 10" is the card's spoken
+// label.
+function EpisodeCard({
+  episode,
+  width,
+  last,
   seasons,
   timeZone,
   todayDate,
-}: { episodes: TvMazeEpisode[] } & EpisodeContext) {
-  if (episodes.length === 0) {
-    return <Text style={styles.quietLine}>No episodes yet.</Text>;
-  }
+  tmdbEpisodes,
+  backdropPath,
+}: { episode: TvMazeEpisode; width: number; last: boolean } & EpisodeContext) {
+  const state = episodeState(episode, timeZone, todayDate);
+  const muted = state === "upcoming";
+  const dateLabel = episodeDateLabel(episode, timeZone, todayDate);
+  const mark = episodeMark(episode, seasons);
+  const summary = episodeSummary(episode, tmdbEpisodes);
+  const image = episodeImage(episode, tmdbEpisodes, backdropPath);
+  const badge = episodeBadgeLabel(episode);
 
-  return episodes.map((episode) => {
-    const state = episodeState(episode, timeZone, todayDate);
-    const muted = state === "upcoming";
-    const dateLabel = episodeDateLabel(episode, timeZone, todayDate);
-    const finale = isFinale(episode, seasons);
-
-    return (
+  return (
+    <View
+      testID={`episode-${state}`}
+      accessible
+      accessibilityLabel={[
+        episodeOfLabel(episode, seasons),
+        episode.name,
+        dateLabel,
+        mark ? EPISODE_MARK_LABELS[mark] : null,
+      ]
+        .filter(Boolean)
+        .join(", ")}
+      style={[styles.card, { width }, !last && { marginRight: CARD_GAP }]}
+    >
+      {/* The episode's still, else the show's backdrop (episodeImage);
+          with neither, an empty frame keeps the cards in line, with
+          nothing made up in it (data first). Only an upcoming episode is
+          dimmed, as a hint that it is coming (owner, 2026-11-08). */}
       <View
-        key={episode.id}
-        testID={`episode-${state}`}
-        accessible
-        accessibilityLabel={[
-          `Episode ${episode.number}`,
-          episode.name,
-          dateLabel,
-          finale ? "Finale" : null,
-        ]
-          .filter(Boolean)
-          .join(", ")}
-        style={[styles.episodeRow, state === "today" && styles.episodeToday]}
+        style={[styles.still, image && styles.stillBehindImage]}
+        testID="episode-image-frame"
       >
-        <Text style={[styles.episodeNumber, muted && styles.muted]}>
-          {episode.number}
-        </Text>
-        <View style={styles.episodeRowDetails}>
-          <Text
-            style={[styles.episodeRowTitle, muted && styles.muted]}
-            numberOfLines={1}
-          >
-            {episode.name}
-          </Text>
-          <Text style={[styles.episodeRowDate, muted && styles.muted]}>
-            {dateLabel}
-          </Text>
-        </View>
-        {finale && <Text style={styles.finaleBadge}>Finale</Text>}
+        {image && (
+          <Image
+            source={image.uri}
+            testID={image.showImage ? "episode-show-image" : "episode-still"}
+            style={[StyleSheet.absoluteFill, muted && styles.stillMuted]}
+            contentFit="cover"
+            accessibilityIgnoresInvertColors
+          />
+        )}
+        {/* The episode's number in the corner, as in PlayPilot, and
+            Premiere or Finale beside it with the dot of Home's chip
+            (owner, 2026-11-08). Never dimmed. */}
+        {(badge || mark) && (
+          <View style={styles.badges}>
+            {badge && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeLabel}>{badge}</Text>
+              </View>
+            )}
+            {mark && (
+              <View style={styles.badge} testID={`episode-mark-${mark}`}>
+                <EpisodeMarkDot mark={mark} />
+                <Text style={styles.badgeLabel}>
+                  {EPISODE_MARK_LABELS[mark]}
+                </Text>
+              </View>
+            )}
+          </View>
+        )}
       </View>
-    );
-  });
+      <View style={styles.cardText}>
+        <Text
+          style={[styles.cardTitle, muted && styles.muted]}
+          numberOfLines={1}
+        >
+          {episode.name}
+        </Text>
+        {/* Without a summary from TVmaze or TMDB, a quiet line says so
+            rather than leaving a gap (owner, 2026-11-08). */}
+        <Text
+          style={[styles.cardSummary, (muted || !summary) && styles.muted]}
+          numberOfLines={3}
+          testID={summary ? undefined : "episode-no-overview"}
+        >
+          {summary ?? NO_OVERVIEW}
+        </Text>
+        <Text
+          style={[
+            styles.cardDate,
+            state === "today" && styles.cardDateToday,
+            muted && styles.muted,
+          ]}
+        >
+          {dateLabel}
+        </Text>
+      </View>
+    </View>
+  );
 }
 
 const STILL_ASPECT_RATIO = 16 / 9;
 
 // The space above a section.
 const SECTION_TOP = 20;
+
+const SHEET_CLOSE_SIZE = 30;
 
 const styles = StyleSheet.create({
   frame: {
@@ -422,122 +761,186 @@ const styles = StyleSheet.create({
   section: {
     paddingHorizontal: t.contentInset,
     paddingTop: SECTION_TOP,
-    gap: 6,
-  },
-  meta: {
-    ...type.meta,
-    color: t.inkMuted,
   },
   summary: {
     ...type.body,
     color: t.ink,
   },
-  sectionLabel: {
-    ...type.label,
+  // The full summary, laid out out of sight to count its lines.
+  measure: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    opacity: 0,
+  },
+  // The heading over a section, as the season's ("About", "Season 6").
+  sectionHeading: {
+    ...type.headline,
+    color: t.ink,
+    marginBottom: 12,
+  },
+  aboutPanel: {
+    backgroundColor: t.surface,
+    borderRadius: t.radiusSm,
+    padding: t.space4,
+  },
+  // Under the text, at the panel's right edge, as "Search more" ends its
+  // row.
+  moreSlot: {
+    alignItems: "flex-end",
+    marginTop: 8,
+  },
+  sheet: {
+    flex: 1,
+    backgroundColor: t.surface,
+  },
+  // The close button stays in the top corner when a long title wraps
+  // (owner, 2026-11-08).
+  sheetHeader: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 12,
+    paddingHorizontal: t.contentInset,
+    paddingTop: t.space6,
+    paddingBottom: 12,
+  },
+  sheetTitle: {
+    ...type.headline,
+    color: t.ink,
+    flex: 1,
+    // Centres the first line (25) on the 30 high button.
+    paddingTop: (SHEET_CLOSE_SIZE - type.headline.lineHeight) / 2,
+  },
+  sheetClose: {
+    width: SHEET_CLOSE_SIZE,
+    height: SHEET_CLOSE_SIZE,
+    borderRadius: SHEET_CLOSE_SIZE / 2,
+    backgroundColor: t.surfaceRaised,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  sheetContent: {
+    paddingHorizontal: t.contentInset,
+    paddingBottom: t.space10,
+    gap: 12,
+  },
+  sheetMetaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  sheetGenres: {
+    ...type.meta,
     color: t.inkMuted,
   },
-  nextLine: {
+  facts: {
+    paddingTop: t.space6,
+  },
+  fact: {
+    paddingVertical: 10,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: t.hairline,
+    gap: 2,
+  },
+  factLabel: {
+    ...type.meta,
+    color: t.inkMuted,
+  },
+  factValue: {
     ...type.body,
-    fontWeight: "600",
     color: t.ink,
   },
-  episodeCard: {
-    gap: 4,
+  episodesSection: {
+    paddingTop: t.space6,
+  },
+  seasonPicker: {
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "flex-start",
+    gap: 6,
+    paddingHorizontal: t.contentInset,
+    paddingBottom: 12,
+  },
+  seasonName: {
+    ...type.headline,
+    color: t.ink,
+  },
+  episodeRow: {
+    paddingHorizontal: t.contentInset,
+  },
+  card: {
+    backgroundColor: t.surface,
+    borderRadius: t.radiusSm,
+    overflow: "hidden",
   },
   still: {
     width: "100%",
     aspectRatio: STILL_ASPECT_RATIO,
-    borderRadius: t.radiusSm,
-    marginBottom: 4,
+    backgroundColor: t.surfaceRaised,
   },
-  episodeTitle: {
+  // Behind an image, black, so a dimmed image darkens rather than greys
+  // (owner, 2026-11-08).
+  stillBehindImage: {
+    backgroundColor: t.imageDimBackdrop,
+  },
+  // An upcoming episode's image, whatever it is: darker than the rest,
+  // as a hint that it is coming (owner, 2026-11-08).
+  stillMuted: {
+    opacity: 0.5,
+  },
+  cardText: {
+    flex: 1,
+    padding: 12,
+    gap: 4,
+  },
+  // Over the image's top left corner.
+  badges: {
+    position: "absolute",
+    top: 8,
+    left: 8,
+    flexDirection: "row",
+    gap: 6,
+  },
+  // A small control's material on an image (image-control-backdrop), so
+  // it reads on light and busy stills.
+  badge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    backgroundColor: t.imageControlBackdrop,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: t.imageControlEdge,
+    borderRadius: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  badgeLabel: {
+    ...type.label,
+    color: t.ink,
+  },
+  cardTitle: {
     ...type.body,
     fontWeight: "600",
     color: t.ink,
   },
-  episodeMetaRow: {
-    flexDirection: "row",
-  },
-  episodeMeta: {
+  cardSummary: {
     ...type.meta,
     color: t.inkMuted,
   },
-  episodeSummary: {
+  // At the foot of the card, so the days line up across the row.
+  cardDate: {
     ...type.meta,
+    color: t.inkMuted,
+    marginTop: "auto",
+    paddingTop: 4,
+  },
+  cardDateToday: {
     color: t.ink,
-  },
-  tabs: {
-    paddingHorizontal: t.contentInset,
-    paddingTop: 24,
-    gap: 8,
-  },
-  tab: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: t.radiusPill,
-    backgroundColor: t.surfaceRaised,
-    alignItems: "center",
-  },
-  tabSelected: {
-    backgroundColor: t.ink,
-  },
-  tabLabel: {
-    fontSize: 14,
     fontWeight: "600",
-    color: t.ink,
-  },
-  tabLabelSelected: {
-    color: t.bg,
-  },
-  tabNote: {
-    fontSize: 11,
-    color: t.inkMuted,
   },
   muted: {
     color: t.inkSubtle,
-  },
-  episodeList: {
-    paddingTop: 8,
-  },
-  episodeRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    paddingHorizontal: t.contentInset,
-    paddingVertical: 10,
-  },
-  episodeToday: {
-    backgroundColor: t.surface,
-  },
-  episodeNumber: {
-    width: 24,
-    ...type.body,
-    fontWeight: "600",
-    textAlign: "right",
-    color: t.ink,
-  },
-  episodeRowDetails: {
-    flex: 1,
-    gap: 2,
-  },
-  episodeRowTitle: {
-    ...type.body,
-    color: t.ink,
-  },
-  episodeRowDate: {
-    ...type.meta,
-    color: t.inkMuted,
-  },
-  finaleBadge: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: t.inkMuted,
-    borderWidth: 1,
-    borderColor: t.inkSubtle,
-    borderRadius: t.radiusPill,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    overflow: "hidden",
   },
   // Below the floating header.
   quietLine: {

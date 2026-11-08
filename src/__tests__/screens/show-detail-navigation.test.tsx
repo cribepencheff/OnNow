@@ -85,7 +85,7 @@ describe("Show detail (real navigation)", () => {
     await fireEvent.press(screen.getByTestId("home-card"));
 
     expect(rendered.getPathname()).toBe("/show/45039");
-    expect(screen.getByTestId("show-detail-next")).toBeTruthy();
+    expect(screen.getByTestId("show-detail-hero")).toBeTruthy();
   });
 
   it("FR-030: opens from a Calendar row", async () => {
@@ -97,7 +97,7 @@ describe("Show detail (real navigation)", () => {
     await fireEvent.press(screen.getByTestId("calendar-row"));
 
     expect(rendered.getPathname()).toBe("/show/45039");
-    expect(screen.getByTestId("show-detail-next")).toBeTruthy();
+    expect(screen.getByTestId("show-detail-hero")).toBeTruthy();
   });
 
   it("FR-030: opens from a Shows row, and back returns to Shows", async () => {
@@ -142,7 +142,7 @@ describe("Show detail (real navigation)", () => {
     releaseNavigation();
 
     expect(rendered.getPathname()).toBe("/search/show/45039");
-    expect(screen.getByTestId("show-detail-next")).toBeTruthy();
+    expect(screen.getByTestId("show-detail-hero")).toBeTruthy();
 
     // Only the floating back button over the backdrop (CRI-129), no close
     // button.

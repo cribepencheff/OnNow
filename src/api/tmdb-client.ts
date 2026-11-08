@@ -7,6 +7,12 @@
 // committed (ADR 0002). Without a key, lookups return null and the app
 // falls back to what TVmaze alone gives.
 
+import { isTrailerVideo, tmdbVideos } from "@/logic/trailers";
+import {
+  aggregateCast,
+  aggregateKeyCrew,
+  type TmdbAggregateCredits,
+} from "@/logic/cast-row";
 import {
   NOT_ON_TMDB,
   regionProviders,
@@ -27,7 +33,16 @@ import { matchTmdbSearch, type TmdbSearchResult } from "@/logic/tmdb-match";
 import { tmdbRating, type TmdbRating } from "@/logic/show-rating";
 import { queryClient } from "@/hooks/query-client";
 import { createTmdbFindCache } from "@/hooks/tmdb-find-cache";
-import type { TmdbImages } from "./tmdb-types";
+import type {
+  TmdbSeason,
+  TmdbCastMember,
+  TmdbCreator,
+  TmdbCrewMember,
+  TmdbImages,
+  TmdbSeasonResponse,
+  TmdbVideo,
+  TmdbVideosResponse,
+} from "./tmdb-types";
 import type { TvMazeExternals, TvMazeShow } from "./tvmaze-types";
 import type {
   SuggestedTitle,
@@ -82,7 +97,30 @@ export interface TmdbClientOptions {
   cachedFind?: CachedFind;
 }
 
+// The show's images, its main poster, and who created it (CRI-143), from
+// one details request with the images appended.
+export interface TmdbShowImagesAnswer {
+  tvId: number;
+  images: TmdbImages;
+  posterPath: string | null;
+  // TMDB's "created by", in its order; [] when it has none.
+  createdBy: TmdbCreator[];
+  // TMDB's main cast, in its order; [] when it has none.
+  cast: TmdbCastMember[];
+  // TMDB's crew in the jobs the Cast & Crew row shows, in its order.
+  crew: TmdbCrewMember[];
+  // The show's trailers and teasers (ADR 0021).
+  videos: TmdbVideo[];
+}
+
 export interface TmdbClient {
+  // A season's episodes, with stills and overviews (CRI-143): [] when TMDB has no such
+  // season, NOT_ON_TMDB when TMDB does not know the show, null without a
+  // key.
+  findSeason: (
+    show: TmdbShowRef,
+    season: number,
+  ) => Promise<TmdbSeason | typeof NOT_ON_TMDB | null>;
   // The region's services for a show, [] when TMDB has none, NOT_ON_TMDB
   // when TMDB does not know the show, null when there is no API key.
   findStreamingProviders: (
@@ -111,11 +149,7 @@ export interface TmdbClient {
   // does not know it, null without a key.
   findImages: (
     show: TmdbShowRef,
-  ) => Promise<
-    | { tvId: number; images: TmdbImages; posterPath: string | null }
-    | typeof NOT_ON_TMDB
-    | null
-  >;
+  ) => Promise<TmdbShowImagesAnswer | typeof NOT_ON_TMDB | null>;
   // TMDB's titles for a half-typed query, its name and original name, to
   // complete the query's last word before searching TVmaze (CRI-142);
   // null without a key.
@@ -293,11 +327,7 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
 
   async function findImages(
     show: TmdbShowRef,
-  ): Promise<
-    | { tvId: number; images: TmdbImages; posterPath: string | null }
-    | typeof NOT_ON_TMDB
-    | null
-  > {
+  ): Promise<TmdbShowImagesAnswer | typeof NOT_ON_TMDB | null> {
     if (!apiKey) {
       return null;
     }
@@ -306,14 +336,77 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     if (tvId === null) {
       return NOT_ON_TMDB;
     }
-    const images = await requestJson<TmdbImages>(
-      `/tv/${tvId}/images?include_image_language=en,null,xx`,
+    // The show's details with its images and its credits over every
+    // season appended: one request, as the images alone were, which also
+    // gives who created the show and its cast and crew for Show detail
+    // (CRI-143). include_image_language applies to the appended images.
+    const details = await requestJson<{
+      images?: TmdbImages;
+      created_by?: { name?: string | null; profile_path?: string | null }[];
+      aggregate_credits?: TmdbAggregateCredits;
+      videos?: TmdbVideosResponse;
+    }>(
+      `/tv/${tvId}?append_to_response=images,aggregate_credits,videos&include_image_language=en,null,xx`,
       apiKey,
     );
     // The main poster from the find step already made: in any language,
-    // where /images above keeps only English and textless ones (CRI-100).
+    // where the images above keep only English and textless ones (CRI-100).
     const posterPath = found.tv_results?.[0]?.poster_path ?? null;
-    return { tvId, images, posterPath };
+    return {
+      tvId,
+      images: details.images ?? {},
+      posterPath,
+      createdBy: (details.created_by ?? [])
+        .map((creator) => ({
+          name: creator.name?.trim() ?? "",
+          profilePath: creator.profile_path || null,
+        }))
+        .filter((creator) => creator.name !== ""),
+      // Trimmed to what the row shows, so a long show's hundreds of credits
+      // are not kept on the phone.
+      cast: aggregateCast(details.aggregate_credits),
+      crew: aggregateKeyCrew(details.aggregate_credits),
+      // The show's own videos for the Trailers row (ADR 0021), kept only
+      // as trailers and teasers.
+      videos: tmdbVideos(details.videos).filter(isTrailerVideo),
+    };
+  }
+
+  async function findSeason(
+    show: TmdbShowRef,
+    season: number,
+  ): Promise<TmdbSeason | typeof NOT_ON_TMDB | null> {
+    if (!apiKey) {
+      return null;
+    }
+    const tvId = tmdbTvId(await lookUp(show, apiKey));
+    if (tvId === null) {
+      return NOT_ON_TMDB;
+    }
+    let response: TmdbSeasonResponse;
+    try {
+      response = await requestJson<TmdbSeasonResponse>(
+        // The season's videos appended for the Trailers row (ADR 0021).
+        `/tv/${tvId}/season/${season}?append_to_response=videos`,
+        apiKey,
+      );
+    } catch (error) {
+      // TMDB numbers a show's seasons its own way at times: a season it
+      // does not have is no stills, not an error.
+      if (error instanceof TmdbResponseError && error.status === 404) {
+        return { episodes: [], videos: [] };
+      }
+      throw error;
+    }
+    return {
+      episodes: (response.episodes ?? []).map((episode) => ({
+        episodeNumber: episode.episode_number,
+        airDate: episode.air_date || null,
+        stillPath: episode.still_path || null,
+        overview: episode.overview?.trim() || null,
+      })),
+      videos: tmdbVideos(response.videos),
+    };
   }
 
   async function externalIdsById(tmdbId: number): Promise<ExternalIds | null> {
@@ -410,6 +503,7 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     findExternalIds,
     findRecommendations,
     findImages,
+    findSeason,
     externalIdsById,
   };
 }

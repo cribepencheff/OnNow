@@ -34,7 +34,6 @@ import {
 import {
   ActivityIndicator,
   Animated,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -58,6 +57,7 @@ import {
   posterSnapOffsets,
 } from "@/logic/poster-snap";
 import { t, type } from "@/theme/tokens";
+import { PillButton } from "./PillButton";
 import {
   DEFAULT_SKELETON_STAGGER_MS,
   POSTER_HEIGHT,
@@ -86,11 +86,8 @@ const END_TEXT = {
   fontWeight: "400",
 } as const;
 
-// The end pill: small, within the title's line, so the gap above the
-// cards stays whole; the card follow circle's material; a hit area of at
-// least 44.
-const END_PILL_HEIGHT = 22;
-const END_PILL_HIT_SLOP = (44 - END_PILL_HEIGHT) / 2;
+// The end pill (PillButton) is small, within the title's line, so the gap
+// above the cards stays whole.
 
 // The load more spinner's box, to the right of the last card.
 const SPINNER_BOX = 40;
@@ -120,6 +117,7 @@ export function PosterRow({
   emptyText,
   endAction,
   quietEndOnArrival = false,
+  noEnd = false,
   pulseOffsetMs = 0,
   testID,
   children,
@@ -145,6 +143,9 @@ export function PosterRow({
   // its cards: in Search, which shares Home's rows, it is said only when
   // the end is reached there (CRI-131).
   quietEndOnArrival?: boolean;
+  // No end element at all: a row that is a sample, not a list to finish
+  // (Show detail's "Related", CRI-143).
+  noEnd?: boolean;
   // Added on top of each of this row's own skeleton cards' delayMs, so a
   // later row on the same screen (Home's "Airing this week" under "Top
   // picks") can start its wave a beat after the row above it, rather than
@@ -176,7 +177,8 @@ export function PosterRow({
     setEndOnArrival(atEnd);
   }
   // The end element shows at the end, unless the row arrived there.
-  const caughtUp = atEnd && !(quietEndOnArrival && endOnArrival === true);
+  const caughtUp =
+    !noEnd && atEnd && !(quietEndOnArrival && endOnArrival === true);
   const [opacity] = useState(() => new Animated.Value(isShown ? 1 : 0));
 
   useEffect(() => {
@@ -398,19 +400,12 @@ export function PosterRow({
               caughtUp ? "auto" : "no-hide-descendants"
             }
           >
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={endAction.label}
+            <PillButton
+              label={endAction.label}
               onPress={endAction.onPress}
               disabled={!caughtUp}
-              hitSlop={END_PILL_HIT_SLOP}
-              style={styles.endPill}
               testID={`${testID}-end-action`}
-            >
-              <Text style={styles.endPillLabel} numberOfLines={1}>
-                {endAction.label}
-              </Text>
-            </Pressable>
+            />
           </Animated.View>
         ) : (
           <Animated.Text
@@ -615,24 +610,6 @@ const styles = StyleSheet.create({
   endPillSlot: {
     flex: 1,
     alignItems: "flex-end",
-  },
-  // The card follow circle's material, as a text pill: neutral, solid, no
-  // blur.
-  endPill: {
-    height: END_PILL_HEIGHT,
-    maxWidth: "100%",
-    paddingHorizontal: 10,
-    borderRadius: END_PILL_HEIGHT / 2,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: t.imageControlEdge,
-    backgroundColor: t.surfaceRaised,
-    justifyContent: "center",
-  },
-  // The label's size, regular weight and no letter spacing: lighter than
-  // the title, and centred in the pill.
-  endPillLabel: {
-    ...END_TEXT,
-    color: t.ink,
   },
   // The pill label's size; muted, so it reads as status.
   caughtUp: {

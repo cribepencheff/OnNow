@@ -292,10 +292,25 @@ per season come in the MVP.
   Calendar, or a show in Shows. The same view everywhere.
 - **Content (stripped):** large image on top in the same cinematic feel as
   Home, title, a meta line ("2026 · Philippines · Drama, Thriller": year,
-  first origin country, genres), status, service, and the summary. Then two
-  episode cards, next and latest, each with a landscape still, episode title,
-  a short summary, "Episode 2 of 10" and relative time ("In 3 days",
-  "Tomorrow", "2 days ago", no time of day). Then the services in the user's
+  first origin country, genres), status, service, and the summary under an
+  "About" heading, in a dark grey panel of three lines; "More" opens a
+  sheet with TMDB's rating followed by every genre, the whole text with TVmaze's paragraphs kept, and
+  an "Information" list of what the data gives: "Created by" (TMDB, from
+  the request that already gives the show's images), "Premiered 2026", or
+  "Years 2018–2022" once there is an end date, seasons with episodes, regular episodes listed,
+  runtime (TVmaze's average), every origin country and language
+  (owner, 2026-11-08). Then the episodes of one season as cards
+  to swipe through, each with a landscape still (TMDB's, else TVmaze's,
+  else the show's backdrop, ADR 0012; dimmed only on an upcoming
+  episode) with the episode's number in a badge in its corner ("E3", and
+  beside it "Premiere" on episode 1 or "Finale" on a season's last, with
+  the coloured dot of Home's chip; screen readers hear "Episode 3 of
+  10"; PlayPilot as the reference), episode title, a short summary (TVmaze's, else TMDB's overview for the
+  same episode; "No overview available." without either, owner
+  2026-11-08) and relative time ("In 3 days", "Tomorrow", "2 days
+  ago", no time of day). There are no separate next and latest cards: each
+  card's relative day says which one is out last and which comes next
+  (owner, 2026-11-08; Apple TV as the reference). Then the services in the user's
   territory, each with the seasons it carries ("SkyShowtime · Season 1",
   "Apple TV · Seasons 1–2").
   References: Next Episode (episode blocks, "of 10"), PlayPilot (primary
@@ -303,7 +318,29 @@ per season come in the MVP.
   The show's rating, TMDB's, sits first on the hero's meta line, marked
   "TMDB" and linked to the show on TMDB, and is left out when there is
   none or it has fewer than 50 votes (ADR 0019).
-  Not included: cast, other ratings, reviews, trailers, similar shows, FAQ,
+  After the episodes, a "Cast & Crew" row (owner, 2026-11-08; Apple TV
+  as the reference): the cast from TMDB over every season, the
+  eight in the most episodes, each with the role they play most (TMDB's
+  portraits are current; TVmaze's cast when TMDB lists none), then the crew
+  from TMDB: the creators, then Book or Novel, Director, Writer,
+  Executive Producer and Producer, someone with several jobs once;
+  nineteen people in all. All from the request that already gives the
+  show's images. Each a round portrait, or the person's initials without
+  one, the name and, muted, the character or the jobs. About three people
+  across the screen, the fourth at the edge. Nothing to tap; no row with
+  no one.
+  After About, a "Trailers" row (ADR 0021, owner 2026-11-08): official
+  trailers and teasers from TMDB, the latest season's and the show's,
+  newest first, at most six, each with YouTube's still, its name and its
+  day. A tap plays it full screen in the app in YouTube's own player;
+  closing it comes back to the row. When YouTube will not play it here, a
+  dialog offers it on YouTube. No row without trailers.
+  Last, a "Related" row (owner, 2026-11-08): TMDB's recommendations for
+  the show, as Top picks uses them (FR-038, ADR 0016), the first six TVmaze
+  knows (the strongest of TMDB's ranking), as Home's poster cards with their follow circle, each opening its
+  own Show detail in the same tab. Followed shows stay in it; the show
+  itself does not. No row when TMDB recommends nothing.
+  Not included: other crew jobs, other ratings, reviews, FAQ,
   lists.
 - **Between seasons:** when the current season has ended, the "next"
   episode card becomes a next season card, so it is clear when new episodes
@@ -316,9 +353,10 @@ per season come in the MVP.
   there is none) and "Open in [service]" as a full button in every state,
   followed or not. Below the backdrop: the meta line (year · first origin country · genres; the
   country is the show's origin, kept on purpose, while the original network
-  stays out of the UI), the status line,
-  then a "Follow" / "Following" toggle button that updates at once.
-- **Status line (CRI-86):** one state derived from TVmaze's status,
+  stays out of the UI), then a "Follow" / "Following" toggle button that updates at once.
+- **Status line (CRI-86):** on Show detail it has no line of its own: it
+  is the hero's pill when there is no news to show (owner, 2026-11-08,
+  FR-028). One state derived from TVmaze's status,
   episodes and seasons, dated facts first: "Next ep <date>" (next episode
   in the season that is airing), "New ep today" (the latest episode is out
   today and nothing is dated after it), "Next ep TBA" (the next episode in
@@ -333,25 +371,25 @@ per season come in the MVP.
   row (5.4), and its state decides the Shows segment.
   When it falls back to TVmaze's raw status, "In Development" reads "In
   development" (CRI-81).
-- **Season drops:** when several episodes of a season come out on the same
-  day, the latest or next card shows them as one item, for example "Season
-  1 · all 8 episodes · Wed 16 Sep" (same grouping as FR-012). "all" only
-  when the season's episode order equals the number released that day,
-  otherwise "3 episodes". An upcoming drop that starts a season reads
-  "Season 3 premiere · all 8 episodes · Thu 16 Oct". When every episode of
-  the latest season is out and the count matches the episode order, a quiet
-  "All episodes available" sits under the status line (CRI-81).
-- **Seasons and episodes:** below the episode cards, season tabs with the
-  current season preselected (not season 1). Each episode shows number,
-  title and relative date. States:
+- **Season drops:** the episodes of a drop are cards in the row like any
+  others, all with the same day. When every episode of the latest season is
+  out and the count matches the episode order, the pill says "All episodes
+  now available" for 30 days (CRI-81, FR-028).
+- **Seasons and episodes:** a season heading ("Season 6") opens a menu of
+  all seasons. The row opens on the current season (not season 1), at the
+  latest episode out, so the next one shows beside it; an ended show opens
+  on season 1, episode 1 (owner, 2026-11-08). A season picked from the menu
+  opens at its first episode. States:
   - aired: normal style
   - today: a quiet highlight (a status, not an action)
   - upcoming: muted, with date or "TBA"
   - not in the user's region yet: muted, with the label (after MVP, ADR
     0015)
   - finale: a small "Finale" badge on the last episode of a season
-  An announced season without episodes gets a muted tab with its premiere
-  date or "Announced".
+  An announced season without episodes is in the menu with its premiere
+  date or "Announced". Picked, it shows one card in an episode card's
+  shape: the show's backdrop dimmed, an "Announced" badge, "Season 3",
+  "No episodes yet." and the premiere day or "TBA" (owner, 2026-11-08).
 - **Two actions, followed or not (CRI-86):** a "Follow" / "Following"
   toggle button ("Follow" in the accent colour, "Following" quiet; tap again
   to undo) and "Open in [service]" as a full button whenever the show has a
@@ -428,13 +466,13 @@ Reached from an icon. Territory and notifications.
 | FR-025 | After following, the result row shows the next episode or "No date yet" (PoC). MVP: every result row shows the show's status from the search result alone ("Airing", "Ended · 2017"), followed or not, with no request of its own (owner, 2026-10-22) | PoC, MVP |
 | FR-026 | Before the user types, Search shows Home's rows as they are: "Top picks for you" (FR-038), then "Airing this week" (FR-039), each sharing what it has loaded with Home; only "Airing this week" when the follow list is empty. No "Search more" in Search: both rows end with "All caught up", shown only when the end is reached there. Region filtered as on Home (CRI-98) | MVP |
 | FR-027 | Search results and Shows rows show the services that carry the show in the user's territory, or plain "Unavailable" when there is none, and nothing when TMDB does not know the show; the row does not name the region, unlike Show detail (CRI-91, CRI-97, CRI-102). Before the services' names, each service's logo, small, up to four, so a service the user has is seen at a glance (CRI-115) | MVP |
-| FR-028 | Show detail view with image, title, year, status, service, summary, next and latest episode. PoC shows the network instead of the service. MVP: a meta line with the premiere year, the first origin country from TMDB and up to three genres from TVmaze ("2026 · Philippines · Drama, Thriller"), any missing part left out; the country is the show's origin, kept on purpose, and the original network stays out of the UI. MVP adds the show's TMDB rating (ADR 0019, replacing ADR 0018's TVmaze rating). MVP: a pill over the title says why the show is current, from the episodes' local days, never a date (CRI-143): "New season" for 7 days after a later season's first episode, "All episodes now available" for 30 days after the latest season is complete, "New episode" on the day an episode is out and the day after, "New episodes every Wednesday" when the last two episodes out and the next one are a week apart each, on the next one's weekday; otherwise no pill | PoC, MVP |
+| FR-028 | Show detail view with image, title, year, status, service, summary, next and latest episode. PoC shows the network instead of the service. MVP: a meta line with the premiere year, the first origin country from TMDB and up to three genres from TVmaze ("2026 · Philippines · Drama, Thriller"), any missing part left out; the country is the show's origin, kept on purpose, and the original network stays out of the UI. MVP adds the show's TMDB rating (ADR 0019, replacing ADR 0018's TVmaze rating). MVP: a pill over the title says why the show is current, from the episodes' local days, and otherwise where it stands; the first that holds wins (CRI-143): "New season" for 7 days after a later season's first episode, "All episodes now available" for 30 days after the latest season is complete, "New episodes every Wednesday" when the last two episodes out and the next one are a week apart each, on the next one's local weekday, "New episode" on the day an episode is out and the day after; otherwise the status line (5.5), which has no line of its own on Show detail. The weekly rhythm comes before "New episode": Show detail is mostly for deciding whether to follow a show, and the rhythm says it is running and when to expect episodes (owner, 2026-11-08). The next and latest episode are cards in the episode row (FR-032) | PoC, MVP |
 | FR-029 | Show detail has a follow toggle and, followed or not, "Open in [service]" as a full button when the show has a service in the user's territory (CRI-86). MVP: the toggle is a circle beside "Open in", as tall as it, with a plus, or a check once followed; without a button it takes the button's place with the words as well, "Follow" or "Following" (CRI-143). PoC: "Follow", and a quiet "Following" that unfollows; "Open in [service]" only when followed, for the show's Swedish service (FR-014); the service list in the user's territory is MVP | PoC, MVP |
 | FR-030 | Show detail opens from Search, Home, Calendar and Shows | PoC |
 | FR-031 | MVP: episode dates are the original air date, shown as a date with no verb and no network ("Fri 9 Oct · S2E4", with the episode title on the line below). "Open in" says the series is on a service in the user's region, never that the episode is. No "Not in [country] yet" label (ADR 0015). After MVP: episodes not yet available in the user's region are labelled "Not in [country] yet" and do not count as new today, from per-episode availability behind our own server (spike 0003, ADR 0015) | MVP, After MVP |
-| FR-032 | Show detail has season tabs with the current season preselected and episodes marked aired, today, upcoming (muted), not in territory yet (muted) and finale. PoC and MVP: all but "not in territory yet", which comes after MVP (ADR 0015) | PoC, After MVP |
-| FR-033 | Announced future seasons appear as muted tabs with premiere date or "Announced" | PoC |
-| FR-034 | Between seasons, the next episode card shows the next announced episode or season with its date, otherwise the show status from the data source | PoC |
+| FR-032 | Show detail has a season menu and the season's episodes as cards to swipe, opening on the current season at the latest episode out (an ended show at season 1, episode 1), and episodes marked aired, today, upcoming (muted), not in territory yet (muted) and finale. PoC and MVP: all but "not in territory yet", which comes after MVP (ADR 0015) | PoC, After MVP |
+| FR-033 | Announced future seasons appear in the season menu with premiere date or "Announced" | PoC |
+| FR-034 | Between seasons, the hero's pill shows the next announced season with its date, otherwise the show status from the data source (the status line, 5.5) | PoC |
 | FR-035 | In Shows, a show between seasons shows its next announced date or its status from the data source instead of a next episode (PoC). MVP: every Shows row uses Show detail's status line in its wording ("Next ep Fri 9 Oct", "Season 3 · TBA", "Ended"), for screen readers; the row shows none (owner, 2026-10-22) | PoC, MVP |
 
 ## 7. Non-functional requirements

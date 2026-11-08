@@ -12,30 +12,38 @@ import type { HeroEpisodeMark } from "@/logic/hero-carousel";
 import { EPISODE_LINE_HEIGHT } from "@/logic/hero-layout";
 import { t, type } from "@/theme/tokens";
 
-const LABELS: Record<HeroEpisodeMark, string> = {
+export const EPISODE_MARK_LABELS: Record<HeroEpisodeMark, string> = {
   premiere: "Premiere",
   finale: "Finale",
 };
 
 const DOT_SIZE = 6;
 
+// The mark's coloured dot: accent for a premiere, amber for a finale. Also
+// on Show detail's episode cards (CRI-143).
+export function EpisodeMarkDot({ mark }: { mark: HeroEpisodeMark }) {
+  return (
+    <View
+      style={[
+        styles.dot,
+        {
+          backgroundColor: mark === "premiere" ? t.accent : t.episodeFinale,
+        },
+      ]}
+    />
+  );
+}
+
 export function EpisodeMarkChip({ mark }: { mark: HeroEpisodeMark }) {
   return (
     <View
       style={styles.chip}
       accessible
-      accessibilityLabel={LABELS[mark]}
+      accessibilityLabel={EPISODE_MARK_LABELS[mark]}
       testID="hero-episode-mark"
     >
-      <View
-        style={[
-          styles.dot,
-          {
-            backgroundColor: mark === "premiere" ? t.accent : t.episodeFinale,
-          },
-        ]}
-      />
-      <Text style={styles.label}>{LABELS[mark]}</Text>
+      <EpisodeMarkDot mark={mark} />
+      <Text style={styles.label}>{EPISODE_MARK_LABELS[mark]}</Text>
     </View>
   );
 }

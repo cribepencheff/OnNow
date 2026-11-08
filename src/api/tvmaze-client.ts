@@ -1,7 +1,12 @@
 import { releaseAirstamp } from "@/logic/release-time";
 import { TVMAZE_CREDIT } from "./tvmaze-credit";
 import { TvMazeNetworkError, TvMazeResponseError } from "./tvmaze-errors";
-import type { TvMazeSearchResult, TvMazeShowWithEmbeds } from "./tvmaze-types";
+import type {
+  TvMazeCastMember,
+  TvMazeCastResponseItem,
+  TvMazeSearchResult,
+  TvMazeShowWithEmbeds,
+} from "./tvmaze-types";
 
 export interface TvMazeWeekInfo {
   type: string | null;
@@ -44,6 +49,7 @@ export interface TvMazeClient {
     thetvdb: number | null;
   }) => Promise<number | null>;
   getWeekInfo: (id: number) => Promise<TvMazeWeekInfo>;
+  getCast: (id: number) => Promise<TvMazeCastMember[]>;
 }
 
 export function createTvMazeClient(
@@ -189,11 +195,27 @@ export function createTvMazeClient(
     return { type: show.type ?? null, episodes };
   }
 
+  // A show's cast, in TVmaze's order (CRI-143). A request of its own, not
+  // an embed on the show, so the followed shows' answers stay as they are.
+  async function getCast(id: number): Promise<TvMazeCastMember[]> {
+    const cast = await requestJson<TvMazeCastResponseItem[]>(
+      `/shows/${id}/cast`,
+    );
+    return cast.map((item) => ({
+      personId: item.person.id,
+      name: item.person.name,
+      imageUrl:
+        item.person.image?.medium ?? item.person.image?.original ?? null,
+      character: item.character?.name || null,
+    }));
+  }
+
   return {
     searchShows,
     getShowWithEpisodesAndSeasons,
     lookupShowId,
     getWeekInfo,
+    getCast,
   };
 }
 

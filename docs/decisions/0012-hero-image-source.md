@@ -1,6 +1,6 @@
 # 0012. Hero image source: episode stills first
 
-Status: Accepted, amended (CRI-124)
+Status: Accepted, amended (CRI-124, CRI-143)
 
 ## Context
 The Home hero (direction B) shows one image per slide, behind the show
@@ -180,3 +180,31 @@ symbol.
   main poster, looked up only for a show without a TVmaze image; an empty
   space while that lookup runs, then the "no image" symbol if there is
   none.
+
+## Show detail's episode cards (amendment 2026-11-08, CRI-143)
+The episode row in Show detail (PRD 5.5) had used TVmaze's stills, which
+came with the episodes at no extra request. TVmaze's stills are added by
+its users, often days after an episode is out; TMDB often has them first
+(100 Days of Deception, episodes 9 and 10, checked by the owner). So,
+contrary to "all image data comes from TMDB" above, both are used, in this
+order (`logic/episode-image.ts`):
+
+1. TMDB's still, from the season's details (`/tv/{id}/season/{n}`), one
+   request per season looked at, a day fresh. Matched on the episode
+   number, and only when TMDB's date is within a day of TVmaze's, since
+   the two can number a season differently: never a wrong episode's
+   still.
+2. TVmaze's still.
+3. The show's highest-rated backdrop (the hero's). The previous
+   episode's still stays rejected, as above.
+
+Only an upcoming episode's image is dimmed, whatever it is, as a hint that
+it is coming; a backdrop standing in on an episode that is out is not.
+4. None: an empty frame.
+
+TVmaze stays the source of the episodes and their days (ADR 0005, ADR
+0006); TMDB only gives the image, and, from the same season request, the
+episode's overview where TVmaze has no summary (TVmaze's text first;
+"No overview available." without either). No new service or key. The TMDB terms
+for a commercial app (ADR 0005) are unchanged by this and belong to the
+backend decision (CRI-145).
