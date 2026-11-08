@@ -1,4 +1,11 @@
-import { CAST_MAX, ROW_MAX, castRowPeople, personInitials } from "./cast-row";
+import {
+  aggregateCast,
+  aggregateKeyCrew,
+  CAST_MAX,
+  ROW_MAX,
+  castRowPeople,
+  personInitials,
+} from "./cast-row";
 
 const TMDB_CAST = [
   { name: "Gary Oldman", character: "Jackson Lamb", profilePath: "/go.jpg" },
@@ -119,5 +126,101 @@ describe("personInitials (CRI-143)", () => {
     expect(personInitials("Kim You-jung")).toBe("KY");
     expect(personInitials("Jinyoung")).toBe("J");
     expect(personInitials("  ")).toBe("");
+  });
+});
+
+// Owner, 2026-11-08: the cast over every season, so Slow Horses' Rosalind
+// Eleazar (29 of 36 episodes, missing from season 6's credits) is in it.
+describe("aggregateCast and aggregateKeyCrew (CRI-143)", () => {
+  const credits = {
+    cast: [
+      {
+        name: "Hugo Weaving",
+        profile_path: "/hw.jpg",
+        total_episode_count: 6,
+        roles: [{ character: "Frank Harkness", episode_count: 6 }],
+      },
+      {
+        name: "Rosalind Eleazar",
+        profile_path: "/re.jpg",
+        total_episode_count: 29,
+        roles: [
+          { character: "Guest", episode_count: 1 },
+          { character: "Louisa Guy", episode_count: 28 },
+        ],
+      },
+      {
+        name: "Gary Oldman",
+        profile_path: null,
+        total_episode_count: 36,
+        roles: [{ character: "Jackson Lamb", episode_count: 36 }],
+      },
+      { name: " ", total_episode_count: 99, roles: [] },
+    ],
+    crew: [
+      {
+        name: "Camera Person",
+        total_episode_count: 30,
+        jobs: [{ job: "Camera Operator", episode_count: 30 }],
+      },
+      {
+        name: "Gary Oldman",
+        profile_path: "/go.jpg",
+        total_episode_count: 36,
+        jobs: [{ job: "Executive Producer", episode_count: 36 }],
+      },
+      {
+        name: "Will Smith",
+        total_episode_count: 12,
+        jobs: [
+          { job: "Writer", episode_count: 12 },
+          { job: "Executive Producer", episode_count: 12 },
+        ],
+      },
+    ],
+  };
+
+  it("orders the cast by episodes over every season, with each one's main role", () => {
+    expect(aggregateCast(credits)).toEqual([
+      { name: "Gary Oldman", character: "Jackson Lamb", profilePath: null },
+      {
+        name: "Rosalind Eleazar",
+        character: "Louisa Guy",
+        profilePath: "/re.jpg",
+      },
+      {
+        name: "Hugo Weaving",
+        character: "Frank Harkness",
+        profilePath: "/hw.jpg",
+      },
+    ]);
+  });
+
+  it(`keeps the first ${CAST_MAX} of the cast`, () => {
+    const many = {
+      cast: Array.from({ length: 20 }, (_, i) => ({
+        name: `Actor ${i}`,
+        total_episode_count: 20 - i,
+        roles: [],
+      })),
+    };
+    expect(aggregateCast(many)).toHaveLength(CAST_MAX);
+  });
+
+  it("keeps the crew in the key jobs only, one entry per job, most episodes first", () => {
+    expect(aggregateKeyCrew(credits)).toEqual([
+      {
+        name: "Gary Oldman",
+        job: "Executive Producer",
+        profilePath: "/go.jpg",
+      },
+      { name: "Will Smith", job: "Writer", profilePath: null },
+      { name: "Will Smith", job: "Executive Producer", profilePath: null },
+    ]);
+  });
+
+  it("is empty without credits", () => {
+    expect(aggregateCast(undefined)).toEqual([]);
+    expect(aggregateKeyCrew(undefined)).toEqual([]);
   });
 });

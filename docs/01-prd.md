@@ -319,8 +319,9 @@ per season come in the MVP.
   "TMDB" and linked to the show on TMDB, and is left out when there is
   none or it has fewer than 50 votes (ADR 0019).
   After the episodes, a "Cast & Crew" row (owner, 2026-11-08; Apple TV
-  as the reference): the first eight of the cast from TMDB, whose
-  portraits are current (TVmaze's when TMDB lists none), then the crew
+  as the reference): the cast from TMDB over every season, the
+  eight in the most episodes, each with the role they play most (TMDB's
+  portraits are current; TVmaze's cast when TMDB lists none), then the crew
   from TMDB: the creators, then Book or Novel, Director, Writer,
   Executive Producer and Producer, someone with several jobs once;
   nineteen people in all. All from the request that already gives the

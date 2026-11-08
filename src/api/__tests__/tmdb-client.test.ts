@@ -434,21 +434,33 @@ describe("TmdbClient.findImages", () => {
             { name: " " },
             { name: "Yoo In-sik", profile_path: null },
           ],
-          credits: {
+          aggregate_credits: {
             cast: [
               {
                 name: "Kim You-jung",
-                character: "Lee Ga-kyung",
                 profile_path: "/kim.jpg",
+                total_episode_count: 16,
+                roles: [{ character: "Lee Ga-kyung", episode_count: 16 }],
               },
-              { name: "Jinyoung", character: "", profile_path: null },
+              {
+                name: "Jinyoung",
+                profile_path: null,
+                total_episode_count: 16,
+                roles: [{ character: "", episode_count: 16 }],
+              },
             ],
             crew: [
-              { name: "Mick Herron", job: "Book", profile_path: "/mh.jpg" },
+              {
+                name: "Mick Herron",
+                profile_path: "/mh.jpg",
+                total_episode_count: 36,
+                jobs: [{ job: "Book", episode_count: 36 }],
+              },
               {
                 name: "Cam Operator",
-                job: "Camera Operator",
                 profile_path: null,
+                total_episode_count: 30,
+                jobs: [{ job: "Camera Operator", episode_count: 30 }],
               },
             ],
           },
@@ -480,7 +492,7 @@ describe("TmdbClient.findImages", () => {
     // One request for both, as the images alone were.
     expect(fetchFn).toHaveBeenCalledTimes(2);
     expect(fetchFn.mock.calls[1][0]).toContain(
-      "/3/tv/273207?append_to_response=images,credits&include_image_language=en,null,xx",
+      "/3/tv/273207?append_to_response=images,aggregate_credits&include_image_language=en,null,xx",
     );
   });
 

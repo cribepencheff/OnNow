@@ -75,13 +75,14 @@ export function useShowImages(
     // kept and saved 21 days (ADR 0017): after time away the hero shows
     // the images it had at once, replaced if TMDB's now differ. Bump this
     // suffix whenever ShowImages' shape changes, since answers are kept.
-    // v10: crew added (CRI-143). v9: cast added (CRI-143). v8: createdBy with portraits (CRI-143). v7: createdBy added, as
+    // v11: cast and crew over every season (CRI-143). v10: crew added
+    // (CRI-143). v9: cast added (CRI-143). v8: createdBy with portraits (CRI-143). v7: createdBy added, as
     // names (CRI-143). v6: posterPath added (CRI-100). v5: the key no longer carries the
     // day (v4 did, which meant a new fetch, and no image meanwhile, on
     // every new day).
     // Earlier: v3 dropped the stored "official" backdrop pick, v4 the "no
     // TMDB match" answers from before the name match (CRI-99).
-    queryKey: ["hero-images-v10", show.id],
+    queryKey: ["hero-images-v11", show.id],
     staleTime: (query) => showImagesStaleTime(query.state.data),
     gcTime: KEEP_MS,
     // Without a key the lookup cannot work, so say so at once.

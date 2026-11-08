@@ -7,7 +7,11 @@
 // committed (ADR 0002). Without a key, lookups return null and the app
 // falls back to what TVmaze alone gives.
 
-import { KEY_CREW_JOBS } from "@/logic/cast-row";
+import {
+  aggregateCast,
+  aggregateKeyCrew,
+  type TmdbAggregateCredits,
+} from "@/logic/cast-row";
 import {
   NOT_ON_TMDB,
   regionProviders,
@@ -327,27 +331,16 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     if (tvId === null) {
       return NOT_ON_TMDB;
     }
-    // The show's details with its images and credits appended: one
-    // request, as the images alone were, which also gives who created the
-    // show and its cast for Show detail (CRI-143). include_image_language applies to the
-    // appended images.
+    // The show's details with its images and its credits over every
+    // season appended: one request, as the images alone were, which also
+    // gives who created the show and its cast and crew for Show detail
+    // (CRI-143). include_image_language applies to the appended images.
     const details = await requestJson<{
       images?: TmdbImages;
       created_by?: { name?: string | null; profile_path?: string | null }[];
-      credits?: {
-        cast?: {
-          name?: string | null;
-          character?: string | null;
-          profile_path?: string | null;
-        }[];
-        crew?: {
-          name?: string | null;
-          job?: string | null;
-          profile_path?: string | null;
-        }[];
-      };
+      aggregate_credits?: TmdbAggregateCredits;
     }>(
-      `/tv/${tvId}?append_to_response=images,credits&include_image_language=en,null,xx`,
+      `/tv/${tvId}?append_to_response=images,aggregate_credits&include_image_language=en,null,xx`,
       apiKey,
     );
     // The main poster from the find step already made: in any language,
@@ -363,24 +356,10 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
           profilePath: creator.profile_path || null,
         }))
         .filter((creator) => creator.name !== ""),
-      cast: (details.credits?.cast ?? [])
-        .map((member) => ({
-          name: member.name?.trim() ?? "",
-          character: member.character?.trim() || null,
-          profilePath: member.profile_path || null,
-        }))
-        .filter((member) => member.name !== ""),
-      // Only the jobs shown, so a long show's hundred crew members are not
-      // kept on the phone.
-      crew: (details.credits?.crew ?? [])
-        .map((member) => ({
-          name: member.name?.trim() ?? "",
-          job: member.job?.trim() ?? "",
-          profilePath: member.profile_path || null,
-        }))
-        .filter(
-          (member) => member.name !== "" && KEY_CREW_JOBS.includes(member.job),
-        ),
+      // Trimmed to what the row shows, so a long show's hundreds of credits
+      // are not kept on the phone.
+      cast: aggregateCast(details.aggregate_credits),
+      crew: aggregateKeyCrew(details.aggregate_credits),
     };
   }
 

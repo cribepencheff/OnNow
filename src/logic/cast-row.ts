@@ -35,6 +35,77 @@ export const KEY_CREW_JOBS = [
 
 const CREATOR = "Creator";
 
+// TMDB's credits over every season of a show (/tv/{id}/aggregate_credits):
+// a person once, with every role or job and how many episodes each.
+export interface TmdbAggregateCredits {
+  cast?: {
+    name?: string | null;
+    profile_path?: string | null;
+    total_episode_count?: number | null;
+    roles?: { character?: string | null; episode_count?: number | null }[];
+  }[];
+  crew?: {
+    name?: string | null;
+    profile_path?: string | null;
+    total_episode_count?: number | null;
+    jobs?: { job?: string | null; episode_count?: number | null }[];
+  }[];
+}
+
+// The show's cast over all its seasons, most episodes first, so the
+// ensemble comes before a season's guests (owner, 2026-11-08: Rosalind
+// Eleazar, in 29 of Slow Horses' 36 episodes, was missing from the latest
+// season's credits). Each with the role they play most. The first
+// CAST_MAX.
+export function aggregateCast(
+  credits: TmdbAggregateCredits | undefined,
+): TmdbCastMember[] {
+  return (credits?.cast ?? [])
+    .map((member) => {
+      const role = [...(member.roles ?? [])].sort(
+        (a, b) => (b.episode_count ?? 0) - (a.episode_count ?? 0),
+      )[0];
+      return {
+        name: member.name?.trim() ?? "",
+        character: role?.character?.trim() || null,
+        profilePath: member.profile_path || null,
+        episodes: member.total_episode_count ?? 0,
+      };
+    })
+    .filter((member) => member.name !== "")
+    .sort((a, b) => b.episodes - a.episodes)
+    .slice(0, CAST_MAX)
+    .map(({ name, character, profilePath }) => ({
+      name,
+      character,
+      profilePath,
+    }));
+}
+
+// The show's crew in KEY_CREW_JOBS over all its seasons, one entry per
+// person and job, most episodes first.
+export function aggregateKeyCrew(
+  credits: TmdbAggregateCredits | undefined,
+): TmdbCrewMember[] {
+  return [...(credits?.crew ?? [])]
+    .sort((a, b) => (b.total_episode_count ?? 0) - (a.total_episode_count ?? 0))
+    .flatMap((member) => {
+      const name = member.name?.trim() ?? "";
+      if (name === "") {
+        return [];
+      }
+      return (member.jobs ?? [])
+        .map((job) => job.job?.trim() ?? "")
+        .filter((job) => KEY_CREW_JOBS.includes(job))
+        .map((job) => ({
+          name,
+          job,
+          profilePath: member.profile_path || null,
+        }));
+    })
+    .slice(0, ROW_MAX * 2);
+}
+
 export interface CastRowPerson {
   key: string;
   name: string;
