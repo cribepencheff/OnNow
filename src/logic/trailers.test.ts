@@ -124,6 +124,8 @@ describe("trailerPlayerHtml", () => {
     expect(html).toContain('videoId: "s6trailer"');
     expect(html).toContain(`origin: "${PLAYER_ORIGIN}"`);
     expect(html).toContain("autoplay: 1");
+    // The app's player is the full screen: no second one inside it.
+    expect(html).toContain("fs: 0");
   });
 
   it("quotes the id, so it cannot break out of the script", () => {

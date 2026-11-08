@@ -84,6 +84,10 @@ export function youtubeThumbnailUrl(key: string): string {
 // removed, or the page's origin not accepted, codes 2, 5, 100, 101, 150,
 // 153), so the app can offer the video on YouTube instead. The page is
 // loaded with PLAYER_ORIGIN as its base, so YouTube gets an origin.
+// YouTube's own full-screen button is hidden (fs: 0, one of its player
+// parameters): the app's player already fills the screen and turns with
+// the phone, so a full screen inside it would be one too many (owner,
+// 2026-11-08).
 export const PLAYER_ORIGIN = "https://cribepencheff.github.io";
 
 export type PlayerMessage =
@@ -108,7 +112,7 @@ function onYouTubeIframeAPIReady() {
   new YT.Player("player", {
     host: "https://www.youtube-nocookie.com",
     videoId: ${videoId},
-    playerVars: { autoplay: 1, playsinline: 1, rel: 0, origin: ${origin} },
+    playerVars: { autoplay: 1, playsinline: 1, fs: 0, rel: 0, origin: ${origin} },
     events: {
       onReady: function (event) { event.target.playVideo(); },
       onStateChange: function (event) {
