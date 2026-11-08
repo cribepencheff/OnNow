@@ -1,6 +1,6 @@
 # 0021. Trailers from TMDB, played in the app in YouTube's player
 
-Status: Proposed (CRI-143, owner 2026-11-08). Awaits the owner's approval.
+Status: Accepted (CRI-143, approved by the owner 2026-11-08).
 
 ## Context
 Show detail is mostly for deciding whether to follow a show (PRD 5.5). The
