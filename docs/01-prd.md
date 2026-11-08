@@ -301,8 +301,9 @@ per season come in the MVP.
   (owner, 2026-11-08). Then the episodes of one season as cards
   to swipe through, each with a landscape still (TMDB's, else TVmaze's,
   else the show's backdrop, ADR 0012; dimmed only on an upcoming
-  episode), "Episode 2 of 10", episode
-  title, a short summary and relative time ("In 3 days", "Tomorrow", "2 days
+  episode) with the episode's number in a badge in its corner ("E3", and
+  "Finale" on a season's last episode; screen readers hear "Episode 3 of
+  10"; PlayPilot as the reference), episode title, a short summary and relative time ("In 3 days", "Tomorrow", "2 days
   ago", no time of day). There are no separate next and latest cards: each
   card's relative day says which one is out last and which comes next
   (owner, 2026-11-08; Apple TV as the reference). Then the services in the user's

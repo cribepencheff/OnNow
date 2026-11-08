@@ -39,6 +39,7 @@ import type { LocalDate } from "@/logic/local-date";
 import { plainTextParagraphs, plainTextSummary } from "@/logic/search-results";
 import {
   aboutFacts,
+  episodeBadgeLabel,
   episodeDateLabel,
   episodeOfLabel,
   episodeState,
@@ -503,8 +504,10 @@ interface EpisodeContext {
   backdropPath: string | null;
 }
 
-// PRD 5.5: landscape still, "Episode 2 of 10", title, a short summary and
-// the relative day, with "Finale" on a season's last episode.
+// PRD 5.5: landscape still with the episode's number ("E3") in its
+// corner, and "Finale" on a season's last episode; then title, a short
+// summary and the relative day. "Episode 2 of 10" is the card's spoken
+// label.
 function EpisodeCard({
   episode,
   width,
@@ -521,6 +524,7 @@ function EpisodeCard({
   const finale = isFinale(episode, seasons);
   const summary = plainTextSummary(episode.summary);
   const image = episodeImage(episode, tmdbStills, backdropPath);
+  const badge = episodeBadgeLabel(episode);
 
   return (
     <View
@@ -553,12 +557,16 @@ function EpisodeCard({
             accessibilityIgnoresInvertColors
           />
         )}
+        {/* The episode's number in the corner, and Finale beside it, as
+            in PlayPilot (owner, 2026-11-08). Never dimmed. */}
+        {(badge || finale) && (
+          <View style={styles.badges}>
+            {badge && <Text style={styles.badge}>{badge}</Text>}
+            {finale && <Text style={styles.badge}>Finale</Text>}
+          </View>
+        )}
       </View>
       <View style={styles.cardText}>
-        <View style={styles.eyebrowRow}>
-          <Text style={styles.eyebrow}>{episodeOfLabel(episode, seasons)}</Text>
-          {finale && <Text style={styles.finaleBadge}>Finale</Text>}
-        </View>
         <Text
           style={[styles.cardTitle, muted && styles.muted]}
           numberOfLines={1}
@@ -760,15 +768,26 @@ const styles = StyleSheet.create({
     padding: 12,
     gap: 4,
   },
-  eyebrowRow: {
+  // Over the image's top left corner.
+  badges: {
+    position: "absolute",
+    top: 8,
+    left: 8,
     flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
+    gap: 6,
   },
-  eyebrow: {
+  // A small control's material on an image (image-control-backdrop), so
+  // it reads on light and busy stills.
+  badge: {
     ...type.label,
-    textTransform: "uppercase",
-    color: t.inkMuted,
+    color: t.ink,
+    backgroundColor: t.imageControlBackdrop,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: t.imageControlEdge,
+    borderRadius: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    overflow: "hidden",
   },
   cardTitle: {
     ...type.body,
@@ -792,17 +811,6 @@ const styles = StyleSheet.create({
   },
   muted: {
     color: t.inkSubtle,
-  },
-  finaleBadge: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: t.inkMuted,
-    borderWidth: 1,
-    borderColor: t.inkSubtle,
-    borderRadius: t.radiusPill,
-    paddingHorizontal: 6,
-    paddingVertical: 1,
-    overflow: "hidden",
   },
   // Below the floating header.
   quietLine: {

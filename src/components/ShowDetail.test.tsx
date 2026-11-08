@@ -408,18 +408,22 @@ describe("ShowDetail", () => {
       );
     });
 
-    it("PRD 5.5: each card has Episode N of M, the title and its relative day", async () => {
+    it("PRD 5.5: each card has its number in a badge, the title and its relative day, and says Episode N of M", async () => {
       mockShow(showSlowHorsesFixture);
       await render(<ShowDetail showId={45039} />);
 
-      const today = within(row().getByTestId("episode-today"));
-      expect(today.getByText("Episode 2 of 6")).toBeTruthy();
+      const todayCard = row().getByTestId("episode-today");
+      expect(todayCard.props.accessibilityLabel).toContain("Episode 2 of 6");
+      const today = within(todayCard);
+      expect(
+        within(today.getByTestId("episode-image-frame")).getByText("E2"),
+      ).toBeTruthy();
       expect(today.getByText("Daddy Issues")).toBeTruthy();
       expect(today.getByText("Today")).toBeTruthy();
 
       const next = within(row().getAllByTestId("episode-upcoming")[0]);
       expect(next.getByText("Resurrection")).toBeTruthy();
-      expect(next.getByText("Episode 3 of 6")).toBeTruthy();
+      expect(next.getByText("E3")).toBeTruthy();
       expect(next.getByText("In 7 days")).toBeTruthy();
     });
 
@@ -478,9 +482,7 @@ describe("ShowDetail", () => {
       // Season 5 is all out, and opens at its first episode.
       await pickSeason("Season 5");
       expect(
-        within(row().getAllByTestId("episode-aired")[0]).getByText(
-          "Episode 1 of 6",
-        ),
+        within(row().getAllByTestId("episode-aired")[0]).getByText("E1"),
       ).toBeTruthy();
       expect(row().queryByTestId("episode-upcoming")).toBeNull();
     });

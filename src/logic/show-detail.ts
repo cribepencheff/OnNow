@@ -107,6 +107,12 @@ export function episodeOfLabel(
     : `Episode ${episode.number}`;
 }
 
+// "E3", the badge in an episode card's corner (owner, 2026-11-08; the
+// card's spoken label keeps "Episode 3 of 6"). Null without a number.
+export function episodeBadgeLabel(episode: TvMazeEpisode): string | null {
+  return episode.number !== null ? `E${episode.number}` : null;
+}
+
 export type EpisodeState = "aired" | "today" | "upcoming";
 
 export function episodeState(

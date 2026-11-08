@@ -2,6 +2,7 @@ import {
   aboutFacts,
   allEpisodesAvailable,
   currentSeasonNumber,
+  episodeBadgeLabel,
   episodeDateLabel,
   episodeOfLabel,
   episodeState,
@@ -466,5 +467,13 @@ describe("aboutFacts (PRD 5.5)", () => {
       _embedded: { episodes: [], seasons: [] },
     };
     expect(aboutFacts(bare, [])).toEqual([]);
+  });
+});
+
+describe("episodeBadgeLabel (owner, 2026-11-08)", () => {
+  it('is "E3" for episode 3, and null without a number', () => {
+    const episode = slowHorses._embedded.episodes[2];
+    expect(episodeBadgeLabel({ ...episode, number: 3 })).toBe("E3");
+    expect(episodeBadgeLabel({ ...episode, number: null })).toBeNull();
   });
 });
