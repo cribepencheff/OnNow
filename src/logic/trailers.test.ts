@@ -126,6 +126,11 @@ describe("trailerPlayerHtml", () => {
     expect(html).toContain("autoplay: 1");
     // The app's player is the full screen: no second one inside it.
     expect(html).toContain("fs: 0");
+    // Captions off at first, over burned-in subtitles; once only, so the
+    // CC button still works.
+    expect(html).toContain("cc_load_policy: 0");
+    expect(html).toContain('unloadModule("captions")');
+    expect(html).toContain("if (captionsOff) { return; }");
   });
 
   it("quotes the id, so it cannot break out of the script", () => {

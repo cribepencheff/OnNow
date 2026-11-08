@@ -57,7 +57,11 @@ fallback.**
   play button, the video's name and its day.
 - **The player:** a full-screen black layer with YouTube's IFrame player,
   unchanged, from `youtube-nocookie.com`, starting at once, and a close
-  button. YouTube's own full-screen button is hidden with its `fs: 0`
+  button. Captions start off (`cc_load_policy: 0`, and the captions
+  module unloaded the first time it loads): YouTube turned them on by
+  itself, machine translated, over a trailer's burned-in subtitles; the CC
+  button still turns them on (owner, 2026-11-08). YouTube's own
+  full-screen button is hidden with its `fs: 0`
   parameter: the layer already fills the screen and turns with the phone
   (owner, 2026-11-08). Going straight to iOS's full-screen player
   (`playsinline: 0`) was weighed and left out: its closing reads to the

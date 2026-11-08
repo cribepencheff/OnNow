@@ -84,6 +84,9 @@ export function youtubeThumbnailUrl(key: string): string {
 // removed, or the page's origin not accepted, codes 2, 5, 100, 101, 150,
 // 153), so the app can offer the video on YouTube instead. The page is
 // loaded with PLAYER_ORIGIN as its base, so YouTube gets an origin.
+// Captions start off (cc_load_policy: 0, and the captions module unloaded
+// the first time it loads), as they came on by themselves, over burned-in
+// subtitles; the CC button turns them on.
 // YouTube's own full-screen button is hidden (fs: 0, one of its player
 // parameters): the app's player already fills the screen and turns with
 // the phone, so a full screen inside it would be one too many (owner,
@@ -108,13 +111,27 @@ export function trailerPlayerHtml(key: string): string {
 function post(message) {
   window.ReactNativeWebView.postMessage(JSON.stringify(message));
 }
+// Captions off when the player first loads them (owner, 2026-11-08: they
+// came on by themselves, often machine translated, over a trailer's own
+// burned-in subtitles). Once only, so the player's CC button still turns
+// them on.
+var captionsOff = false;
 function onYouTubeIframeAPIReady() {
   new YT.Player("player", {
     host: "https://www.youtube-nocookie.com",
     videoId: ${videoId},
-    playerVars: { autoplay: 1, playsinline: 1, fs: 0, rel: 0, origin: ${origin} },
+    playerVars: { autoplay: 1, playsinline: 1, fs: 0, rel: 0, cc_load_policy: 0, origin: ${origin} },
     events: {
       onReady: function (event) { event.target.playVideo(); },
+      onApiChange: function (event) {
+        if (captionsOff) { return; }
+        var modules = event.target.getOptions ? event.target.getOptions() : [];
+        if (modules.indexOf("captions") >= 0 || modules.indexOf("cc") >= 0) {
+          captionsOff = true;
+          event.target.unloadModule("captions");
+          event.target.unloadModule("cc");
+        }
+      },
       onStateChange: function (event) {
         if (event.data === YT.PlayerState.PLAYING) { post({ type: "playing" }); }
       },
