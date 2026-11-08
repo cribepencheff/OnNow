@@ -82,12 +82,3 @@ export function trailerPlayerLayout(
     closeLabelled: false,
   };
 }
-
-// A pull down closes the player as well as the button (owner,
-// 2026-11-08): the player's page, which fits and only bounces, pulled down
-// past this far (its scroll offset goes negative).
-export const PULL_TO_CLOSE = 100;
-
-export function pullClosesPlayer(offsetY: number): boolean {
-  return offsetY < -PULL_TO_CLOSE;
-}

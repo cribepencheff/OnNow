@@ -8,7 +8,7 @@
 
 import { Image } from "expo-image";
 import { SymbolView } from "expo-symbols";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -24,18 +24,13 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
-import type { WebViewScrollEvent } from "react-native-webview/lib/WebViewTypes";
 
 import type { TmdbVideo } from "@/api/tmdb-types";
 import { openExternalUrl } from "@/hooks/useGuardedRouter";
 import { allowAnyOrientation, holdPortrait } from "@/hooks/screen-orientation";
 import { localDateFromAirstamp, type LocalDate } from "@/logic/local-date";
 import { formatLabelDate } from "@/logic/next-episode-label";
-import {
-  CLOSE_SIZE,
-  pullClosesPlayer,
-  trailerPlayerLayout,
-} from "@/logic/trailer-player-layout";
+import { CLOSE_SIZE, trailerPlayerLayout } from "@/logic/trailer-player-layout";
 import {
   PLAYER_ORIGIN,
   parsePlayerMessage,
@@ -196,18 +191,6 @@ function PlayerContent({
   const screen = useWindowDimensions();
   const layout = trailerPlayerLayout(screen, insets);
 
-  // A pull down closes it too (owner, 2026-11-08). The web view takes
-  // every touch on the player, so the pull is the web view's own: its page
-  // bounces with the finger, and once pulled past PULL_TO_CLOSE the layer
-  // closes. Nothing is drawn over the player.
-  const closing = useRef(false);
-  function onScroll(offsetY: number) {
-    if (!closing.current && pullClosesPlayer(offsetY)) {
-      closing.current = true;
-      onClose();
-    }
-  }
-
   // The player turns with the phone; the app is upright again once it
   // closes (ADR 0021).
   useEffect(() => {
@@ -240,12 +223,10 @@ function PlayerContent({
           baseUrl: `${PLAYER_ORIGIN}/`,
         }}
         originWhitelist={["*"]}
-        // The page fits, so it only bounces: a pull down closes the layer.
-        bounces
-        scrollEventThrottle={16}
-        onScroll={(event: WebViewScrollEvent) =>
-          onScroll(event.nativeEvent.contentOffset.y)
-        }
+        // The page fits the player and stays put (a pull to close, tried
+        // on 2026-11-08, stopped the player starting upright).
+        scrollEnabled={false}
+        bounces={false}
         allowsInlineMediaPlayback
         allowsFullscreenVideo
         mediaPlaybackRequiresUserAction={false}

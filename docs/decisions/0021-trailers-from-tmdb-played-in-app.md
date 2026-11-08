@@ -76,12 +76,11 @@ fallback.**
   screen's full height, edge to edge, and a round button at the top of the
   black bar beside it (owner, 2026-11-08: a smaller video lost the full
   screen feel).
-- **A pull down closes it too.** A gesture laid over the web view never
-  saw the touch: iOS's web view takes it first. So the page, which fits
-  the player and only bounces, closes the layer once pulled down past
-  100 points (`pullClosesPlayer`). Whether YouTube's player lets the pull
-  through is to be checked on a phone; the Close button stays either way,
-  for VoiceOver and for anyone who does not know the pull. A player filling the screen had YouTube lay its
+- **No swipe or pull to close; the Close button only.** A gesture laid
+  over the web view never saw the touch (iOS's web view takes it first),
+  and letting the page bounce so a pull could close it stopped the player
+  starting upright (owner's test, 2026-11-08). Anything over the player
+  is ruled out by YouTube's terms. A player filling the screen had YouTube lay its
   title and controls out to the edges, under the button (owner,
   2026-11-08).
 
