@@ -335,7 +335,12 @@ per season come in the MVP.
   day. A tap plays it full screen in the app in YouTube's own player;
   closing it comes back to the row. When YouTube will not play it here, a
   dialog offers it on YouTube. No row without trailers.
-  Not included: other crew jobs, other ratings, reviews, similar shows, FAQ,
+  Last, a "Related" row (owner, 2026-11-08): TMDB's recommendations for
+  the show, as Top picks uses them (FR-038, ADR 0016), the first ten TVmaze
+  knows, as Home's poster cards with their follow circle, each opening its
+  own Show detail in the same tab. Followed shows stay in it; the show
+  itself does not. No row when TMDB recommends nothing.
+  Not included: other crew jobs, other ratings, reviews, FAQ,
   lists.
 - **Between seasons:** when the current season has ended, the "next"
   episode card becomes a next season card, so it is clear when new episodes

@@ -60,6 +60,10 @@ const mockTmdbSeason = jest.fn(() => ({
 jest.mock("@/hooks/useTmdbSeason", () => ({
   useTmdbSeason: () => mockTmdbSeason(),
 }));
+// The Related row is tested in RelatedRow.test.tsx.
+jest.mock("@/hooks/useRelatedShows", () => ({
+  useRelatedShows: () => ({ cards: [], isLoading: false }),
+}));
 // The Cast row is tested in ShowCast.test.tsx.
 jest.mock("@/hooks/useShowCast", () => ({
   useShowCast: () => ({ data: undefined }),

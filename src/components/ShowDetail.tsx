@@ -61,6 +61,7 @@ import { TAB_BAR_HEIGHT } from "@/logic/tab-bar";
 import { heroLayout, topScrimGradient } from "@/logic/hero-layout";
 import { FloatingBackButton } from "./FloatingBackButton";
 import { PillButton } from "./PillButton";
+import { RelatedRow } from "./RelatedRow";
 import { ShowCast } from "./ShowCast";
 import { TrailersRow } from "./Trailers";
 import { EPISODE_MARK_LABELS, EpisodeMarkDot } from "./Hero/EpisodeMarkChip";
@@ -260,6 +261,13 @@ function ShowDetailContent({
         tmdbCast={showImagesSettled ? (showImages?.cast ?? []) : undefined}
         creators={showImages?.createdBy ?? []}
         crew={showImages?.crew ?? []}
+      />
+
+      {/* Last, before the credits: shows like this one (owner,
+          2026-11-08), opening in the same tab. */}
+      <RelatedRow
+        show={show}
+        detailPathname={overTabBar ? "/search/show/[id]" : "/show/[id]"}
       />
 
       <TvMazeCredit />

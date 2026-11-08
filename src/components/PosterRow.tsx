@@ -117,6 +117,7 @@ export function PosterRow({
   emptyText,
   endAction,
   quietEndOnArrival = false,
+  noEnd = false,
   pulseOffsetMs = 0,
   testID,
   children,
@@ -142,6 +143,9 @@ export function PosterRow({
   // its cards: in Search, which shares Home's rows, it is said only when
   // the end is reached there (CRI-131).
   quietEndOnArrival?: boolean;
+  // No end element at all: a row that is a sample, not a list to finish
+  // (Show detail's "Related", CRI-143).
+  noEnd?: boolean;
   // Added on top of each of this row's own skeleton cards' delayMs, so a
   // later row on the same screen (Home's "Airing this week" under "Top
   // picks") can start its wave a beat after the row above it, rather than
@@ -173,7 +177,8 @@ export function PosterRow({
     setEndOnArrival(atEnd);
   }
   // The end element shows at the end, unless the row arrived there.
-  const caughtUp = atEnd && !(quietEndOnArrival && endOnArrival === true);
+  const caughtUp =
+    !noEnd && atEnd && !(quietEndOnArrival && endOnArrival === true);
   const [opacity] = useState(() => new Animated.Value(isShown ? 1 : 0));
 
   useEffect(() => {
