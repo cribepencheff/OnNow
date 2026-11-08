@@ -7,6 +7,7 @@ import {
   regionProviders,
   rowIsUnavailable,
   rowServiceLogos,
+  streamingServices,
   rowServiceText,
   tmdbOriginCountries,
   tmdbTvId,
@@ -573,5 +574,28 @@ describe("tmdbOriginCountries (FR-028)", () => {
 
   it("is empty when TMDB does not know the show", () => {
     expect(tmdbOriginCountries({ tv_results: [] })).toEqual([]);
+  });
+});
+
+// Owner, 2026-11-08: every service in the About sheet, as the rows name them.
+describe("streamingServices", () => {
+  it("lists every streaming service once, in TMDB's order, with its logo", () => {
+    expect(
+      streamingServices([
+        { providerId: 1773, providerName: "SkyShowtime", logoPath: "/sky.png" },
+        { providerId: 350, providerName: "Apple TV", logoPath: "/atv.png" },
+        { providerId: 350, providerName: "Apple TV", logoPath: "/atv.png" },
+      ]),
+    ).toEqual([
+      { name: "SkyShowtime", logoPath: "/sky.png" },
+      { name: "Apple TV", logoPath: "/atv.png" },
+    ]);
+  });
+
+  it("is empty while loading, without a key, or when TMDB does not know the show", () => {
+    expect(streamingServices(undefined)).toEqual([]);
+    expect(streamingServices(null)).toEqual([]);
+    expect(streamingServices(NOT_ON_TMDB)).toEqual([]);
+    expect(streamingServices([])).toEqual([]);
   });
 });

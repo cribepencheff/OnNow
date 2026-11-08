@@ -247,18 +247,6 @@ describe("ShowDetail", () => {
   // Owner, 2026-11-08 (Apple TV): "About", the summary in a panel, three
   // lines, with More opening the whole text in a sheet.
   describe("About", () => {
-    const LONG = Array.from({ length: 5 }, () => ({ text: "line" }));
-
-    function layOut(lines: { text: string }[]) {
-      return fireEvent(
-        screen.getByTestId("show-detail-summary-measure", {
-          includeHiddenElements: true,
-        }),
-        "textLayout",
-        { nativeEvent: { lines } },
-      );
-    }
-
     it("shows the summary in three lines under an About heading", async () => {
       mockShow(showSlowHorsesFixture);
       await render(<ShowDetail showId={45039} />);
@@ -274,8 +262,6 @@ describe("ShowDetail", () => {
     it("opens the whole summary in a sheet from More, and closes it", async () => {
       mockShow(showSlowHorsesFixture);
       await render(<ShowDetail showId={45039} />);
-      expect(screen.queryByRole("button", { name: "More" })).toBeNull();
-      await layOut(LONG);
 
       await fireEvent.press(screen.getByRole("button", { name: "More" }));
       const sheet = within(screen.getByTestId("show-detail-about-sheet"));
@@ -303,11 +289,49 @@ describe("ShowDetail", () => {
       expect(screen.queryByTestId("show-detail-about-sheet")).toBeNull();
     });
 
-    it("shows no More when the summary fits in three lines", async () => {
-      mockShow(showSlowHorsesFixture);
+    // Owner, 2026-11-08: the sheet holds more than the text, so More is
+    // always there.
+    it("shows More however short the summary, as the sheet holds more", async () => {
+      mockShow({ ...showSlowHorsesFixture, summary: "<p>Short.</p>" });
       await render(<ShowDetail showId={45039} />);
-      await layOut(LONG.slice(0, 3));
-      expect(screen.queryByRole("button", { name: "More" })).toBeNull();
+      expect(screen.getByRole("button", { name: "More" })).toBeTruthy();
+    });
+
+    it("says there is no overview without a summary, and still opens the sheet", async () => {
+      mockShow({ ...showSlowHorsesFixture, summary: null });
+      await render(<ShowDetail showId={45039} />);
+      expect(
+        within(screen.getByTestId("show-detail-about")).getByText(
+          "No overview available.",
+        ),
+      ).toBeTruthy();
+      await fireEvent.press(screen.getByRole("button", { name: "More" }));
+      const sheet = within(screen.getByTestId("show-detail-about-sheet"));
+      expect(sheet.getByTestId("show-detail-about-facts")).toBeTruthy();
+    });
+
+    it("lists every service in the region in the sheet, as the rows name them", async () => {
+      mockShow(showSlowHorsesFixture);
+      mockStreamingServices([
+        { providerId: 350, providerName: "Apple TV", logoPath: "/atv.png" },
+        SKYSHOWTIME,
+      ]);
+      await render(<ShowDetail showId={45039} />);
+      await fireEvent.press(screen.getByRole("button", { name: "More" }));
+      const services = within(screen.getByTestId("show-detail-about-services"));
+      expect(
+        services.getByRole("header", { name: "Where to watch in Sweden" }),
+      ).toBeTruthy();
+      expect(services.getByLabelText("Apple TV")).toBeTruthy();
+      expect(services.getByLabelText("SkyShowtime")).toBeTruthy();
+    });
+
+    it("leaves where to watch out when the show is on no service", async () => {
+      mockShow(showSlowHorsesFixture);
+      mockStreamingServices([]);
+      await render(<ShowDetail showId={45039} />);
+      await fireEvent.press(screen.getByRole("button", { name: "More" }));
+      expect(screen.queryByTestId("show-detail-about-services")).toBeNull();
     });
   });
 
