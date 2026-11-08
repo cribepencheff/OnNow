@@ -8,7 +8,7 @@
 
 import { Image } from "expo-image";
 import { SymbolView } from "expo-symbols";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -23,6 +23,7 @@ import { WebView } from "react-native-webview";
 
 import type { TmdbVideo } from "@/api/tmdb-types";
 import { openExternalUrl } from "@/hooks/useGuardedRouter";
+import { allowAnyOrientation, holdPortrait } from "@/hooks/screen-orientation";
 import { localDateFromAirstamp, type LocalDate } from "@/logic/local-date";
 import { formatLabelDate } from "@/logic/next-episode-label";
 import {
@@ -157,6 +158,13 @@ export function TrailerPlayer({
   onClose: () => void;
 }) {
   const insets = useSafeAreaInsets();
+
+  // The player turns with the phone; the app is upright again once it
+  // closes (ADR 0021).
+  useEffect(() => {
+    allowAnyOrientation();
+    return holdPortrait;
+  }, []);
 
   // Shown over the player, which closes with either button.
   function unavailable() {

@@ -8,6 +8,7 @@ import { Alert } from "react-native";
 
 import type { TmdbVideo } from "@/api/tmdb-types";
 import { openExternalUrl } from "@/hooks/useGuardedRouter";
+import { allowAnyOrientation, holdPortrait } from "@/hooks/screen-orientation";
 import { PLAYER_ORIGIN } from "@/logic/trailers";
 import {
   TrailersRow,
@@ -18,6 +19,10 @@ import {
 // react-native-webview is mocked in jest/setup.ts as a plain view that
 // keeps its props.
 jest.mock("@/hooks/useGuardedRouter", () => ({ openExternalUrl: jest.fn() }));
+jest.mock("@/hooks/screen-orientation", () => ({
+  allowAnyOrientation: jest.fn(),
+  holdPortrait: jest.fn(),
+}));
 
 const S6: TmdbVideo = {
   key: "s6trailer",
@@ -54,6 +59,8 @@ function webView() {
 describe("TrailersRow (ADR 0021)", () => {
   beforeEach(() => {
     (openExternalUrl as jest.Mock).mockClear();
+    (allowAnyOrientation as jest.Mock).mockClear();
+    (holdPortrait as jest.Mock).mockClear();
   });
 
   it("shows each trailer with YouTube's still, its name and its day", async () => {
@@ -87,6 +94,19 @@ describe("TrailersRow (ADR 0021)", () => {
     await fireEvent.press(screen.getByRole("button", { name: "Close" }));
     expect(screen.queryByTestId("trailer-player")).toBeNull();
     expect(screen.getByTestId("show-detail-trailers")).toBeTruthy();
+  });
+
+  it("lets the player turn with the phone, and holds the app upright again when it closes", async () => {
+    await renderRow();
+    expect(allowAnyOrientation).not.toHaveBeenCalled();
+    await fireEvent.press(
+      screen.getByRole("button", { name: "Play Season 6 Official Trailer" }),
+    );
+    expect(allowAnyOrientation).toHaveBeenCalledTimes(1);
+    expect(holdPortrait).not.toHaveBeenCalled();
+
+    await fireEvent.press(screen.getByRole("button", { name: "Close" }));
+    expect(holdPortrait).toHaveBeenCalledTimes(1);
   });
 
   it("offers YouTube when the video will not play here", async () => {

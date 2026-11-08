@@ -80,7 +80,12 @@ fallback.**
   checklist (CRI-83).
 - The cached answers grow by their videos: the images answer
   (`hero-images-v12`) and the season answer (`tmdb-season-v2`).
-- Whether the player turns to landscape although the app is locked to
-  portrait (`app.json`) is to be checked on a phone; the player asks for
-  both.
+- **Only the player turns** (owner, 2026-11-08). `app.json` allows every
+  orientation, and the app holds itself upright with
+  `expo-screen-orientation` (in Expo Go): at launch, and again when the
+  player closes; the player lets it turn while it is open. A native build
+  also starts upright (the plugin's `initialOrientation: PORTRAIT_UP`).
+  Before, `"orientation": "portrait"` kept iOS from turning anything, the
+  player included. On iPad, a lock holds only with `ios.requireFullScreen`,
+  and not reliably from iOS 27; the app is for iPhone now.
 - PRD 5.5 no longer lists trailers as not included.

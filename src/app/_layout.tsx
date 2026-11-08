@@ -7,6 +7,7 @@ import { Manrope_800ExtraBold, useFonts } from "@expo-google-fonts/manrope";
 
 import { setUpAppStateFocus } from "@/hooks/app-state-focus";
 import { releaseNavigation } from "@/hooks/navigation-lock";
+import { holdPortrait } from "@/hooks/screen-orientation";
 import {
   asyncStoragePersister,
   PERSISTED_CACHE_MAX_AGE_MS,
@@ -18,6 +19,8 @@ import { t } from "@/theme/tokens";
 // CRI-95: Home hides the splash once its data is ready (at once from the
 // cache); without a cache it waits for the first fetch, at most this long.
 SplashScreen.preventAutoHideAsync().catch(() => {});
+// Upright, as early as can be: only the trailer player turns (ADR 0021).
+holdPortrait();
 const SPLASH_MAX_MS = 2000;
 
 export default function RootLayout() {
