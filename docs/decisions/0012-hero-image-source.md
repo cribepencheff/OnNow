@@ -205,6 +205,6 @@ it is coming; a backdrop standing in on an episode that is out is not.
 TVmaze stays the source of the episodes and their days (ADR 0005, ADR
 0006); TMDB only gives the image, and, from the same season request, the
 episode's overview where TVmaze has no summary (TVmaze's text first;
-nothing without either). No new service or key. The TMDB terms
+"No overview available." without either). No new service or key. The TMDB terms
 for a commercial app (ADR 0005) are unchanged by this and belong to the
 backend decision (CRI-145).

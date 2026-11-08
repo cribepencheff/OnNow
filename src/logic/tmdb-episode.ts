@@ -28,8 +28,8 @@ export function matchTmdbEpisode(
 }
 
 // An episode card's short summary (owner, 2026-11-08): TVmaze's, else
-// TMDB's overview for the same episode. Null without either: the card
-// shows no text rather than one saying there is none (data first).
+// TMDB's overview for the same episode. Null without either; the card
+// then says "No overview available." (owner, 2026-11-08).
 export function episodeSummary(
   episode: TvMazeEpisode,
   tmdbEpisodes: TmdbSeasonEpisode[],

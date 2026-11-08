@@ -304,7 +304,8 @@ per season come in the MVP.
   episode) with the episode's number in a badge in its corner ("E3", and
   "Finale" on a season's last episode; screen readers hear "Episode 3 of
   10"; PlayPilot as the reference), episode title, a short summary (TVmaze's, else TMDB's overview for the
-  same episode; nothing without either) and relative time ("In 3 days", "Tomorrow", "2 days
+  same episode; "No overview available." without either, owner
+  2026-11-08) and relative time ("In 3 days", "Tomorrow", "2 days
   ago", no time of day). There are no separate next and latest cards: each
   card's relative day says which one is out last and which comes next
   (owner, 2026-11-08; Apple TV as the reference). Then the services in the user's

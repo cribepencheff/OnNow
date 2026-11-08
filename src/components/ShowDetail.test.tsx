@@ -485,6 +485,32 @@ describe("ShowDetail", () => {
       expect(next.getByText("From TMDB.")).toBeTruthy();
     });
 
+    it("CRI-143: says No overview available. on a card with no summary anywhere", async () => {
+      const withoutSummary = {
+        ...showSlowHorsesFixture,
+        _embedded: {
+          ...showSlowHorsesFixture._embedded,
+          episodes: showSlowHorsesFixture._embedded.episodes.map((episode) =>
+            episode.season === 6 && episode.number === 3
+              ? { ...episode, summary: null }
+              : episode,
+          ),
+        },
+      };
+      mockShow(withoutSummary);
+      await render(<ShowDetail showId={45039} />);
+      const next = within(row().getAllByTestId("episode-upcoming")[0]);
+      expect(next.getByTestId("episode-no-overview")).toHaveTextContent(
+        "No overview available.",
+      );
+      // A card with a summary has no such line.
+      expect(
+        within(row().getByTestId("episode-today")).queryByTestId(
+          "episode-no-overview",
+        ),
+      ).toBeNull();
+    });
+
     it("CRI-143: leaves the show's backdrop undimmed on an episode that is out", async () => {
       mockShow(showSlowHorsesFixture);
       await render(<ShowDetail showId={45039} />);

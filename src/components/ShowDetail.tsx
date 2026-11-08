@@ -444,6 +444,8 @@ function SeasonPicker({
 }
 
 const CARD_GAP = 12;
+// An episode card's line when neither TVmaze nor TMDB has a summary.
+export const NO_OVERVIEW = "No overview available.";
 // How much of the card's width the screen gives it: the next card shows at
 // the edge, to say the row scrolls (Apple TV).
 const CARD_WIDTH_SHARE = 0.78;
@@ -575,14 +577,15 @@ function EpisodeCard({
         >
           {episode.name}
         </Text>
-        {summary && (
-          <Text
-            style={[styles.cardSummary, muted && styles.muted]}
-            numberOfLines={3}
-          >
-            {summary}
-          </Text>
-        )}
+        {/* Without a summary from TVmaze or TMDB, a quiet line says so
+            rather than leaving a gap (owner, 2026-11-08). */}
+        <Text
+          style={[styles.cardSummary, (muted || !summary) && styles.muted]}
+          numberOfLines={3}
+          testID={summary ? undefined : "episode-no-overview"}
+        >
+          {summary ?? NO_OVERVIEW}
+        </Text>
         <Text
           style={[
             styles.cardDate,
