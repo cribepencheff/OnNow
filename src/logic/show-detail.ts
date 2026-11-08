@@ -354,15 +354,18 @@ export function aboutFacts(
   const facts: AboutFact[] = [];
   const episodes = regularEpisodes(show._embedded.episodes);
 
+  // "Years 2018–2022" once TVmaze gives an end date, otherwise "Premiered
+  // 2026": nothing said about a future the data does not give (owner,
+  // 2026-11-08).
   const first = show.premiered?.slice(0, 4);
-  if (first) {
-    const last = show.ended?.slice(0, 4);
-    const value = !last
-      ? `${first}–`
-      : last === first
-        ? first
-        : `${first}–${last}`;
-    facts.push({ label: "Years", value });
+  const last = show.ended?.slice(0, 4);
+  if (first && last) {
+    facts.push({
+      label: "Years",
+      value: last === first ? first : `${first}–${last}`,
+    });
+  } else if (first) {
+    facts.push({ label: "Premiered", value: first });
   }
 
   const seasonCount = new Set(episodes.map((episode) => episode.season)).size;

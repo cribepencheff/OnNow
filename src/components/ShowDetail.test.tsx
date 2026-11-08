@@ -266,12 +266,16 @@ describe("ShowDetail", () => {
       expect(
         sheet.getByText(/Slow Horses follows the story/).props.numberOfLines,
       ).toBeUndefined();
+      // Slow Horses has two paragraphs on TVmaze, kept apart in the sheet.
+      expect(
+        sheet.getByText(/Slow Horses follows the story/).props.children,
+      ).toContain("\n\n");
 
       // Every genre, and the facts the data gives.
       expect(sheet.getByText("Drama, Thriller, Espionage")).toBeTruthy();
       const facts = within(sheet.getByTestId("show-detail-about-facts"));
       expect(facts.getByRole("header", { name: "Information" })).toBeTruthy();
-      expect(facts.getByLabelText("Years, 2022–")).toBeTruthy();
+      expect(facts.getByLabelText("Premiered, 2022")).toBeTruthy();
       expect(facts.getByLabelText("Runtime, 45 min")).toBeTruthy();
       expect(facts.getByLabelText("Origin, United Kingdom")).toBeTruthy();
 

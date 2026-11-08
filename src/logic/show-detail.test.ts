@@ -417,9 +417,9 @@ describe("initialSeasonNumber and initialEpisodeIndex (FR-032)", () => {
 
 // Owner, 2026-11-08: the About sheet's facts, from data already fetched.
 describe("aboutFacts (PRD 5.5)", () => {
-  it("lists years, seasons, episodes, runtime, origin and language (Slow Horses)", () => {
+  it("lists premiere, seasons, episodes, runtime, origin and language (Slow Horses)", () => {
     expect(aboutFacts(slowHorses, ["GB"])).toEqual([
-      { label: "Years", value: "2022–" },
+      { label: "Premiered", value: "2022" },
       { label: "Seasons", value: "6" },
       {
         label: "Episodes",
@@ -439,7 +439,7 @@ describe("aboutFacts (PRD 5.5)", () => {
     expect(seasons?.value).toBe("6");
   });
 
-  it("gives an ended show its last year, and one year once", () => {
+  it("gives a show with an end date its years, and one year once", () => {
     const years = (show: TvMazeShowWithEmbeds) =>
       aboutFacts(show, []).find((fact) => fact.label === "Years")?.value;
     expect(years(killingEve)).toBe("2018–2022");

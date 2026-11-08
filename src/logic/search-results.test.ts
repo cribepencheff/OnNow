@@ -1,4 +1,5 @@
 import {
+  plainTextParagraphs,
   plainTextSummary,
   rankSearchResults,
   searchResultNetworkName,
@@ -158,5 +159,32 @@ describe("plainTextSummary", () => {
 
   it("returns null when there is no summary", () => {
     expect(plainTextSummary(null)).toBeNull();
+  });
+});
+
+// Owner, 2026-11-08: the About sheet keeps TVmaze's paragraphs and line
+// breaks, which a Text shows from "\n".
+describe("plainTextParagraphs", () => {
+  it("keeps paragraphs apart with a blank line", () => {
+    expect(
+      plainTextParagraphs("<p>Slow Horses</p>\n<p>Second  paragraph.</p>"),
+    ).toBe("Slow Horses\n\nSecond paragraph.");
+  });
+
+  it("keeps a line break, and strips other tags", () => {
+    expect(
+      plainTextParagraphs("<p><b>Slow</b> Horses<br />Next line</p>"),
+    ).toBe("Slow Horses\nNext line");
+  });
+
+  it("returns one paragraph as it is (VisionQuest)", () => {
+    expect(plainTextParagraphs("<p>Vision, rebooted.</p>")).toBe(
+      "Vision, rebooted.",
+    );
+  });
+
+  it("returns null when there is no summary, or no text in it", () => {
+    expect(plainTextParagraphs(null)).toBeNull();
+    expect(plainTextParagraphs("<p> </p>")).toBeNull();
   });
 });

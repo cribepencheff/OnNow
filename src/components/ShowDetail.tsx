@@ -31,7 +31,7 @@ import { useOriginCountries } from "@/hooks/useOriginCountries";
 import { useShow } from "@/hooks/useShow";
 import { useToday } from "@/hooks/useToday";
 import type { LocalDate } from "@/logic/local-date";
-import { plainTextSummary } from "@/logic/search-results";
+import { plainTextParagraphs, plainTextSummary } from "@/logic/search-results";
 import {
   aboutFacts,
   episodeDateLabel,
@@ -177,6 +177,7 @@ function ShowDetailContent({
         <About
           title={show.name}
           text={summary}
+          fullText={plainTextParagraphs(show.summary) ?? summary}
           genres={show.genres ?? []}
           facts={aboutFacts(show, originCountries ?? [])}
         />
@@ -217,11 +218,14 @@ const SUMMARY_LINES = 3;
 function About({
   title,
   text,
+  fullText,
   genres,
   facts,
 }: {
   title: string;
   text: string;
+  // The whole text with TVmaze's paragraphs kept, for the sheet.
+  fullText: string;
   genres: string[];
   facts: AboutFact[];
 }) {
@@ -271,7 +275,7 @@ function About({
       <AboutSheet
         visible={open}
         title={title}
-        text={text}
+        text={fullText}
         genres={genres}
         facts={facts}
         onClose={() => setOpen(false)}
