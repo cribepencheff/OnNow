@@ -204,6 +204,18 @@ export function seasonTabs(
     });
 }
 
+// An announced season's card (FR-033, owner 2026-11-08): its premiere day
+// as an episode card says its day ("In 6 days", "Fri 9 Jul 2027"), or
+// "TBA" when TVmaze has no date.
+export function announcedSeasonDateLabel(
+  season: TvMazeSeason | undefined,
+  todayDate: LocalDate,
+): string {
+  return season?.premiereDate
+    ? relativeDayLabel(season.premiereDate, todayDate)
+    : "TBA";
+}
+
 // FR-032: the current season is the one of the latest episode out by
 // today; before a show's first episode, its first season with episodes.
 export function currentSeasonNumber(

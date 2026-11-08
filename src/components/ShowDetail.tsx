@@ -34,12 +34,13 @@ import { useShow } from "@/hooks/useShow";
 import { useShowImages } from "@/hooks/useShowImages";
 import { useToday } from "@/hooks/useToday";
 import type { TmdbSeasonEpisode } from "@/api/tmdb-types";
-import { episodeImage } from "@/logic/episode-image";
+import { episodeImage, showBackdropImage } from "@/logic/episode-image";
 import { episodeSummary } from "@/logic/tmdb-episode";
 import type { LocalDate } from "@/logic/local-date";
 import { plainTextParagraphs, plainTextSummary } from "@/logic/search-results";
 import {
   aboutFacts,
+  announcedSeasonDateLabel,
   episodeBadgeLabel,
   episodeDateLabel,
   episodeMark,
@@ -209,6 +210,7 @@ function ShowDetailContent({
           <EpisodeRow
             // A new list per season, so it opens at its own start.
             key={selectedSeason}
+            seasonNumber={selectedSeason}
             episodes={seasonEpisodes}
             startIndex={startIndex}
             width={width}
@@ -443,7 +445,6 @@ function SeasonPicker({
           importantForAccessibility="no"
         />
       )}
-      {current?.note && <Text style={styles.seasonNote}>{current.note}</Text>}
     </Pressable>
   );
 }
@@ -461,21 +462,34 @@ const CARD_WIDTH_SHARE = 0.78;
 // label of their own; upcoming episodes are muted. Never a time of day
 // (ADR 0001). Specials are never listed (FR-037).
 function EpisodeRow({
+  seasonNumber,
   episodes,
   startIndex,
   width,
   ...context
 }: {
+  seasonNumber: number | undefined;
   episodes: TvMazeEpisode[];
   startIndex: number;
   width: number;
 } & EpisodeContext) {
-  if (episodes.length === 0) {
-    return <Text style={styles.noEpisodes}>No episodes yet.</Text>;
-  }
-
   const cardWidth = Math.round(width * CARD_WIDTH_SHARE);
   const interval = cardWidth + CARD_GAP;
+
+  if (episodes.length === 0) {
+    // An announced season TVmaze lists no episodes for (FR-033): one card
+    // in an episode card's shape, so it reads as a season coming, as a
+    // listed "TBA" episode does (owner, 2026-11-08).
+    return seasonNumber !== undefined ? (
+      <View style={styles.episodeRow}>
+        <AnnouncedSeasonCard
+          seasonNumber={seasonNumber}
+          width={cardWidth}
+          {...context}
+        />
+      </View>
+    ) : null;
+  }
 
   return (
     <FlatList
@@ -502,6 +516,62 @@ function EpisodeRow({
         />
       )}
     />
+  );
+}
+
+// The card for an announced season without episodes: the show's backdrop,
+// dimmed as everything upcoming is, an "Announced" badge, "Season 3", "No
+// episodes yet." and the premiere day or "TBA".
+function AnnouncedSeasonCard({
+  seasonNumber,
+  width,
+  seasons,
+  todayDate,
+  backdropPath,
+}: { seasonNumber: number; width: number } & EpisodeContext) {
+  const image = showBackdropImage(backdropPath);
+  const dateLabel = announcedSeasonDateLabel(
+    seasons.find((season) => season.number === seasonNumber),
+    todayDate,
+  );
+  const title = `Season ${seasonNumber}`;
+
+  return (
+    <View
+      testID="announced-season-card"
+      accessible
+      accessibilityLabel={`${title}, Announced, No episodes yet, ${dateLabel}`}
+      style={[styles.card, { width }]}
+    >
+      <View
+        style={[styles.still, image && styles.stillBehindImage]}
+        testID="episode-image-frame"
+      >
+        {image && (
+          <Image
+            source={image.uri}
+            style={[StyleSheet.absoluteFill, styles.stillMuted]}
+            contentFit="cover"
+            accessibilityIgnoresInvertColors
+            testID="episode-show-image"
+          />
+        )}
+        <View style={styles.badges}>
+          <View style={styles.badge}>
+            <Text style={styles.badgeLabel}>Announced</Text>
+          </View>
+        </View>
+      </View>
+      <View style={styles.cardText}>
+        <Text style={[styles.cardTitle, styles.muted]} numberOfLines={1}>
+          {title}
+        </Text>
+        <Text style={[styles.cardSummary, styles.muted]} numberOfLines={3}>
+          No episodes yet.
+        </Text>
+        <Text style={[styles.cardDate, styles.muted]}>{dateLabel}</Text>
+      </View>
+    </View>
   );
 }
 
@@ -752,17 +822,7 @@ const styles = StyleSheet.create({
     ...type.headline,
     color: t.ink,
   },
-  seasonNote: {
-    ...type.meta,
-    color: t.inkMuted,
-    marginLeft: 4,
-  },
   episodeRow: {
-    paddingHorizontal: t.contentInset,
-  },
-  noEpisodes: {
-    ...type.body,
-    color: t.inkMuted,
     paddingHorizontal: t.contentInset,
   },
   card: {

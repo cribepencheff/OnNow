@@ -1,6 +1,7 @@
 import {
   aboutFacts,
   allEpisodesAvailable,
+  announcedSeasonDateLabel,
   currentSeasonNumber,
   episodeBadgeLabel,
   episodeDateLabel,
@@ -508,5 +509,27 @@ describe("episodeMark (owner, 2026-11-08; as heroEpisodeMark)", () => {
 
   it("marks no finale without TVmaze's episode order", () => {
     expect(episodeMark(find(slowHorses, 6, 6), [])).toBeNull();
+  });
+});
+
+describe("announcedSeasonDateLabel (FR-033)", () => {
+  it("gives the premiere day as an episode card does, or TBA", () => {
+    const season = slowHorses._embedded.seasons[0];
+    expect(
+      announcedSeasonDateLabel(
+        { ...season, premiereDate: "2026-09-29" },
+        TODAY,
+      ),
+    ).toBe("In 6 days");
+    expect(
+      announcedSeasonDateLabel(
+        { ...season, premiereDate: "2027-07-09" },
+        TODAY,
+      ),
+    ).toBe("Fri 9 Jul 2027");
+    expect(
+      announcedSeasonDateLabel({ ...season, premiereDate: null }, TODAY),
+    ).toBe("TBA");
+    expect(announcedSeasonDateLabel(undefined, TODAY)).toBe("TBA");
   });
 });

@@ -41,11 +41,15 @@ export function episodeImage(
   if (tvmaze) {
     return { uri: tvmaze, showImage: false };
   }
-  if (backdropPath) {
-    return {
-      uri: `${IMAGE_BASE}/${BACKDROP_SIZE}${backdropPath}`,
-      showImage: true,
-    };
-  }
-  return null;
+  return showBackdropImage(backdropPath);
+}
+
+// The show's backdrop as a card's image: for an episode with no still,
+// and for an announced season's card (owner, 2026-11-08).
+export function showBackdropImage(
+  backdropPath: string | null,
+): EpisodeImage | null {
+  return backdropPath
+    ? { uri: `${IMAGE_BASE}/${BACKDROP_SIZE}${backdropPath}`, showImage: true }
+    : null;
 }

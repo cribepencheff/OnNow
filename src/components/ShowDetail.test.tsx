@@ -401,15 +401,26 @@ describe("ShowDetail", () => {
       ).toBe(0);
     });
 
-    it("FR-033: says No episodes yet for an announced season", async () => {
+    it("FR-033: shows an announced season as one card in an episode card's shape", async () => {
       mockShow(showSlowHorsesFixture);
       await render(<ShowDetail showId={45039} />);
       await pickSeason("Season 7 · Announced");
 
-      expect(screen.getByText("No episodes yet.")).toBeTruthy();
+      // The heading says the season alone; the card says the rest.
       expect(screen.getByTestId("show-detail-season-picker")).toHaveTextContent(
-        "Season 7Announced",
+        /^Season 7$/,
       );
+      const card = within(screen.getByTestId("announced-season-card"));
+      expect(card.getByText("Announced")).toBeTruthy();
+      expect(card.getByText("Season 7")).toBeTruthy();
+      expect(card.getByText("No episodes yet.")).toBeTruthy();
+      // TVmaze has no premiere date for it.
+      expect(card.getByText("TBA")).toBeTruthy();
+      // The show's backdrop, dimmed as everything upcoming is.
+      expect(
+        StyleSheet.flatten(card.getByTestId("episode-show-image").props.style)
+          .opacity,
+      ).toBe(0.5);
     });
 
     it("PRD 5.5: each card has its number in a badge, the title and its relative day, and says Episode N of M", async () => {

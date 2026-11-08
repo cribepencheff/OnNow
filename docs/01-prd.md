@@ -368,7 +368,9 @@ per season come in the MVP.
     0015)
   - finale: a small "Finale" badge on the last episode of a season
   An announced season without episodes is in the menu with its premiere
-  date or "Announced", and shows "No episodes yet." when picked.
+  date or "Announced". Picked, it shows one card in an episode card's
+  shape: the show's backdrop dimmed, an "Announced" badge, "Season 3",
+  "No episodes yet." and the premiere day or "TBA" (owner, 2026-11-08).
 - **Two actions, followed or not (CRI-86):** a "Follow" / "Following"
   toggle button ("Follow" in the accent colour, "Following" quiet; tap again
   to undo) and "Open in [service]" as a full button whenever the show has a
