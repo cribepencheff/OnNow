@@ -13,7 +13,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { tmdbClient, tmdbShowRef } from "@/api/tmdb-client";
 import type { TvMazeShow } from "@/api/tvmaze-types";
-import type { TmdbCreator, TmdbImage } from "@/api/tmdb-types";
+import type { TmdbCastMember, TmdbCreator, TmdbImage } from "@/api/tmdb-types";
 import {
   chooseHighestRatedBackdrop,
   chooseLogo,
@@ -44,6 +44,9 @@ export interface ShowImages {
   // Who created the show, for Show detail's About sheet (CRI-143); from
   // the same request as the images.
   createdBy: TmdbCreator[];
+  // The show's main cast, for Show detail's Cast & Crew row (CRI-143);
+  // from the same request as the images.
+  cast: TmdbCastMember[];
 }
 
 // How long an answer is fresh (ADR 0017, owner 2026-10-22): a week when
@@ -65,13 +68,13 @@ export function useShowImages(
     // kept and saved 21 days (ADR 0017): after time away the hero shows
     // the images it had at once, replaced if TMDB's now differ. Bump this
     // suffix whenever ShowImages' shape changes, since answers are kept.
-    // v8: createdBy with portraits (CRI-143). v7: createdBy added, as
+    // v9: cast added (CRI-143). v8: createdBy with portraits (CRI-143). v7: createdBy added, as
     // names (CRI-143). v6: posterPath added (CRI-100). v5: the key no longer carries the
     // day (v4 did, which meant a new fetch, and no image meanwhile, on
     // every new day).
     // Earlier: v3 dropped the stored "official" backdrop pick, v4 the "no
     // TMDB match" answers from before the name match (CRI-99).
-    queryKey: ["hero-images-v8", show.id],
+    queryKey: ["hero-images-v9", show.id],
     staleTime: (query) => showImagesStaleTime(query.state.data),
     gcTime: KEEP_MS,
     // Without a key the lookup cannot work, so say so at once.
@@ -92,9 +95,10 @@ export function useShowImages(
           logo: null,
           posterPath: null,
           createdBy: [],
+          cast: [],
         };
       }
-      const { tvId, images, posterPath, createdBy } = found;
+      const { tvId, images, posterPath, createdBy, cast } = found;
       const textless = textlessBackdrops(images);
       return {
         tmdbId: tvId,
@@ -105,6 +109,7 @@ export function useShowImages(
         logo: chooseLogo(images),
         posterPath,
         createdBy,
+        cast,
       };
     },
   });

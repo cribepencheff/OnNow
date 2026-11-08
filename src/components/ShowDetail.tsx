@@ -153,7 +153,11 @@ function ShowDetailContent({
   // and the show's backdrop
   // (the hero's, already fetched) for a card with no still anywhere.
   const { data: tmdbEpisodes } = useTmdbSeason(show, selectedSeason);
-  const { data: showImages } = useShowImages(show);
+  const { data: showImages, isPending: showImagesPending } =
+    useShowImages(show);
+  // TMDB's answer is in, or failed (no key): the cast row may then ask
+  // TVmaze instead.
+  const showImagesSettled = !showImagesPending;
   const seasonEpisodes = regularEpisodes(episodes).filter(
     (episode) => episode.season === selectedSeason,
   );
@@ -228,7 +232,11 @@ function ShowDetailContent({
       )}
 
       {/* After the episodes (owner, 2026-11-08), as in Apple TV. */}
-      <ShowCast showId={show.id} creators={showImages?.createdBy ?? []} />
+      <ShowCast
+        showId={show.id}
+        tmdbCast={showImagesSettled ? (showImages?.cast ?? []) : undefined}
+        creators={showImages?.createdBy ?? []}
+      />
 
       <TvMazeCredit />
       <TmdbCredit />

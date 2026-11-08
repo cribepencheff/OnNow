@@ -434,6 +434,16 @@ describe("TmdbClient.findImages", () => {
             { name: " " },
             { name: "Yoo In-sik", profile_path: null },
           ],
+          credits: {
+            cast: [
+              {
+                name: "Kim You-jung",
+                character: "Lee Ga-kyung",
+                profile_path: "/kim.jpg",
+              },
+              { name: "Jinyoung", character: "", profile_path: null },
+            ],
+          },
         }),
       );
     const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
@@ -447,22 +457,33 @@ describe("TmdbClient.findImages", () => {
         { name: "Ryu Bo-ri", profilePath: "/ryu.jpg" },
         { name: "Yoo In-sik", profilePath: null },
       ],
+      // And its cast, from the same request.
+      cast: [
+        {
+          name: "Kim You-jung",
+          character: "Lee Ga-kyung",
+          profilePath: "/kim.jpg",
+        },
+        { name: "Jinyoung", character: null, profilePath: null },
+      ],
     });
     // One request for both, as the images alone were.
     expect(fetchFn).toHaveBeenCalledTimes(2);
     expect(fetchFn.mock.calls[1][0]).toContain(
-      "/3/tv/273207?append_to_response=images&include_image_language=en,null,xx",
+      "/3/tv/273207?append_to_response=images,credits&include_image_language=en,null,xx",
     );
   });
 
-  it("gives no creators when TMDB lists none", async () => {
+  it("gives no creators or cast when TMDB lists none", async () => {
     const fetchFn = jest
       .fn()
       .mockResolvedValueOnce(jsonResponse(findNeagley))
       .mockResolvedValueOnce(jsonResponse({ images: {} }));
     const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
     const answer = await client.findImages(NEAGLEY_EXTERNALS);
-    expect(answer).toEqual(expect.objectContaining({ createdBy: [] }));
+    expect(answer).toEqual(
+      expect.objectContaining({ createdBy: [], cast: [] }),
+    );
   });
 
   it("is NOT_ON_TMDB for an unknown show, null without a key", async () => {

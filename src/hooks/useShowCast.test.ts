@@ -30,4 +30,15 @@ describe("useShowCast (CRI-143)", () => {
     expect(getCast).toHaveBeenCalledWith(45039);
     await unmount();
   });
+
+  it("asks nothing when not enabled (TMDB has the cast)", async () => {
+    getCast.mockReset();
+    const { result, unmount } = await renderHook(
+      () => useShowCast(45039, false),
+      { wrapper: wrapperWithQueryClient(createTestQueryClient()) },
+    );
+    expect(result.current.fetchStatus).toBe("idle");
+    expect(getCast).not.toHaveBeenCalled();
+    await unmount();
+  });
 });

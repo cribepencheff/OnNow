@@ -319,10 +319,12 @@ per season come in the MVP.
   "TMDB" and linked to the show on TMDB, and is left out when there is
   none or it has fewer than 50 votes (ADR 0019).
   After the episodes, a "Cast & Crew" row (owner, 2026-11-08; Apple TV
-  as the reference): TVmaze's cast in its order, then the show's creators
-  from TMDB, each a round portrait, the name and, muted, the character or
+  as the reference): the cast from TMDB, whose portraits are current
+  (TVmaze's when TMDB lists none), then the show's creators from TMDB,
+  both from the request that already gives the show's images; each a
+  round portrait, the name and, muted, the character or
   "Creator". About three people across the screen, the fourth at the edge.
-  "Cast" alone without creators; nothing to tap; no row with no one.
+  Nothing to tap; no row with no one.
   Not included: other crew, other ratings, reviews, trailers, similar shows, FAQ,
   lists.
 - **Between seasons:** when the current season has ended, the "next"

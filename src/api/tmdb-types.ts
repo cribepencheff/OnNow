@@ -42,6 +42,14 @@ export interface TmdbCreator {
   profilePath: string | null;
 }
 
+// A cast member in TMDB's credits for a show (CRI-143): the current main
+// cast, in TMDB's order.
+export interface TmdbCastMember {
+  name: string;
+  character: string | null;
+  profilePath: string | null;
+}
+
 export const IMAGE_BASE = "https://image.tmdb.org/t/p";
 
 // The largest backdrop size fetched (CRI-140, ADR 0012): w1920, which

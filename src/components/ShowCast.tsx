@@ -1,11 +1,9 @@
 // Show detail's Cast & Crew row (CRI-143, owner 2026-11-08; Apple TV's
-// Cast & Crew as the reference): TVmaze's cast in its own order, then the
-// show's creators from TMDB (from the request that already gives the
-// show's images), each a round portrait with the name and, muted, the
-// character or "Creator". Nothing to tap. Without a portrait, a plain
-// circle with a person symbol; without a character, the name alone (data
-// first). "Cast" alone when TMDB lists no creators; no row at all when
-// there is no one, while loading, or on an error.
+// Cast & Crew as the reference): who is in it is decided in
+// logic/cast-row.ts (TMDB's cast, else TVmaze's, then TMDB's creators).
+// Each person is a round portrait with the name and, muted, the character
+// or "Creator". Nothing to tap. Without a portrait, a plain circle with a
+// person symbol. No row at all when there is no one.
 
 import { SymbolView } from "expo-symbols";
 import { Image } from "expo-image";
@@ -17,8 +15,9 @@ import {
   useWindowDimensions,
 } from "react-native";
 
-import { IMAGE_BASE, type TmdbCreator } from "@/api/tmdb-types";
+import type { TmdbCastMember, TmdbCreator } from "@/api/tmdb-types";
 import { useShowCast } from "@/hooks/useShowCast";
+import { castRowPeople, type CastRowPerson } from "@/logic/cast-row";
 import { t, type } from "@/theme/tokens";
 
 // How many people show across the screen: three, and the fourth at the
@@ -26,40 +25,24 @@ import { t, type } from "@/theme/tokens";
 const PEOPLE_ACROSS = 3.4;
 const GAP = 12;
 
-interface Person {
-  key: string;
-  name: string;
-  imageUrl: string | null;
-  role: string | null;
-}
-
 export function ShowCast({
   showId,
+  tmdbCast,
   creators,
 }: {
   showId: number;
+  // TMDB's cast once its answer is in ([] when it has none, or failed);
+  // undefined while it loads, so TVmaze is not asked too early.
+  tmdbCast: TmdbCastMember[] | undefined;
   creators: TmdbCreator[];
 }) {
-  const { data: cast } = useShowCast(showId);
+  const { data: tvmazeCast } = useShowCast(
+    showId,
+    tmdbCast !== undefined && tmdbCast.length === 0,
+  );
   const { width } = useWindowDimensions();
 
-  const people: Person[] = [
-    ...(cast ?? []).map((member, index) => ({
-      // One person can play more than one character.
-      key: `cast-${member.personId}-${member.character ?? index}`,
-      name: member.name,
-      imageUrl: member.imageUrl,
-      role: member.character,
-    })),
-    ...creators.map((creator) => ({
-      key: `creator-${creator.name}`,
-      name: creator.name,
-      imageUrl: creator.profilePath
-        ? `${IMAGE_BASE}/w185${creator.profilePath}`
-        : null,
-      role: "Creator",
-    })),
-  ];
+  const people = castRowPeople(tmdbCast ?? [], tvmazeCast ?? [], creators);
   if (people.length === 0) {
     return null;
   }
@@ -69,7 +52,7 @@ export function ShowCast({
   return (
     <View style={styles.section} testID="show-detail-cast">
       <Text style={styles.heading} accessibilityRole="header">
-        {creators.length > 0 ? "Cast & Crew" : "Cast"}
+        Cast & Crew
       </Text>
       <ScrollView
         horizontal
@@ -84,7 +67,7 @@ export function ShowCast({
   );
 }
 
-function PersonItem({ person, size }: { person: Person; size: number }) {
+function PersonItem({ person, size }: { person: CastRowPerson; size: number }) {
   return (
     <View
       style={[styles.item, { width: size }]}

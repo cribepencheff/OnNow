@@ -29,6 +29,7 @@ import { queryClient } from "@/hooks/query-client";
 import { createTmdbFindCache } from "@/hooks/tmdb-find-cache";
 import type {
   TmdbSeasonEpisode,
+  TmdbCastMember,
   TmdbCreator,
   TmdbImages,
   TmdbSeasonResponse,
@@ -95,6 +96,8 @@ export interface TmdbShowImagesAnswer {
   posterPath: string | null;
   // TMDB's "created by", in its order; [] when it has none.
   createdBy: TmdbCreator[];
+  // TMDB's main cast, in its order; [] when it has none.
+  cast: TmdbCastMember[];
 }
 
 export interface TmdbClient {
@@ -320,15 +323,22 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     if (tvId === null) {
       return NOT_ON_TMDB;
     }
-    // The show's details with its images appended: one request, as the
-    // images alone were, which also gives who created the show for the
-    // About sheet (CRI-143). include_image_language applies to the
+    // The show's details with its images and credits appended: one
+    // request, as the images alone were, which also gives who created the
+    // show and its cast for Show detail (CRI-143). include_image_language applies to the
     // appended images.
     const details = await requestJson<{
       images?: TmdbImages;
       created_by?: { name?: string | null; profile_path?: string | null }[];
+      credits?: {
+        cast?: {
+          name?: string | null;
+          character?: string | null;
+          profile_path?: string | null;
+        }[];
+      };
     }>(
-      `/tv/${tvId}?append_to_response=images&include_image_language=en,null,xx`,
+      `/tv/${tvId}?append_to_response=images,credits&include_image_language=en,null,xx`,
       apiKey,
     );
     // The main poster from the find step already made: in any language,
@@ -344,6 +354,13 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
           profilePath: creator.profile_path || null,
         }))
         .filter((creator) => creator.name !== ""),
+      cast: (details.credits?.cast ?? [])
+        .map((member) => ({
+          name: member.name?.trim() ?? "",
+          character: member.character?.trim() || null,
+          profilePath: member.profile_path || null,
+        }))
+        .filter((member) => member.name !== ""),
     };
   }
 
