@@ -11,6 +11,7 @@ import { openExternalUrl } from "@/hooks/useGuardedRouter";
 import { allowAnyOrientation, holdPortrait } from "@/hooks/screen-orientation";
 import { PLAYER_ORIGIN } from "@/logic/trailers";
 import {
+  TrailerPlayer,
   TrailersRow,
   UNAVAILABLE_MESSAGE,
   UNAVAILABLE_TITLE,
@@ -107,6 +108,21 @@ describe("TrailersRow (ADR 0021)", () => {
 
     await fireEvent.press(screen.getByRole("button", { name: "Close" }));
     expect(holdPortrait).toHaveBeenCalledTimes(1);
+  });
+
+  it("closes when the player is pulled down far enough, once", async () => {
+    const close = jest.fn();
+    await render(<TrailerPlayer trailer={S6} onClose={close} />);
+    const pull = (y: number) =>
+      fireEvent(webView(), "scroll", {
+        nativeEvent: { contentOffset: { x: 0, y } },
+      });
+
+    await pull(-40);
+    expect(close).not.toHaveBeenCalled();
+    await pull(-140);
+    await pull(-160);
+    expect(close).toHaveBeenCalledTimes(1);
   });
 
   it("says Close on the close button upright", async () => {

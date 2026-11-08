@@ -1,5 +1,6 @@
 import {
   CLOSE_SIZE,
+  pullClosesPlayer,
   trailerPlayerLayout,
   type PlayerLayout,
 } from "./trailer-player-layout";
@@ -41,26 +42,39 @@ describe("trailerPlayerLayout (ADR 0021)", () => {
     expect(overlaps(layout, 393)).toBe(false);
   });
 
-  it("turned: the video centred between two columns, a round button at the top of the right one", () => {
+  it("turned: the video the screen's full height, centred, a round button at the top of the right bar", () => {
     const layout = trailerPlayerLayout(TURNED, TURNED_INSETS);
-    const safeWidth = 852 - 59 - 59;
-    const column = CLOSE_SIZE + 32;
     expect(layout.closeLabelled).toBe(false);
-    expect(layout.video.width).toBeCloseTo(safeWidth - 2 * column);
-    expect(layout.video.height).toBeCloseTo(layout.video.width / (16 / 9));
-    expect(layout.video.left).toBeCloseTo(59 + column);
-    expect(layout.close.top).toBe(16);
-    // Inside the safe area, centred in the right column.
-    expect(layout.close.right).toBeCloseTo(59 + 16);
+    // Edge to edge in height, as YouTube's own full screen.
+    expect(layout.video.top).toBe(0);
+    expect(layout.video.height).toBeCloseTo(393);
+    expect(layout.video.width).toBeCloseTo(393 * (16 / 9));
+    expect(layout.video.left).toBeCloseTo((852 - 393 * (16 / 9)) / 2);
+    // Centred in the right bar, clear of the rounded corner.
+    const bar = (852 - 393 * (16 / 9)) / 2;
+    expect(layout.close.right).toBeCloseTo((bar - CLOSE_SIZE) / 2);
+    expect(layout.close.top).toBe(20);
     expect(overlaps(layout, 852)).toBe(false);
   });
 
-  it("turned on a screen with room to spare: no taller than the safe area", () => {
+  it("turned on a screen too narrow for the bars: the video gives way", () => {
     const layout = trailerPlayerLayout(
-      { width: 1400, height: 400 },
+      { width: 720, height: 405 },
       { top: 0, right: 0, bottom: 0, left: 0 },
     );
-    expect(layout.video.height).toBeCloseTo(400);
-    expect(overlaps(layout, 1400)).toBe(false);
+    expect(layout.video.width).toBeCloseTo(720 - 2 * (CLOSE_SIZE + 16));
+    expect(overlaps(layout, 720)).toBe(false);
+  });
+});
+
+describe("pullClosesPlayer (owner, 2026-11-08)", () => {
+  it("closes once the page is pulled down past the limit", () => {
+    expect(pullClosesPlayer(-120)).toBe(true);
+  });
+
+  it("stays on a short pull, or a push up", () => {
+    expect(pullClosesPlayer(-60)).toBe(false);
+    expect(pullClosesPlayer(0)).toBe(false);
+    expect(pullClosesPlayer(40)).toBe(false);
   });
 });
