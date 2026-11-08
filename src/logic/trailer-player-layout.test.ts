@@ -1,5 +1,6 @@
 import {
   CLOSE_SIZE,
+  pullClosesPlayer,
   trailerPlayerLayout,
   type PlayerLayout,
 } from "./trailer-player-layout";
@@ -63,5 +64,17 @@ describe("trailerPlayerLayout (ADR 0021)", () => {
     );
     expect(layout.video.width).toBeCloseTo(720 - 2 * (CLOSE_SIZE + 16));
     expect(overlaps(layout, 720)).toBe(false);
+  });
+});
+
+describe("pullClosesPlayer (owner, 2026-11-08)", () => {
+  it("closes once the page is pulled down past the limit", () => {
+    expect(pullClosesPlayer(-120)).toBe(true);
+  });
+
+  it("stays on a short pull, or a push up", () => {
+    expect(pullClosesPlayer(-60)).toBe(false);
+    expect(pullClosesPlayer(0)).toBe(false);
+    expect(pullClosesPlayer(40)).toBe(false);
   });
 });
