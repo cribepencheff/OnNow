@@ -52,6 +52,12 @@ const mockShowImages = jest.fn();
 jest.mock("@/hooks/useShowImages", () => ({
   useShowImages: () => mockShowImages(),
 }));
+// TMDB's stills for the season shown (CRI-143); the choice of image is
+// tested in episode-image.test.ts.
+const mockSeasonStills = jest.fn(() => ({ data: [] as unknown[] }));
+jest.mock("@/hooks/useSeasonStills", () => ({
+  useSeasonStills: () => mockSeasonStills(),
+}));
 jest.mock("@/hooks/useFollowList", () =>
   jest.requireActual("@/hooks/test-follow-list-mock").followListMock(),
 );
@@ -135,6 +141,7 @@ describe("ShowDetail", () => {
       url: "https://www.themoviedb.org/tv/247718",
     });
     mockOriginCountries.mockReturnValue({ data: ["GB"] });
+    mockSeasonStills.mockReturnValue({ data: [] });
     follow.mockReset();
     unfollow.mockReset();
     mockFollowed(false);
@@ -414,6 +421,29 @@ describe("ShowDetail", () => {
       expect(next.getByText("Resurrection")).toBeTruthy();
       expect(next.getByText("Episode 3 of 6")).toBeTruthy();
       expect(next.getByText("In 7 days")).toBeTruthy();
+    });
+
+    it("CRI-143: draws TMDB's still, else the show's backdrop, dimmed", async () => {
+      mockShow(showSlowHorsesFixture);
+      mockSeasonStills.mockReturnValueOnce({
+        data: [
+          // Slow Horses S6E3, out on Wed 30 Sep 2026.
+          { episodeNumber: 3, airDate: "2026-09-30", stillPath: "/s6e3.jpg" },
+        ],
+      });
+      await render(<ShowDetail showId={45039} />);
+
+      const next = row().getAllByTestId("episode-upcoming")[0];
+      expect(
+        JSON.stringify(within(next).getByTestId("episode-still").props.source),
+      ).toContain("/original/s6e3.jpg");
+      // S6E4 has no still anywhere yet: the show's backdrop, dimmed.
+      const after = row().getAllByTestId("episode-upcoming")[1];
+      const backdrop = within(after).getByTestId("episode-show-image");
+      expect(JSON.stringify(backdrop.props.source)).toContain(
+        "/w780/textless.jpg",
+      );
+      expect(StyleSheet.flatten(backdrop.props.style).opacity).toBe(0.5);
     });
 
     it("marks aired, today and upcoming episodes, and the finale", async () => {

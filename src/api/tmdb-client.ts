@@ -27,7 +27,11 @@ import { matchTmdbSearch, type TmdbSearchResult } from "@/logic/tmdb-match";
 import { tmdbRating, type TmdbRating } from "@/logic/show-rating";
 import { queryClient } from "@/hooks/query-client";
 import { createTmdbFindCache } from "@/hooks/tmdb-find-cache";
-import type { TmdbImages } from "./tmdb-types";
+import type {
+  TmdbEpisodeStill,
+  TmdbImages,
+  TmdbSeasonResponse,
+} from "./tmdb-types";
 import type { TvMazeExternals, TvMazeShow } from "./tvmaze-types";
 import type {
   SuggestedTitle,
@@ -83,6 +87,13 @@ export interface TmdbClientOptions {
 }
 
 export interface TmdbClient {
+  // A season's episode stills (CRI-143): [] when TMDB has no such
+  // season, NOT_ON_TMDB when TMDB does not know the show, null without a
+  // key.
+  findSeasonStills: (
+    show: TmdbShowRef,
+    season: number,
+  ) => Promise<TmdbEpisodeStill[] | typeof NOT_ON_TMDB | null>;
   // The region's services for a show, [] when TMDB has none, NOT_ON_TMDB
   // when TMDB does not know the show, null when there is no API key.
   findStreamingProviders: (
@@ -316,6 +327,38 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     return { tvId, images, posterPath };
   }
 
+  async function findSeasonStills(
+    show: TmdbShowRef,
+    season: number,
+  ): Promise<TmdbEpisodeStill[] | typeof NOT_ON_TMDB | null> {
+    if (!apiKey) {
+      return null;
+    }
+    const tvId = tmdbTvId(await lookUp(show, apiKey));
+    if (tvId === null) {
+      return NOT_ON_TMDB;
+    }
+    let response: TmdbSeasonResponse;
+    try {
+      response = await requestJson<TmdbSeasonResponse>(
+        `/tv/${tvId}/season/${season}`,
+        apiKey,
+      );
+    } catch (error) {
+      // TMDB numbers a show's seasons its own way at times: a season it
+      // does not have is no stills, not an error.
+      if (error instanceof TmdbResponseError && error.status === 404) {
+        return [];
+      }
+      throw error;
+    }
+    return (response.episodes ?? []).map((episode) => ({
+      episodeNumber: episode.episode_number,
+      airDate: episode.air_date || null,
+      stillPath: episode.still_path || null,
+    }));
+  }
+
   async function externalIdsById(tmdbId: number): Promise<ExternalIds | null> {
     if (!apiKey) {
       return null;
@@ -410,6 +453,7 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     findExternalIds,
     findRecommendations,
     findImages,
+    findSeasonStills,
     externalIdsById,
   };
 }

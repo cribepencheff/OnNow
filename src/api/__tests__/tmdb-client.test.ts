@@ -510,3 +510,60 @@ describe("TmdbClient.findTranslations", () => {
     expect(fetchFn.mock.calls[0][0]).toContain("/3/tv/255570/translations");
   });
 });
+
+// CRI-143: episode stills come from TMDB first, a season at a time.
+describe("TmdbClient.findSeasonStills (CRI-143)", () => {
+  const FIND = { tv_results: [{ id: 248890 }] };
+
+  it("reads a season's stills, trimmed to number, date and path", async () => {
+    const fetchFn = jest
+      .fn()
+      .mockResolvedValueOnce(jsonResponse(FIND))
+      .mockResolvedValueOnce(
+        jsonResponse({
+          episodes: [
+            { episode_number: 9, air_date: "2026-11-07", still_path: "/9.jpg" },
+            { episode_number: 11, air_date: "2026-11-14", still_path: null },
+          ],
+        }),
+      );
+    const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
+
+    await expect(
+      client.findSeasonStills(NEAGLEY_EXTERNALS, 1),
+    ).resolves.toEqual([
+      { episodeNumber: 9, airDate: "2026-11-07", stillPath: "/9.jpg" },
+      { episodeNumber: 11, airDate: "2026-11-14", stillPath: null },
+    ]);
+    expect(fetchFn.mock.calls[1][0]).toContain("/3/tv/248890/season/1");
+  });
+
+  it("is [] for a season TMDB does not have", async () => {
+    const fetchFn = jest
+      .fn()
+      .mockResolvedValueOnce(jsonResponse(FIND))
+      .mockResolvedValueOnce(jsonResponse({}, 404));
+    const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
+    await expect(
+      client.findSeasonStills(NEAGLEY_EXTERNALS, 9),
+    ).resolves.toEqual([]);
+  });
+
+  it("is NOT_ON_TMDB for an unknown show, null without a key", async () => {
+    const fetchFn = jest
+      .fn()
+      .mockResolvedValue(jsonResponse({ tv_results: [] }));
+    const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
+    await expect(client.findSeasonStills(NEAGLEY_EXTERNALS, 1)).resolves.toBe(
+      NOT_ON_TMDB,
+    );
+    const noKey = createTmdbClient({
+      apiKey: undefined,
+      fetchFn,
+      wait: noWait,
+    });
+    await expect(
+      noKey.findSeasonStills(NEAGLEY_EXTERNALS, 1),
+    ).resolves.toBeNull();
+  });
+});

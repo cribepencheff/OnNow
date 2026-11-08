@@ -299,7 +299,8 @@ per season come in the MVP.
   "Years 2018–2022" once there is an end date, seasons with episodes, regular episodes listed,
   runtime (TVmaze's average), every origin country and language
   (owner, 2026-11-08). Then the episodes of one season as cards
-  to swipe through, each with a landscape still, "Episode 2 of 10", episode
+  to swipe through, each with a landscape still (TMDB's, else TVmaze's,
+  else the show's backdrop dimmed, ADR 0012), "Episode 2 of 10", episode
   title, a short summary and relative time ("In 3 days", "Tomorrow", "2 days
   ago", no time of day). There are no separate next and latest cards: each
   card's relative day says which one is out last and which comes next

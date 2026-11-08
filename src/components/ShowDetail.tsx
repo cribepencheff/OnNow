@@ -29,8 +29,12 @@ import type {
   TvMazeShowWithEmbeds,
 } from "@/api/tvmaze-types";
 import { useOriginCountries } from "@/hooks/useOriginCountries";
+import { useSeasonStills } from "@/hooks/useSeasonStills";
 import { useShow } from "@/hooks/useShow";
+import { useShowImages } from "@/hooks/useShowImages";
 import { useToday } from "@/hooks/useToday";
+import type { TmdbEpisodeStill } from "@/api/tmdb-types";
+import { episodeImage } from "@/logic/episode-image";
 import type { LocalDate } from "@/logic/local-date";
 import { plainTextParagraphs, plainTextSummary } from "@/logic/search-results";
 import {
@@ -139,6 +143,10 @@ function ShowDetailContent({
       tabs[0]?.number,
   );
   const [selectedSeason, setSelectedSeason] = useState(initialSeason);
+  // CRI-143: TMDB's stills for the season shown, and the show's backdrop
+  // (the hero's, already fetched) for a card with no still anywhere.
+  const { data: tmdbStills } = useSeasonStills(show, selectedSeason);
+  const { data: showImages } = useShowImages(show);
   const seasonEpisodes = regularEpisodes(episodes).filter(
     (episode) => episode.season === selectedSeason,
   );
@@ -201,6 +209,8 @@ function ShowDetailContent({
             seasons={seasons}
             timeZone={timeZone}
             todayDate={todayDate}
+            tmdbStills={tmdbStills ?? []}
+            backdropPath={showImages?.highestRatedBackdrop?.file_path ?? null}
           />
         </View>
       )}
@@ -492,6 +502,8 @@ interface EpisodeContext {
   seasons: TvMazeSeason[];
   timeZone: string;
   todayDate: LocalDate;
+  tmdbStills: TmdbEpisodeStill[];
+  backdropPath: string | null;
 }
 
 // PRD 5.5: landscape still, "Episode 2 of 10", title, a short summary and
@@ -503,12 +515,15 @@ function EpisodeCard({
   seasons,
   timeZone,
   todayDate,
+  tmdbStills,
+  backdropPath,
 }: { episode: TvMazeEpisode; width: number; last: boolean } & EpisodeContext) {
   const state = episodeState(episode, timeZone, todayDate);
   const muted = state === "upcoming";
   const dateLabel = episodeDateLabel(episode, timeZone, todayDate);
   const finale = isFinale(episode, seasons);
   const summary = plainTextSummary(episode.summary);
+  const image = episodeImage(episode, tmdbStills, backdropPath);
 
   return (
     <View
@@ -524,13 +539,18 @@ function EpisodeCard({
         .join(", ")}
       style={[styles.card, { width }, !last && { marginRight: CARD_GAP }]}
     >
-      {/* Upcoming episodes usually have no still yet: an empty frame keeps
+      {/* The episode's still, else the show's backdrop, dimmed as not the
+          episode's own (episodeImage); with neither, an empty frame keeps
           the cards in line, with nothing made up in it (data first). */}
       <View style={styles.still}>
-        {episode.image?.medium && (
+        {image && (
           <Image
-            source={episode.image.original ?? episode.image.medium}
-            style={[StyleSheet.absoluteFill, muted && styles.stillMuted]}
+            source={image.uri}
+            testID={image.showImage ? "episode-show-image" : "episode-still"}
+            style={[
+              StyleSheet.absoluteFill,
+              (muted || image.showImage) && styles.stillMuted,
+            ]}
             contentFit="cover"
             accessibilityIgnoresInvertColors
           />

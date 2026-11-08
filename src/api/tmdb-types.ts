@@ -15,6 +15,23 @@ export interface TmdbImages {
   logos?: TmdbImage[];
 }
 
+// An episode's still in TMDB's season details (/tv/{id}/season/{n}),
+// trimmed to what the episode row uses (CRI-143).
+export interface TmdbEpisodeStill {
+  episodeNumber: number;
+  // TMDB's date, without a time of day (ADR 0005), or null.
+  airDate: string | null;
+  stillPath: string | null;
+}
+
+export interface TmdbSeasonResponse {
+  episodes?: {
+    episode_number: number;
+    air_date: string | null;
+    still_path: string | null;
+  }[];
+}
+
 export const IMAGE_BASE = "https://image.tmdb.org/t/p";
 
 // The largest backdrop size fetched (CRI-140, ADR 0012): w1920, which
