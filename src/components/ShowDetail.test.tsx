@@ -444,7 +444,13 @@ describe("ShowDetail", () => {
       expect(JSON.stringify(backdrop.props.source)).toContain(
         "/w780/textless.jpg",
       );
-      expect(StyleSheet.flatten(backdrop.props.style).opacity).toBe(0.35);
+      expect(StyleSheet.flatten(backdrop.props.style).opacity).toBe(0.5);
+      // Over black, not the card's grey.
+      expect(
+        StyleSheet.flatten(
+          within(after).getByTestId("episode-image-frame").props.style,
+        ).backgroundColor,
+      ).toBe(t.imageDimBackdrop);
     });
 
     it("CRI-143: leaves the show's backdrop undimmed on an episode that is out", async () => {

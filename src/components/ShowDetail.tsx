@@ -540,7 +540,10 @@ function EpisodeCard({
           with neither, an empty frame keeps the cards in line, with
           nothing made up in it (data first). Only an upcoming episode is
           dimmed, as a hint that it is coming (owner, 2026-11-08). */}
-      <View style={[styles.still, image && styles.stillBehindImage]}>
+      <View
+        style={[styles.still, image && styles.stillBehindImage]}
+        testID="episode-image-frame"
+      >
         {image && (
           <Image
             source={image.uri}
@@ -742,15 +745,15 @@ const styles = StyleSheet.create({
     aspectRatio: STILL_ASPECT_RATIO,
     backgroundColor: t.surfaceRaised,
   },
-  // Behind an image, near black, so a dimmed image darkens rather than
-  // greys (owner, 2026-11-08).
+  // Behind an image, black, so a dimmed image darkens rather than greys
+  // (owner, 2026-11-08).
   stillBehindImage: {
-    backgroundColor: t.bg,
+    backgroundColor: t.imageDimBackdrop,
   },
   // An upcoming episode's image, whatever it is: darker than the rest,
   // as a hint that it is coming (owner, 2026-11-08).
   stillMuted: {
-    opacity: 0.35,
+    opacity: 0.5,
   },
   cardText: {
     flex: 1,
