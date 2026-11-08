@@ -54,7 +54,9 @@ jest.mock("@/hooks/useShowImages", () => ({
 }));
 // TMDB's stills for the season shown (CRI-143); the choice of image is
 // tested in episode-image.test.ts.
-const mockTmdbSeason = jest.fn(() => ({ data: [] as unknown[] }));
+const mockTmdbSeason = jest.fn(() => ({
+  data: { episodes: [] as unknown[], videos: [] as unknown[] },
+}));
 jest.mock("@/hooks/useTmdbSeason", () => ({
   useTmdbSeason: () => mockTmdbSeason(),
 }));
@@ -145,7 +147,7 @@ describe("ShowDetail", () => {
       url: "https://www.themoviedb.org/tv/247718",
     });
     mockOriginCountries.mockReturnValue({ data: ["GB"] });
-    mockTmdbSeason.mockReturnValue({ data: [] });
+    mockTmdbSeason.mockReturnValue({ data: { episodes: [], videos: [] } });
     follow.mockReset();
     unfollow.mockReset();
     mockFollowed(false);
@@ -444,11 +446,14 @@ describe("ShowDetail", () => {
 
     it("CRI-143: draws TMDB's still, else the show's backdrop, dimming only upcoming episodes", async () => {
       mockShow(showSlowHorsesFixture);
-      mockTmdbSeason.mockReturnValueOnce({
-        data: [
-          // Slow Horses S6E3, out on Wed 30 Sep 2026.
-          { episodeNumber: 3, airDate: "2026-09-30", stillPath: "/s6e3.jpg" },
-        ],
+      mockTmdbSeason.mockReturnValue({
+        data: {
+          episodes: [
+            // Slow Horses S6E3, out on Wed 30 Sep 2026.
+            { episodeNumber: 3, airDate: "2026-09-30", stillPath: "/s6e3.jpg" },
+          ],
+          videos: [],
+        },
       });
       await render(<ShowDetail showId={45039} />);
 
@@ -486,14 +491,17 @@ describe("ShowDetail", () => {
       };
       mockShow(withoutSummary);
       mockTmdbSeason.mockReturnValue({
-        data: [
-          {
-            episodeNumber: 3,
-            airDate: "2026-09-30",
-            stillPath: null,
-            overview: "From TMDB.",
-          },
-        ],
+        data: {
+          episodes: [
+            {
+              episodeNumber: 3,
+              airDate: "2026-09-30",
+              stillPath: null,
+              overview: "From TMDB.",
+            },
+          ],
+          videos: [],
+        },
       });
       await render(<ShowDetail showId={45039} />);
       const next = within(row().getAllByTestId("episode-upcoming")[0]);

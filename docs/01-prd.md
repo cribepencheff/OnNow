@@ -329,7 +329,13 @@ per season come in the MVP.
   one, the name and, muted, the character or the jobs. About three people
   across the screen, the fourth at the edge. Nothing to tap; no row with
   no one.
-  Not included: other crew jobs, other ratings, reviews, trailers, similar shows, FAQ,
+  After About, a "Trailers" row (ADR 0021, owner 2026-11-08): official
+  trailers and teasers from TMDB, the latest season's and the show's,
+  newest first, at most six, each with YouTube's still, its name and its
+  day. A tap plays it full screen in the app in YouTube's own player;
+  closing it comes back to the row. When YouTube will not play it here, a
+  dialog offers it on YouTube. No row without trailers.
+  Not included: other crew jobs, other ratings, reviews, similar shows, FAQ,
   lists.
 - **Between seasons:** when the current season has ended, the "next"
   episode card becomes a next season card, so it is clear when new episodes

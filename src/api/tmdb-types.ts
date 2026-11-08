@@ -33,6 +33,40 @@ export interface TmdbSeasonResponse {
     still_path: string | null;
     overview?: string | null;
   }[];
+  videos?: TmdbVideosResponse;
+}
+
+// TMDB's videos for a show or a season (/videos, or appended), as TMDB
+// sends them (ADR 0021).
+export interface TmdbVideosResponse {
+  results?: {
+    key?: string | null;
+    name?: string | null;
+    site?: string | null;
+    type?: string | null;
+    official?: boolean | null;
+    iso_639_1?: string | null;
+    published_at?: string | null;
+  }[];
+}
+
+// A video TMDB lists, trimmed (ADR 0021). key is the video's id on its
+// site (YouTube's "v=").
+export interface TmdbVideo {
+  key: string;
+  name: string;
+  site: string;
+  type: string;
+  official: boolean;
+  language: string | null;
+  // "2026-08-18T16:00:12.000Z", or null.
+  publishedAt: string | null;
+}
+
+// A season's episodes and videos from TMDB (CRI-143, ADR 0021).
+export interface TmdbSeason {
+  episodes: TmdbSeasonEpisode[];
+  videos: TmdbVideo[];
 }
 
 // Someone TMDB lists as having created a show (CRI-143), with a portrait

@@ -8,10 +8,10 @@ import { useTmdbSeason } from "./useTmdbSeason";
 
 jest.mock("@/api/tmdb-client", () => ({
   ...jest.requireActual("@/api/tmdb-client"),
-  tmdbClient: { findSeasonEpisodes: jest.fn() },
+  tmdbClient: { findSeason: jest.fn() },
 }));
 
-const findSeasonEpisodes = tmdbClient.findSeasonEpisodes as jest.Mock;
+const findSeason = tmdbClient.findSeason as jest.Mock;
 const SHOW = {
   id: 90249,
   name: "100 Days of Deception",
@@ -21,7 +21,7 @@ const SHOW = {
 
 // CRI-143: a season's TMDB stills, one request per season looked at.
 describe("useTmdbSeason (CRI-143)", () => {
-  beforeEach(() => findSeasonEpisodes.mockReset());
+  beforeEach(() => findSeason.mockReset());
 
   async function render(season: number | undefined) {
     return renderHook(() => useTmdbSeason(SHOW, season), {
@@ -29,14 +29,17 @@ describe("useTmdbSeason (CRI-143)", () => {
     });
   }
 
-  it("gives the season's stills", async () => {
-    const stills = [
-      { episodeNumber: 9, airDate: "2026-11-07", stillPath: "/9.jpg" },
-    ];
-    findSeasonEpisodes.mockResolvedValue(stills);
+  it("gives the season's episodes and videos", async () => {
+    const season = {
+      episodes: [
+        { episodeNumber: 9, airDate: "2026-11-07", stillPath: "/9.jpg" },
+      ],
+      videos: [],
+    };
+    findSeason.mockResolvedValue(season);
     const { result, unmount } = await render(1);
-    await waitFor(() => expect(result.current.data).toEqual(stills));
-    expect(findSeasonEpisodes).toHaveBeenCalledWith(
+    await waitFor(() => expect(result.current.data).toEqual(season));
+    expect(findSeason).toHaveBeenCalledWith(
       expect.objectContaining({ name: "100 Days of Deception" }),
       1,
     );
@@ -44,21 +47,28 @@ describe("useTmdbSeason (CRI-143)", () => {
   });
 
   it("gives none without a key or a TMDB match, so TVmaze's stills show", async () => {
-    findSeasonEpisodes.mockResolvedValueOnce(null);
+    findSeason.mockResolvedValueOnce(null);
     const noKey = await render(1);
-    await waitFor(() => expect(noKey.result.current.data).toEqual([]));
+    await waitFor(() =>
+      expect(noKey.result.current.data).toEqual({ episodes: [], videos: [] }),
+    );
     await noKey.unmount();
 
-    findSeasonEpisodes.mockResolvedValueOnce(NOT_ON_TMDB);
+    findSeason.mockResolvedValueOnce(NOT_ON_TMDB);
     const notOnTmdb = await render(1);
-    await waitFor(() => expect(notOnTmdb.result.current.data).toEqual([]));
+    await waitFor(() =>
+      expect(notOnTmdb.result.current.data).toEqual({
+        episodes: [],
+        videos: [],
+      }),
+    );
     await notOnTmdb.unmount();
   });
 
   it("asks nothing without a season", async () => {
     const { result, unmount } = await render(undefined);
     expect(result.current.fetchStatus).toBe("idle");
-    expect(findSeasonEpisodes).not.toHaveBeenCalled();
+    expect(findSeason).not.toHaveBeenCalled();
     await unmount();
   });
 });

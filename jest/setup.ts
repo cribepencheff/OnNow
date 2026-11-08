@@ -34,3 +34,13 @@ jest.mock("expo-sqlite/kv-store", () => {
   };
   return { __esModule: true, default: Storage, AsyncStorage: Storage };
 });
+
+// react-native-webview is native (the Trailers player, ADR 0021): a plain
+// view that keeps its props, so tests can read and fire them.
+jest.mock("react-native-webview", () => {
+  const { View } = jest.requireActual("react-native");
+  const React = jest.requireActual("react");
+  return {
+    WebView: (props: object) => React.createElement(View, props),
+  };
+});

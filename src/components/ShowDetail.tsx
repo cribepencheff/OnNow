@@ -36,6 +36,7 @@ import { useToday } from "@/hooks/useToday";
 import type { TmdbSeasonEpisode } from "@/api/tmdb-types";
 import { episodeImage, showBackdropImage } from "@/logic/episode-image";
 import { episodeSummary } from "@/logic/tmdb-episode";
+import { pickTrailers } from "@/logic/trailers";
 import type { LocalDate } from "@/logic/local-date";
 import { plainTextParagraphs, plainTextSummary } from "@/logic/search-results";
 import {
@@ -61,6 +62,7 @@ import { heroLayout, topScrimGradient } from "@/logic/hero-layout";
 import { FloatingBackButton } from "./FloatingBackButton";
 import { PillButton } from "./PillButton";
 import { ShowCast } from "./ShowCast";
+import { TrailersRow } from "./Trailers";
 import { EPISODE_MARK_LABELS, EpisodeMarkDot } from "./Hero/EpisodeMarkChip";
 import { ShowDetailHero } from "./ShowDetailHero";
 import { ShowRating } from "./ShowRating";
@@ -152,9 +154,21 @@ function ShowDetailContent({
   // CRI-143: TMDB's episodes for the season shown (stills and overviews),
   // and the show's backdrop
   // (the hero's, already fetched) for a card with no still anywhere.
-  const { data: tmdbEpisodes } = useTmdbSeason(show, selectedSeason);
+  const { data: tmdbSeason } = useTmdbSeason(show, selectedSeason);
   const { data: showImages, isPending: showImagesPending } =
     useShowImages(show);
+  // ADR 0021: the latest season's trailers and the show's own. The latest
+  // season's TMDB answer is the episode row's when that shows it, as it
+  // usually does; otherwise one request more.
+  const latestSeasonNumber =
+    seasons.length > 0
+      ? Math.max(...seasons.map((season) => season.number))
+      : undefined;
+  const { data: latestTmdbSeason } = useTmdbSeason(show, latestSeasonNumber);
+  const trailers = pickTrailers(
+    latestTmdbSeason?.videos ?? [],
+    showImages?.videos ?? [],
+  );
   // TMDB's answer is in, or failed (no key): the cast row may then ask
   // TVmaze instead.
   const showImagesSettled = !showImagesPending;
@@ -208,6 +222,15 @@ function ShowDetailContent({
         />
       )}
 
+      {/* After About: a trailer helps decide whether to follow, as the
+          summary does (owner, 2026-11-08). */}
+      <TrailersRow
+        trailers={trailers}
+        width={width}
+        timeZone={timeZone}
+        todayDate={todayDate}
+      />
+
       {tabs.length > 0 && (
         <View style={styles.episodesSection}>
           <SeasonPicker
@@ -225,7 +248,7 @@ function ShowDetailContent({
             seasons={seasons}
             timeZone={timeZone}
             todayDate={todayDate}
-            tmdbEpisodes={tmdbEpisodes ?? []}
+            tmdbEpisodes={tmdbSeason?.episodes ?? []}
             backdropPath={showImages?.highestRatedBackdrop?.file_path ?? null}
           />
         </View>
