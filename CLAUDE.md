@@ -148,12 +148,17 @@ Avoid running the same checks twice.
   not approval. Never merge a gated PR without that explicit approval.
 - After merging any PR: move its Linear issue to Done, pull `main` in the
   main folder (so a reload on the owner's phone picks up the change), and
-  merge `main` into any other open branch that was created before it.
+  merge `main` into every other open branch that was created before it,
+  in the main folder and in every worktree.
 - For intermediate steps within a batched PR (finishing one of several
   issues it covers, a retry after a fix), a short status line is enough.
   It still starts with ROUTINE or REVIEW, see "Reports" below.
 
-- **Merging:** `gh pr merge <number> --merge --delete-branch`.
+- **Merging:** `gh pr merge <number> --merge --delete-branch` when the
+  branch is checked out in the main folder. For a branch in a worktree,
+  `gh pr merge <number> --merge` without `--delete-branch` (it would
+  remove the worktree on its own), then clean up as described under
+  "Worktrees" below.
 
 ## Owner review gates
 This is separate from "When to involve Cribe" below. That section
@@ -195,14 +200,35 @@ transition rather than assuming they carry over unchanged:
 - **Release**: not yet defined. New categories of risk appear here (a
   public App Store submission, store data). Stop and ask the owner to
   define gates before treating any release work as gate-free.
-- **One folder only:** all work happens in this one repository folder. No
-  extra folders or worktrees, not even for docs.
+- **The phone uses the main folder only:** the owner's phone connects to
+  the main folder's Metro on port 8081, never to a worktree. Expo Go likely
+  keeps its storage per server address, so follows saved on a worktree's
+  Metro would not show when the phone goes back to 8081.
 - **No branch switching during the owner's test:** while a UI branch is
-  waiting for the owner's Expo Go test, do not switch branches in the repo
+  waiting for the owner's Expo Go test, do not switch branches in the main
   folder, not even briefly (the phone reloads from whatever is checked
-  out). Either keep working on that branch, wait until it is merged, or ask
-  the owner first. Work that needs another branch waits, and the report
-  says so.
+  out). Work that needs another branch goes into a short lived worktree,
+  see "Worktrees" below.
+
+## Worktrees
+Short lived git worktrees let work continue while the main folder is held
+for the owner's test.
+- **One branch, one worktree, short lived.** Create it from the latest
+  `main` next to the repo: `git fetch origin && git worktree add -b
+  <branch> ../OnNow-<short-name> origin/main`, then `npm install` in it.
+  Copy `.env` from the main folder if the work needs it. Remove it as soon
+  as its PR is merged or closed. No long lived working copies.
+- **Build and test only.** A worktree is for writing code, running Jest
+  and Maestro (`npm run e2e:work`, Metro on port 8082). It is never where
+  the owner tests in Expo Go.
+- **The owner's Expo Go test happens in the main folder.** When a UI
+  branch from a worktree is ready for the owner, remove the worktree and
+  check the branch out in the main folder, once no other UI branch is
+  waiting there. The report says when that is.
+- **After its PR is merged:** `gh pr merge <number> --merge` (no
+  `--delete-branch`), then `git worktree remove ../OnNow-<short-name>`,
+  `git branch -D <branch>` and `git push origin --delete <branch>`. Then
+  pull `main` and merge it into open branches as under "Git and planning".
 
 ## When to involve Cribe
 Needs Cribe (REVIEW): UI to test in Expo Go; ADR, PRD or CLAUDE.md changes;
