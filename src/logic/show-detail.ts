@@ -241,17 +241,33 @@ export function allEpisodesAvailable(
 // pill after the episode that earned them (owner, CRI-143).
 const NEW_SEASON_DAYS = 7;
 const ALL_EPISODES_DAYS = 30;
+const WEEKDAY_NAMES = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
 
 // The pill above Show detail's title (CRI-143), Apple TV style. The news
 // comes first; the first that holds wins:
 // - "New season": a later season's first episode came out within 7 days.
 // - "All episodes now available": the latest season is complete
 //   (allEpisodesAvailable) and its last episode came out within 30 days.
+// - "New episodes every Friday": the last two episodes out and the next
+//   one are a week apart each, on the next one's local weekday. From the
+//   episodes' own local days (ADR 0006), not TVmaze's schedule days, which
+//   are the network's and can fall a day off here. Before "New episode":
+//   Show detail is mostly for deciding whether to follow a show, and the
+//   rhythm says it is running and when to expect episodes (owner,
+//   2026-11-08).
 // - "New episode": an episode came out today or yesterday.
 // Otherwise the show's status (showStateLabel: "Next ep Fri 13 Nov",
 // "Season 3 · TBA", "Ended"), which the pill now carries in place of a
-// line of its own (owner, 2026-11-08). A next episode's date that a news
-// pill hides is still on its card in the episode row.
+// line of its own (owner, 2026-11-08). A next episode's date that the
+// pill does not say is still on its card in the episode row.
 export function showDetailPill(
   episodes: TvMazeEpisode[],
   seasons: TvMazeSeason[],
@@ -259,12 +275,13 @@ export function showDetailPill(
   todayDate: LocalDate,
   status: string,
 ): string {
-  const out = regularEpisodes(episodes)
+  const dated = regularEpisodes(episodes)
     .map((episode) => ({ episode, date: episodeLocalDate(episode, timeZone) }))
     .filter(
       (entry): entry is { episode: TvMazeEpisode; date: LocalDate } =>
-        entry.date !== null && entry.date <= todayDate,
+        entry.date !== null,
     );
+  const out = dated.filter((entry) => entry.date <= todayDate);
   const daysAgo = (date: LocalDate) => daysBetween(date, todayDate);
 
   const premiere = out.find(
@@ -291,7 +308,24 @@ export function showDetailPill(
     }
   }
 
-  if (out.some((entry) => daysAgo(entry.date) <= 1)) {
+  const outDates = [...new Set(out.map((entry) => entry.date))].sort();
+  const lastOutDate = outDates[outDates.length - 1];
+  const before = outDates[outDates.length - 2];
+  const nextDate = dated
+    .map((entry) => entry.date)
+    .filter((date) => date > todayDate)
+    .sort()[0];
+  if (
+    nextDate &&
+    before &&
+    daysBetween(before, lastOutDate) === 7 &&
+    daysBetween(lastOutDate, nextDate) === 7
+  ) {
+    const weekday = new Date(`${nextDate}T00:00:00Z`).getUTCDay();
+    return `New episodes every ${WEEKDAY_NAMES[weekday]}`;
+  }
+
+  if (lastOutDate && daysAgo(lastOutDate) <= 1) {
     return "New episode";
   }
 

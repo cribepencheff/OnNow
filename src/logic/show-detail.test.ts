@@ -312,7 +312,7 @@ describe("showDetailPill (CRI-143)", () => {
     // Slow Horses S6E1 is out on Wed 16 Sep 2026.
     expect(pill(slowHorses, "2026-09-16")).toBe("New season");
     expect(pill(slowHorses, "2026-09-23")).toBe("New season");
-    expect(pill(slowHorses, "2026-09-24")).toBe("New episode");
+    expect(pill(slowHorses, "2026-09-24")).toBe("New episodes every Wednesday");
     // The Diplomat's season 3 drop.
     expect(pill(diplomat, "2025-10-23")).toBe("New season");
   });
@@ -327,17 +327,36 @@ describe("showDetailPill (CRI-143)", () => {
     expect(pill(diplomat, "2025-10-24")).toBe(STATUS);
   });
 
-  it('says "New episode" today and the day after, over the status', () => {
-    expect(pill(slowHorses, "2026-09-30")).toBe("New episode");
-    expect(pill(slowHorses, "2026-10-01")).toBe("New episode");
-    // The finale: seasons 7 and 8 are listed, so the show is not complete.
-    expect(pill(slowHorses, "2026-10-21")).toBe("New episode");
+  // Owner, 2026-11-08: Show detail is mostly for deciding whether to
+  // follow a show, and the rhythm says more than one new episode.
+  it('says "New episodes every Wednesday" for a weekly show, over New episode', () => {
+    expect(pill(slowHorses, "2026-09-25")).toBe("New episodes every Wednesday");
+    // An episode out today, and the next a week on.
+    expect(pill(slowHorses, "2026-09-30")).toBe("New episodes every Wednesday");
+    expect(pill(slowHorses, "2026-10-02")).toBe("New episodes every Wednesday");
   });
 
-  it("says the status between a weekly show's episodes, not a weekday it works out", () => {
-    expect(pill(slowHorses, "2026-09-25")).toBe(STATUS);
-    expect(pill(slowHorses, "2026-10-02")).toBe(STATUS);
-    expect(pill(silo, "2026-07-21")).toBe(STATUS);
+  it("names the weekday of the user's local day (ADR 0006)", () => {
+    // Out at 12:00 UTC on Wednesdays: still Wednesday in Los Angeles,
+    // Thursday in Auckland.
+    expect(pill(slowHorses, "2026-09-26", "America/Los_Angeles")).toBe(
+      "New episodes every Wednesday",
+    );
+    expect(pill(slowHorses, "2026-09-26", "Pacific/Auckland")).toBe(
+      "New episodes every Thursday",
+    );
+  });
+
+  it("names the episodes' own weekday, not TVmaze's schedule day", () => {
+    // TVmaze lists Silo on Thursday; its episodes are out on Fridays here.
+    expect(pill(silo, "2026-07-21")).toBe("New episodes every Friday");
+  });
+
+  it('says "New episode" today and the day after when there is no weekly rhythm, over the status', () => {
+    // The finale: nothing after it, so no rhythm; seasons 7 and 8 are
+    // listed, so the show is not complete.
+    expect(pill(slowHorses, "2026-10-21")).toBe("New episode");
+    expect(pill(slowHorses, "2026-10-22")).toBe("New episode");
   });
 
   it("says the status for a show between seasons, ended, or announced", () => {
@@ -349,7 +368,7 @@ describe("showDetailPill (CRI-143)", () => {
     expect(pill(diplomat, TODAY)).toBe(STATUS);
   });
 
-  it("gives no new season pill for season 1", () => {
+  it("gives no weekly pill with a single episode out, and no new season pill for season 1", () => {
     // Slow Horses' season 6, as if it were a new show's first season.
     const firstSeason = slowHorses._embedded.episodes
       .filter((episode) => episode.season === 6)
