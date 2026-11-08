@@ -530,11 +530,18 @@ describe("ShowDetail", () => {
       expect(upcoming).toHaveLength(4);
       const finale = upcoming[3];
       expect(within(finale).getByText("Judgment Day")).toBeTruthy();
-      expect(within(finale).getByText("Finale")).toBeTruthy();
+      expect(
+        within(finale).getByTestId("episode-mark-finale"),
+      ).toHaveTextContent("Finale");
       expect(within(upcoming[0]).queryByText("Finale")).toBeNull();
 
-      // Season 5 is all out, and opens at its first episode.
+      // Season 5 is all out, and opens at its first episode, a premiere.
       await pickSeason("Season 5");
+      expect(
+        within(row().getAllByTestId("episode-aired")[0]).getByTestId(
+          "episode-mark-premiere",
+        ),
+      ).toHaveTextContent("Premiere");
       expect(
         within(row().getAllByTestId("episode-aired")[0]).getByText("E1"),
       ).toBeTruthy();

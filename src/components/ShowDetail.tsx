@@ -42,11 +42,11 @@ import {
   aboutFacts,
   episodeBadgeLabel,
   episodeDateLabel,
+  episodeMark,
   episodeOfLabel,
   episodeState,
   initialEpisodeIndex,
   initialSeasonNumber,
-  isFinale,
   regularEpisodes,
   seasonTabs,
   showDetailMetaLine,
@@ -59,6 +59,7 @@ import { TAB_BAR_HEIGHT } from "@/logic/tab-bar";
 import { heroLayout, topScrimGradient } from "@/logic/hero-layout";
 import { FloatingBackButton } from "./FloatingBackButton";
 import { PillButton } from "./PillButton";
+import { EPISODE_MARK_LABELS, EpisodeMarkDot } from "./Hero/EpisodeMarkChip";
 import { ShowDetailHero } from "./ShowDetailHero";
 import { ShowRating } from "./ShowRating";
 import { t, type } from "@/theme/tokens";
@@ -525,7 +526,7 @@ function EpisodeCard({
   const state = episodeState(episode, timeZone, todayDate);
   const muted = state === "upcoming";
   const dateLabel = episodeDateLabel(episode, timeZone, todayDate);
-  const finale = isFinale(episode, seasons);
+  const mark = episodeMark(episode, seasons);
   const summary = episodeSummary(episode, tmdbEpisodes);
   const image = episodeImage(episode, tmdbEpisodes, backdropPath);
   const badge = episodeBadgeLabel(episode);
@@ -538,7 +539,7 @@ function EpisodeCard({
         episodeOfLabel(episode, seasons),
         episode.name,
         dateLabel,
-        finale ? "Finale" : null,
+        mark ? EPISODE_MARK_LABELS[mark] : null,
       ]
         .filter(Boolean)
         .join(", ")}
@@ -561,12 +562,24 @@ function EpisodeCard({
             accessibilityIgnoresInvertColors
           />
         )}
-        {/* The episode's number in the corner, and Finale beside it, as
-            in PlayPilot (owner, 2026-11-08). Never dimmed. */}
-        {(badge || finale) && (
+        {/* The episode's number in the corner, as in PlayPilot, and
+            Premiere or Finale beside it with the dot of Home's chip
+            (owner, 2026-11-08). Never dimmed. */}
+        {(badge || mark) && (
           <View style={styles.badges}>
-            {badge && <Text style={styles.badge}>{badge}</Text>}
-            {finale && <Text style={styles.badge}>Finale</Text>}
+            {badge && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeLabel}>{badge}</Text>
+              </View>
+            )}
+            {mark && (
+              <View style={styles.badge} testID={`episode-mark-${mark}`}>
+                <EpisodeMarkDot mark={mark} />
+                <Text style={styles.badgeLabel}>
+                  {EPISODE_MARK_LABELS[mark]}
+                </Text>
+              </View>
+            )}
           </View>
         )}
       </View>
@@ -784,15 +797,19 @@ const styles = StyleSheet.create({
   // A small control's material on an image (image-control-backdrop), so
   // it reads on light and busy stills.
   badge: {
-    ...type.label,
-    color: t.ink,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
     backgroundColor: t.imageControlBackdrop,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: t.imageControlEdge,
     borderRadius: 6,
     paddingHorizontal: 6,
     paddingVertical: 2,
-    overflow: "hidden",
+  },
+  badgeLabel: {
+    ...type.label,
+    color: t.ink,
   },
   cardTitle: {
     ...type.body,

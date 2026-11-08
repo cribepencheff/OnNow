@@ -302,7 +302,8 @@ per season come in the MVP.
   to swipe through, each with a landscape still (TMDB's, else TVmaze's,
   else the show's backdrop, ADR 0012; dimmed only on an upcoming
   episode) with the episode's number in a badge in its corner ("E3", and
-  "Finale" on a season's last episode; screen readers hear "Episode 3 of
+  beside it "Premiere" on episode 1 or "Finale" on a season's last, with
+  the coloured dot of Home's chip; screen readers hear "Episode 3 of
   10"; PlayPilot as the reference), episode title, a short summary (TVmaze's, else TMDB's overview for the
   same episode; "No overview available." without either, owner
   2026-11-08) and relative time ("In 3 days", "Tomorrow", "2 days

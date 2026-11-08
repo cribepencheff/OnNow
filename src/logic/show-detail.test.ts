@@ -4,6 +4,7 @@ import {
   currentSeasonNumber,
   episodeBadgeLabel,
   episodeDateLabel,
+  episodeMark,
   episodeOfLabel,
   episodeState,
   isFinale,
@@ -494,5 +495,18 @@ describe("episodeBadgeLabel (owner, 2026-11-08)", () => {
     const episode = slowHorses._embedded.episodes[2];
     expect(episodeBadgeLabel({ ...episode, number: 3 })).toBe("E3");
     expect(episodeBadgeLabel({ ...episode, number: null })).toBeNull();
+  });
+});
+
+describe("episodeMark (owner, 2026-11-08; as heroEpisodeMark)", () => {
+  const seasons = slowHorses._embedded.seasons;
+  it("marks episode 1 a premiere and a season's last a finale", () => {
+    expect(episodeMark(find(slowHorses, 6, 1), seasons)).toBe("premiere");
+    expect(episodeMark(find(slowHorses, 6, 6), seasons)).toBe("finale");
+    expect(episodeMark(find(slowHorses, 6, 3), seasons)).toBeNull();
+  });
+
+  it("marks no finale without TVmaze's episode order", () => {
+    expect(episodeMark(find(slowHorses, 6, 6), [])).toBeNull();
   });
 });

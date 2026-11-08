@@ -113,6 +113,20 @@ export function episodeBadgeLabel(episode: TvMazeEpisode): string | null {
   return episode.number !== null ? `E${episode.number}` : null;
 }
 
+// An episode card's mark beside its number (owner, 2026-11-08), the same
+// facts Home's hero marks (heroEpisodeMark): "premiere" for episode 1 of a
+// season, "finale" for its last (known only from TVmaze's episode order).
+// A one-episode season starts a season: "premiere".
+export function episodeMark(
+  episode: TvMazeEpisode,
+  seasons: TvMazeSeason[],
+): "premiere" | "finale" | null {
+  if (episode.number === 1) {
+    return "premiere";
+  }
+  return isFinale(episode, seasons) ? "finale" : null;
+}
+
 export type EpisodeState = "aired" | "today" | "upcoming";
 
 export function episodeState(
