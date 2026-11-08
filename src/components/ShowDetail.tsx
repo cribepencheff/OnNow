@@ -25,6 +25,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type {
   TvMazeEpisode,
   TvMazeSeason,
+  TvMazeShow,
   TvMazeShowWithEmbeds,
 } from "@/api/tvmaze-types";
 import { useOriginCountries } from "@/hooks/useOriginCountries";
@@ -52,6 +53,7 @@ import { TAB_BAR_HEIGHT } from "@/logic/tab-bar";
 import { heroLayout, topScrimGradient } from "@/logic/hero-layout";
 import { FloatingBackButton } from "./FloatingBackButton";
 import { ShowDetailHero } from "./ShowDetailHero";
+import { ShowRating } from "./ShowRating";
 import { t, type } from "@/theme/tokens";
 import { TmdbCredit } from "./TmdbCredit";
 import { TvMazeCredit } from "./TvMazeCredit";
@@ -175,7 +177,7 @@ function ShowDetailContent({
 
       {summary && (
         <About
-          title={show.name}
+          show={show}
           text={summary}
           fullText={plainTextParagraphs(show.summary) ?? summary}
           genres={show.genres ?? []}
@@ -216,13 +218,13 @@ const SUMMARY_LINES = 3;
 // reference). The full text is laid out once, out of sight, to know
 // whether it runs longer; "More" shows only when it does.
 function About({
-  title,
+  show,
   text,
   fullText,
   genres,
   facts,
 }: {
-  title: string;
+  show: TvMazeShow;
   text: string;
   // The whole text with TVmaze's paragraphs kept, for the sheet.
   fullText: string;
@@ -274,7 +276,7 @@ function About({
       </Pressable>
       <AboutSheet
         visible={open}
-        title={title}
+        show={show}
         text={fullText}
         genres={genres}
         facts={facts}
@@ -289,14 +291,14 @@ function About({
 // summary and the show's facts (aboutFacts), as in Apple TV.
 function AboutSheet({
   visible,
-  title,
+  show,
   text,
   genres,
   facts,
   onClose,
 }: {
   visible: boolean;
-  title: string;
+  show: TvMazeShow;
   text: string;
   genres: string[];
   facts: AboutFact[];
@@ -312,7 +314,7 @@ function AboutSheet({
       <View style={styles.sheet} testID="show-detail-about-sheet">
         <View style={styles.sheetHeader}>
           <Text style={styles.sheetTitle} accessibilityRole="header">
-            {title}
+            {show.name}
           </Text>
           <Pressable
             accessibilityRole="button"
@@ -332,9 +334,13 @@ function AboutSheet({
           </Pressable>
         </View>
         <ScrollView contentContainerStyle={styles.sheetContent}>
-          {genres.length > 0 && (
-            <Text style={styles.sheetGenres}>{genres.join(", ")}</Text>
-          )}
+          {/* TMDB's rating first, then every genre (owner, 2026-11-08). */}
+          <View style={styles.sheetMetaRow} testID="show-detail-about-meta">
+            <ShowRating show={show} />
+            {genres.length > 0 && (
+              <Text style={styles.sheetGenres}>{genres.join(", ")}</Text>
+            )}
+          </View>
           <Text style={styles.summary}>{text}</Text>
           {facts.length > 0 && (
             <View style={styles.facts} testID="show-detail-about-facts">
@@ -653,6 +659,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: t.contentInset,
     paddingBottom: t.space10,
     gap: 12,
+  },
+  sheetMetaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
+    gap: 8,
   },
   sheetGenres: {
     ...type.meta,

@@ -294,7 +294,7 @@ per season come in the MVP.
   Home, title, a meta line ("2026 · Philippines · Drama, Thriller": year,
   first origin country, genres), status, service, and the summary under an
   "About" heading, in a dark grey panel of three lines; "More" opens a
-  sheet with every genre, the whole text with TVmaze's paragraphs kept, and
+  sheet with TMDB's rating followed by every genre, the whole text with TVmaze's paragraphs kept, and
   an "Information" list of what the data gives: "Premiered 2026", or
   "Years 2018–2022" once there is an end date, seasons with episodes, regular episodes listed,
   runtime (TVmaze's average), every origin country and language

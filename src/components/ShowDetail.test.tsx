@@ -271,7 +271,10 @@ describe("ShowDetail", () => {
         sheet.getByText(/Slow Horses follows the story/).props.children,
       ).toContain("\n\n");
 
-      // Every genre, and the facts the data gives.
+      // TMDB's rating first, then every genre, and the facts the data gives.
+      const meta = sheet.getByTestId("show-detail-about-meta");
+      const metaChildren = meta.children as { props: { testID?: string } }[];
+      expect(metaChildren[0].props.testID).toBe("show-rating");
       expect(sheet.getByText("Drama, Thriller, Espionage")).toBeTruthy();
       const facts = within(sheet.getByTestId("show-detail-about-facts"));
       expect(facts.getByRole("header", { name: "Information" })).toBeTruthy();
