@@ -154,6 +154,23 @@ const KNOWN_SERVICES: Record<number, KnownService> = {
   333: { service: "5", startPage: "https://www.channel5.com" },
 };
 
+// Services that are free in themselves, public service or with ads: "Open
+// in" picks one of these before a subscription service, since anyone can
+// open it (owner, 2026-11-08, CRI-150). Our own list, not TMDB's "free",
+// which also holds subscription services (Prime Video for Slow Horses,
+// Paramount+ for MobLand). TV4 Play is left out: TMDB's TV4 Play is the
+// paid one.
+const FREE_SERVICES = new Set([
+  "SVT Play",
+  "Pluto TV",
+  "The Roku Channel",
+  "Tubi",
+  "BBC iPlayer",
+  "ITVX",
+  "Channel 4",
+  "5",
+]);
+
 // Pay-TV, operator bundles and network apps that need a TV provider login.
 // They are never offered as a streaming service: no button, no text.
 const PAY_TV = new Set([
@@ -217,7 +234,8 @@ export function hasStreamingService(providers: StreamingProvider[]): boolean {
 // One service per show for now (ADR 0004); the menu for several services
 // (FR-015) is MVP. In order: the show's own page when TVmaze's official
 // site is on a known service, then a known service's start page, then an
-// add-on channel's host (CRI-90). Within each, TMDB's order. Anything else
+// add-on channel's host (CRI-90). Among the start pages, a service that is
+// free in itself comes first (CRI-150). Otherwise TMDB's order. Anything else
 // gives no button: it would not open the service itself.
 export function openInLink(
   providers: StreamingProvider[],
@@ -241,11 +259,13 @@ export function openInLink(
       null;
     return { ...direct, logoPath };
   }
-  if (known[0]) {
+  const startPage =
+    known.find((service) => FREE_SERVICES.has(service.service)) ?? known[0];
+  if (startPage) {
     return {
-      service: known[0].service,
-      url: known[0].startPage,
-      logoPath: known[0].logoPath,
+      service: startPage.service,
+      url: startPage.startPage,
+      logoPath: startPage.logoPath,
     };
   }
 
