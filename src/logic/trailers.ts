@@ -86,7 +86,9 @@ export function youtubeThumbnailUrl(key: string): string {
 // loaded with PLAYER_ORIGIN as its base, so YouTube gets an origin.
 // Captions start off (cc_load_policy: 0, and the captions module unloaded
 // the first time it loads), as they came on by themselves, over burned-in
-// subtitles; the CC button turns them on.
+// subtitles; the CC button turns them on. The player's language is English
+// (hl: "en", ADR 0003): signed out, YouTube goes by the phone's language,
+// and turned captions on for an English trailer on a Swedish phone.
 // YouTube's own full-screen button is hidden (fs: 0, one of its player
 // parameters): the app's player already fills the screen and turns with
 // the phone, so a full screen inside it would be one too many (owner,
@@ -120,7 +122,7 @@ function onYouTubeIframeAPIReady() {
   new YT.Player("player", {
     host: "https://www.youtube-nocookie.com",
     videoId: ${videoId},
-    playerVars: { autoplay: 1, playsinline: 1, fs: 0, rel: 0, cc_load_policy: 0, origin: ${origin} },
+    playerVars: { autoplay: 1, playsinline: 1, fs: 0, rel: 0, cc_load_policy: 0, hl: "en", origin: ${origin} },
     events: {
       onReady: function (event) { event.target.playVideo(); },
       onApiChange: function (event) {

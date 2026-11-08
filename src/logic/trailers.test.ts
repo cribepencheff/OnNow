@@ -129,6 +129,7 @@ describe("trailerPlayerHtml", () => {
     // Captions off at first, over burned-in subtitles; once only, so the
     // CC button still works.
     expect(html).toContain("cc_load_policy: 0");
+    expect(html).toContain('hl: "en"');
     expect(html).toContain('unloadModule("captions")');
     expect(html).toContain("if (captionsOff) { return; }");
   });
