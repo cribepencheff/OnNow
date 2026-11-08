@@ -69,8 +69,12 @@ fallback.**
   "This trailer can only be watched on YouTube.", Cancel and Open in
   YouTube. Both close the player; Open in YouTube opens the video's page,
   in the YouTube app when it is installed.
-- **Nothing downloaded or saved,** and nothing drawn over YouTube's player
-  but our own close button outside its controls.
+- **Nothing downloaded or saved, and nothing over YouTube's player.** The
+  player gets a 16:9 box of its own, and the close button sits in the
+  black outside it: above the video upright, in a column beside it turned
+  (`trailerPlayerLayout`). A player filling the screen had YouTube lay its
+  title and controls out to the edges, under the button (owner,
+  2026-11-08).
 
 ## Consequences
 - A new package, `react-native-webview` (in Expo Go). Jest mocks it in

@@ -17,6 +17,7 @@ import {
   StyleSheet,
   Text,
   View,
+  useWindowDimensions,
 } from "react-native";
 import {
   SafeAreaProvider,
@@ -29,6 +30,7 @@ import { openExternalUrl } from "@/hooks/useGuardedRouter";
 import { allowAnyOrientation, holdPortrait } from "@/hooks/screen-orientation";
 import { localDateFromAirstamp, type LocalDate } from "@/logic/local-date";
 import { formatLabelDate } from "@/logic/next-episode-label";
+import { CLOSE_SIZE, trailerPlayerLayout } from "@/logic/trailer-player-layout";
 import {
   PLAYER_ORIGIN,
   parsePlayerMessage,
@@ -43,7 +45,6 @@ const CARD_GAP = 12;
 // As the episode row's cards: the next card shows at the edge.
 const CARD_WIDTH_SHARE = 0.78;
 const PLAY_SIZE = 48;
-const CLOSE_SIZE = 36;
 
 export const UNAVAILABLE_TITLE = "Playback unavailable in app";
 export const UNAVAILABLE_MESSAGE =
@@ -151,26 +152,10 @@ function TrailerCard({
   );
 }
 
-// The close button's place: as far from the safe area's top and right
-// edges, upright or turned (owner, 2026-11-08). Upright, the status bar's
-// inset plus a little, as before; turned, there is no top inset, and the
-// camera's cut-out takes the side's.
-const CLOSE_MARGIN = 16;
-const CLOSE_BELOW_STATUS_BAR = 8;
-
-export function closeButtonPosition(insets: { top: number; right: number }): {
-  top: number;
-  right: number;
-} {
-  return {
-    top: insets.top > 0 ? insets.top + CLOSE_BELOW_STATUS_BAR : CLOSE_MARGIN,
-    right: insets.right + CLOSE_MARGIN,
-  };
-}
-
-// Full screen over the app, black, with YouTube's player and a close
-// button. The layer is the full screen and turns with the phone; YouTube's
-// own full-screen button is hidden (logic/trailers.ts).
+// Full screen over the app, black, with YouTube's player in a 16:9 box
+// and a close button outside it (trailerPlayerLayout). The layer is the
+// full screen and turns with the phone; YouTube's own full-screen button
+// is hidden (logic/trailers.ts).
 export function TrailerPlayer({
   trailer,
   onClose,
@@ -203,6 +188,8 @@ function PlayerContent({
   onClose: () => void;
 }) {
   const insets = useSafeAreaInsets();
+  const screen = useWindowDimensions();
+  const layout = trailerPlayerLayout(screen, insets);
 
   // The player turns with the phone; the app is upright again once it
   // closes (ADR 0021).
@@ -229,6 +216,7 @@ function PlayerContent({
     <View style={styles.player} testID="trailer-player">
       <WebView
         testID="trailer-webview"
+        containerStyle={[styles.video, layout.video]}
         style={styles.webView}
         source={{
           html: trailerPlayerHtml(trailer.key),
@@ -260,7 +248,7 @@ function PlayerContent({
         accessibilityLabel="Close"
         onPress={onClose}
         hitSlop={8}
-        style={[styles.close, closeButtonPosition(insets)]}
+        style={[styles.close, layout.close]}
       >
         <SymbolView
           name="xmark"
@@ -328,6 +316,9 @@ const styles = StyleSheet.create({
   player: {
     flex: 1,
     backgroundColor: t.imageDimBackdrop,
+  },
+  video: {
+    position: "absolute",
   },
   webView: {
     flex: 1,

@@ -11,7 +11,6 @@ import { openExternalUrl } from "@/hooks/useGuardedRouter";
 import { allowAnyOrientation, holdPortrait } from "@/hooks/screen-orientation";
 import { PLAYER_ORIGIN } from "@/logic/trailers";
 import {
-  closeButtonPosition,
   TrailersRow,
   UNAVAILABLE_MESSAGE,
   UNAVAILABLE_TITLE,
@@ -158,23 +157,5 @@ describe("TrailersRow (ADR 0021)", () => {
     expect(openExternalUrl).toHaveBeenCalledWith(
       "https://www.youtube.com/watch?v=x",
     );
-  });
-});
-
-// Owner, 2026-11-08: the close button as far from the safe area's top and
-// right edges, upright or turned.
-describe("closeButtonPosition", () => {
-  it("sits under the status bar upright, at the right margin", () => {
-    expect(closeButtonPosition({ top: 59, right: 0 })).toEqual({
-      top: 67,
-      right: 16,
-    });
-  });
-
-  it("keeps the same margin from the top and from the cut-out turned", () => {
-    expect(closeButtonPosition({ top: 0, right: 59 })).toEqual({
-      top: 16,
-      right: 75,
-    });
   });
 });
