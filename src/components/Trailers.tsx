@@ -18,7 +18,10 @@ import {
   Text,
   View,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 
 import type { TmdbVideo } from "@/api/tmdb-types";
@@ -148,9 +151,51 @@ function TrailerCard({
   );
 }
 
+// The close button's place: as far from the safe area's top and right
+// edges, upright or turned (owner, 2026-11-08). Upright, the status bar's
+// inset plus a little, as before; turned, there is no top inset, and the
+// camera's cut-out takes the side's.
+const CLOSE_MARGIN = 16;
+const CLOSE_BELOW_STATUS_BAR = 8;
+
+export function closeButtonPosition(insets: { top: number; right: number }): {
+  top: number;
+  right: number;
+} {
+  return {
+    top: insets.top > 0 ? insets.top + CLOSE_BELOW_STATUS_BAR : CLOSE_MARGIN,
+    right: insets.right + CLOSE_MARGIN,
+  };
+}
+
 // Full screen over the app, black, with YouTube's player and a close
-// button. YouTube's own controls go full screen and turn with the phone.
+// button. The layer is the full screen and turns with the phone; YouTube's
+// own full-screen button is hidden (logic/trailers.ts).
 export function TrailerPlayer({
+  trailer,
+  onClose,
+}: {
+  trailer: TmdbVideo;
+  onClose: () => void;
+}) {
+  return (
+    <Modal
+      visible
+      animationType="fade"
+      presentationStyle="fullScreen"
+      supportedOrientations={["portrait", "landscape"]}
+      onRequestClose={onClose}
+    >
+      {/* Its own provider: a modal's safe area is its own, and changes as
+          it turns. */}
+      <SafeAreaProvider>
+        <PlayerContent trailer={trailer} onClose={onClose} />
+      </SafeAreaProvider>
+    </Modal>
+  );
+}
+
+function PlayerContent({
   trailer,
   onClose,
 }: {
@@ -181,60 +226,52 @@ export function TrailerPlayer({
   }
 
   return (
-    <Modal
-      visible
-      animationType="fade"
-      presentationStyle="fullScreen"
-      supportedOrientations={["portrait", "landscape"]}
-      onRequestClose={onClose}
-    >
-      <View style={styles.player} testID="trailer-player">
-        <WebView
-          testID="trailer-webview"
-          style={styles.webView}
-          source={{
-            html: trailerPlayerHtml(trailer.key),
-            baseUrl: `${PLAYER_ORIGIN}/`,
-          }}
-          originWhitelist={["*"]}
-          allowsInlineMediaPlayback
-          allowsFullscreenVideo
-          mediaPlaybackRequiresUserAction={false}
-          onMessage={(event) => {
-            const message = parsePlayerMessage(event.nativeEvent.data);
-            if (message?.type === "error") {
-              unavailable();
-            }
-          }}
-          onShouldStartLoadWithRequest={(request) => {
-            if (playerMayLoad(request.url, request.isTopFrame ?? true)) {
-              return true;
-            }
-            // A link out of the player: YouTube, outside the app.
-            openExternalUrl(request.url);
-            return false;
-          }}
-          onError={unavailable}
-          onHttpError={unavailable}
+    <View style={styles.player} testID="trailer-player">
+      <WebView
+        testID="trailer-webview"
+        style={styles.webView}
+        source={{
+          html: trailerPlayerHtml(trailer.key),
+          baseUrl: `${PLAYER_ORIGIN}/`,
+        }}
+        originWhitelist={["*"]}
+        allowsInlineMediaPlayback
+        allowsFullscreenVideo
+        mediaPlaybackRequiresUserAction={false}
+        onMessage={(event) => {
+          const message = parsePlayerMessage(event.nativeEvent.data);
+          if (message?.type === "error") {
+            unavailable();
+          }
+        }}
+        onShouldStartLoadWithRequest={(request) => {
+          if (playerMayLoad(request.url, request.isTopFrame ?? true)) {
+            return true;
+          }
+          // A link out of the player: YouTube, outside the app.
+          openExternalUrl(request.url);
+          return false;
+        }}
+        onError={unavailable}
+        onHttpError={unavailable}
+      />
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Close"
+        onPress={onClose}
+        hitSlop={8}
+        style={[styles.close, closeButtonPosition(insets)]}
+      >
+        <SymbolView
+          name="xmark"
+          tintColor={t.ink}
+          size={15}
+          weight="bold"
+          accessibilityElementsHidden
+          importantForAccessibility="no"
         />
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Close"
-          onPress={onClose}
-          hitSlop={8}
-          style={[styles.close, { top: insets.top + 8 }]}
-        >
-          <SymbolView
-            name="xmark"
-            tintColor={t.ink}
-            size={15}
-            weight="bold"
-            accessibilityElementsHidden
-            importantForAccessibility="no"
-          />
-        </Pressable>
-      </View>
-    </Modal>
+      </Pressable>
+    </View>
   );
 }
 
@@ -298,7 +335,6 @@ const styles = StyleSheet.create({
   },
   close: {
     position: "absolute",
-    right: t.headerInset,
     width: CLOSE_SIZE,
     height: CLOSE_SIZE,
     borderRadius: CLOSE_SIZE / 2,
