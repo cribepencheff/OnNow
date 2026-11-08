@@ -56,6 +56,18 @@ export function pickTrailers(
     .slice(0, TRAILERS_MAX);
 }
 
+// The season whose trailers the row shows: the latest with episodes
+// listed. A season only announced (Slow Horses' seasons 7 and 8) is often
+// not on TMDB yet, and has no trailer to show.
+export function trailerSeasonNumber(
+  episodes: { season: number; type: string }[],
+): number | undefined {
+  const seasons = episodes
+    .filter((episode) => episode.type === "regular")
+    .map((episode) => episode.season);
+  return seasons.length > 0 ? Math.max(...seasons) : undefined;
+}
+
 // The video's own page, opened in the YouTube app or the browser.
 export function youtubeWatchUrl(key: string): string {
   return `https://www.youtube.com/watch?v=${encodeURIComponent(key)}`;

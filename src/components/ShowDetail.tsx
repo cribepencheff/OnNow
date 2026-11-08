@@ -36,7 +36,7 @@ import { useToday } from "@/hooks/useToday";
 import type { TmdbSeasonEpisode } from "@/api/tmdb-types";
 import { episodeImage, showBackdropImage } from "@/logic/episode-image";
 import { episodeSummary } from "@/logic/tmdb-episode";
-import { pickTrailers } from "@/logic/trailers";
+import { pickTrailers, trailerSeasonNumber } from "@/logic/trailers";
 import type { LocalDate } from "@/logic/local-date";
 import { plainTextParagraphs, plainTextSummary } from "@/logic/search-results";
 import {
@@ -158,13 +158,13 @@ function ShowDetailContent({
   const { data: showImages, isPending: showImagesPending } =
     useShowImages(show);
   // ADR 0021: the latest season's trailers and the show's own. The latest
-  // season's TMDB answer is the episode row's when that shows it, as it
-  // usually does; otherwise one request more.
-  const latestSeasonNumber =
-    seasons.length > 0
-      ? Math.max(...seasons.map((season) => season.number))
-      : undefined;
-  const { data: latestTmdbSeason } = useTmdbSeason(show, latestSeasonNumber);
+  // season with episodes (trailerSeasonNumber): its TMDB answer is the
+  // episode row's when that shows it, as it usually does; otherwise one
+  // request more.
+  const { data: latestTmdbSeason } = useTmdbSeason(
+    show,
+    trailerSeasonNumber(episodes),
+  );
   const trailers = pickTrailers(
     latestTmdbSeason?.videos ?? [],
     showImages?.videos ?? [],

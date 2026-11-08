@@ -8,6 +8,7 @@ import {
   playerMayLoad,
   tmdbVideos,
   trailerPlayerHtml,
+  trailerSeasonNumber,
   youtubeThumbnailUrl,
   youtubeWatchUrl,
 } from "./trailers";
@@ -163,5 +164,19 @@ describe("playerMayLoad", () => {
     expect(playerMayLoad("https://www.youtube.com/watch?v=x", true)).toBe(
       false,
     );
+  });
+});
+
+describe("trailerSeasonNumber", () => {
+  it("is the latest season with episodes listed, not one only announced", () => {
+    // Slow Horses: episodes up to season 6; seasons 7 and 8 only announced.
+    expect(
+      trailerSeasonNumber([
+        { season: 5, type: "regular" },
+        { season: 6, type: "regular" },
+        { season: 7, type: "significant_special" },
+      ]),
+    ).toBe(6);
+    expect(trailerSeasonNumber([])).toBeUndefined();
   });
 });

@@ -44,7 +44,8 @@ full screen in the app and back to the row when closed.
 fallback.**
 
 - **Which videos:** official trailers and teasers in English on YouTube,
-  from the latest season's list and the show's own, each once, newest
+  from the list of the latest season with episodes listed (not one only
+  announced, which TMDB often does not have yet) and the show's own, each once, newest
   first, at most six (`pickTrailers`, `logic/trailers.ts`). Clips,
   featurettes and opening credits are left out. No row without any.
 - **No new requests in the usual case:** the show's videos are appended to
