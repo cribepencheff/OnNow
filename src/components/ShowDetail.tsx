@@ -536,18 +536,16 @@ function EpisodeCard({
         .join(", ")}
       style={[styles.card, { width }, !last && { marginRight: CARD_GAP }]}
     >
-      {/* The episode's still, else the show's backdrop, dimmed as not the
-          episode's own (episodeImage); with neither, an empty frame keeps
-          the cards in line, with nothing made up in it (data first). */}
+      {/* The episode's still, else the show's backdrop (episodeImage);
+          with neither, an empty frame keeps the cards in line, with
+          nothing made up in it (data first). Only an upcoming episode is
+          dimmed, as a hint that it is coming (owner, 2026-11-08). */}
       <View style={[styles.still, image && styles.stillBehindImage]}>
         {image && (
           <Image
             source={image.uri}
             testID={image.showImage ? "episode-show-image" : "episode-still"}
-            style={[
-              StyleSheet.absoluteFill,
-              (muted || image.showImage) && styles.stillMuted,
-            ]}
+            style={[StyleSheet.absoluteFill, muted && styles.stillMuted]}
             contentFit="cover"
             accessibilityIgnoresInvertColors
           />
@@ -749,8 +747,8 @@ const styles = StyleSheet.create({
   stillBehindImage: {
     backgroundColor: t.bg,
   },
-  // An upcoming episode's image, and the show's backdrop standing in for a
-  // still: darker than the rest (owner, 2026-11-08).
+  // An upcoming episode's image, whatever it is: darker than the rest,
+  // as a hint that it is coming (owner, 2026-11-08).
   stillMuted: {
     opacity: 0.35,
   },

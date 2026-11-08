@@ -423,7 +423,7 @@ describe("ShowDetail", () => {
       expect(next.getByText("In 7 days")).toBeTruthy();
     });
 
-    it("CRI-143: draws TMDB's still, else the show's backdrop, dimmed", async () => {
+    it("CRI-143: draws TMDB's still, else the show's backdrop, dimming only upcoming episodes", async () => {
       mockShow(showSlowHorsesFixture);
       mockSeasonStills.mockReturnValueOnce({
         data: [
@@ -437,13 +437,25 @@ describe("ShowDetail", () => {
       expect(
         JSON.stringify(within(next).getByTestId("episode-still").props.source),
       ).toContain("/original/s6e3.jpg");
-      // S6E4 has no still anywhere yet: the show's backdrop, dimmed.
+      // S6E4 has no still anywhere yet: the show's backdrop, dimmed as an
+      // upcoming episode.
       const after = row().getAllByTestId("episode-upcoming")[1];
       const backdrop = within(after).getByTestId("episode-show-image");
       expect(JSON.stringify(backdrop.props.source)).toContain(
         "/w780/textless.jpg",
       );
       expect(StyleSheet.flatten(backdrop.props.style).opacity).toBe(0.35);
+    });
+
+    it("CRI-143: leaves the show's backdrop undimmed on an episode that is out", async () => {
+      mockShow(showSlowHorsesFixture);
+      await render(<ShowDetail showId={45039} />);
+      // S6E2, out today, has no still in the fixture.
+      const today = within(row().getByTestId("episode-today"));
+      const image =
+        today.queryByTestId("episode-show-image") ??
+        today.getByTestId("episode-still");
+      expect(StyleSheet.flatten(image.props.style).opacity).toBeUndefined();
     });
 
     it("marks aired, today and upcoming episodes, and the finale", async () => {

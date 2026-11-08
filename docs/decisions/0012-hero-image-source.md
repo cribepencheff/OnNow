@@ -195,9 +195,11 @@ order (`logic/episode-image.ts`):
    the two can number a season differently: never a wrong episode's
    still.
 2. TVmaze's still.
-3. The show's highest-rated backdrop (the hero's), dimmed so it does not
-   pass for the episode's own. The previous episode's still stays
-   rejected, as above.
+3. The show's highest-rated backdrop (the hero's). The previous
+   episode's still stays rejected, as above.
+
+Only an upcoming episode's image is dimmed, whatever it is, as a hint that
+it is coming; a backdrop standing in on an episode that is out is not.
 4. None: an empty frame.
 
 TVmaze stays the source of the episodes and their days (ADR 0005, ADR

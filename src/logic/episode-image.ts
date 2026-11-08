@@ -7,8 +7,9 @@
 //    only when its date agrees with TVmaze's within a day, since the two
 //    can number a season differently. Never a wrong episode's still.
 // 2. TVmaze's still, already in the show's data.
-// 3. The show's TMDB backdrop, marked as the show's so the card dims it:
-//    neutral, never another episode's still (ADR 0012).
+// 3. The show's TMDB backdrop: neutral, never another episode's still
+//    (ADR 0012). Marked as the show's (showImage); the card dims only
+//    upcoming episodes, whatever their image.
 // 4. None: the card's empty frame (data first).
 
 import { IMAGE_BASE, type TmdbEpisodeStill } from "@/api/tmdb-types";
