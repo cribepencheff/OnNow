@@ -28,7 +28,7 @@ import { tmdbRating, type TmdbRating } from "@/logic/show-rating";
 import { queryClient } from "@/hooks/query-client";
 import { createTmdbFindCache } from "@/hooks/tmdb-find-cache";
 import type {
-  TmdbEpisodeStill,
+  TmdbSeasonEpisode,
   TmdbImages,
   TmdbSeasonResponse,
 } from "./tmdb-types";
@@ -87,13 +87,13 @@ export interface TmdbClientOptions {
 }
 
 export interface TmdbClient {
-  // A season's episode stills (CRI-143): [] when TMDB has no such
+  // A season's episodes, with stills and overviews (CRI-143): [] when TMDB has no such
   // season, NOT_ON_TMDB when TMDB does not know the show, null without a
   // key.
-  findSeasonStills: (
+  findSeasonEpisodes: (
     show: TmdbShowRef,
     season: number,
-  ) => Promise<TmdbEpisodeStill[] | typeof NOT_ON_TMDB | null>;
+  ) => Promise<TmdbSeasonEpisode[] | typeof NOT_ON_TMDB | null>;
   // The region's services for a show, [] when TMDB has none, NOT_ON_TMDB
   // when TMDB does not know the show, null when there is no API key.
   findStreamingProviders: (
@@ -327,10 +327,10 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     return { tvId, images, posterPath };
   }
 
-  async function findSeasonStills(
+  async function findSeasonEpisodes(
     show: TmdbShowRef,
     season: number,
-  ): Promise<TmdbEpisodeStill[] | typeof NOT_ON_TMDB | null> {
+  ): Promise<TmdbSeasonEpisode[] | typeof NOT_ON_TMDB | null> {
     if (!apiKey) {
       return null;
     }
@@ -356,6 +356,7 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
       episodeNumber: episode.episode_number,
       airDate: episode.air_date || null,
       stillPath: episode.still_path || null,
+      overview: episode.overview?.trim() || null,
     }));
   }
 
@@ -453,7 +454,7 @@ export function createTmdbClient(options: TmdbClientOptions): TmdbClient {
     findExternalIds,
     findRecommendations,
     findImages,
-    findSeasonStills,
+    findSeasonEpisodes,
     externalIdsById,
   };
 }

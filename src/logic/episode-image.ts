@@ -3,18 +3,17 @@
 // 1. TMDB's still for the episode. TMDB often has one before TVmaze, whose
 //    stills are added by its users days after an episode is out (100 Days
 //    of Deception). TVmaze stays the source of the episode itself and its
-//    day (ADR 0005, ADR 0006); TMDB is matched on the episode number, and
-//    only when its date agrees with TVmaze's within a day, since the two
-//    can number a season differently. Never a wrong episode's still.
+//    day (ADR 0005, ADR 0006); the TMDB episode is matched by
+//    matchTmdbEpisode, so never a wrong episode's still.
 // 2. TVmaze's still, already in the show's data.
 // 3. The show's TMDB backdrop: neutral, never another episode's still
 //    (ADR 0012). Marked as the show's (showImage); the card dims only
 //    upcoming episodes, whatever their image.
 // 4. None: the card's empty frame (data first).
 
-import { IMAGE_BASE, type TmdbEpisodeStill } from "@/api/tmdb-types";
+import { IMAGE_BASE, type TmdbSeasonEpisode } from "@/api/tmdb-types";
 import type { TvMazeEpisode } from "@/api/tvmaze-types";
-import { daysBetween } from "./local-date";
+import { matchTmdbEpisode } from "./tmdb-episode";
 
 export interface EpisodeImage {
   uri: string;
@@ -28,17 +27,10 @@ const BACKDROP_SIZE = "w780";
 
 export function episodeImage(
   episode: TvMazeEpisode,
-  tmdbStills: TmdbEpisodeStill[],
+  tmdbEpisodes: TmdbSeasonEpisode[],
   backdropPath: string | null,
 ): EpisodeImage | null {
-  const tmdb = tmdbStills.find(
-    (still) =>
-      still.episodeNumber === episode.number &&
-      still.stillPath !== null &&
-      still.airDate !== null &&
-      episode.airdate !== "" &&
-      Math.abs(daysBetween(still.airDate, episode.airdate)) <= 1,
-  );
+  const tmdb = matchTmdbEpisode(episode, tmdbEpisodes);
   if (tmdb?.stillPath) {
     return {
       uri: `${IMAGE_BASE}/${STILL_SIZE}${tmdb.stillPath}`,

@@ -54,9 +54,9 @@ jest.mock("@/hooks/useShowImages", () => ({
 }));
 // TMDB's stills for the season shown (CRI-143); the choice of image is
 // tested in episode-image.test.ts.
-const mockSeasonStills = jest.fn(() => ({ data: [] as unknown[] }));
-jest.mock("@/hooks/useSeasonStills", () => ({
-  useSeasonStills: () => mockSeasonStills(),
+const mockTmdbSeason = jest.fn(() => ({ data: [] as unknown[] }));
+jest.mock("@/hooks/useTmdbSeason", () => ({
+  useTmdbSeason: () => mockTmdbSeason(),
 }));
 jest.mock("@/hooks/useFollowList", () =>
   jest.requireActual("@/hooks/test-follow-list-mock").followListMock(),
@@ -141,7 +141,7 @@ describe("ShowDetail", () => {
       url: "https://www.themoviedb.org/tv/247718",
     });
     mockOriginCountries.mockReturnValue({ data: ["GB"] });
-    mockSeasonStills.mockReturnValue({ data: [] });
+    mockTmdbSeason.mockReturnValue({ data: [] });
     follow.mockReset();
     unfollow.mockReset();
     mockFollowed(false);
@@ -429,7 +429,7 @@ describe("ShowDetail", () => {
 
     it("CRI-143: draws TMDB's still, else the show's backdrop, dimming only upcoming episodes", async () => {
       mockShow(showSlowHorsesFixture);
-      mockSeasonStills.mockReturnValueOnce({
+      mockTmdbSeason.mockReturnValueOnce({
         data: [
           // Slow Horses S6E3, out on Wed 30 Sep 2026.
           { episodeNumber: 3, airDate: "2026-09-30", stillPath: "/s6e3.jpg" },
@@ -455,6 +455,34 @@ describe("ShowDetail", () => {
           within(after).getByTestId("episode-image-frame").props.style,
         ).backgroundColor,
       ).toBe(t.imageDimBackdrop);
+    });
+
+    it("CRI-143: takes TMDB's overview for an episode TVmaze has no summary for", async () => {
+      const withoutSummary = {
+        ...showSlowHorsesFixture,
+        _embedded: {
+          ...showSlowHorsesFixture._embedded,
+          episodes: showSlowHorsesFixture._embedded.episodes.map((episode) =>
+            episode.season === 6 && episode.number === 3
+              ? { ...episode, summary: null }
+              : episode,
+          ),
+        },
+      };
+      mockShow(withoutSummary);
+      mockTmdbSeason.mockReturnValue({
+        data: [
+          {
+            episodeNumber: 3,
+            airDate: "2026-09-30",
+            stillPath: null,
+            overview: "From TMDB.",
+          },
+        ],
+      });
+      await render(<ShowDetail showId={45039} />);
+      const next = within(row().getAllByTestId("episode-upcoming")[0]);
+      expect(next.getByText("From TMDB.")).toBeTruthy();
     });
 
     it("CRI-143: leaves the show's backdrop undimmed on an episode that is out", async () => {

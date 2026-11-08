@@ -29,12 +29,13 @@ import type {
   TvMazeShowWithEmbeds,
 } from "@/api/tvmaze-types";
 import { useOriginCountries } from "@/hooks/useOriginCountries";
-import { useSeasonStills } from "@/hooks/useSeasonStills";
+import { useTmdbSeason } from "@/hooks/useTmdbSeason";
 import { useShow } from "@/hooks/useShow";
 import { useShowImages } from "@/hooks/useShowImages";
 import { useToday } from "@/hooks/useToday";
-import type { TmdbEpisodeStill } from "@/api/tmdb-types";
+import type { TmdbSeasonEpisode } from "@/api/tmdb-types";
 import { episodeImage } from "@/logic/episode-image";
+import { episodeSummary } from "@/logic/tmdb-episode";
 import type { LocalDate } from "@/logic/local-date";
 import { plainTextParagraphs, plainTextSummary } from "@/logic/search-results";
 import {
@@ -145,9 +146,10 @@ function ShowDetailContent({
       tabs[0]?.number,
   );
   const [selectedSeason, setSelectedSeason] = useState(initialSeason);
-  // CRI-143: TMDB's stills for the season shown, and the show's backdrop
+  // CRI-143: TMDB's episodes for the season shown (stills and overviews),
+  // and the show's backdrop
   // (the hero's, already fetched) for a card with no still anywhere.
-  const { data: tmdbStills } = useSeasonStills(show, selectedSeason);
+  const { data: tmdbEpisodes } = useTmdbSeason(show, selectedSeason);
   const { data: showImages } = useShowImages(show);
   const seasonEpisodes = regularEpisodes(episodes).filter(
     (episode) => episode.season === selectedSeason,
@@ -211,7 +213,7 @@ function ShowDetailContent({
             seasons={seasons}
             timeZone={timeZone}
             todayDate={todayDate}
-            tmdbStills={tmdbStills ?? []}
+            tmdbEpisodes={tmdbEpisodes ?? []}
             backdropPath={showImages?.highestRatedBackdrop?.file_path ?? null}
           />
         </View>
@@ -500,7 +502,7 @@ interface EpisodeContext {
   seasons: TvMazeSeason[];
   timeZone: string;
   todayDate: LocalDate;
-  tmdbStills: TmdbEpisodeStill[];
+  tmdbEpisodes: TmdbSeasonEpisode[];
   backdropPath: string | null;
 }
 
@@ -515,15 +517,15 @@ function EpisodeCard({
   seasons,
   timeZone,
   todayDate,
-  tmdbStills,
+  tmdbEpisodes,
   backdropPath,
 }: { episode: TvMazeEpisode; width: number; last: boolean } & EpisodeContext) {
   const state = episodeState(episode, timeZone, todayDate);
   const muted = state === "upcoming";
   const dateLabel = episodeDateLabel(episode, timeZone, todayDate);
   const finale = isFinale(episode, seasons);
-  const summary = plainTextSummary(episode.summary);
-  const image = episodeImage(episode, tmdbStills, backdropPath);
+  const summary = episodeSummary(episode, tmdbEpisodes);
+  const image = episodeImage(episode, tmdbEpisodes, backdropPath);
   const badge = episodeBadgeLabel(episode);
 
   return (

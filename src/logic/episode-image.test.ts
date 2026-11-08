@@ -1,4 +1,4 @@
-import type { TmdbEpisodeStill } from "@/api/tmdb-types";
+import type { TmdbSeasonEpisode } from "@/api/tmdb-types";
 import type { TvMazeEpisode } from "@/api/tvmaze-types";
 import { episodeImage } from "./episode-image";
 
@@ -27,11 +27,12 @@ const TVMAZE_IMAGE = {
   original: "https://static.tvmaze.com/original.jpg",
 };
 
-function still(overrides: Partial<TmdbEpisodeStill> = {}): TmdbEpisodeStill {
+function still(overrides: Partial<TmdbSeasonEpisode> = {}): TmdbSeasonEpisode {
   return {
     episodeNumber: 9,
     airDate: "2026-11-07",
     stillPath: "/still9.jpg",
+    overview: null,
     ...overrides,
   };
 }

@@ -15,13 +15,15 @@ export interface TmdbImages {
   logos?: TmdbImage[];
 }
 
-// An episode's still in TMDB's season details (/tv/{id}/season/{n}),
-// trimmed to what the episode row uses (CRI-143).
-export interface TmdbEpisodeStill {
+// An episode in TMDB's season details (/tv/{id}/season/{n}), trimmed to
+// what the episode row uses (CRI-143): its still and its overview.
+export interface TmdbSeasonEpisode {
   episodeNumber: number;
   // TMDB's date, without a time of day (ADR 0005), or null.
   airDate: string | null;
   stillPath: string | null;
+  // In English; null where TMDB has none (it sends "").
+  overview: string | null;
 }
 
 export interface TmdbSeasonResponse {
@@ -29,6 +31,7 @@ export interface TmdbSeasonResponse {
     episode_number: number;
     air_date: string | null;
     still_path: string | null;
+    overview?: string | null;
   }[];
 }
 

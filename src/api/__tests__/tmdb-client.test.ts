@@ -512,28 +512,48 @@ describe("TmdbClient.findTranslations", () => {
 });
 
 // CRI-143: episode stills come from TMDB first, a season at a time.
-describe("TmdbClient.findSeasonStills (CRI-143)", () => {
+describe("TmdbClient.findSeasonEpisodes (CRI-143)", () => {
   const FIND = { tv_results: [{ id: 248890 }] };
 
-  it("reads a season's stills, trimmed to number, date and path", async () => {
+  it("reads a season's episodes, trimmed to number, date, still and overview", async () => {
     const fetchFn = jest
       .fn()
       .mockResolvedValueOnce(jsonResponse(FIND))
       .mockResolvedValueOnce(
         jsonResponse({
           episodes: [
-            { episode_number: 9, air_date: "2026-11-07", still_path: "/9.jpg" },
-            { episode_number: 11, air_date: "2026-11-14", still_path: null },
+            {
+              episode_number: 9,
+              air_date: "2026-11-07",
+              still_path: "/9.jpg",
+              overview: " A secret comes out. ",
+            },
+            {
+              episode_number: 11,
+              air_date: "2026-11-14",
+              still_path: null,
+              overview: "",
+            },
           ],
         }),
       );
     const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
 
     await expect(
-      client.findSeasonStills(NEAGLEY_EXTERNALS, 1),
+      client.findSeasonEpisodes(NEAGLEY_EXTERNALS, 1),
     ).resolves.toEqual([
-      { episodeNumber: 9, airDate: "2026-11-07", stillPath: "/9.jpg" },
-      { episodeNumber: 11, airDate: "2026-11-14", stillPath: null },
+      {
+        episodeNumber: 9,
+        airDate: "2026-11-07",
+        stillPath: "/9.jpg",
+        overview: "A secret comes out.",
+      },
+      {
+        episodeNumber: 11,
+        airDate: "2026-11-14",
+        stillPath: null,
+        overview: null,
+      },
     ]);
     expect(fetchFn.mock.calls[1][0]).toContain("/3/tv/248890/season/1");
   });
@@ -545,7 +565,7 @@ describe("TmdbClient.findSeasonStills (CRI-143)", () => {
       .mockResolvedValueOnce(jsonResponse({}, 404));
     const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
     await expect(
-      client.findSeasonStills(NEAGLEY_EXTERNALS, 9),
+      client.findSeasonEpisodes(NEAGLEY_EXTERNALS, 9),
     ).resolves.toEqual([]);
   });
 
@@ -554,7 +574,7 @@ describe("TmdbClient.findSeasonStills (CRI-143)", () => {
       .fn()
       .mockResolvedValue(jsonResponse({ tv_results: [] }));
     const client = createTmdbClient({ apiKey: V3_KEY, fetchFn, wait: noWait });
-    await expect(client.findSeasonStills(NEAGLEY_EXTERNALS, 1)).resolves.toBe(
+    await expect(client.findSeasonEpisodes(NEAGLEY_EXTERNALS, 1)).resolves.toBe(
       NOT_ON_TMDB,
     );
     const noKey = createTmdbClient({
@@ -563,7 +583,7 @@ describe("TmdbClient.findSeasonStills (CRI-143)", () => {
       wait: noWait,
     });
     await expect(
-      noKey.findSeasonStills(NEAGLEY_EXTERNALS, 1),
+      noKey.findSeasonEpisodes(NEAGLEY_EXTERNALS, 1),
     ).resolves.toBeNull();
   });
 });
