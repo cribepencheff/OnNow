@@ -293,8 +293,11 @@ per season come in the MVP.
 - **Content (stripped):** large image on top in the same cinematic feel as
   Home, title, a meta line ("2026 · Philippines · Drama, Thriller": year,
   first origin country, genres), status, service, and the summary under an
-  "About" heading, in a dark grey panel of three lines; "More" opens the
-  whole text in a sheet (owner, 2026-11-08). Then the episodes of one season as cards
+  "About" heading, in a dark grey panel of three lines; "More" opens a
+  sheet with every genre, the whole text and an "Information" list of what
+  the data gives: years, seasons with episodes, regular episodes listed,
+  runtime (TVmaze's average), every origin country and language
+  (owner, 2026-11-08). Then the episodes of one season as cards
   to swipe through, each with a landscape still, "Episode 2 of 10", episode
   title, a short summary and relative time ("In 3 days", "Tomorrow", "2 days
   ago", no time of day). There are no separate next and latest cards: each

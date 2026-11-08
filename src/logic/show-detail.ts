@@ -333,3 +333,59 @@ export function initialEpisodeIndex(
   });
   return index;
 }
+
+export interface AboutFact {
+  label: string;
+  value: string;
+}
+
+// The facts in Show detail's About sheet (PRD 5.5, owner 2026-11-08), from
+// data the view already has: TVmaze's show, seasons and episodes, and
+// TMDB's origin countries. A fact the data does not give is left out
+// (data first). Seasons count only those with regular episodes listed, so
+// an announced season is not one yet (FR-033); episodes count the regular
+// ones TVmaze lists, upcoming included (FR-037).
+export function aboutFacts(
+  show: TvMazeShow & {
+    _embedded: { episodes: TvMazeEpisode[]; seasons: TvMazeSeason[] };
+  },
+  originCountries: string[],
+): AboutFact[] {
+  const facts: AboutFact[] = [];
+  const episodes = regularEpisodes(show._embedded.episodes);
+
+  const first = show.premiered?.slice(0, 4);
+  if (first) {
+    const last = show.ended?.slice(0, 4);
+    const value = !last
+      ? `${first}–`
+      : last === first
+        ? first
+        : `${first}–${last}`;
+    facts.push({ label: "Years", value });
+  }
+
+  const seasonCount = new Set(episodes.map((episode) => episode.season)).size;
+  if (seasonCount > 0) {
+    facts.push({ label: "Seasons", value: String(seasonCount) });
+    facts.push({ label: "Episodes", value: String(episodes.length) });
+  }
+
+  const runtime = show.averageRuntime ?? show.runtime;
+  if (runtime) {
+    facts.push({ label: "Runtime", value: `${runtime} min` });
+  }
+
+  const countries = originCountries
+    .map(countryName)
+    .filter((name): name is string => name !== null);
+  if (countries.length > 0) {
+    facts.push({ label: "Origin", value: countries.join(", ") });
+  }
+
+  if (show.language) {
+    facts.push({ label: "Language", value: show.language });
+  }
+
+  return facts;
+}

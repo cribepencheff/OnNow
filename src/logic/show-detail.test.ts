@@ -1,4 +1,5 @@
 import {
+  aboutFacts,
   allEpisodesAvailable,
   currentSeasonNumber,
   episodeDateLabel,
@@ -411,5 +412,59 @@ describe("initialSeasonNumber and initialEpisodeIndex (FR-032)", () => {
         "2020-01-01",
       ),
     ).toBe(0);
+  });
+});
+
+// Owner, 2026-11-08: the About sheet's facts, from data already fetched.
+describe("aboutFacts (PRD 5.5)", () => {
+  it("lists years, seasons, episodes, runtime, origin and language (Slow Horses)", () => {
+    expect(aboutFacts(slowHorses, ["GB"])).toEqual([
+      { label: "Years", value: "2022–" },
+      { label: "Seasons", value: "6" },
+      {
+        label: "Episodes",
+        value: String(regularEpisodes(slowHorses._embedded.episodes).length),
+      },
+      { label: "Runtime", value: "45 min" },
+      { label: "Origin", value: "United Kingdom" },
+      { label: "Language", value: "English" },
+    ]);
+  });
+
+  it("counts only seasons with episodes, not an announced one (FR-033)", () => {
+    // Slow Horses lists season 7 without episodes.
+    const seasons = aboutFacts(slowHorses, []).find(
+      (fact) => fact.label === "Seasons",
+    );
+    expect(seasons?.value).toBe("6");
+  });
+
+  it("gives an ended show its last year, and one year once", () => {
+    const years = (show: TvMazeShowWithEmbeds) =>
+      aboutFacts(show, []).find((fact) => fact.label === "Years")?.value;
+    expect(years(killingEve)).toBe("2018–2022");
+    expect(
+      years({ ...killingEve, premiered: "2022-01-01", ended: "2022-12-01" }),
+    ).toBe("2022");
+  });
+
+  it("names every origin country, not only the first", () => {
+    expect(
+      aboutFacts(slowHorses, ["GB", "US"]).find(
+        (fact) => fact.label === "Origin",
+      )?.value,
+    ).toBe("United Kingdom, United States");
+  });
+
+  it("leaves out what the data does not give (data first)", () => {
+    const bare = {
+      ...slowHorses,
+      premiered: null,
+      runtime: null,
+      averageRuntime: null,
+      language: null,
+      _embedded: { episodes: [], seasons: [] },
+    };
+    expect(aboutFacts(bare, [])).toEqual([]);
   });
 });

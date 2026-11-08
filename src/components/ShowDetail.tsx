@@ -33,6 +33,7 @@ import { useToday } from "@/hooks/useToday";
 import type { LocalDate } from "@/logic/local-date";
 import { plainTextSummary } from "@/logic/search-results";
 import {
+  aboutFacts,
   episodeDateLabel,
   episodeOfLabel,
   episodeState,
@@ -43,6 +44,7 @@ import {
   seasonTabs,
   showDetailMetaLine,
   showDetailPill,
+  type AboutFact,
   type SeasonTab,
 } from "@/logic/show-detail";
 import { showState, showStateLabel } from "@/logic/show-state";
@@ -171,7 +173,14 @@ function ShowDetailContent({
         metaLine={metaLine}
       />
 
-      {summary && <About title={show.name} text={summary} />}
+      {summary && (
+        <About
+          title={show.name}
+          text={summary}
+          genres={show.genres ?? []}
+          facts={aboutFacts(show, originCountries ?? [])}
+        />
+      )}
 
       {tabs.length > 0 && (
         <View style={styles.episodesSection}>
@@ -205,7 +214,17 @@ const SUMMARY_LINES = 3;
 // opening the whole text in a sheet (owner, 2026-11-08; Apple TV as the
 // reference). The full text is laid out once, out of sight, to know
 // whether it runs longer; "More" shows only when it does.
-function About({ title, text }: { title: string; text: string }) {
+function About({
+  title,
+  text,
+  genres,
+  facts,
+}: {
+  title: string;
+  text: string;
+  genres: string[];
+  facts: AboutFact[];
+}) {
   const [open, setOpen] = useState(false);
   const [lineCount, setLineCount] = useState(0);
   const truncated = lineCount > SUMMARY_LINES;
@@ -253,22 +272,30 @@ function About({ title, text }: { title: string; text: string }) {
         visible={open}
         title={title}
         text={text}
+        genres={genres}
+        facts={facts}
         onClose={() => setOpen(false)}
       />
     </View>
   );
 }
 
-// iOS's own page sheet, which can be swiped down, with a close button.
+// iOS's own page sheet, which can be swiped down, with a close button:
+// the title, every genre (the hero's meta line shows three), the whole
+// summary and the show's facts (aboutFacts), as in Apple TV.
 function AboutSheet({
   visible,
   title,
   text,
+  genres,
+  facts,
   onClose,
 }: {
   visible: boolean;
   title: string;
   text: string;
+  genres: string[];
+  facts: AboutFact[];
   onClose: () => void;
 }) {
   return (
@@ -301,7 +328,28 @@ function AboutSheet({
           </Pressable>
         </View>
         <ScrollView contentContainerStyle={styles.sheetContent}>
+          {genres.length > 0 && (
+            <Text style={styles.sheetGenres}>{genres.join(", ")}</Text>
+          )}
           <Text style={styles.summary}>{text}</Text>
+          {facts.length > 0 && (
+            <View style={styles.facts} testID="show-detail-about-facts">
+              <Text style={styles.sectionHeading} accessibilityRole="header">
+                Information
+              </Text>
+              {facts.map((fact) => (
+                <View
+                  key={fact.label}
+                  style={styles.fact}
+                  accessible
+                  accessibilityLabel={`${fact.label}, ${fact.value}`}
+                >
+                  <Text style={styles.factLabel}>{fact.label}</Text>
+                  <Text style={styles.factValue}>{fact.value}</Text>
+                </View>
+              ))}
+            </View>
+          )}
         </ScrollView>
       </View>
     </Modal>
@@ -594,6 +642,28 @@ const styles = StyleSheet.create({
   sheetContent: {
     paddingHorizontal: t.contentInset,
     paddingBottom: t.space10,
+    gap: 12,
+  },
+  sheetGenres: {
+    ...type.meta,
+    color: t.inkMuted,
+  },
+  facts: {
+    paddingTop: t.space6,
+  },
+  fact: {
+    paddingVertical: 10,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: t.hairline,
+    gap: 2,
+  },
+  factLabel: {
+    ...type.meta,
+    color: t.inkMuted,
+  },
+  factValue: {
+    ...type.body,
+    color: t.ink,
   },
   more: {
     ...type.meta,

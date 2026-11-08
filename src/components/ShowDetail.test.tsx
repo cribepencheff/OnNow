@@ -267,6 +267,14 @@ describe("ShowDetail", () => {
         sheet.getByText(/Slow Horses follows the story/).props.numberOfLines,
       ).toBeUndefined();
 
+      // Every genre, and the facts the data gives.
+      expect(sheet.getByText("Drama, Thriller, Espionage")).toBeTruthy();
+      const facts = within(sheet.getByTestId("show-detail-about-facts"));
+      expect(facts.getByRole("header", { name: "Information" })).toBeTruthy();
+      expect(facts.getByLabelText("Years, 2022–")).toBeTruthy();
+      expect(facts.getByLabelText("Runtime, 45 min")).toBeTruthy();
+      expect(facts.getByLabelText("Origin, United Kingdom")).toBeTruthy();
+
       await fireEvent.press(sheet.getByRole("button", { name: "Close" }));
       expect(screen.queryByTestId("show-detail-about-sheet")).toBeNull();
     });
